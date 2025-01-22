@@ -1,0 +1,142 @@
+##### azurerm_logic_app_action_custom
+module "logic_app_action_custom" {
+  source = "./modules/logic_app/action_custom"
+
+  for_each = local.logic_app.logic_app_action_custom
+
+  global_settings = local.global_settings
+  client_config   = local.client_config
+  settings        = each.value
+  logic_app_id    = try(local.combined_objects_logic_app_workflow[try(each.value.lz_key, local.client_config.landingzone_key)][each.value.logic_app_key].id, null)
+}
+
+output "logic_app_action_custom" {
+  value = module.logic_app_action_custom
+}
+
+##### azurerm_logic_app_action_http
+module "logic_app_action_http" {
+  source = "./modules/logic_app/action_http"
+
+  for_each = local.logic_app.logic_app_action_http
+
+  global_settings = local.global_settings
+  client_config   = local.client_config
+  settings        = each.value
+  logic_app_id    = try(local.combined_objects_logic_app_workflow[try(each.value.lz_key, local.client_config.landingzone_key)][each.value.logic_app_key].id, null)
+}
+
+output "logic_app_action_http" {
+  value = module.logic_app_action_http
+}
+
+##### azurerm_logic_app_integration_account
+module "logic_app_integration_account" {
+  source = "./modules/logic_app/integration_account"
+
+  for_each = local.logic_app.logic_app_integration_account
+
+  global_settings     = local.global_settings
+  client_config       = local.client_config
+  settings            = each.value
+  location            = can(local.global_settings.regions[each.value.region]) ? local.global_settings.regions[each.value.region] : local.combined_objects_resource_groups[try(each.value.resource_group.lz_key, local.client_config.landingzone_key)][try(each.value.resource_group.key, each.value.resource_group_key)].location
+  resource_group_name = can(each.value.resource_group.name) || can(each.value.resource_group_name) ? try(each.value.resource_group.name, each.value.resource_group_name) : local.combined_objects_resource_groups[try(each.value.resource_group.lz_key, local.client_config.landingzone_key)][try(each.value.resource_group_key, each.value.resource_group.key)].name
+  base_tags           = try(local.global_settings.inherit_tags, false) ? try(local.combined_objects_resource_groups[try(each.value.resource_group.lz_key, local.client_config.landingzone_key)][try(each.value.resource_group.key, each.value.resource_group_key)].tags, {}) : {}
+
+}
+
+output "logic_app_integration_account" {
+  value = module.logic_app_integration_account
+}
+
+##### azurerm_logic_app_trigger_custom
+module "logic_app_trigger_custom" {
+  source = "./modules/logic_app/trigger_custom"
+
+  for_each = local.logic_app.logic_app_trigger_custom
+
+  global_settings = local.global_settings
+  client_config   = local.client_config
+  settings        = each.value
+  logic_app_id    = try(local.combined_objects_logic_app_workflow[try(each.value.lz_key, local.client_config.landingzone_key)][each.value.logic_app_key].id, null)
+}
+
+output "logic_app_trigger_custom" {
+  value = module.logic_app_trigger_custom
+}
+
+##### azurerm_logic_app_trigger_http_request
+module "logic_app_trigger_http_request" {
+  source = "./modules/logic_app/trigger_http_request"
+
+  for_each = local.logic_app.logic_app_trigger_http_request
+
+  global_settings = local.global_settings
+  client_config   = local.client_config
+  settings        = each.value
+  logic_app_id    = try(local.combined_objects_logic_app_workflow[try(each.value.lz_key, local.client_config.landingzone_key)][each.value.logic_app_key].id, null)
+}
+
+output "logic_app_trigger_http_request" {
+  value = module.logic_app_trigger_http_request
+}
+
+##### azurerm_logic_app_trigger_recurrence
+module "logic_app_trigger_recurrence" {
+  source = "./modules/logic_app/trigger_recurrence"
+
+  for_each = local.logic_app.logic_app_trigger_recurrence
+
+  global_settings = local.global_settings
+  client_config   = local.client_config
+  settings        = each.value
+  logic_app_id    = try(local.combined_objects_logic_app_workflow[try(each.value.lz_key, local.client_config.landingzone_key)][each.value.logic_app_key].id, null)
+}
+
+output "logic_app_trigger_recurrence" {
+  value = module.logic_app_trigger_recurrence
+}
+
+##### azurerm_logic_app_workflow
+module "logic_app_workflow" {
+  source   = "./modules/logic_app/workflow"
+  for_each = local.logic_app.logic_app_workflow
+
+  global_settings                  = local.global_settings
+  client_config                    = local.client_config
+  settings                         = each.value
+  location                         = can(local.global_settings.regions[each.value.region]) ? local.global_settings.regions[each.value.region] : local.combined_objects_resource_groups[try(each.value.resource_group.lz_key, local.client_config.landingzone_key)][try(each.value.resource_group.key, each.value.resource_group_key)].location
+  resource_group_name              = can(each.value.resource_group.name) || can(each.value.resource_group_name) ? try(each.value.resource_group.name, each.value.resource_group_name) : local.combined_objects_resource_groups[try(each.value.resource_group.lz_key, local.client_config.landingzone_key)][try(each.value.resource_group_key, each.value.resource_group.key)].name
+  base_tags                        = try(local.global_settings.inherit_tags, false) ? try(local.combined_objects_resource_groups[try(each.value.resource_group.lz_key, local.client_config.landingzone_key)][try(each.value.resource_group.key, each.value.resource_group_key)].tags, {}) : {}
+  logic_app_integration_account_id = try(local.combined_objects_logic_app_integration_account[try(each.value.lz_key, local.client_config.landingzone_key)][each.value.logic_app_integration_account_key].id, null)
+}
+
+output "logic_app_workflow" {
+  value = module.logic_app_workflow
+}
+
+module "logic_app_standard" {
+  source = "./modules/logic_app/standard"
+
+  for_each = local.logic_app.logic_app_standard
+
+  global_settings   = local.global_settings
+  client_config     = local.client_config
+  settings          = each.value
+  resource_groups   = local.combined_objects_resource_groups
+  storage_accounts  = local.combined_objects_storage_accounts
+  app_service_plans = local.combined_objects_app_service_plans
+  app_settings      = try(each.value.app_settings, null)
+  subnets           = local.combined_objects_networking
+  identity          = try(each.value.identity, null)
+  private_endpoints = try(each.value.private_endpoints, {})
+  private_dns       = local.combined_objects_private_dns
+  vnets             = local.combined_objects_networking
+  virtual_subnets   = local.combined_objects_virtual_subnets
+  base_tags         = try(local.global_settings.inherit_tags, false) ? local.resource_groups[each.value.resource_group_key].tags : {}
+  vnet_integration  = try(each.value.vnet_integration, {})
+}
+
+output "logic_app_standard" {
+  value = module.logic_app_standard
+}
