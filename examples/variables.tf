@@ -687,6 +687,9 @@ variable "wvd_applications" {
 variable "lighthouse_definitions" {
   default = {}
 }
+variable "linux_function_app" {
+  default = {}
+}
 variable "dedicated_host_groups" {
   default = {}
 }

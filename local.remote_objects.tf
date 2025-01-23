@@ -85,6 +85,7 @@ locals {
     lb                                             = try(local.combined_objects_lb, null)
     lb_backend_address_pool                        = try(local.combined_objects_lb_backend_address_pool, null)
     lb_probe                                       = try(local.combined_objects_lb_probe, null)
+    linux_function_apps                            = try(local.combined_objects_linux_function_apps, null)
     load_balancers                                 = try(local.combined_objects_load_balancers, null)
     log_analytics                                  = try(local.combined_objects_log_analytics, null)
     logic_app_integration_account                  = try(local.combined_objects_logic_app_integration_account, null)
