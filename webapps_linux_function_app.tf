@@ -15,11 +15,8 @@ module "linux_function_apps" {
     diagnostics       = local.combined_diagnostics
     keyvaults         = local.combined_objects_keyvaults
     storage_accounts  = local.combined_objects_storage_accounts
-    virtual_networks  = local.combined_objects_networking
-    virtual_network_subnets     = local.combined_objects_virtual_subnets
+    vnets             = local.combined_objects_networking
   }
-
-
 }
 
 output "linux_function_apps" {

@@ -3,14 +3,9 @@
 
 
 
-resource "azurerm_linux_function_app" "linux_function_app" {
-  location            = local.location
-  name                = azurecaf_name.linux_function_app.result
-  resource_group_name = local.resource_group_name
-  service_plan_id = coalesce(
-    var.settings.service_plan_id,
-    var.remote_objects.app_service_plans[try(var.settings.app_service_plan.lz_key, var.client_config.landingzone_key)][var.settings.app_service_plan.key].id
-  )
+resource "azurerm_linux_function_app_slot" "linux_function_app_slot" {  
+  name                = azurecaf_name.linux_function_app_slot.result
+  function_app_id     = var.remote_objects.function_app_id
   site_config {
     always_on          = try(var.settings.site_config.always_on, null)
     api_definition_url = try(var.settings.site_config.api_definition_url, null)
@@ -394,14 +389,6 @@ resource "azurerm_linux_function_app" "linux_function_app" {
     }
   }
 
-  dynamic "sticky_settings" {
-    for_each = try(var.settings.sticky_settings, {}) != {} ? [1] : []
-    content {
-      app_setting_names = try(var.settings.sticky_settings.app_setting_names, null)
-      connection_string_names = try(var.settings.sticky_settings.connection_string_names, null)
-    }
-  }
-
   storage_account_access_key = try(
     var.settings.storage_account_access_key,
     var.remote_objects.storage_accounts[try(var.settings.storage_account.lz_key, var.client_config.landingzone_key)][var.settings.storage_account.key].primary_access_key
@@ -424,7 +411,7 @@ resource "azurerm_linux_function_app" "linux_function_app" {
 
   vnet_image_pull_enabled = try(var.settings.vnet_image_pull_enabled, false)
   webdeploy_publish_basic_authentication_enabled = try(var.settings.webdeploy_publish_basic_authentication_enabled, null)
-  zip_deploy_file = try(var.settings.zip_deploy_file, null)
+  
 
   dynamic "timeouts" {
     for_each = try(var.settings.timeouts, {}) != {} ? [1] : []

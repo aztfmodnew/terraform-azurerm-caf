@@ -10,4 +10,5 @@ locals {
     try(var.settings.app_settings, {}),
     try(local.dynamic_settings_to_process, {})
   )
+
 }
