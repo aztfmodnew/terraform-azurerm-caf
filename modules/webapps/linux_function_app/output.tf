@@ -53,10 +53,10 @@ output "hosting_environment_id" {
 }
 
 output "identity" {
-  value = {
+  value = length(azurerm_linux_function_app.linux_function_app.identity) > 0 ? {
     principal_id = azurerm_linux_function_app.linux_function_app.identity[0].principal_id
     tenant_id    = azurerm_linux_function_app.linux_function_app.identity[0].tenant_id
-  }
+  } : null
 }
 
 output "kind" {
@@ -80,9 +80,9 @@ output "possible_outbound_ip_addresses" {
 }
 
 output "site_credential" {
-  value = {
+  value = length(azurerm_linux_function_app.linux_function_app.site_credential) > 0 ? {
     name     = azurerm_linux_function_app.linux_function_app.site_credential[0].name
     password = azurerm_linux_function_app.linux_function_app.site_credential[0].password
-  }
+  } : null
 }
 

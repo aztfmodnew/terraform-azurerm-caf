@@ -128,6 +128,7 @@ locals {
     redis_caches                                   = try(local.combined_objects_redis_caches, null)
     resource_groups                                = try(local.combined_objects_resource_groups, null)
     search_services                                = try(local.combined_objects_search_services, null)
+    service_plans                                  = try(local.combined_objects_service_plans, null)
     servicebus_namespaces                          = try(local.combined_objects_servicebus_namespaces, null)
     servicebus_topics                              = try(local.combined_objects_servicebus_topics, null)
     servicebus_queues                              = try(local.combined_objects_servicebus_queues, null)

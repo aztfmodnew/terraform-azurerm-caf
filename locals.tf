@@ -441,6 +441,7 @@ locals {
     function_apps                                  = try(var.webapp.function_apps, {})
     linux_function_apps                            = try(var.webapp.linux_function_apps, {})
     static_sites                                   = try(var.webapp.static_sites, {})
+    service_plans                                  = try(var.webapp.service_plans, {})
   }
 
   enable = {

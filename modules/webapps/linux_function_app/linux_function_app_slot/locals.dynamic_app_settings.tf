@@ -17,7 +17,7 @@ locals {
           for resource_type_key, resource in resources : [
             for object_id_key, object_attributes in resource : {
               key   = setting_name
-              value = try(var.remote_objects.combined_objects[resource_type_key][object_attributes.lz_key][object_id_key][object_attributes.attribute_key], var.remote_objects.combined_objects[resource_type_key][var.client_config.landingzone_key][object_id_key][object_attributes.attribute_key])              
+              value = try(var.remote_objects.combined_objects[resource_type_key][object_attributes.lz_key][object_id_key][object_attributes.attribute_key], var.remote_objects.combined_objects[resource_type_key][var.client_config.landingzone_key][object_id_key][object_attributes.attribute_key])
             }
           ]
         ]
