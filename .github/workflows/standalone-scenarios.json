@@ -138,6 +138,8 @@
     "webapps/function_app/101-function_app-private",
     "webapps/function_app/102-function_app-linux",
     "webapps/function_app/103-function_app-windows",
+    "webapps/linux_function_app/100-simple-linux_function_app",
+    "webapps/service_plan/100-simple-linux_service_plan",
     "webapps/static_site/101-simple-static-web-app"
   ]
 }

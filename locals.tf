@@ -439,7 +439,9 @@ locals {
     azurerm_application_insights_web_test          = try(var.webapp.azurerm_application_insights_web_test, {})
     azurerm_application_insights_standard_web_test = try(var.webapp.azurerm_application_insights_standard_web_test, {})
     function_apps                                  = try(var.webapp.function_apps, {})
+    linux_function_apps                            = try(var.webapp.linux_function_apps, {})
     static_sites                                   = try(var.webapp.static_sites, {})
+    service_plans                                  = try(var.webapp.service_plans, {})
   }
 
   enable = {

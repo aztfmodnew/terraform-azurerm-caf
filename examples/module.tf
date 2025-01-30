@@ -337,7 +337,9 @@ module "example" {
     app_service_environments_v3                    = var.app_service_environments_v3
     app_service_plans                              = var.app_service_plans
     app_services                                   = var.app_services
+    linux_function_apps                            = var.linux_function_apps
     function_apps                                  = var.function_apps
+    service_plans                                  = var.service_plans
     static_sites                                   = var.static_sites
   }
   data_factory = {

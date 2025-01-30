@@ -687,6 +687,9 @@ variable "wvd_applications" {
 variable "lighthouse_definitions" {
   default = {}
 }
+variable "linux_function_apps" {
+  default = {}
+}
 variable "dedicated_host_groups" {
   default = {}
 }
@@ -702,6 +705,45 @@ variable "vpn_gateway_connections" {
 variable "vpn_gateway_nat_rules" {
   default = {}
 }
+variable "service_plans" {
+  description = <<DESCRIPTION
+The service_plans object is a map of service plan objects. Each service plan object has the following keys:
+- resource_group_key: The key of the resource group object to deploy the Azure resource.
+- name: (Required) The name of the service plan.
+- location: The location of the service plan. If not provided, the location of the resource group will be used.
+- os_type: (Required) The operating system of the service plan. Possible values are Windows, Linux and WindowsContainer.
+- sku_name: (Required) The SKU name of the service plan.
+- app_service_environment_id: (Optional) The ID of the App Service Environment where the service plan should be created.
+- app_service_environment: (Optional) The App Service Environment object where the service plan should be created.
+  - lz_key: The key of the landing zone object to deploy the Azure resource.
+  - key: The key of the App Service Environment object to deploy the Azure resource.
+- app_service_environment_v3: (Optional) The App Service Environment V3 object where the service plan should be created.
+  - lz_key: The key of the landing zone object to deploy the Azure resource.
+  - key: The key of the App Service Environment V3 object to deploy the Azure resource.
+- maximum_elastic_worker_count: (Optional) The maximum number of workers that can be allocated to this App Service Plan.
+- worker_count: (Optional) The number of workers to allocate.
+- per_site_scaling_enabled: (Optional) Should the Service Plan balance across Availability Zones in the region. Changing this forces a new resource to be created.
+- tags: (Optional) The tags for the service plan.
+
+Example:
+
+service_plans = {
+  sp1 = {
+    resource_group_key = "test_re1"
+    name               = "asp-simple"
+    os_type            = "Linux"
+    sku_name           = "FC1"
+
+    tags = {
+      project = "Test"
+    }
+  }
+}
+DESCRIPTION
+  default     = {}
+}
+
+
 variable "servicebus_namespaces" {
   default = {}
 }
