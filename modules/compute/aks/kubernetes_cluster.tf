@@ -141,9 +141,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     }
     vnet_subnet_id   = try(var.settings.default_node_pool.vnet_subnet_id, var.remote_objects.vnet_subnet_id)
     workload_runtime = try(var.settings.default_node_pool.workload_runtime, null)
-    zones            = try(var.settings.default_node_pool.zones, var.settings.default_node_pool.availability_zones, null)
-    #If auto_scaling_enabled is set to true, then the following fields can also be configured:
-    #If auto_scaling_enabled is set to false both min_count and max_count fields need to be set to null or omitted from the configuration.
+    zones            = try(var.settings.default_node_pool.zones, var.settings.default_node_pool.availability_zones, null)    
     max_count  = try(var.settings.default_node_pool.auto_scaling_enabled, false) == false ? null : try(var.settings.default_node_pool.max_count, null)
     min_count  = try(var.settings.default_node_pool.auto_scaling_enabled, false) == false ? null : try(var.settings.default_node_pool.min_count, null)
     node_count = try(var.settings.default_node_pool.node_count, null)
@@ -309,30 +307,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
       }
     }
   }
-  /*
-A maintenance_window_auto_upgrade block supports the following:
-
-frequency - (Required) Frequency of maintenance. Possible options are Weekly, AbsoluteMonthly and RelativeMonthly.
-
-interval - (Required) The interval for maintenance runs. Depending on the frequency this interval is week or month based.
-
-duration - (Required) The duration of the window for maintenance to run in hours. Possible options are between 4 to 24.
-
-day_of_week - (Optional) The day of the week for the maintenance run. Required in combination with weekly frequency. Possible values are Friday, Monday, Saturday, Sunday, Thursday, Tuesday and Wednesday.
-
-day_of_month - (Optional) The day of the month for the maintenance run. Required in combination with AbsoluteMonthly frequency. Value between 0 and 31 (inclusive).
-
-week_index - (Optional) Specifies on which instance of the allowed days specified in day_of_week the maintenance occurs. Options are First, Second, Third, Fourth, and Last. Required in combination with relative monthly frequency.
-
-start_time - (Optional) The time for maintenance to begin, based on the timezone determined by utc_offset. Format is HH:mm.
-
-utc_offset - (Optional) Used to determine the timezone for cluster maintenance.
-
-start_date - (Optional) The date on which the maintenance window begins to take effect.
-
-not_allowed - (Optional) One or more not_allowed block as defined below.
-*/
-  dynamic "maintenance_window_auto_upgrade" {
+dynamic "maintenance_window_auto_upgrade" {
     for_each = try(var.settings.maintenance_window_auto_upgrade, null) == null ? [] : [var.settings.maintenance_window_auto_upgrade]
     content {
       frequency    = maintenance_window_auto_upgrade.frequency
@@ -355,29 +330,6 @@ not_allowed - (Optional) One or more not_allowed block as defined below.
     }
 
   }
-  /*
-  A maintenance_window_node_os block supports the following:
-
-frequency - (Required) Frequency of maintenance. Possible options are Daily, Weekly, AbsoluteMonthly and RelativeMonthly.
-
-interval - (Required) The interval for maintenance runs. Depending on the frequency this interval is week or month based.
-
-duration - (Required) The duration of the window for maintenance to run in hours. Possible options are between 4 to 24.
-
-day_of_week - (Optional) The day of the week for the maintenance run. Required in combination with weekly frequency. Possible values are Friday, Monday, Saturday, Sunday, Thursday, Tuesday and Wednesday.
-
-day_of_month - (Optional) The day of the month for the maintenance run. Required in combination with AbsoluteMonthly frequency. Value between 0 and 31 (inclusive).
-
-week_index - (Optional) The week in the month used for the maintenance run. Options are First, Second, Third, Fourth, and Last.
-
-start_time - (Optional) The time for maintenance to begin, based on the timezone determined by utc_offset. Format is HH:mm.
-
-utc_offset - (Optional) Used to determine the timezone for cluster maintenance.
-
-start_date - (Optional) The date on which the maintenance window begins to take effect.
-
-not_allowed - (Optional) One or more not_allowed block as defined below.
-  */
 
   dynamic "maintenance_window_node_os" {
     for_each = try(var.settings.maintenance_window_node_os, null) == null ? [] : [var.settings.maintenance_window_node_os]
