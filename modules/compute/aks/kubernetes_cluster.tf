@@ -141,10 +141,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
     }
     vnet_subnet_id   = try(var.settings.default_node_pool.vnet_subnet_id, var.remote_objects.vnet_subnet_id)
     workload_runtime = try(var.settings.default_node_pool.workload_runtime, null)
-    zones            = try(var.settings.default_node_pool.zones, var.settings.default_node_pool.availability_zones, null)    
-    max_count  = try(var.settings.default_node_pool.auto_scaling_enabled, false) == false ? null : try(var.settings.default_node_pool.max_count, null)
-    min_count  = try(var.settings.default_node_pool.auto_scaling_enabled, false) == false ? null : try(var.settings.default_node_pool.min_count, null)
-    node_count = try(var.settings.default_node_pool.node_count, null)
+    zones            = try(var.settings.default_node_pool.zones, var.settings.default_node_pool.availability_zones, null)
+    max_count        = try(var.settings.default_node_pool.auto_scaling_enabled, false) == false ? null : try(var.settings.default_node_pool.max_count, null)
+    min_count        = try(var.settings.default_node_pool.auto_scaling_enabled, false) == false ? null : try(var.settings.default_node_pool.min_count, null)
+    node_count       = try(var.settings.default_node_pool.node_count, null)
   }
   dns_prefix                 = try(var.settings.dns_prefix, try(var.settings.dns_prefix_private_cluster, random_string.prefix.result))
   dns_prefix_private_cluster = try(var.settings.dns_prefix_private_cluster, null)
@@ -307,7 +307,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
       }
     }
   }
-dynamic "maintenance_window_auto_upgrade" {
+  dynamic "maintenance_window_auto_upgrade" {
     for_each = try(var.settings.maintenance_window_auto_upgrade, null) == null ? [] : [var.settings.maintenance_window_auto_upgrade]
     content {
       frequency    = maintenance_window_auto_upgrade.frequency
@@ -495,13 +495,6 @@ node_os_upgrade_channel must be set to NodeImage if automatic_upgrade_channel ha
       }
     }
   }
-
-
-
-
-
-
-
 }
 
 
