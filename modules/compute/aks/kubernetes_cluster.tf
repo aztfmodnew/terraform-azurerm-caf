@@ -42,7 +42,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     gpu_instance                  = try(var.settings.default_node_pool.gpu_instance, null)
     host_group_id                 = try(var.settings.default_node_pool.host_group_id, null)
     dynamic "kubelet_config" {
-      for_each = try(var.settings.default_node_pool.kubelet_config, null) == null ? [] : [1]
+      for_each = try(var.settings.default_node_pool.kubelet_config, null) == null ? [] : [var.settings.default_node_pool.kubelet_config]
       content {
         allowed_unsafe_sysctls    = try(kubelet_config.value.allowed_unsafe_sysctls, null)
         container_log_max_line    = try(kubelet_config.value.container_log_max_line, null)
@@ -57,11 +57,11 @@ resource "azurerm_kubernetes_cluster" "aks" {
       }
     }
     dynamic "linux_os_config" {
-      for_each = try(var.settings.default_node_pool.linux_os_config, null) == null ? [] : [1]
+      for_each = try(var.settings.default_node_pool.linux_os_config, null) == null ? [] : [var.settings.default_node_pool.linux_os_config]
       content {
         swap_file_size_mb = try(linux_os_config.value.allowed_unsafe_sysctls, null)
         dynamic "sysctl_config" {
-          for_each = try(linux_os_config.value.sysctl_config, null) == null ? [] : [1]
+          for_each = try(linux_os_config.value.sysctl_config, null) == null ? [] : [linux_os_config.value.sysctl_config]
           content {
             fs_aio_max_nr                      = try(sysctl_config.value.fs_aio_max_nr, null)
             fs_file_max                        = try(sysctl_config.value.fs_file_max, null)
@@ -142,11 +142,9 @@ resource "azurerm_kubernetes_cluster" "aks" {
     vnet_subnet_id   = try(var.settings.default_node_pool.vnet_subnet_id, var.remote_objects.vnet_subnet_id)
     workload_runtime = try(var.settings.default_node_pool.workload_runtime, null)
     zones            = try(var.settings.default_node_pool.zones, var.settings.default_node_pool.availability_zones, null)
-    #If auto_scaling_enabled is set to true, then the following fields can also be configured:
-    #If auto_scaling_enabled is set to false both min_count and max_count fields need to be set to null or omitted from the configuration.
-    max_count  = try(var.settings.default_node_pool.auto_scaling_enabled, false) == false ? null : try(var.settings.default_node_pool.max_count, null)
-    min_count  = try(var.settings.default_node_pool.auto_scaling_enabled, false) == false ? null : try(var.settings.default_node_pool.min_count, null)
-    node_count = try(var.settings.default_node_pool.node_count, null)
+    max_count        = try(var.settings.default_node_pool.auto_scaling_enabled, false) == false ? null : try(var.settings.default_node_pool.max_count, null)
+    min_count        = try(var.settings.default_node_pool.auto_scaling_enabled, false) == false ? null : try(var.settings.default_node_pool.min_count, null)
+    node_count       = try(var.settings.default_node_pool.node_count, null)
   }
   dns_prefix                 = try(var.settings.dns_prefix, try(var.settings.dns_prefix_private_cluster, random_string.prefix.result))
   dns_prefix_private_cluster = try(var.settings.dns_prefix_private_cluster, null)
@@ -226,7 +224,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   dynamic "identity" {
-    for_each = try(var.settings.identity, null) == null ? [] : [1]
+    for_each = try(var.settings.identity, null) == null ? [] : [var.settings.identity]
 
     content {
       type         = var.settings.identity.type
@@ -237,7 +235,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   image_cleaner_enabled        = try(var.settings.image_cleaner_enabled, null)
   image_cleaner_interval_hours = try(var.settings.image_cleaner_interval_hours, null)
   dynamic "ingress_application_gateway" {
-    for_each = try(var.settings.ingress_application_gateway, null) == null ? [] : [1]
+    for_each = try(var.settings.ingress_application_gateway, null) == null ? [] : [var.settings.ingress_application_gateway]
     content {
       gateway_name = try(ingress_application_gateway.value.gateway_name, null)
       gateway_id   = try(ingress_application_gateway.value.gateway_id, try(var.application_gateway.id, null))
@@ -247,7 +245,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   dynamic "key_management_service" {
-    for_each = try(var.settings.key_management_service, null) == null ? [] : [1]
+    for_each = try(var.settings.key_management_service, null) == null ? [] : [var.settings.key_management_service]
     content {
       key_vault_key_id         = key_management_service.value.key_vault_key_id
       key_vault_network_access = try(key_management_service.value.key_vault_network_access, null)
@@ -257,7 +255,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   dynamic "key_vault_secrets_provider" {
-    for_each = try(var.settings.key_vault_secrets_provider, null) == null ? [] : [1]
+    for_each = try(var.settings.key_vault_secrets_provider, null) == null ? [] : [var.settings.key_vault_secrets_provider]
     content {
       secret_rotation_enabled  = try(key_vault_secrets_provider.value.secret_rotation_enabled, null)
       secret_rotation_interval = try(key_vault_secrets_provider.value.secret_rotation_interval, null)
@@ -265,7 +263,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   dynamic "kubelet_identity" {
-    for_each = try(var.settings.kubelet_identity, null) == null ? [] : [1]
+    for_each = try(var.settings.kubelet_identity, null) == null ? [] : [var.settings.kubelet_identity]
     content {
       client_id                 = can(kubelet_identity.value.client_id) ? kubelet_identity.value.client_id : var.remote_objects.managed_identities[try(var.settings.kubelet_identity.lz_key, var.client_config.landingzone_key)][var.settings.kubelet_identity.managed_identity_key].client_id
       object_id                 = can(kubelet_identity.value.object_id) ? kubelet_identity.value.object_id : var.remote_objects.managed_identities[try(var.settings.kubelet_identity.lz_key, var.client_config.landingzone_key)][var.settings.kubelet_identity.managed_identity_key].principal_id
@@ -291,7 +289,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   local_account_disabled = try(var.settings.local_account_disabled, false)
 
   dynamic "maintenance_window" {
-    for_each = try(var.settings.maintenance_window, null) == null ? [] : [1]
+    for_each = try(var.settings.maintenance_window, null) == null ? [] : [var.settings.maintenance_window]
     content {
       dynamic "allowed" {
         for_each = try(var.settings.maintenance_window.allowed, null)
@@ -309,43 +307,20 @@ resource "azurerm_kubernetes_cluster" "aks" {
       }
     }
   }
-  /*
-A maintenance_window_auto_upgrade block supports the following:
-
-frequency - (Required) Frequency of maintenance. Possible options are Weekly, AbsoluteMonthly and RelativeMonthly.
-
-interval - (Required) The interval for maintenance runs. Depending on the frequency this interval is week or month based.
-
-duration - (Required) The duration of the window for maintenance to run in hours. Possible options are between 4 to 24.
-
-day_of_week - (Optional) The day of the week for the maintenance run. Required in combination with weekly frequency. Possible values are Friday, Monday, Saturday, Sunday, Thursday, Tuesday and Wednesday.
-
-day_of_month - (Optional) The day of the month for the maintenance run. Required in combination with AbsoluteMonthly frequency. Value between 0 and 31 (inclusive).
-
-week_index - (Optional) Specifies on which instance of the allowed days specified in day_of_week the maintenance occurs. Options are First, Second, Third, Fourth, and Last. Required in combination with relative monthly frequency.
-
-start_time - (Optional) The time for maintenance to begin, based on the timezone determined by utc_offset. Format is HH:mm.
-
-utc_offset - (Optional) Used to determine the timezone for cluster maintenance.
-
-start_date - (Optional) The date on which the maintenance window begins to take effect.
-
-not_allowed - (Optional) One or more not_allowed block as defined below.
-*/
   dynamic "maintenance_window_auto_upgrade" {
-    for_each = try(var.settings.maintenance_window_auto_upgrade, null) == null ? [] : [1]
+    for_each = try(var.settings.maintenance_window_auto_upgrade, null) == null ? [] : [var.settings.maintenance_window_auto_upgrade]
     content {
-      frequency    = var.settings.maintenance_window_auto_upgrade.frequency
-      interval     = var.settings.maintenance_window_auto_upgrade.interval
-      duration     = var.settings.maintenance_window_auto_upgrade.duration
-      day_of_week  = try(var.settings.maintenance_window_auto_upgrade.day_of_week, null)
-      day_of_month = try(var.settings.maintenance_window_auto_upgrade.day_of_month, null)
-      week_index   = try(var.settings.maintenance_window_auto_upgrade.week_index, null)
-      start_time   = try(var.settings.maintenance_window_auto_upgrade.start_time, null)
-      utc_offset   = try(var.settings.maintenance_window_auto_upgrade.utc_offset, null)
-      start_date   = try(var.settings.maintenance_window_auto_upgrade.start_date, null)
+      frequency    = maintenance_window_auto_upgrade.frequency
+      interval     = maintenance_window_auto_upgrade.interval
+      duration     = maintenance_window_auto_upgrade.duration
+      day_of_week  = try(maintenance_window_auto_upgrade.day_of_week, null)
+      day_of_month = try(maintenance_window_auto_upgrade.day_of_month, null)
+      week_index   = try(maintenance_window_auto_upgrade.week_index, null)
+      start_time   = try(maintenance_window_auto_upgrade.start_time, null)
+      utc_offset   = try(maintenance_window_auto_upgrade.utc_offset, null)
+      start_date   = try(maintenance_window_auto_upgrade.start_date, null)
       dynamic "not_allowed" {
-        for_each = try(var.settings.maintenance_window_auto_upgrade.not_allowed, null) == null ? [] : [1]
+        for_each = try(var.settings.maintenance_window_auto_upgrade.maintenance_window_auto_upgrade.not_allowed, null) == null ? [] : [var.settings.maintenance_window_auto_upgrade.not_allowed]
         content {
           end   = not_allowed.value.end
           start = not_allowed.value.start
@@ -355,32 +330,9 @@ not_allowed - (Optional) One or more not_allowed block as defined below.
     }
 
   }
-  /*
-  A maintenance_window_node_os block supports the following:
-
-frequency - (Required) Frequency of maintenance. Possible options are Daily, Weekly, AbsoluteMonthly and RelativeMonthly.
-
-interval - (Required) The interval for maintenance runs. Depending on the frequency this interval is week or month based.
-
-duration - (Required) The duration of the window for maintenance to run in hours. Possible options are between 4 to 24.
-
-day_of_week - (Optional) The day of the week for the maintenance run. Required in combination with weekly frequency. Possible values are Friday, Monday, Saturday, Sunday, Thursday, Tuesday and Wednesday.
-
-day_of_month - (Optional) The day of the month for the maintenance run. Required in combination with AbsoluteMonthly frequency. Value between 0 and 31 (inclusive).
-
-week_index - (Optional) The week in the month used for the maintenance run. Options are First, Second, Third, Fourth, and Last.
-
-start_time - (Optional) The time for maintenance to begin, based on the timezone determined by utc_offset. Format is HH:mm.
-
-utc_offset - (Optional) Used to determine the timezone for cluster maintenance.
-
-start_date - (Optional) The date on which the maintenance window begins to take effect.
-
-not_allowed - (Optional) One or more not_allowed block as defined below.
-  */
 
   dynamic "maintenance_window_node_os" {
-    for_each = try(var.settings.maintenance_window_node_os, null) == null ? [] : [1]
+    for_each = try(var.settings.maintenance_window_node_os, null) == null ? [] : [var.settings.maintenance_window_node_os]
     content {
       frequency    = var.settings.maintenance_window_node_os.frequency
       interval     = var.settings.maintenance_window_node_os.interval
@@ -412,7 +364,7 @@ not_allowed - (Optional) One or more not_allowed block as defined below.
   }
 
   dynamic "monitor_metrics" {
-    for_each = try(var.settings.monitor_metrics, null) == null ? [] : [1]
+    for_each = try(var.settings.monitor_metrics, null) == null ? [] : [var.settings.monitor_metrics]
 
     content {
       annotations_allowed = try(monitor_metrics.value.annotations_allowed, null)
@@ -497,7 +449,7 @@ node_os_upgrade_channel must be set to NodeImage if automatic_upgrade_channel ha
   run_command_enabled = try(var.settings.run_command_enabled, null)
 
   dynamic "service_principal" {
-    for_each = try(var.settings.service_principal, null) == null ? [] : [1]
+    for_each = try(var.settings.service_principal, null) == null ? [] : [var.settings.service_principal]
     content {
       client_id     = var.settings.service_principal.client_id
       client_secret = var.settings.service_principal.client_secret
@@ -543,13 +495,6 @@ node_os_upgrade_channel must be set to NodeImage if automatic_upgrade_channel ha
       }
     }
   }
-
-
-
-
-
-
-
 }
 
 
