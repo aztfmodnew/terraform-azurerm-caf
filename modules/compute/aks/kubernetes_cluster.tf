@@ -103,7 +103,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     max_pods          = try(var.settings.default_node_pool.max_pods, 30)
 
     dynamic "node_network_profile" {
-      for_each = try(var.settings.default_node_pool.node_network_profile, null) == null ? [] : [1]
+      for_each = try(var.settings.default_node_pool.node_network_profile, null) == null ? [] : [var.settings.default_node_pool.node_network_profile]
 
       content {
         dynamic "allowed_host_ports" {
@@ -134,7 +134,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     tags                         = merge(try(var.settings.default_node_pool.tags, {}), local.tags)
     ultra_ssd_enabled            = try(var.settings.default_node_pool.ultra_ssd_enabled, false)
     dynamic "upgrade_settings" {
-      for_each = try(var.settings.default_node_pool.upgrade_settings, null) == null ? [] : [1]
+      for_each = try(var.settings.default_node_pool.upgrade_settings, null) == null ? [] : [var.settings.default_node_pool.upgrade_settings]
       content {
         max_surge = upgrade_settings.value.max_surge
       }
@@ -149,7 +149,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   dns_prefix                 = try(var.settings.dns_prefix, try(var.settings.dns_prefix_private_cluster, random_string.prefix.result))
   dns_prefix_private_cluster = try(var.settings.dns_prefix_private_cluster, null)
   dynamic "aci_connector_linux" {
-    for_each = try(var.settings.aci_connector_linux, null) == null ? [] : [1]
+    for_each = try(var.settings.aci_connector_linux, null) == null ? [] : [var.settings.aci_connector_linux]
 
     content {
       subnet_name = aci_connector_linux.value.subnet_name
@@ -157,7 +157,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
   automatic_upgrade_channel = try(var.settings.automatic_upgrade_channel, null)
   dynamic "api_server_access_profile" {
-    for_each = try(var.settings.api_server_access_profile, null) == null ? [] : [1]
+    for_each = try(var.settings.api_server_access_profile, null) == null ? [] : [var.settings.api_server_access_profile]
 
     content {
       authorized_ip_ranges = try(api_server_access_profile.value.authorized_ip_ranges, null)
@@ -166,7 +166,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   dynamic "auto_scaler_profile" {
-    for_each = try(var.settings.auto_scaler_profile, null) == null ? [] : [1]
+    for_each = try(var.settings.auto_scaler_profile, null) == null ? [] : [var.settings.auto_scaler_profile]
 
     content {
       balance_similar_node_groups      = try(auto_scaler_profile.value.balance_similar_node_groups, null)
@@ -191,7 +191,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   #Enabled RBAC
   dynamic "azure_active_directory_role_based_access_control" {
-    for_each = try(var.settings.azure_active_directory_role_based_access_control, null) == null ? [] : [1]
+    for_each = try(var.settings.azure_active_directory_role_based_access_control, null) == null ? [] : [var.settings.azure_active_directory_role_based_access_control]
 
     content {
       tenant_id              = try(azure_active_directory_role_based_access_control.value.tenant_id, null)
@@ -201,7 +201,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
   azure_policy_enabled = try(var.settings.azure_policy_enabled, null)
   dynamic "confidential_computing" {
-    for_each = try(var.settings.confidential_computing, null) == null ? [] : [1]
+    for_each = try(var.settings.confidential_computing, null) == null ? [] : [var.settings.confidential_computing]
 
     content {
       sgx_quote_helper_enabled = try(confidential_computing.value.sgx_quote_helper_enabled, null)
@@ -213,7 +213,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   edge_zone                        = try(var.settings.edge_zone, null)
   http_application_routing_enabled = try(var.settings.http_application_routing_enabled, null)
   dynamic "http_proxy_config" {
-    for_each = try(var.settings.http_proxy_config, null) == null ? [] : [1]
+    for_each = try(var.settings.http_proxy_config, null) == null ? [] : [var.settings.http_proxy_config]
 
     content {
       http_proxy  = try(http_proxy_config.value.http_proxy, null)
@@ -274,11 +274,11 @@ resource "azurerm_kubernetes_cluster" "aks" {
   kubernetes_version = try(var.settings.kubernetes_version, null)
 
   dynamic "linux_profile" {
-    for_each = try(var.settings.linux_profile, null) == null ? [] : [1]
+    for_each = try(var.settings.linux_profile, null) == null ? [] : [var.settings.linux_profile]
     content {
       admin_username = try(var.settings.linux_profile.admin_username, null)
       dynamic "ssh_key" {
-        for_each = try(var.settings.linux_profile.ssh_key, null) == null ? [] : [1]
+        for_each = try(var.settings.linux_profile.ssh_key, null) == null ? [] : [var.settings.linux_profile.ssh_key]
         content {
           key_data = try(var.settings.linux_profile.ssh_key.key_data, null)
         }
