@@ -1,58 +1,120 @@
 # Copilot Instructions for Creating a Terraform Module
 
 ## Directory Structure
+
 / is the root directory of the repository.Create the following directory structure for the Terraform module:
+
+
+/modules
+└── /category_name
+                └──/module_name
+                    ├── main.tf
+                    ├── outputs.tf
+                    ├── providers.tf
+                    ├── variables.tf
+                    ├── diagnostics.tf
+                    ├── locals.tf
+                    ├── module_name.tf
+                    |── resource1.tf
+                    |── resource2.tf
+                    ├── resource1
+                    │   ├── resource1.tf
+                    │   ├── main.tf
+                    │   ├── output.tf
+                    │   ├── providers.tf
+                    │   └── variables.tf
+                    ├── resource2
+                    │   ├── resource2.tf
+                    │   ├── main.tf
+                    │   ├── output.tf
+                    │   ├── providers.tf
+                    │   └── variables.tf
+/category_name_module_names.tf
+
+
+module_name is the name of the resource without the provider prefix. For example, if the resource is azurerm_container_app, the module_name would be container_app.
+
+module_names is the name of the resource without the provider prefix and with the plural form. For example, if the resource is azurerm_container_app, the module_names would be container_apps.
+
+resource1 and resource2 are examples of resources that can be added to the module. Add as many resources as needed. If there are no resources, don't create the resource directories.
+
+Usually, resource1 and resource2 are components of the module. For example, if the module is a module_name, resource1 could be module_name_resource1 and resource2 could be module_name_resource2,
+
+use resource1 and resource2 as the names of the directories, don't repeat the module_name in the directory name.
+
+If category_name is not provided, the module_name directory should be created directly under the /modules directory.
+
+If category_name is not provided, /category_name_module_names.tf should be created like /module_names.tf.
+
+For example for a module with category_name equal to cognitive_services and module_name equal to azurerm_cognitive_account, and with one resource named azurerm_cognitive_account_customer_managed_key:
 
 ```plaintext
 /modules
-└── /category_name/
-                └── module_name
-                ├── main.tf
-                ├── outputs.tf
-                ├── providers.tf
-                ├── variables.tf
-                ├── diagnostics.tf
-                ├── locals.tf
-                ├── module.tf
-                |── resource1.tf
-                |── resource2.tf
-                ├── resource1
-                │   ├── resource1.tf
-                │   ├── main.tf
-                │   ├── output.tf
-                │   ├── providers.tf
-                │   └── variables.tf
-                ├── resource2
-                │   ├── resource2.tf
-                │   ├── main.tf
-                │   ├── output.tf
-                │   ├── providers.tf
-                │   └── variables.tf
-/module_name.tf
+└── /cognitive_services
+                └──/cognitive_account
+                    ├── main.tf
+                    ├── outputs.tf
+                    ├── providers.tf
+                    ├── variables.tf
+                    ├── diagnostics.tf
+                    ├── locals.tf
+                    ├── cognitive_account.tf
+                    |── customer_managed_key.tf
+                    ├── customer_managed_key
+                    │   ├── customer_managed_key.tf
+                    │   ├── main.tf
+                    │   ├── output.tf
+                    │   ├── providers.tf
+                    │   └── variables.tf
+/cognitive_services.tf
 ```
+
+### No Resources
+
+If the module does not require any resources, do not create any resource directories or files. Ensure that the module only includes the necessary configuration files such as `main.tf`, `outputs.tf`, `providers.tf`, `variables.tf`, `diagnostics.tf`, `locals.tf`, and `module_name.tf`.
+
+For example, if the module is `azurerm_ai_services` under the category `cognitive_services`, the directory structure should look like this:
+
+```plaintext
+/modules
+└── /cognitive_services
+    └── /ai_services
+        ├── main.tf
+        ├── outputs.tf
+        ├── providers.tf
+        ├── variables.tf
+        ├── diagnostics.tf
+        ├── locals.tf
+        ├── ai_services.tf
+```
+
+
+
+
 ## Modify existing files
+
 ### /local.remote_objects.tf
 
-Add the following code to the file:
+Insert alphabetically the following code to the file inside of locals { }:
 
-combined_objects_module_name                               = try(local.combined_objects_module_name, null)
+module_names = try(local.combined_objects_module_names, null)
 
 Example with module_nameequal to resource_groups:
 
 ```hcl
-combined_objects_resource_groups                                = try(local.combined_objects_resource_groups, null)
+network_managers                               = try(local.combined_objects_network_managers, null)
 ```
 
 ### /locals.combined_objects.tf
 
-Add the following code to the file:
+Insert alphabetically the following code to the file inside of locals { }:
 
-combined_objects_module_name               = merge(tomap({ (local.client_config.landingzone_key) = merge(local.module_name, lookup(var.data_sources, "module_name", {})) }), lookup(var.remote_objects, "module_name", {}))
+combined_objects_module_names = merge(tomap({ (local.client_config.landingzone_key) = module.module_names }), lookup(var.remote_objects, "module_names", {}), lookup(var.data_sources, "module_names", {}))
 
 Example with module_name equal to resource_groups:
 
 ```hcl
-combined_objects_resource_groups                                = merge(tomap({ (local.client_config.landingzone_key) = merge(local.resource_groups, lookup(var.data_sources, "resource_groups", {})) }), lookup(var.remote_objects, "resource_groups", {}))
+combined_objects_network_managers                               = merge(tomap({ (local.client_config.landingzone_key) = module.network_managers }), lookup(var.remote_objects, "network_managers", {}), lookup(var.data_sources, "network_managers", {}))
 ```
 
 ### /locals.tf
@@ -60,9 +122,8 @@ combined_objects_resource_groups                                = merge(tomap({ 
 Add the following code to the file inside of locals { }:
 
 category_name = {
-    module_name = try(var.category.module_name, {})
+module_name = try(var.category.module_name, {})
 }
-
 
 Example with module_name equal to resource_groups and category_name equal to dynamic_app_config_combined_objects:
 
@@ -74,7 +135,7 @@ locals {
 }
 ```
 
-Example with category_name equal to cognitive_services and module_name    cognitive_services_account:
+Example with category_name equal to cognitive_services and module_name cognitive_services_account:
 
 ```hcl
 locals {
@@ -83,12 +144,13 @@ locals {
   }
 }
 ```
-### /module_name.tf
+
+### /module_names.tf
 
 Add the following code to the file:
 
 ```hcl
-module "module_name" {
+module "module_names" {
   source   = "./modules/category_name/module_name"
   for_each = local.category_name.module_name
 
@@ -99,12 +161,12 @@ module "module_name" {
   location        = try(each.value.location, null)
   settings        = each.value
 
-  remote_objects = {    
+  remote_objects = {
     module_that_depends_on = local.combined_objects_module_that_depends_on
   }
 }
 
-output "module_name" {
+output "module_names" {
   value = module.module_name
 }
 ```
@@ -188,6 +250,119 @@ output "custom_domain_verification_id" {
 
 
 
+### /modules/category_name/module_name/providers.tf
+
+Add the following code to the file:
+
+```hcl
+terraform {
+  required_version = ">= 1.6.0"
+  required_providers {
+    azapi = {
+      source  = "azure/azapi"
+      version = ">= 2.1.0"
+    }
+    azurecaf = {
+      source  = "aztfmod/azurecaf"
+      version = "~> 1.2.0"
+    }
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = ">= 4.0"
+    }
+  }
+}
+```
+
+### /modules/category_name/module_name/variables.tf
+
+Add the following code to the file:
+
+```hcl
+variable "global_settings" {
+  description = <<DESCRIPTION
+  Global settings object
+  DESCRIPTION
+  type        = any
+}
+variable "client_config" {
+  description = <<DESCRIPTION
+  Client configuration object
+  DESCRIPTION
+  type        = any
+}
+variable "location" {
+  description = "(Required) Specifies the supported Azure location where to create the resource. Changing this forces a new resource to be created."
+  type        = string
+}
+variable "settings" {
+  type        = any
+  description = "Settings for the module"
+}
+
+variable "resource_group" {
+  description = "Resource group object"
+  type        = any
+}
+
+variable "base_tags" {
+  type        = bool
+  description = "Flag to determine if tags should be inherited"
+}
+
+variable "remote_objects" {
+  type        = any
+  description = "Remote objects"
+}
+
+```
+
+### /modules/category_name/module_name/diagnostics.tf
+
+Add the following code to the file:
+
+```hcl
+module "diagnostics" {
+  source = "../../diagnostics"
+  count  = lookup(var.settings, "diagnostic_profiles", null) == null ? 0 : 1
+
+  resource_id       = azurerm_module_name.module_name.id
+  resource_location = azurerm_module_name.module_name.location
+  diagnostics       = var.remote_objects.diagnostics
+  profiles          = var.settings.diagnostic_profiles
+}
+```
+
+### /modules/category_name/module_name/managed_identitties.tf
+
+Add the following code to the file:
+
+```hcl
+#
+# Managed identities from remote state
+#
+
+locals {
+  managed_local_identities = flatten([
+    for managed_identity_key in try(var.settings.identity.managed_identity_keys, []) : [
+      var.remote_objects.managed_identities[var.client_config.landingzone_key][managed_identity_key].id
+    ]
+  ])
+
+  managed_remote_identities = flatten([
+    for lz_key, value in try(var.settings.identity.remote, []) : [
+      for managed_identity_key in value.managed_identity_keys : [
+        var.remote_objects.managed_identities[lz_key][managed_identity_key].id
+      ]
+    ]
+  ])
+
+  managed_identities = concat(local.managed_local_identities, local.managed_remote_identities)
+}
+```
+
+
+
 ## Coding Instructions
 
 ### Necessary Blocks
@@ -201,7 +376,9 @@ block_name {
 ```
 
 ### Dynamic Blocks
+
 #### Optional Single Destination Block
+
 Use the following structure for optional single destination blocks:
 
 ```hcl
@@ -213,7 +390,6 @@ dynamic "block" {
     }
 }
 ```
-
 #### Optional Multiple Destination Blocks
 
 Use the following structure for optional multiple destination blocks:
@@ -226,6 +402,19 @@ dynamic "block" {
         value = block.value.value
     }
 }
+```
+
+#### dynamic block with condition
+
+```hcl
+  dynamic "identity" {
+    for_each = try(var.settings.identity, null) == null ? [] : [var.settings.identity]
+
+    content {
+      type         = var.settings.identity.type
+      identity_ids = contains(["userassigned", "systemassigned", "systemassigned, userassigned"], lower(var.identity.type)) ? local.managed_identities : null
+    }
+  }
 ```
 
 ### Optional Arguments
@@ -259,6 +448,27 @@ For tags, use the following structure:
 ```hcl
 tags                = merge(local.tags, try(var.settings.tags, null))
 ```
+
+### Resource Group
+
+For resource groups, use the following structure:
+
+```hcl
+resource_group_name = var.resource_group.name
+```
+
+### Location
+
+For location, use the following structure:
+
+```hcl
+location            = coalesce(var.location, var.resource_group.location)
+```
+
+### Other Instructions
+
+- Search in workspace for the existing argument definitions and use them as a reference, if available.
+
 
 ### Commit messages
 
