@@ -66,7 +66,7 @@ For example for a module with category_name equal to cognitive_services and modu
                     │   ├── output.tf
                     │   ├── providers.tf
                     │   └── variables.tf
-/cognitive_services.tf
+/cognitive_services_cognitive_account.tf
 ```
 
 ### No Resources
@@ -86,6 +86,7 @@ For example, if the module is `azurerm_ai_services` under the category `cognitiv
         ├── diagnostics.tf
         ├── locals.tf
         ├── ai_services.tf
+/cognitive_services_ai_services.tf
 ```
 
 
@@ -145,7 +146,7 @@ locals {
 }
 ```
 
-### /module_names.tf
+### /category_name_module_names.tf
 
 Add the following code to the file:
 
@@ -171,7 +172,7 @@ output "module_names" {
 }
 ```
 
-### /modules/category_name/module_name/azurerm_module_name.tf
+### /modules/category_name/module_name/module_name.tf
 
 Add the following code to the file:
 
@@ -180,9 +181,8 @@ resource "azurerm_module_name" "module_name" {
   name                = var.settings.name
   location            = local.location
   resource_group_name = local.resource_group_name
-  #arguments
-  #dynamic blocks
-
+  # Other arguments
+  
 }
 ```
 
@@ -295,9 +295,14 @@ variable "location" {
   description = "(Required) Specifies the supported Azure location where to create the resource. Changing this forces a new resource to be created."
   type        = string
 }
+# Complete the rest of settings in variable settings
 variable "settings" {
+  description = <<DESCRIPTION
+  Settings of the module:
+
+  DESCRIPTION
   type        = any
-  description = "Settings for the module"
+  
 }
 
 variable "resource_group" {
@@ -333,6 +338,14 @@ module "diagnostics" {
 }
 ```
 
+### /modules/category_name/module_name/main.tf
+
+Add the following code to the file:
+
+```hcl
+#This file is maintained by legacy purposes. Please do not modify this file.
+```	
+
 ### /modules/category_name/module_name/managed_identitties.tf
 
 Add the following code to the file:
@@ -361,7 +374,21 @@ locals {
 }
 ```
 
+### /examples/module.tf
 
+Add the following code to the file inside of locals { }:
+
+category_name = {
+module_names = var.module_names
+}
+
+Example with module_name equal to service_plans  and category_name equal to webapp:
+
+```hcl
+webapp = {    
+    service_plans                                  = var.service_plans    
+  }
+```
 
 ## Coding Instructions
 
