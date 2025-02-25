@@ -431,7 +431,9 @@ dynamic "block" {
 }
 ```
 
-#### dynamic block with condition
+#### dynamic block identity
+
+Use the following structure for dynamic block identity:
 
 ```hcl
   dynamic "identity" {
@@ -444,23 +446,59 @@ dynamic "block" {
   }
 ```
 
-### Optional Arguments
+### dynamic block timeouts
 
-For arguments that are optional, use the following structure:
+Based on the values defined in timeouts,add allways the following structure for dynamic block timeouts:
+
+```hcl
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+
+    content {
+      create = try(timeouts.create, null)
+      update = try(timeouts.update, null)
+      read   = try(timeouts.read, null)
+      delete = try(timeouts.delete, null)
+    }
+  }
+```
+
+or
+
+```hcl
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+
+    content {
+      create = try(timeouts.create, null)
+      update = try(timeouts.update, null)
+      delete = try(timeouts.delete, null)
+    }
+  }
+```
+
+Change null for default values if default values are provided.
+
+
+
+
+### Arguments
+
+#### Default values
+
+For arguments that without default value, use the following structure:
 
 ```hcl
 argument_name = try(var.argument_name, null)
 ```
 
-### Arguments with Default Values
-
-For arguments that have default values, use the following structure:
+For arguments that have default values, use the following structure, adjust default_value:
 
 ```hcl
-argument_name = try(var.argument_name, "default_value")
+argument_name = try(var.argument_name, default_value)
 ```
 
-### Conditional Arguments
+##### Conditional Arguments
 
 For arguments that are conditional, use the following structure:
 
@@ -468,7 +506,7 @@ For arguments that are conditional, use the following structure:
 argument_name = var.condition ? var.argument_name : null
 ```
 
-### Tags
+##### Tags
 
 For tags, use the following structure:
 
@@ -476,23 +514,23 @@ For tags, use the following structure:
 tags                = merge(local.tags, try(var.settings.tags, null))
 ```
 
-### Resource Group
+##### Resource Group
 
 For resource groups, use the following structure:
 
 ```hcl
-resource_group_name = var.resource_group.name
+resource_group_name = local.resource_group.name
 ```
 
-### Location
+##### Location
 
 For location, use the following structure:
 
 ```hcl
-location            = coalesce(var.location, var.resource_group.location)
+location            = local.location
 ```
 
-### Other Instructions
+##### Other Instructions
 
 - Search in workspace for the existing argument definitions and use them as a reference, if available.
 

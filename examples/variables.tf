@@ -145,6 +145,10 @@ variable "tags" {
 variable "subscription_billing_role_assignments" {
   default = {}
 }
+variable "ai_services" {
+  default = {}
+}
+
 variable "app_service_environments" {
   default = {}
 }
