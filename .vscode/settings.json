@@ -45,5 +45,20 @@
     "peacock.remoteColor": "#215732",
     "[plaintext]": {
         "editor.quickSuggestionsDelay": 1
-    }
+    },
+    "terraform.indexing": {
+        "enabled": true,
+        "maxNumberOfProblems": 100,
+        "liveIndexing": true,
+        "delay": 500,
+        "exclude": [
+            ".terraform/**/*",
+            "**/.terraform/**/*"
+        ]
+    },
+    "terraform.languageServer": {
+        "enabled": true,
+        "trace.server": "disabled"       
+        
+    },
 }
