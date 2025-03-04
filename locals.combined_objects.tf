@@ -2,6 +2,7 @@ locals {
   # CAF landing zones can retrieve remote objects from a different landing zone and the
   # combined_objects will merge it with the local objects
   combined_objects_aadb2c_directory                               = merge(tomap({ (local.client_config.landingzone_key) = module.aadb2c_directory }), lookup(var.remote_objects, "aadb2c_directory", {}))
+  combined_objects_ai_services                                    = merge(tomap({ (local.client_config.landingzone_key) = module.ai_services }), lookup(var.remote_objects, "ai_services", {}))
   combined_objects_aks_clusters                                   = merge(tomap({ (local.client_config.landingzone_key) = module.aks_clusters }), lookup(var.remote_objects, "aks_clusters", {}), lookup(var.data_sources, "aks_clusters", {}))
   combined_objects_api_management                                 = merge(tomap({ (local.client_config.landingzone_key) = module.api_management }), lookup(var.remote_objects, "api_management", {}), lookup(var.data_sources, "api_management", {}))
   combined_objects_api_management_api                             = merge(tomap({ (local.client_config.landingzone_key) = module.api_management_api }), lookup(var.remote_objects, "api_management_api", {}), lookup(var.data_sources, "api_management_api", {}))

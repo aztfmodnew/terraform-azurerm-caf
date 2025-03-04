@@ -258,6 +258,7 @@ locals {
   }
 
   cognitive_services = {
+    ai_services                            = try(var.cognitive_services.ai_services, {})
     cognitive_services_account             = try(var.cognitive_services.cognitive_services_account, {})
     cognitive_account_customer_managed_key = try(var.cognitive_services.cognitive_account_customer_managed_key, {})
     cognitive_deployment                   = try(var.cognitive_services.cognitive_deployment, {})

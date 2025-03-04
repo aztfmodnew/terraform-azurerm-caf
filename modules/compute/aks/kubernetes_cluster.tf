@@ -125,7 +125,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     os_disk_size_gb              = try(var.settings.default_node_pool.os_disk_size_gb, null)
     os_disk_type                 = try(var.settings.default_node_pool.os_disk_type, null)
     os_sku                       = try(var.settings.default_node_pool.os_sku, null)
-    pod_subnet_id                = try(var.remote_objects.pod_subnet_id, var.settings.default_node_pool.pod_subnet_id)
+    pod_subnet_id                = can(var.settings.default_node_pool.pod_subnet_key) == false || can(var.settings.default_node_pool.pod_subnet.key) == false || can(var.settings.default_node_pool.pod_subnet_id) || can(var.settings.default_node_pool.pod_subnet.resource_id) ? try(var.settings.default_node_pool.pod_subnet_id, var.settings.default_node_pool.pod_subnet.resource_id, null) : var.remote_objects.vnets[try(var.settings.lz_key, var.client_config.landingzone_key)][var.settings.vnet_key].subnets[try(var.settings.default_node_pool.pod_subnet_key, var.settings.default_node_pool.pod_subnet.key)].id
     proximity_placement_group_id = try(var.settings.default_node_pool.proximity_placement_group_id, null)
     scale_down_mode              = try(var.settings.default_node_pool.scale_down_mode, null)
     snapshot_id                  = try(var.settings.default_node_pool.snapshot_id, null)
@@ -139,7 +139,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
         max_surge = upgrade_settings.value.max_surge
       }
     }
-    vnet_subnet_id   = try(var.settings.default_node_pool.vnet_subnet_id, var.remote_objects.vnet_subnet_id)
+    vnet_subnet_id   = can(var.settings.default_node_pool.vnet_subnet_id) || can(var.settings.default_node_pool.subnet.resource_id) ? try(var.settings.default_node_pool.vnet_subnet_id, var.settings.default_node_pool.subnet.resource_id) : var.remote_objects.vnets[try(var.settings.vnet.lz_key, var.settings.lz_key, var.client_config.landingzone_key)][try(var.settings.vnet.key, var.settings.vnet_key)].subnets[try(var.settings.default_node_pool.subnet_key, var.settings.default_node_pool.subnet.key)].id
     workload_runtime = try(var.settings.default_node_pool.workload_runtime, null)
     zones            = try(var.settings.default_node_pool.zones, var.settings.default_node_pool.availability_zones, null)
     max_count        = try(var.settings.default_node_pool.auto_scaling_enabled, false) == false ? null : try(var.settings.default_node_pool.max_count, null)

@@ -1,5 +1,6 @@
 {
   "config_files": [
+    "ai_services/100-cognitive-services-ai-services",
     "apim/100-basic",
     "apim/101-api",
     "apim/102-diagnostics",
