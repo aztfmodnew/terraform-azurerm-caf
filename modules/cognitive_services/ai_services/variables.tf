@@ -101,7 +101,7 @@ variable "settings" {
     ```
   DESCRIPTION
   type        = any
-  
+
 }
 
 variable "resource_group" {

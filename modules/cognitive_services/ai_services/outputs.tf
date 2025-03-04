@@ -22,8 +22,8 @@ output "secondary_access_key" {
 
 output "principal_id" {
   description = "The Principal ID associated with this Managed Service Identity."
-  value = try(azurerm_ai_services.ai_services.identity[0].principal_id, null)
-  sensitive = false
+  value       = try(azurerm_ai_services.ai_services.identity[0].principal_id, null)
+  sensitive   = false
 }
 
 output "tenant_id" {

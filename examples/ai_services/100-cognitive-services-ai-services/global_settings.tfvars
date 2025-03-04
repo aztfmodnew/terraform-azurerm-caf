@@ -4,5 +4,5 @@ global_settings = {
     region1 = "westus"
   }
   random_length = 5
-  pass_through = false
+  pass_through  = false
 }

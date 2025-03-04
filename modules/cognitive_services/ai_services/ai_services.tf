@@ -1,31 +1,31 @@
 resource "azurerm_ai_services" "ai_services" {
-  name                = var.settings.name
-  location            = local.location
-  resource_group_name = local.resource_group_name
-  sku_name            = var.settings.sku_name
-  custom_subdomain_name = try(var.settings.custom_subdomain_name, null)
-  fqdns =   try(var.settings.fqdns, null)
-  local_authentication_enabled = try(var.settings.local_authentication_enabled, true)
+  name                               = var.settings.name
+  location                           = local.location
+  resource_group_name                = local.resource_group_name
+  sku_name                           = var.settings.sku_name
+  custom_subdomain_name              = try(var.settings.custom_subdomain_name, null)
+  fqdns                              = try(var.settings.fqdns, null)
+  local_authentication_enabled       = try(var.settings.local_authentication_enabled, true)
   outbound_network_access_restricted = try(var.settings.outbound_network_access_restricted, false)
-  public_network_access = try(var.settings.public_network_access, "Enabled")
-  
+  public_network_access              = try(var.settings.public_network_access, "Enabled")
+
   dynamic "customer_managed_key" {
     for_each = try(var.settings.customer_managed_key, null) == null ? [] : [var.settings.customer_managed_key]
     content {
-      key_vault_key_id = try(customer_managed_key.value.key_vault_key_id, null)
+      key_vault_key_id   = try(customer_managed_key.value.key_vault_key_id, null)
       managed_hsm_key_id = try(customer_managed_key.value.managed_hsm_key_id, null)
       identity_client_id = try(customer_managed_key.value.identity_client_id, null)
     }
   }
 
-  
 
 
-  
+
+
   dynamic "network_acls" {
     for_each = try(var.settings.network_acls, null) == null ? [] : [var.settings.network_acls]
     content {
-      default_action = network_acls.value.default_action      
+      default_action = network_acls.value.default_action
       ip_rules       = try(network_acls.value.ip_rules, null)
       dynamic "virtual_network_rules" {
         for_each = try(network_acls.value.virtual_network_rules, null) == null ? [] : network_acls.value.virtual_network_rules

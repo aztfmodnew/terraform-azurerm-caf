@@ -10,8 +10,10 @@ module "ai_services" {
   settings        = each.value
 
   remote_objects = {
-    storage_accounts = local.combined_objects_storage_accounts
-    managed_identities = local.combined_objects_managed_identities    
+    storage_accounts   = local.combined_objects_storage_accounts
+    managed_identities = local.combined_objects_managed_identities
+    vnets              = local.combined_objects_networking
+    virtual_subnets    = local.combined_objects_virtual_subnets
   }
 }
 
