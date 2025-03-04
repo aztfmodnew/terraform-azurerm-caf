@@ -51,9 +51,57 @@ variable "settings" {
     - update - (Defaults to 30 minutes) Used when updating the AI Services Account.
     - read - (Defaults to 5 minutes) Used when retrieving the AI Services Account.
     - delete - (Defaults to 30 minutes) Used when deleting the AI Services Account.
-
+  
+  Example Input:
+    ```terraform
+    settings = {
+      name = "example-ai-services-account"
+      resource_group_name = "example-resources"
+      location = "eastus"
+      sku_name = "S0"
+      custom_subdomain_name = "example"
+      customer_managed_key = {
+        key_vault_key_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example-resources/providers/Microsoft.KeyVault/vaults/example-keyvault/keys/example-key"
+      }
+      fqdns = [
+        "example.com",
+        "example.net"
+      ]
+      identity = {
+        type = "SystemAssigned"
+      }
+      local_authentication_enabled = false
+      network_acls = {
+        default_action = "Deny"
+        ip_rules = [
+          "10.0.0.0/8"
+        ]
+        virtual_network_rules = [
+          {
+            subnet_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example-resources/providers/Microsoft.Network/virtualNetworks/example-vnet/subnets/example-subnet"
+          }
+        ]
+      }
+      outbound_network_access_restricted = true
+      public_network_access = "Disabled"
+      storage = {
+        storage_account_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example-resources/providers/Microsoft.Storage/storageAccounts/examplestorage"
+        identity_client_id = "00000000-0000-0000-0000-000000000000"
+      }
+      tags = {
+        environment = "production"
+      }
+      timeouts = {
+        create = "30m"
+        update = "30m"
+        read = "5m"
+        delete = "30m"
+      }
+    }
+    ```
   DESCRIPTION
   type        = any
+  
 }
 
 variable "resource_group" {

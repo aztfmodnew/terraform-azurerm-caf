@@ -3,12 +3,12 @@ resource "azurerm_ai_services" "ai_services" {
   location            = local.location
   resource_group_name = local.resource_group_name
   sku_name            = var.settings.sku_name
-
   custom_subdomain_name = try(var.settings.custom_subdomain_name, null)
+  fqdns =   try(var.settings.fqdns, null)
   local_authentication_enabled = try(var.settings.local_authentication_enabled, true)
   outbound_network_access_restricted = try(var.settings.outbound_network_access_restricted, false)
   public_network_access = try(var.settings.public_network_access, "Enabled")
-
+  
   dynamic "customer_managed_key" {
     for_each = try(var.settings.customer_managed_key, null) == null ? [] : [var.settings.customer_managed_key]
     content {
@@ -18,21 +18,23 @@ resource "azurerm_ai_services" "ai_services" {
     }
   }
 
+  
+
+
+  
   dynamic "network_acls" {
     for_each = try(var.settings.network_acls, null) == null ? [] : [var.settings.network_acls]
     content {
-      default_action = network_acls.value.default_action
-      dynamic "ip_rules" {
-        for_each = try(network_acls.value.ip_rules, null) == null ? [] : network_acls.value.ip_rules
-        content {
-          name = ip_rules.value.name
-          value = ip_rules.value.value
-        }
-      }
+      default_action = network_acls.value.default_action      
+      ip_rules       = try(network_acls.value.ip_rules, null)
       dynamic "virtual_network_rules" {
         for_each = try(network_acls.value.virtual_network_rules, null) == null ? [] : network_acls.value.virtual_network_rules
         content {
-          subnet_id = virtual_network_rules.value.subnet_id
+          subnet_id = can(virtual_network_rules.value.subnet_id) || can(virtual_network_rules.value.subnet_key) ? try(virtual_network_rules.value.subnet_id, var.remote_objects.virtual_subnets[try(virtual_network_rules.value.lz_key, var.client_config.landingzone_key)][virtual_network_rules.value.subnet_key].id) : var.remote_objects.vnets[try(virtual_network_rules.value.lz_key, var.client_config.landingzone_key)][virtual_network_rules.value.vnet_key].subnets[virtual_network_rules.value.subnet_key].id
+          # Depurar en algún moment, error: The given key does not identify an element in this collection value.
+          # subnet_id = var.remote_objects.subnet_id
+          #  Try virtual_network_rules.value.subnet_id and if it is null, try to get the subnet_id from the remote_objects and if it is null, use null
+          # subnet_id = try(virtual_network_rules.value.subnet_id, try(var.remote_objects.subnet_id, null))
           ignore_missing_vnet_service_endpoint = try(virtual_network_rules.value.ignore_missing_vnet_service_endpoint, false)
         }
       }
