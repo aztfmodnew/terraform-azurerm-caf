@@ -1,4 +1,4 @@
-# Copilot Instructions for Creating a Terraform Module
+# Instructions for Creating a Terraform Module
 
 ## Directory Structure
 
