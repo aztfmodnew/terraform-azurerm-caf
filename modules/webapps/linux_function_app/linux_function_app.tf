@@ -367,10 +367,11 @@ resource "azurerm_linux_function_app" "linux_function_app" {
   https_only                               = try(var.settings.https_only, null)
   public_network_access_enabled            = try(var.settings.public_network_access_enabled, null)
   dynamic "identity" {
-    for_each = try(var.settings.identity, {}) != {} ? [1] : []
+    for_each = try(var.settings.identity, null) == null ? [] : [var.settings.identity]
+
     content {
       type         = var.settings.identity.type
-      identity_ids = concat(local.managed_identities, try(identity.value.identity_ids, []))
+      identity_ids = contains(["userassigned", "systemassigned", "systemassigned, userassigned"], lower(var.settings.identity.type)) ? local.managed_identities : null
     }
   }
 
