@@ -46,3 +46,10 @@ variable "settings" {
   DESCRIPTION
   type        = any
 }
+
+
+variable "private_endpoints" {
+  description = "A map of objects representing the private endpoints to create."
+  type        = any
+  default     = {}
+}
