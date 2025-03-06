@@ -213,5 +213,5 @@ locals {
     lookup(var.remote_objects, "subscriptions", {})
   )
 
-  
+
 }

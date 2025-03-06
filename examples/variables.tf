@@ -1157,6 +1157,10 @@ variable "static_sites" {
 variable "aro_clusters" {
   default = {}
 }
+variable "windows_web_apps" {
+  type = any
+  default = {}
+}
 variable "web_pubsubs" {
   default = {}
 }

@@ -1,5 +1,5 @@
 locals {
-  arm_filename = "${path.module}/arm_site_config.json"
+  #arm_filename = "${path.module}/arm_site_config.json"
 
   app_settings = merge(
     try(var.settings.application_insight, null) == null ? {} : {

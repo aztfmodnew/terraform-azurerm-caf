@@ -441,7 +441,7 @@ locals {
     azurerm_application_insights_standard_web_test = try(var.webapp.azurerm_application_insights_standard_web_test, {})
     function_apps                                  = try(var.webapp.function_apps, {})
     linux_function_apps                            = try(var.webapp.linux_function_apps, {})
-    windows_web_apps                               = try(var.webapps.windows_web_apps, {})
+    windows_web_apps                               = try(var.webapp.windows_web_apps, {})
     static_sites                                   = try(var.webapp.static_sites, {})
     service_plans                                  = try(var.webapp.service_plans, {})
   }

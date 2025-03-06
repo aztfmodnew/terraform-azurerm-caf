@@ -342,6 +342,7 @@ module "example" {
     function_apps                                  = var.function_apps
     service_plans                                  = var.service_plans
     static_sites                                   = var.static_sites
+    windows_web_apps                               = var.windows_web_apps
   }
   data_factory = {
     data_factory                                 = var.data_factory

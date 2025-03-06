@@ -1,5 +1,5 @@
 resource "azurerm_windows_web_app" "windows_web_app" {
-  name                = var.settings.name
+  name                = azurecaf_name.windows_web_app.name
   location            = local.location
   resource_group_name = local.resource_group_name
   service_plan_id = coalesce(
@@ -37,19 +37,19 @@ resource "azurerm_windows_web_app" "windows_web_app" {
     dynamic "application_stack" {
       for_each = try(var.settings.site_config.application_stack, null) == null ? [] : [var.settings.site_config.application_stack]
       content {
-        current_stack                    = try(application_stack.value.current_stack, null)
-        docker_image_name                = try(application_stack.value.docker_image_name, null)
-        docker_registry_url              = try(application_stack.value.docker_registry_url, null)
-        docker_registry_username         = try(application_stack.value.docker_registry_username, null)
-        docker_registry_password         = try(application_stack.value.docker_registry_password, null)
-        dotnet_version                   = try(application_stack.value.dotnet_version, null)
-        dotnet_core_version              = try(application_stack.value.dotnet_core_version, null)
-        tomcat_version                   = try(application_stack.value.tomcat_version, null)
-        java_embedded_server_enabled     = try(application_stack.value.java_embedded_server_enabled, null)
-        java_version                     = try(application_stack.value.java_version, null)
-        node_version                     = try(application_stack.value.node_version, null)
-        php_version                      = try(application_stack.value.php_version, null)
-        python                           = try(application_stack.value.python, null)
+        current_stack                = try(application_stack.value.current_stack, null)
+        docker_image_name            = try(application_stack.value.docker_image_name, null)
+        docker_registry_url          = try(application_stack.value.docker_registry_url, null)
+        docker_registry_username     = try(application_stack.value.docker_registry_username, null)
+        docker_registry_password     = try(application_stack.value.docker_registry_password, null)
+        dotnet_version               = try(application_stack.value.dotnet_version, null)
+        dotnet_core_version          = try(application_stack.value.dotnet_core_version, null)
+        tomcat_version               = try(application_stack.value.tomcat_version, null)
+        java_embedded_server_enabled = try(application_stack.value.java_embedded_server_enabled, null)
+        java_version                 = try(application_stack.value.java_version, null)
+        node_version                 = try(application_stack.value.node_version, null)
+        php_version                  = try(application_stack.value.php_version, null)
+        python                       = try(application_stack.value.python, null)
       }
     }
 
@@ -63,60 +63,60 @@ resource "azurerm_windows_web_app" "windows_web_app" {
           dynamic "custom_action" {
             for_each = try(auto_heal_setting.value.action.custom_action, null) == null ? [] : [auto_heal_setting.value.action.custom_action]
             content {
-              executable                 = custom_action.value.executable
-              parameters                 = try(custom_action.value.parameters, null)
+              executable = custom_action.value.executable
+              parameters = try(custom_action.value.parameters, null)
             }
           }
         }
 
         trigger {
-          private_memory_kb              = try(auto_heal_setting.value.trigger.private_memory_kb, null)
+          private_memory_kb = try(auto_heal_setting.value.trigger.private_memory_kb, null)
 
           dynamic "requests" {
             for_each = try(auto_heal_setting.value.trigger.requests, null) == null ? [] : [auto_heal_setting.value.trigger.requests]
             content {
-              count                      = requests.value.count
-              interval                   = requests.value.interval
+              count    = requests.value.count
+              interval = requests.value.interval
             }
           }
 
           dynamic "slow_request" {
             for_each = try(auto_heal_setting.value.trigger.slow_request, null) == null ? [] : [auto_heal_setting.value.trigger.slow_request]
             content {
-              count                      = slow_request.value.count
-              interval                   = slow_request.value.interval
-              time_taken                 = slow_request.value.time_taken
+              count      = slow_request.value.count
+              interval   = slow_request.value.interval
+              time_taken = slow_request.value.time_taken
             }
           }
 
           dynamic "slow_request_with_path" {
             for_each = try(auto_heal_setting.value.trigger.slow_request_with_path, [])
             content {
-              count                      = slow_request_with_path.value.count
-              interval                   = slow_request_with_path.value.interval
-              time_taken                 = slow_request_with_path.value.time_taken
-              path                       = try(slow_request_with_path.value.path, null)
+              count      = slow_request_with_path.value.count
+              interval   = slow_request_with_path.value.interval
+              time_taken = slow_request_with_path.value.time_taken
+              path       = try(slow_request_with_path.value.path, null)
             }
           }
 
           dynamic "status_code" {
             for_each = try(auto_heal_setting.value.trigger.status_code, [])
             content {
-              count                      = status_code.value.count
-              interval                   = status_code.value.interval
-              status_code_range          = status_code.value.status_code_range
-              path                       = try(status_code.value.path, null)
-              sub_status                 = try(status_code.value.sub_status, null)
-              win32_status_code          = try(status_code.value.win32_status_code, null)
+              count             = status_code.value.count
+              interval          = status_code.value.interval
+              status_code_range = status_code.value.status_code_range
+              path              = try(status_code.value.path, null)
+              sub_status        = try(status_code.value.sub_status, null)
+              win32_status_code = try(status_code.value.win32_status_code, null)
             }
           }
         }
       }
     }
   }
-  app_settings                                       = try(local.app_settings, null)
+  app_settings = try(local.app_settings, null)
 
-  
+
   dynamic "auth_settings" {
     for_each = try(var.settings.auth_settings, {}) != {} ? [1] : []
     content {
@@ -330,7 +330,7 @@ resource "azurerm_windows_web_app" "windows_web_app" {
     }
 
   }
-  
+
   dynamic "backup" {
     for_each = try(var.settings.backup, {}) != {} ? [1] : []
     content {
@@ -344,16 +344,17 @@ resource "azurerm_windows_web_app" "windows_web_app" {
       }
       storage_account_url = try(
         var.settings.backup.storage_account_url,
-        var.remote_objects.storage_accounts[try(var.settings.backup.storage_account.lz_key, var.client_config.landingzone_key)][try(var.settings.backup.storage_account.key, var.settings.backup.storage_account_key)].primary_blob_connection_string
+        var.remote_objects.storage_accounts[try(var.settings.backup.storage_account.lz_key, var.client_config.landingzone_key)][try(var.settings.backup.storage_account.key, var.settings.backup.storage_account_key)].primary_blob_connection_string,
+        local.backup_sas_url
       )
       enabled = try(var.settings.backup.enabled, null)
     }
   }
-  
-  client_affinity_enabled                            = try(var.settings.client_affinity_enabled, null)
-  client_certificate_enabled                         = try(var.settings.client_certificate_enabled, null)
-  client_certificate_mode                            = try(var.settings.client_certificate_mode, null)
-  client_certificate_exclusion_paths                 = try(var.settings.client_certificate_exclusion_paths, null)
+
+  client_affinity_enabled            = try(var.settings.client_affinity_enabled, null)
+  client_certificate_enabled         = try(var.settings.client_certificate_enabled, null)
+  client_certificate_mode            = try(var.settings.client_certificate_mode, null)
+  client_certificate_exclusion_paths = try(var.settings.client_certificate_exclusion_paths, null)
   dynamic "connection_string" {
     for_each = try(var.settings.connection_string, {}) != {} ? [1] : []
     content {
@@ -362,10 +363,10 @@ resource "azurerm_windows_web_app" "windows_web_app" {
       value = var.settings.connection_string.value
     }
   }
-  enabled                                            = try(var.settings.enabled, true)
-  ftp_publish_basic_authentication_enabled           = try(var.settings.ftp_publish_basic_authentication_enabled, true)
-  https_only                                         = try(var.settings.https_only, false)
-  public_network_access_enabled                      = try(var.settings.public_network_access_enabled, true)  
+  enabled                                  = try(var.settings.enabled, true)
+  ftp_publish_basic_authentication_enabled = try(var.settings.ftp_publish_basic_authentication_enabled, true)
+  https_only                               = try(var.settings.https_only, false)
+  public_network_access_enabled            = try(var.settings.public_network_access_enabled, true)
   dynamic "identity" {
     for_each = try(var.settings.identity, null) == null ? [] : [var.settings.identity]
 
@@ -390,13 +391,13 @@ resource "azurerm_windows_web_app" "windows_web_app" {
           dynamic "azure_blob_storage" {
             for_each = try(var.settings.logs.application_logs.azure_blob_storage, {}) != {} ? [1] : []
             content {
-              level = try(var.settings.logs.application_logs.azure_blob_storage.level, "Error")
+              level             = try(var.settings.logs.application_logs.azure_blob_storage.level, "Error")
               retention_in_days = try(var.settings.logs.application_logs.azure_blob_storage.retention_in_days, 7)
               sas_url           = try(var.settings.logs.application_logs.azure_blob_storage.sas_url, local.logs_sas_url)
             }
           }
           file_system_level = try(var.settings.logs.application_logs.file_system_level, "Error")
-          
+
         }
       }
       detailed_error_messages = try(var.settings.logs.detailed_error_messages, true)
@@ -404,35 +405,35 @@ resource "azurerm_windows_web_app" "windows_web_app" {
       dynamic "http_logs" {
         for_each = try(var.settings.logs.http_logs, {}) != {} ? [1] : []
         content {
-          dynamic "azure_blob_storage_http" {
-            for_each = try(http_logs.value.azure_blob_storage_http, {}) != {} ? [1] : []
+          dynamic "azure_blob_storage" {
+            for_each = try(http_logs.value.azure_blob_storage, {}) != {} ? [1] : []
             content {
-              retention_in_days = try(http_logs.value.azure_blob_storage_http.retention_in_days, 7)              
-              sas_url           = try(http_logs.azure_blob_storage.sas_url, local.http_logs_sas_url)
-            }           
+              retention_in_days = try(http_logs.value.azure_blob_storage.retention_in_days, 7)
+              sas_url           = try(http_logs.value.azure_blob_storage.sas_url, local.http_logs_sas_url)
+            }
           }
           dynamic "file_system" {
             for_each = try(http_logs.value.file_system, {}) != {} ? [1] : []
             content {
-            retention_in_days = try(http_logs.value.file_system.retention_in_days, 7)
-            retention_in_mb   = try(http_logs.value.file_system.retention_in_mb, 35)
+              retention_in_days = try(http_logs.value.file_system.retention_in_days, 7)
+              retention_in_mb   = try(http_logs.value.file_system.retention_in_mb, 35)
+            }
           }
         }
       }
     }
   }
-  }
 
-  
-   dynamic "sticky_settings" {
+
+  dynamic "sticky_settings" {
     for_each = try(var.settings.sticky_settings, {}) != {} ? [1] : []
     content {
       app_setting_names       = try(var.settings.sticky_settings.app_setting_names, null)
       connection_string_names = try(var.settings.sticky_settings.connection_string_names, null)
     }
-  } 
+  }
 
-  
+
 
   dynamic "storage_account" {
     for_each = try(var.settings.storage_account, {}) != {} ? [1] : []
@@ -449,7 +450,7 @@ resource "azurerm_windows_web_app" "windows_web_app" {
     }
   }
 
-  
+
 
 
 
@@ -462,7 +463,7 @@ resource "azurerm_windows_web_app" "windows_web_app" {
   )
 
   webdeploy_publish_basic_authentication_enabled = try(var.settings.webdeploy_publish_basic_authentication_enabled, true)
-  zip_deploy_file = try(var.settings.zip_deploy_file, null)
+  zip_deploy_file                                = try(var.settings.zip_deploy_file, null)
 
   dynamic "timeouts" {
     for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
