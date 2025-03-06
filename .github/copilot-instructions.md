@@ -445,7 +445,6 @@ Use the following structure for dynamic block identity:
     }
   }
 ```
-
 ### dynamic block timeouts
 
 Based on the values defined in timeouts,add allways the following structure for dynamic block timeouts:
@@ -486,7 +485,7 @@ Change null for default values if default values are provided.
 
 #### Default values
 
-For arguments that without default value, use the following structure:
+For arguments that do not have a default value, use the following structure:
 
 ```hcl
 argument_name = try(var.argument_name, null)
@@ -528,6 +527,18 @@ For location, use the following structure:
 
 ```hcl
 location            = local.location
+```
+
+##### argument service_plan_id
+Use the following structure for argument service_plan_id:
+
+```hcl
+
+service_plan_id = coalesce(
+    try(var.settings.service_plan_id, null),
+    try(var.remote_objects.service_plans[try(var.settings.service_plan.lz_key, var.client_config.landingzone_key)][try(var.settings.service_plan.key, var.settings.service_plan_key)].id, null),
+    try(var.remote_objects.app_service_plans[try(var.settings.app_service_plan.lz_key, var.client_config.landingzone_key)][try(var.settings.app_service_plan.key, var.settings.app_service_plan_key)].id, null)
+  )
 ```
 
 ##### Other Instructions
