@@ -12,17 +12,17 @@ module "linux_function_apps" {
   settings          = each.value
 
   remote_objects = {
-    app_service_plans   = local.combined_objects_app_service_plans
-    service_plans       = local.combined_objects_service_plans
-    combined_objects    = local.dynamic_app_settings_combined_objects
-    diagnostics         = local.combined_diagnostics
-    keyvaults           = local.combined_objects_keyvaults
-    storage_accounts    = local.combined_objects_storage_accounts
-    vnets               = local.combined_objects_networking
-    virtual_subnets     = local.combined_objects_virtual_subnets
-    managed_identities  = local.combined_objects_managed_identities
-    private_dns         = local.combined_objects_private_dns
-    app_insights        = local.combined_objects_app_insights
+    app_service_plans    = local.combined_objects_app_service_plans
+    service_plans        = local.combined_objects_service_plans
+    combined_objects     = local.dynamic_app_settings_combined_objects
+    diagnostics          = local.combined_diagnostics
+    keyvaults            = local.combined_objects_keyvaults
+    storage_accounts     = local.combined_objects_storage_accounts
+    vnets                = local.combined_objects_networking
+    virtual_subnets      = local.combined_objects_virtual_subnets
+    managed_identities   = local.combined_objects_managed_identities
+    private_dns          = local.combined_objects_private_dns
+    application_insights = local.combined_objects_application_insights
 
   }
 }
