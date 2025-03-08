@@ -1158,7 +1158,7 @@ variable "aro_clusters" {
   default = {}
 }
 variable "windows_web_apps" {
-  type = any
+  type    = any
   default = {}
 }
 variable "web_pubsubs" {
