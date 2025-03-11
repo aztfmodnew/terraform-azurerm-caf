@@ -1,6 +1,6 @@
 mssql_servers = {
   adventureworks-rg1 = {
-    name                = "adventureworks-rg1"
+    name                = "adventureworks"
     region              = "region1"
     resource_group_key  = "rg1"
     version             = "12.0"
@@ -24,14 +24,14 @@ mssql_servers = {
     private_endpoints = {
       # Require enforce_private_link_endpoint_network_policies set to true on the subnet
       private-link-level4 = {
-        name       = "adventureworks-sql-rg1"
+        name       = "adventureworks-sql"
         vnet_key   = "vnet1"
         subnet_key = "private_endpoints"
         #subnet_id          = "/subscriptions/97958dac-f75b-4ee3-9a07-9f436fa73bd4/resourceGroups/ppga-rg-sql-rg1/providers/Microsoft.Network/virtualNetworks/ppga-vnet-testvnet1/subnets/ppga-snet-web-subnet"
         resource_group_key = "rg1"
 
         private_service_connection = {
-          name                 = "adventureworks-sql-rg1"
+          name                 = "adventureworks-sql"
           is_manual_connection = false
           subresource_names    = ["sqlServer"]
         }
