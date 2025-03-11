@@ -745,11 +745,13 @@ service_plans = {
 }
 DESCRIPTION
   default     = {}
+  type        = any
 }
 
 
 variable "servicebus_namespaces" {
   default = {}
+  type    = any
 }
 variable "servicebus_topics" {
   default = {}
@@ -1158,10 +1160,31 @@ variable "aro_clusters" {
   default = {}
 }
 variable "windows_web_apps" {
+  description = <<DESCRIPTION
+  The windows_web_appss object is a map of windows web app objects. Each windows web app object has the following keys:
+- resource_group_key: The key of the resource group object to deploy the Azure resource.
+- name: (Required) The name of the windows web app.
+- service_plan_key: (Required) The key of the service plan object to deploy the Azure resource.
+- location: The location of the windows web app. If not provided, the location of the resource group will be used.
+- settings: (Optional) The settings for the windows web app.
+- app_settings: (Optional) The app settings for the windows web app.
+- connection_string: (Optional) The connection string for the windows web app.
+- identity: (Optional) The identity for the windows web app.
+- identity_type: (Optional) The identity type for the windows web app. Possible values are SystemAssigned, UserAssigned and None.
+- identity_ids: (Optional) The identity IDs for the windows web app.
+- https_only: (Optional) Should the windows web app enforce HTTPS only. Changing this forces a new resource to be created.
+- client_cert_enabled: (Optional) Should the windows web app require client certificates. Changing this forces a new resource to be created.
+- client_cert_mode: (Optional) The client certificate mode for the windows web app. Possible values are Require and Allow.
+
+  
+  
+
+  DESCRIPTION
   type    = any
   default = {}
 }
 variable "web_pubsubs" {
+  description = "Configuration settings for Azure Web PubSub services."
   default = {}
 }
 variable "web_pubsub_hubs" {
@@ -1247,4 +1270,5 @@ variable "search_services" {
 }
 variable "load_test" {
   default = {}
+  type    = any
 }
