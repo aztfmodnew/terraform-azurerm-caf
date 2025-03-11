@@ -1,6 +1,6 @@
 windows_web_apps = {
   webapp1 = {
-    name               = "example-webapp"
+    name               = "example-webapp1417"
     resource_group_key = "rg1"
     service_plan_key   = "sp1"
     settings = {
