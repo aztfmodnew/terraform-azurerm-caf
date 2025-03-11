@@ -5,6 +5,10 @@ variable "settings" {
 variable "group_id" {
   default = null
 }
+
+variable "group_object_id" {
+  default = null
+}
 variable "client_config" {
   description = "Client configuration object (see module README.md)."
   type        = any
