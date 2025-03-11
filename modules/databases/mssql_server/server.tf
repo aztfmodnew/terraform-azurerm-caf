@@ -16,7 +16,7 @@ resource "azurerm_mssql_server" "mssql" {
     content {
       azuread_authentication_only = try(var.settings.azuread_administrator.azuread_authentication_only, false)
       login_username              = can(var.settings.azuread_administrator.login_username) ? var.settings.azuread_administrator.login_username : try(var.azuread_groups[var.client_config.landingzone_key][var.settings.azuread_administrator.azuread_group_key].display_name, var.azuread_groups[var.settings.azuread_administrator.lz_key][var.settings.azuread_administrator.azuread_group_key].display_name)
-      object_id                   = can(var.settings.azuread_administrator.object_id) ? var.settings.azuread_administrator.object_id : try(var.azuread_groups[var.client_config.landingzone_key][var.settings.azuread_administrator.azuread_group_key].id, var.azuread_groups[var.settings.azuread_administrator.lz_key][var.settings.azuread_administrator.azuread_group_key].id)
+      object_id                   = can(var.settings.azuread_administrator.object_id) ? var.settings.azuread_administrator.object_id : try(var.azuread_groups[var.client_config.landingzone_key][var.settings.azuread_administrator.azuread_group_key].object_id, var.azuread_groups[var.settings.azuread_administrator.lz_key][var.settings.azuread_administrator.azuread_group_key].object_id)
       tenant_id                   = can(var.settings.azuread_administrator.tenant_id) ? var.settings.azuread_administrator.tenant_id : try(var.azuread_groups[var.client_config.landingzone_key][var.settings.azuread_administrator.azuread_group_key].tenant_id, var.azuread_groups[var.settings.azuread_administrator.lz_key][var.settings.azuread_administrator.azuread_group_key].tenant_id)
     }
   }
