@@ -66,6 +66,9 @@ resource "azurerm_mssql_database" "mssqldb" {
     }
   }
 
+  lifecycle {
+    prevent_destroy = true
+  }
 
 }
 
