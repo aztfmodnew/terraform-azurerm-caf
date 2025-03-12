@@ -5,9 +5,36 @@ windows_web_apps = {
     service_plan_key              = "sp1"
     enabled                       = true
     https_only                    = false
-    public_network_access_enabled = false
+    public_network_access_enabled = true
+    zip_deploy_file               = "stacks/Baseline_web_application_with_zone_redundancy/SimpleWebApp.zip"
+    application_insight_key       = "app_insights1"
+
+
+
+    identity = {
+      type = "UserAssigned"
+      # lz_key = ""
+      managed_identity_keys = ["webapp_mi"]
+    }
+
+    site_config = {
+      always_on = true
+      application_stack = {
+        current_stack  = "dotnet"
+        dotnet_version = "v4.0"
+      }
+      http2_enabled             = true
+      minnimum_tls_version      = "1.3"
+      ftps_state                = "Disabled"
+      use_32_bit_worker_process = false
+      vnet_route_all            = true
+
+
+    }
+
+    # Optional
     app_settings = {
-      "WEBSITE_NODE_DEFAULT_VERSION" = "14.17.0"
+      "WEBSITE_RUN_FROM_PACKAGE" = "1"
     }
 
     virtual_network_subnet = {
