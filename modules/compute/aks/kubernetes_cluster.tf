@@ -380,7 +380,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     content {
       network_plugin      = try(network_profile.value.network_plugin, null)
       network_mode        = try(network_profile.value.network_mode, null)
-      network_policy      = try(network_profile.value.network_policy, null)
+      network_policy      = try(network_profile.value.network_policy, "azure")
       dns_service_ip      = try(network_profile.value.dns_service_ip, null)
       outbound_type       = try(network_profile.value.outbound_type, null)
       pod_cidr            = try(network_profile.value.pod_cidr, null)
@@ -444,7 +444,7 @@ node_os_upgrade_channel must be set to NodeImage if automatic_upgrade_channel ha
   workload_identity_enabled = try(var.settings.workload_identity_enabled, null)
 
 
-  role_based_access_control_enabled = try(var.settings.role_based_access_control_enabled, null)
+  role_based_access_control_enabled = try(var.settings.role_based_access_control_enabled, true)
 
   run_command_enabled = try(var.settings.run_command_enabled, null)
 
