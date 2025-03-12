@@ -35,7 +35,7 @@ lint:
     - shellcheck@0.10.0
     - shfmt@3.6.0
     - tflint@0.55.1
-    - yamllint@1.35.1
+    - yamllint@1.36.0
 actions:
   disabled:
     - trunk-announce
