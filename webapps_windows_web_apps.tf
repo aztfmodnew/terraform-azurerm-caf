@@ -19,7 +19,6 @@ module "windows_web_apps" {
     keyvaults            = local.combined_objects_keyvaults
     storage_accounts     = local.combined_objects_storage_accounts
     vnets                = local.combined_objects_networking
-    virtual_subnets      = local.combined_objects_virtual_subnets
     managed_identities   = local.combined_objects_managed_identities
     private_dns          = local.combined_objects_private_dns
     application_insights = local.combined_objects_application_insights

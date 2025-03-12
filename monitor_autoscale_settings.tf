@@ -10,7 +10,8 @@ module "monitor_autoscale_settings" {
 
   remote_objects = {
     app_service_plans          = local.combined_objects_app_service_plans
-    virtual_machine_scale_sets = local.combined_objects_virtual_machine_scale_sets
+    service_plans              = local.combined_objects_service_plans
+    virtual_machine_scale_sets  = local.combined_objects_virtual_machine_scale_sets
   }
 
 }
