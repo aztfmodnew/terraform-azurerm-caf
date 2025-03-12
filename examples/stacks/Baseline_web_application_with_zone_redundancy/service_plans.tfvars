@@ -4,6 +4,7 @@ service_plans = {
     name               = "asp-simple"
     os_type            = "Windows"
     sku_name           = "P1v2"
+    zone_balancing_enabled = true
     tags = {
       project = "Test"
     }
