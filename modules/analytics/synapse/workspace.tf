@@ -82,12 +82,12 @@ resource "random_password" "sql_admin" {
 resource "azurerm_key_vault_secret" "sql_admin_password" {
   count = try(var.settings.sql_administrator_login_password, null) == null ? 1 : 0
 
-  name         = format("%s-synapse-sql-admin-password", azurerm_synapse_workspace.ws.name)
-  value        = random_password.sql_admin[0].result
-  key_vault_id = var.keyvault_id
+  name            = format("%s-synapse-sql-admin-password", azurerm_synapse_workspace.ws.name)
+  value           = random_password.sql_admin[0].result
+  key_vault_id    = var.keyvault_id
   not_before_date = try(var.settings.sql_administrator_login_password_not_before, null)
-  content_type = "text/plain"
-  expiration_date = try(var.settings.sql_administrator_login_password_expiration_date, timeadd(timestamp(), "2160h"))  # 2160 hours = 90 days
+  content_type    = "text/plain"
+  expiration_date = try(var.settings.sql_administrator_login_password_expiration_date, timeadd(timestamp(), "2160h")) # 2160 hours = 90 days
   # This is to prevent the secret from being updated when the password is changed
   # in the azurerm_synapse_workspace resource. This is a workaround for the issue
   # where the azurerm_synapse_workspace resource does not support updating the password
@@ -103,31 +103,31 @@ resource "azurerm_key_vault_secret" "sql_admin_password" {
 resource "azurerm_key_vault_secret" "sql_admin" {
   count = try(var.settings.sql_administrator_login_password, null) == null ? 1 : 0
 
-  name           = format("%s-synapse-sql-admin-username", azurerm_synapse_workspace.ws.name)
-  value          = var.settings.sql_administrator_login
-  key_vault_id   = var.keyvault_id
-  content_type   = "text/plain"
-  expiration_date = try(var.settings.sql_administrator_login_password_expiration_date, timeadd(timestamp(), "2160h"))  # 2160 hours = 90 days
+  name            = format("%s-synapse-sql-admin-username", azurerm_synapse_workspace.ws.name)
+  value           = var.settings.sql_administrator_login
+  key_vault_id    = var.keyvault_id
+  content_type    = "text/plain"
+  expiration_date = try(var.settings.sql_administrator_login_password_expiration_date, timeadd(timestamp(), "2160h")) # 2160 hours = 90 days
 }
 
 resource "azurerm_key_vault_secret" "synapse_name" {
   count = try(var.settings.sql_administrator_login_password, null) == null ? 1 : 0
 
-  name         = format("%s-synapse-name", azurerm_synapse_workspace.ws.name)
-  value        = azurerm_synapse_workspace.ws.name
-  key_vault_id = var.keyvault_id
-  content_type   = "text/plain"
-  expiration_date = try(var.settings.sql_administrator_login_password_expiration_date, timeadd(timestamp(), "2160h"))  # 2160 hours = 90 days
+  name            = format("%s-synapse-name", azurerm_synapse_workspace.ws.name)
+  value           = azurerm_synapse_workspace.ws.name
+  key_vault_id    = var.keyvault_id
+  content_type    = "text/plain"
+  expiration_date = try(var.settings.sql_administrator_login_password_expiration_date, timeadd(timestamp(), "2160h")) # 2160 hours = 90 days
 }
 
 resource "azurerm_key_vault_secret" "synapse_rg_name" {
   count = try(var.settings.sql_administrator_login_password, null) == null ? 1 : 0
 
-  name         = format("%s-synapse-resource-group-name", azurerm_synapse_workspace.ws.name)
-  value        = local.resource_group_name
-  key_vault_id = var.keyvault_id
-  content_type = "text/plain"
-  expiration_date = try(var.settings.sql_administrator_login_password_expiration_date, timeadd(timestamp(), "2160h"))  # 2160 hours = 90 days
+  name            = format("%s-synapse-resource-group-name", azurerm_synapse_workspace.ws.name)
+  value           = local.resource_group_name
+  key_vault_id    = var.keyvault_id
+  content_type    = "text/plain"
+  expiration_date = try(var.settings.sql_administrator_login_password_expiration_date, timeadd(timestamp(), "2160h")) # 2160 hours = 90 days
 }
 
 # for backwards compatibility to create single firewall rule

@@ -35,28 +35,28 @@ variable "base_tags" {
 }
 variable "diagnostic_profiles" {
   description = "Diagnostic settings for the resource."
-  default = {}
-  type    = any
+  default     = {}
+  type        = any
 }
 variable "private_dns_zone_id" {
   description = "Private DNS zone id to be used in the module."
-  default = null
-  type    = string
+  default     = null
+  type        = string
 }
 
 variable "private_endpoints" {
   description = "Private endpoints to be used in the module."
-  default = {}
-  type    = any
+  default     = {}
+  type        = any
 }
 variable "private_dns" {
   description = "Private DNS zones to be used in the module."
-  default = {}
-  type    = any
+  default     = {}
+  type        = any
 }
 
 variable "remote_objects" {
   description = "Remote objects to be used in the module."
-  default = {}
-  type    = any
+  default     = {}
+  type        = any
 }

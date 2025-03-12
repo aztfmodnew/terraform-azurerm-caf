@@ -128,8 +128,8 @@ variable "var_folder_path" {
 # }
 variable "environment" {
   description = "The environment in which the resources are deployed."
-  default = "sandpit"
-  type    = string
+  default     = "sandpit"
+  type        = string
 }
 variable "rover_version" {
   default = null
@@ -1273,26 +1273,26 @@ variable "network_interface_backend_address_pool_association" {
 }
 variable "digital_twins_instances" {
   description = "Digital Twins Instances"
-  type    = any
-  default = {}
+  type        = any
+  default     = {}
 }
 
 variable "digital_twins_endpoint_eventhubs" {
   description = "Digital Twins Endpoints Eventhubs"
-  type    = any
-  default = {}
+  type        = any
+  default     = {}
 }
 
 variable "digital_twins_endpoint_eventgrids" {
   description = "Digital Twins Endpoints Eventgrid"
-  type    = any
-  default = {}
+  type        = any
+  default     = {}
 }
 
 variable "digital_twins_endpoint_servicebuses" {
   description = "Digital Twins Endpoints Service Bus"
-  type    = any
-  default = {}
+  type        = any
+  default     = {}
 }
 
 variable "monitor_metric_alert" {
@@ -1476,13 +1476,13 @@ variable "windows_web_apps" {
   
 
   DESCRIPTION
-  type    = any
-  default = {}
+  type        = any
+  default     = {}
 }
 variable "web_pubsubs" {
   description = "Configuration settings for Azure Web PubSub services."
-  type    = any
-  default = {}
+  type        = any
+  default     = {}
 }
 variable "web_pubsub_hubs" {
   type    = any

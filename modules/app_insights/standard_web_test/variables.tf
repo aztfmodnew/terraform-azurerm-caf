@@ -10,12 +10,12 @@ variable "location" {
 
 variable "resource_group_id" {
   description = "(Required) The id of the resource group in which to create the Application Insights WebTest. Changing this forces a new resource."
-  type = string
+  type        = string
 }
 
 variable "application_insights_id" {
   description = "(Required) The ID of the Application Insights component on which the WebTest operates. Changing this forces a new resource to be created."
-  type = string
+  type        = string
 }
 
 variable "global_settings" {

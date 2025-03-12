@@ -73,12 +73,12 @@ resource "random_password" "sql_admin" {
 resource "azurerm_key_vault_secret" "sql_admin_password" {
   count = try(var.settings.administrator_login_password, null) == null ? 1 : 0
 
-  name         = can(var.settings.keyvault_secret_name) ? var.settings.keyvault_secret_name : format("%s-password", azurecaf_name.mssql.result)
-  value        = random_password.sql_admin[0].result
-  key_vault_id = var.keyvault_id
-  content_type = "text/plain"
-  not_before_date   = try(var.settings.administrator_login_password_not_before, null)
-  expiration_date = try(var.settings.administrator_login_password_expiration_date, timeadd(timestamp(), "2160h"))  # 2160 hours = 90 days
+  name            = can(var.settings.keyvault_secret_name) ? var.settings.keyvault_secret_name : format("%s-password", azurecaf_name.mssql.result)
+  value           = random_password.sql_admin[0].result
+  key_vault_id    = var.keyvault_id
+  content_type    = "text/plain"
+  not_before_date = try(var.settings.administrator_login_password_not_before, null)
+  expiration_date = try(var.settings.administrator_login_password_expiration_date, timeadd(timestamp(), "2160h")) # 2160 hours = 90 days
 
   lifecycle {
     ignore_changes = [
