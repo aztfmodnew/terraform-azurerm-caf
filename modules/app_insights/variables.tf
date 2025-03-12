@@ -15,6 +15,7 @@ variable "name" {
 
 variable "resource_group_name" {
   description = "(Required) The name of the resource group where to create the resource."
+  type = string
 }
 
 variable "location" {
@@ -84,7 +85,12 @@ variable "diagnostic_profiles" {
   default = {}
 }
 variable "diagnostics" {
-  default = null
+  description = "(Optional) Additional diagnostic settings for the Application Insights resource."
+  default     = null
+  type        = any
 }
 variable "settings" {
+  description = "Settings for the Application Insights resource."
+  default     = {}
+  type        = any
 }
