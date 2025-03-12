@@ -127,16 +127,21 @@ variable "var_folder_path" {
 #   default = "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/master/arm-compute/quickstart-templates/aliases.json"
 # }
 variable "environment" {
+  description = "The environment in which the resources are deployed."
   default = "sandpit"
+  type    = string
 }
 variable "rover_version" {
   default = null
+  type    = string
 }
 variable "logged_user_objectId" {
   default = null
+  type    = string
 }
 variable "logged_aad_app_objectId" {
   default = null
+  type    = string
 }
 variable "tags" {
   default = null
@@ -803,8 +808,9 @@ variable "disk_encryption_sets" {
   default = {}
 }
 variable "vhub_peerings" {
-  default     = {}
   description = "Use virtual_hub_connections instead of vhub_peerings. It will be removed in version 6.0"
+  type        = any
+  default     = {}
 }
 variable "virtual_hub_connections" {
   type    = any
