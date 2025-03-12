@@ -7,7 +7,9 @@ variable "group_id" {
 }
 
 variable "group_object_id" {
-  default = null
+  description = "The object ID of the group."
+  type        = string
+  default     = null
 }
 variable "client_config" {
   description = "Client configuration object (see module README.md)."
