@@ -1,10 +1,10 @@
 windows_web_apps = {
   webapp1 = {
-    name               = "example-webapp1417"
-    resource_group_key = "rg1"
-    service_plan_key   = "sp1"
-    enabled = true
-    https_only = false
+    name                          = "example-webapp1417"
+    resource_group_key            = "rg1"
+    service_plan_key              = "sp1"
+    enabled                       = true
+    https_only                    = false
     public_network_access_enabled = false
     app_settings = {
       "WEBSITE_NODE_DEFAULT_VERSION" = "14.17.0"
@@ -12,12 +12,12 @@ windows_web_apps = {
 
     virtual_network_subnet = {
       # lz_key = ""
-      vnet_key = "vnet1"
+      vnet_key   = "vnet1"
       subnet_key = "app_service_integration"
       #subnet_id = "/subscriptions/000000000/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/vnet1/subnets/app_service_integration"
 
     }
-        # Optional
+    # Optional
     private_endpoints = {
       # Require enforce_private_link_endpoint_network_policies set to true on the subnet
       private-link-webapp1 = {
@@ -31,14 +31,14 @@ windows_web_apps = {
           name                 = "example-webapp1"
           is_manual_connection = false
           #https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-overview#private-link-resource
-          subresource_names    = ["sites"]
+          subresource_names = ["sites"]
         }
 
-         private_dns = {
-           zone_group_name = "privatelink_azurewebsites_windows_net"
-           # lz_key          = ""   # If the DNS keys are deployed in a remote landingzone
-           keys = ["azurewebsites_dns"]
-         }
+        private_dns = {
+          zone_group_name = "privatelink_azurewebsites_windows_net"
+          # lz_key          = ""   # If the DNS keys are deployed in a remote landingzone
+          keys = ["azurewebsites_dns"]
+        }
       }
     }
     tags = {

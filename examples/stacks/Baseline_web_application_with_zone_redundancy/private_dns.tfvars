@@ -20,19 +20,19 @@ private_dns = {
       }
     }
   }
-   database_dns = {
-     name               = "privatelink.database.windows.net"
-     resource_group_key = "rg1"
+  database_dns = {
+    name               = "privatelink.database.windows.net"
+    resource_group_key = "rg1"
 
-     vnet_links = {
-       vnlk2 = {
-         name     = "auto-vnet-link"
-         #lz_key   = "launchpad"
-         vnet_key = "vnet1"
-          tags = {
-            net_team = "noc1"
-          }
-       }
-     }
-   }
+    vnet_links = {
+      vnlk2 = {
+        name = "auto-vnet-link"
+        #lz_key   = "launchpad"
+        vnet_key = "vnet1"
+        tags = {
+          net_team = "noc1"
+        }
+      }
+    }
+  }
 }

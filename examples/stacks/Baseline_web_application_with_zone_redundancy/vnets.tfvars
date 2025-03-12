@@ -13,8 +13,8 @@ vnets = {
         nsg_key = "appgw"
       }
       app_service_integration = {
-        name    = "app_service_integration"
-        cidr    = ["10.0.2.0/24"]
+        name = "app_service_integration"
+        cidr = ["10.0.2.0/24"]
         delegation = {
           name               = "serverFarms"
           service_delegation = "Microsoft.Web/serverFarms"

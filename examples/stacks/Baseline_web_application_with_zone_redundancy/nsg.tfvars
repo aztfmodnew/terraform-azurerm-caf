@@ -1,16 +1,16 @@
 #
 # Definition of the networking security groups
 #
-network_security_group_definition = { 
+network_security_group_definition = {
   # This entry is applied to all subnets with no NSG defined
-  empty_nsg = {    
+  empty_nsg = {
     resource_group_key = "rg1"
-    nsg = [ ]
+    nsg                = []
   }
   # This entry is applied to the appgw subnet
   appgw = {
     resource_group_key = "rg1"
-      nsg = [
+    nsg = [
       {
         name                       = "Inbound-HTTP",
         priority                   = "120"
@@ -52,7 +52,7 @@ network_security_group_definition = {
   app_service_integration = {
     resource_group_key = "rg1"
     nsg = [
-      
+
       {
         name                       = "Inbound-HTTP",
         priority                   = "120"
@@ -74,9 +74,9 @@ network_security_group_definition = {
         destination_port_range     = "443"
         source_address_prefix      = "*"
         destination_address_prefix = "*"
-      }        
+      }
     ]
-    
+
 
   }
 

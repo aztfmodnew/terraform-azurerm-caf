@@ -3,7 +3,7 @@ resource_groups = {
     name = "webapp"
     tags = {
       environment = "demo"
-      project     = "webapp-demo"      
+      project     = "webapp-demo"
     }
   }
 }
