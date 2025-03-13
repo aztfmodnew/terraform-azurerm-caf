@@ -24,7 +24,7 @@ windows_web_apps = {
         dotnet_version = "v4.0"
       }
       http2_enabled             = true
-      minnimum_tls_version      = "1.3"
+      minimum_tls_version      = "1.3"
       ftps_state                = "Disabled"
       use_32_bit_worker_process = false
       vnet_route_all            = true
