@@ -4,33 +4,31 @@
 
 / is the root directory of the repository.Create the following directory structure for the Terraform module:
 
-
 /modules
 └── /category_name
-                └──/module_name
-                    ├── main.tf
-                    ├── outputs.tf
-                    ├── providers.tf
-                    ├── variables.tf
-                    ├── diagnostics.tf
-                    ├── locals.tf
-                    ├── module_name.tf
-                    |── resource1.tf
-                    |── resource2.tf
-                    ├── resource1
-                    │   ├── resource1.tf
-                    │   ├── main.tf
-                    │   ├── output.tf
-                    │   ├── providers.tf
-                    │   └── variables.tf
-                    ├── resource2
-                    │   ├── resource2.tf
-                    │   ├── main.tf
-                    │   ├── output.tf
-                    │   ├── providers.tf
-                    │   └── variables.tf
+└──/module_name
+├── main.tf
+├── outputs.tf
+├── providers.tf
+├── variables.tf
+├── diagnostics.tf
+├── locals.tf
+├── module_name.tf
+|── resource1.tf
+|── resource2.tf
+├── resource1
+│ ├── resource1.tf
+│ ├── main.tf
+│ ├── output.tf
+│ ├── providers.tf
+│ └── variables.tf
+├── resource2
+│ ├── resource2.tf
+│ ├── main.tf
+│ ├── output.tf
+│ ├── providers.tf
+│ └── variables.tf
 /category_name_module_names.tf
-
 
 module_name is the name of the resource without the provider prefix. For example, if the resource is azurerm_container_app, the module_name would be container_app.
 
@@ -88,9 +86,6 @@ For example, if the module is `azurerm_ai_services` under the category `cognitiv
         ├── ai_services.tf
 /cognitive_services_ai_services.tf
 ```
-
-
-
 
 ## Modify existing files
 
@@ -182,7 +177,7 @@ resource "azurerm_module_name" "module_name" {
   location            = local.location
   resource_group_name = local.resource_group_name
   # Other arguments
-  
+
 }
 ```
 
@@ -246,10 +241,6 @@ output "custom_domain_verification_id" {
 }
 ```
 
-
-
-
-
 ### /modules/category_name/module_name/providers.tf
 
 Add the following code to the file:
@@ -302,7 +293,7 @@ variable "settings" {
 
   DESCRIPTION
   type        = any
-  
+
 }
 
 variable "resource_group" {
@@ -344,7 +335,7 @@ Add the following code to the file:
 
 ```hcl
 #This file is maintained by legacy purposes. Please do not modify this file.
-```	
+```
 
 ### /modules/category_name/module_name/managed_identitties.tf
 
@@ -382,11 +373,11 @@ category_name = {
 module_names = var.module_names
 }
 
-Example with module_name equal to service_plans  and category_name equal to webapp:
+Example with module_name equal to service_plans and category_name equal to webapp:
 
 ```hcl
-webapp = {    
-    service_plans                                  = var.service_plans    
+webapp = {
+    service_plans                                  = var.service_plans
   }
 ```
 
@@ -417,6 +408,7 @@ dynamic "block" {
     }
 }
 ```
+
 #### Optional Multiple Destination Blocks
 
 Use the following structure for optional multiple destination blocks:
@@ -445,6 +437,7 @@ Use the following structure for dynamic block identity:
     }
   }
 ```
+
 ### dynamic block timeouts
 
 Based on the values defined in timeouts,add allways the following structure for dynamic block timeouts:
@@ -477,9 +470,6 @@ or
 ```
 
 Change null for default values if default values are provided.
-
-
-
 
 ### Arguments
 
@@ -530,6 +520,7 @@ location            = local.location
 ```
 
 ##### argument service_plan_id
+
 Use the following structure for argument service_plan_id:
 
 ```hcl
@@ -544,7 +535,6 @@ service_plan_id = coalesce(
 ##### Other Instructions
 
 - Search in workspace for the existing argument definitions and use them as a reference, if available.
-
 
 ### Commit messages
 
