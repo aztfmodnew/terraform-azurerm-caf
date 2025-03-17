@@ -32,6 +32,16 @@ windows_web_apps = {
 
     }
 
+    sql_connections = [
+      {
+        # lz_key = ""
+        mssql_server_key             = "adventureworks-rg1"
+        mssql_database_key    = "mssql_db1"
+        #database_name   = "adventureworks"
+        #fully_qualified_domain_name = "example-sqlserver.database.windows.net"
+      }
+    ]
+
     # Optional
     app_settings = {
       "WEBSITE_RUN_FROM_PACKAGE" = "1"

@@ -22,6 +22,8 @@ module "windows_web_apps" {
     managed_identities   = local.combined_objects_managed_identities
     private_dns          = local.combined_objects_private_dns
     application_insights = local.combined_objects_application_insights
+    mssql_servers        = local.combined_objects_mssql_servers
+    mssql_databases      = local.combined_objects_mssql_databases
   }
 }
 
