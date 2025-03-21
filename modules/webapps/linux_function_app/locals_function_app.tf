@@ -1,5 +1,5 @@
 locals {
-  arm_filename = "${path.module}/arm_site_config.json"
+   arm_filename = "${path.module}/arm_site_config.json"
 
   app_settings = merge(
     try(var.settings.application_insight, null) == null ? {} : {
@@ -16,6 +16,6 @@ locals {
       "ApplicationInsightsAgent_EXTENSION_VERSION" = "~3"
     },
     try(var.settings.app_settings, {}),
-    try(local.dynamic_settings_to_process, {})
+    try(local.dynamic_settings_to_process, {}),
   )
 }

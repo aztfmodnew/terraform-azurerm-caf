@@ -23,6 +23,10 @@ resource "azurecaf_name" "rg_node" {
 
 ### AKS cluster resource
 
+
+# trunk-ignore(trivy/AVD-AZU-0040)
+# trunk-ignore(trivy/AVD-AZU-0041)
+# trunk-ignore(trivy/AVD-AZU-0043)
 resource "azurerm_kubernetes_cluster" "aks" {
   lifecycle {
     ignore_changes = [

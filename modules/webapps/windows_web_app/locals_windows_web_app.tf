@@ -15,22 +15,30 @@ locals {
     null),
       "ApplicationInsightsAgent_EXTENSION_VERSION" = "~2"
     },
-    merge([
-      #Managed identity "Server=tcp:<server-name>.database.windows.net;Authentication=Active Directory Default; Database=<database-name>;"
-      for sql in try(var.settings.sqlconnections, []) : {
-        "SQLAZURE_CONNECTION_STRING_${try(var.remote_objects.mssql_servers[sql.lz_key][sql.mssql_server_key].fully_qualified_domain_name,
-        var.remote_objects.mssql_servers[var.client_config.landingzone_key][sql.mssql_server_key].fully_qualified_domain_name,
-        sql.fully_qualified_domain_name,
-        null)}" = "Server=tcp:${try(var.remote_objects.mssql_servers[sql.lz_key][sql.mssql_server_key].fully_qualified_domain_name,
-        var.remote_objects.mssql_servers[var.client_config.landingzone_key][sql.mssql_server_key].fully_qualified_domain_name,
-        sql.fully_qualified_domain_name,
-        null)},1433;Authentication=Active Directory Default;Database=${try(var.remote_objects.mssql_databases[sql.lz_key][sql.mssql_database_key].name,
-        var.remote_objects.mssql_databases[var.client_config.landingzone_key][sql.mssql_database_key].name,
-        sql.mssql_database_name,
-        null)};"
-      }
-    ]),
-
+    merge(
+      flatten([
+        for sql_connection in try(var.settings.sql_connections.sql_connections_mi, []) : [
+          for sql in sql_connection : {
+            "SQLAZURE_CONNECTION_STRING_${try(
+              var.remote_objects.mssql_servers[sql.value.mssql_server_key].fully_qualified_domain_name,
+              var.remote_objects.mssql_servers[var.client_config.landingzone_key][sql.value.mssql_server_key].fully_qualified_domain_name,
+              sql.value.fully_qualified_domain_name,
+              ""
+            )}" = "Server=tcp:${try(
+              var.remote_objects.mssql_servers[sql.value.mssql_server_key].fully_qualified_domain_name,
+              var.remote_objects.mssql_servers[var.client_config.landingzone_key][sql.value.mssql_server_key].fully_qualified_domain_name,
+              sql.value.fully_qualified_domain_name,
+              ""
+            )},1433;Authentication=Active Directory Default;Database=${try(
+              var.remote_objects.mssql_databases[sql.value.mssql_database_key].name,
+              var.remote_objects.mssql_databases[var.client_config.landingzone_key][sql.value.mssql_database_key].name,
+              sql.value.mssql_database_name,
+              ""
+            )};"
+          }
+        ]
+      ])
+    ),
     try(var.settings.app_settings, {}),
     try(local.dynamic_settings_to_process, {})
   )
