@@ -2,8 +2,11 @@ variable "settings" {
   description = "The settings for the Azure resource."
   type        = any
 }
+
 variable "group_id" {
-  default = null
+  description = "The ID of the group."
+  type        = string
+  default     = null
 }
 
 variable "group_object_id" {
@@ -11,25 +14,44 @@ variable "group_object_id" {
   type        = string
   default     = null
 }
+
 variable "client_config" {
   description = "Client configuration object (see module README.md)."
   type        = any
 }
+
 variable "group_key" {
-  default = null
+  description = "The key of the group."
+  type        = string
+  default     = null
 }
+
 variable "azuread_groups" {
-  default = {}
+  description = "A map of Azure AD groups."
+  type        = map(any)
+  default     = {}
 }
+
 variable "azuread_apps" {
-  default = {}
+  description = "A map of Azure AD applications."
+  type        = map(any)
+  default     = {}
 }
+
 variable "azuread_service_principals" {
-  default = {}
+  description = "A map of Azure AD service principals."
+  type        = map(any)
+  default     = {}
 }
+
 variable "managed_identities" {
-  default = {}
+  description = "A map of managed identities."
+  type        = map(any)
+  default     = {}
 }
+
 variable "mssql_servers" {
-  default = {}
+  description = "A map of MSSQL servers."
+  type        = map(any)
+  default     = {}
 }
