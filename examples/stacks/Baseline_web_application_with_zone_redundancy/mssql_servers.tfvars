@@ -10,7 +10,15 @@ mssql_servers = {
     keyvault_key                  = "sql-rg1"
     connection_policy             = "Default"
     system_msi                    = true
-    public_network_access_enabled = false
+    #For demo purposes only, not recommended for production
+    public_network_access_enabled = true
+    firewall_rules = {
+      rule1 = {
+        name             = "testrule1"
+        start_ip_address = "79.116.77.125"
+        end_ip_address   = "79.116.77.125"
+      }
+    }
     azuread_administrator = {
       azuread_group_key = "sqlserver_admin"
     }

@@ -9,6 +9,7 @@ azuread_groups = {
       # NOTE: since the authentication uses SQLCMD + DSN, UID cannot be supplied to the connection string, thus only system assigned identity is possible at this stage.
       object_ids = [
         # Add object id of rover agent with system assigned identity here.
+        "logged_in_user"
       ]
       group_keys             = []
       service_principal_keys = []
@@ -17,7 +18,9 @@ azuread_groups = {
       user_principal_names = [
       ]
       service_principal_keys = []
-      object_ids             = []
+      object_ids             = [
+        "logged_in_user"
+      ]
     }
     prevent_duplicate_name = false
   }
