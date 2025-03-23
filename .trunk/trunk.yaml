@@ -24,12 +24,12 @@ lint:
     - trufflehog
   enabled:
     - oxipng@9.1.4
-    - osv-scanner@1.9.2
+    - osv-scanner@2.0.0
     - trivy@0.60.0
     - actionlint@1.7.7
     - git-diff-check
     - gofmt@1.20.4
-    - golangci-lint@1.64.6
+    - golangci-lint@1.64.8
     - markdownlint@0.44.0
     - prettier@3.5.3
     - shellcheck@0.10.0
