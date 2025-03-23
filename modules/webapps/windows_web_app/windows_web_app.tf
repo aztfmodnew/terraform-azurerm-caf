@@ -359,9 +359,9 @@ resource "azurerm_windows_web_app" "windows_web_app" {
     #for_each = try(var.settings.connection_string, null) == null ? [] : var.settings.connection_string
     for_each = local.connection_strings
     content {
-      name  = var.settings.connection_string.name
-      type  = var.settings.connection_string.type
-      value = var.settings.connection_string.value
+      name  = connection_string.value.name
+      type  = connection_string.value.type
+      value = connection_string.value.valu
     }
   }
   enabled                                  = try(var.settings.enabled, true)

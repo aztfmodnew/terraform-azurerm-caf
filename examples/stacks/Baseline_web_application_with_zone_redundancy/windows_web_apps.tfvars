@@ -32,20 +32,20 @@ windows_web_apps = {
 
     }
 
-    sql_connections = {
-      sql_connections_mi = {
-        sql_connections_mi1 = {
-          # lz_key = ""
-          mssql_server_key   = "adventureworks-rg1"
-          mssql_database_key = "mssql_db1"
-        }
-      }
-    }
-
     # Optional
     app_settings = {
       "WEBSITE_RUN_FROM_PACKAGE" = "1"
     }
+
+    connection_strings = [
+      {
+        name     = "SQLAZURE_CONNECTION_STRING"
+        type     = "SQLAzure"
+        mssql_server_key = "adventureworks-rg1"
+        mssql_database_key = "mssql_db1"
+        # lz_key = ""
+      }
+    ]
 
     virtual_network_subnet = {
       # lz_key = ""
