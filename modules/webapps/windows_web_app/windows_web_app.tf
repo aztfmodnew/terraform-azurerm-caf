@@ -361,7 +361,7 @@ resource "azurerm_windows_web_app" "windows_web_app" {
     content {
       name  = connection_string.value.name
       type  = connection_string.value.type
-      value = connection_string.value.valu
+      value = connection_string.value.value
     }
   }
   enabled                                  = try(var.settings.enabled, true)
