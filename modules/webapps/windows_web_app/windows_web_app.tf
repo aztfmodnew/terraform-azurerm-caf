@@ -356,7 +356,8 @@ resource "azurerm_windows_web_app" "windows_web_app" {
   client_certificate_mode            = try(var.settings.client_certificate_mode, null)
   client_certificate_exclusion_paths = try(var.settings.client_certificate_exclusion_paths, null)
   dynamic "connection_string" {
-    for_each = try(var.settings.connection_string, {}) != {} ? [1] : []
+    #for_each = try(var.settings.connection_string, null) == null ? [] : var.settings.connection_string
+    for_each = local.connection_strings
     content {
       name  = var.settings.connection_string.name
       type  = var.settings.connection_string.type

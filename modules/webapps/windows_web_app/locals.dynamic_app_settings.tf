@@ -24,4 +24,28 @@ locals {
       ]
     ) : setting.key => setting.value
   }
+
+/*
+      {
+      for sql_connection_key, sql_connection in try(var.settings.sql_connections.sql_connections_mi, {}) :
+      "sql_connection_key" => {
+        for sql_key, sql in sql_connection :
+        "SQLAZURE_CONNECTION_STRING_${try(
+          var.remote_objects.mssql_servers[sql.mssql_server_key].fully_qualified_domain_name,
+          var.remote_objects.mssql_servers[var.client_config.landingzone_key][sql.mssql_server_key].fully_qualified_domain_name,
+          sql.fully_qualified_domain_name,
+          ""
+        )}" => "Server=tcp:${try(
+          var.remote_objects.mssql_servers[sql.mssql_server_key].fully_qualified_domain_name,
+          var.remote_objects.mssql_servers[var.client_config.landingzone_key][sql.mssql_server_key].fully_qualified_domain_name,
+          sql.fully_qualified_domain_name,
+          ""
+        )},1433;Authentication=Active Directory Default;Database=${try(
+          var.remote_objects.mssql_databases[sql.mssql_database_key].name,
+          var.remote_objects.mssql_databases[var.client_config.landingzone_key][sql.mssql_database_key].name,
+          sql.mssql_database_name,
+          ""
+        )};"
+      ...}
+    }*/
 }
