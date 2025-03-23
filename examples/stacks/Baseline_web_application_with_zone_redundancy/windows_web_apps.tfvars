@@ -24,7 +24,7 @@ windows_web_apps = {
         dotnet_version = "v4.0"
       }
       http2_enabled             = true
-      minimum_tls_version      = "1.3"
+      minimum_tls_version       = "1.3"
       ftps_state                = "Disabled"
       use_32_bit_worker_process = false
       vnet_route_all            = true
@@ -32,16 +32,15 @@ windows_web_apps = {
 
     }
 
-    sql_connections = [
-  {
-    sql_connections_mi = [
-      {
-        mssql_server_key   = "adventureworks-rg1"
-        mssql_database_key = "mssql_db1"
+    sql_connections = {
+      sql_connections_mi = {
+        sql_connections_mi1 = {
+          # lz_key = ""
+          mssql_server_key   = "adventureworks-rg1"
+          mssql_database_key = "mssql_db1"
+        }
       }
-    ]
-  }
-]
+    }
 
     # Optional
     app_settings = {
