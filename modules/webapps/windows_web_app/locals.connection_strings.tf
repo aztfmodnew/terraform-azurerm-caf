@@ -4,7 +4,7 @@ locals {
       name = connection_string.name
       type = connection_string.type
       value = (
-        connection_string.type == "SQLAzure" ? "Data Source=${try(
+        connection_string.type == "SQLAzure" ? "Server=${try(
           var.remote_objects.mssql_servers[connection_string.mssql_server_key].fully_qualified_domain_name,
           var.remote_objects.mssql_servers[var.client_config.landingzone_key][connection_string.mssql_server_key].fully_qualified_domain_name,
           connection_string.fully_qualified_domain_name,
