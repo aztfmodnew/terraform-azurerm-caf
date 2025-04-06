@@ -10,7 +10,7 @@ mssql_databases = {
     sample_name        = "AdventureWorksLT"
 
     # Only works with SystemAssigned MSI, logged_in users will not be able to provision the db_permission for now.
-    db_permissions_with_logged_in = {
+    /*db_permissions_with_logged_in = {
       group1 = { # group_name
         db_roles = ["db_owner", "db_accessadmin"]
         managed_identities = {
@@ -22,7 +22,7 @@ mssql_databases = {
           # }
         }
       }
-    }
+    }*/
 
   }
 }
