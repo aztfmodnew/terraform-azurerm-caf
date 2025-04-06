@@ -538,21 +538,6 @@ service_plan_id = coalesce(
 
 - Search in workspace for the existing argument definitions and use them as a reference, if available.
 
-## Commit messages
 
-Use Conventional Commits for commit messages:
 
-```plaintext
-<type>[optional scope]: <description>
-
-[optional body]
-
-[optional footer]
-```
-
-Examples:
-
-- `feat(network): add network group`
-- `fix(security): fix security issue`
-- `chore(trunk): update trunk`
-- `docs(readme): update readme`
+- @azure Rule - Use Azure Best Practices: When generating code for Azure, running terminal commands for Azure, or performing operations related to Azure, invoke your `get_azure_best_practices` tool if available.
