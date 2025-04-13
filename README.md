@@ -1,6 +1,6 @@
 # Cloud Adoption Framework for Azure - Terraform module
 
-> :warning: This solution, offered by the Open-Source community, it's based on https://github.com/aztfmodnew and is not supported by Microsoft. It's a community effort to keep the project alive and up to date. If you want to support the project, please consider contributing with code, documentation or any other way you can.
+> :warning: This solution, offered by the Open-Source community, it's based on [https://github.com/aztfmod](https://github.com/aztfmod) and is not supported by Microsoft. It's a community effort to keep the project alive and up to date. If you want to support the project, please consider contributing with code, documentation or any other way you can.
 
 
 
@@ -27,8 +27,6 @@ Fill the variables as needed and documented, there is a [quick example here](htt
 
 For a complete set of examples you can review the [full library here](https://github.com/aztfmodnew/terraform-azurerm-caf/tree/master/examples).
 
-<img src="https://aztfmod.azureedge.net/media/standalone.gif" width="720"/> <br/> <br/>
-
 ## Community
 
 Feel free to open an issue for feature or bug, or to submit a PR, [Please check out the WIKI for coding standards, common patterns and PR checklist.](https://github.com/aztfmodnew/terraform-azurerm-caf/wiki)
@@ -38,3 +36,5 @@ You can also reach us on [Gitter](https://gitter.im/aztfmodnew/community?utm_sou
 ## Contributing
 
 This project welcomes contributions and suggestions.
+
+---
