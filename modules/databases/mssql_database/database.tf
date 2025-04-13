@@ -65,7 +65,7 @@ resource "azurerm_mssql_database" "mssqldb" {
       week_of_year      = try(long_term_retention_policy.value.week_of_year, null)
     }
   }
-/*
+  /*
   lifecycle {
     prevent_destroy = true
   }

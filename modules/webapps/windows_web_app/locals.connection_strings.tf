@@ -9,7 +9,7 @@ locals {
           var.remote_objects.mssql_servers[var.client_config.landingzone_key][connection_string.mssql_server_key].fully_qualified_domain_name,
           connection_string.fully_qualified_domain_name,
           ""
-        )},1433;Initial Catalog=${try(
+          )},1433;Initial Catalog=${try(
           var.remote_objects.mssql_databases[connection_string.mssql_database_key].name,
           var.remote_objects.mssql_databases[var.client_config.landingzone_key][connection_string.mssql_database_key].name,
           connection_string.mssql_database_name,

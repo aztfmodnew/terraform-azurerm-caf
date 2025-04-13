@@ -1,6 +1,6 @@
 resource "azurerm_windows_web_app_slot" "windows_web_app_slot" {
-  name                = var.settings.name
-  app_service_id      = var.remote_objects.app_service_id
+  name           = var.settings.name
+  app_service_id = var.remote_objects.app_service_id
   service_plan_id = coalesce(
     try(var.settings.service_plan_id, null),
     try(var.remote_objects.service_plans[try(var.settings.service_plan.lz_key, var.client_config.landingzone_key)][try(var.settings.service_plan.key, var.settings.service_plan_key)].id, null),
@@ -425,20 +425,20 @@ resource "azurerm_windows_web_app_slot" "windows_web_app_slot" {
 
 
 
-dynamic "storage_account" {
-  for_each = try(var.settings.storage_account, {}) != {} ? var.settings.storage_account : []
-  content {
-    access_key = try(
-      var.settings.storage_account.access_key,
-      var.remote_objects.storage_accounts[try(var.settings.storage_account.lz_key, var.client_config.landingzone_key)][try(var.settings.storage_account.key, var.settings.storage_account_key)].primary_access_key
-    )
-    account_name = var.settings.storage_account.account_name
-    name         = var.settings.storage_account.name
-    share_name   = var.settings.storage_account.share_name
-    type         = var.settings.storage_account.type
-    mount_path   = try(var.settings.storage_account.mount_path, null)
+  dynamic "storage_account" {
+    for_each = try(var.settings.storage_account, {}) != {} ? var.settings.storage_account : []
+    content {
+      access_key = try(
+        var.settings.storage_account.access_key,
+        var.remote_objects.storage_accounts[try(var.settings.storage_account.lz_key, var.client_config.landingzone_key)][try(var.settings.storage_account.key, var.settings.storage_account_key)].primary_access_key
+      )
+      account_name = var.settings.storage_account.account_name
+      name         = var.settings.storage_account.name
+      share_name   = var.settings.storage_account.share_name
+      type         = var.settings.storage_account.type
+      mount_path   = try(var.settings.storage_account.mount_path, null)
+    }
   }
-}
 
 
 

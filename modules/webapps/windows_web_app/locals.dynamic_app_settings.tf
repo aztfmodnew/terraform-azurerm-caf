@@ -25,7 +25,7 @@ locals {
     ) : setting.key => setting.value
   }
 
-/*
+  /*
       {
       for sql_connection_key, sql_connection in try(var.settings.sql_connections.sql_connections_mi, {}) :
       "sql_connection_key" => {
