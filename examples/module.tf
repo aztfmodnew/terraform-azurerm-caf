@@ -138,6 +138,7 @@ module "example" {
     cosmosdb_role_mapping              = var.cosmosdb_role_mapping
     cosmosdb_role_definitions          = var.cosmosdb_role_definitions
     databricks_workspaces              = var.databricks_workspaces
+    database_migration_projects        = var.database_migration_projects
     database_migration_services        = var.database_migration_services
     databricks_access_connectors       = var.databricks_access_connectors
     machine_learning_workspaces        = var.machine_learning_workspaces
@@ -227,6 +228,7 @@ module "example" {
     nat_gateways                                            = var.nat_gateways
     network_managers                                        = var.network_managers
     network_manager_admin_rules                             = var.network_manager_admin_rules
+    network_manager_admin_rule_collections                  = var.network_manager_admin_rule_collections
     network_manager_connectivity_configurations             = var.network_manager_connectivity_configurations
     network_manager_deployments                             = var.network_manager_deployments
     network_manager_network_groups                          = var.network_manager_network_groups
@@ -342,6 +344,7 @@ module "example" {
     function_apps                                  = var.function_apps
     service_plans                                  = var.service_plans
     static_sites                                   = var.static_sites
+    windows_web_apps                               = var.windows_web_apps
   }
   data_factory = {
     data_factory                                 = var.data_factory

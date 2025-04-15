@@ -10,7 +10,11 @@ variable "settings" {
   description = "The settings for the Azure resource."
   type        = any
 }
-variable "admin_group_object_ids" {}
+variable "admin_group_object_ids" {
+  description = "Admin group object ids to be used in the module."
+  default     = []
+  type        = list(string)
+}
 variable "location" {
   description = "location of the resource if different from the resource group."
   type        = string
@@ -30,19 +34,29 @@ variable "base_tags" {
   type        = bool
 }
 variable "diagnostic_profiles" {
-  default = {}
+  description = "Diagnostic settings for the resource."
+  default     = {}
+  type        = any
 }
 variable "private_dns_zone_id" {
-  default = null
+  description = "Private DNS zone id to be used in the module."
+  default     = null
+  type        = string
 }
 
 variable "private_endpoints" {
-  default = {}
+  description = "Private endpoints to be used in the module."
+  default     = {}
+  type        = any
 }
 variable "private_dns" {
-  default = {}
+  description = "Private DNS zones to be used in the module."
+  default     = {}
+  type        = any
 }
 
 variable "remote_objects" {
-  default = {}
+  description = "Remote objects to be used in the module."
+  default     = {}
+  type        = any
 }

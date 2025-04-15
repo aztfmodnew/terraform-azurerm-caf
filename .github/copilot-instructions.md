@@ -1,36 +1,35 @@
 # Instructions for Creating a Terraform Module
 
-## Directory Structure
+## For new modules
+### Directory Structure
 
-/ is the root directory of the repository.Create the following directory structure for the Terraform module:
-
+/ is the root directory of the repository. Create the following directory structure for the Terraform module:
 
 /modules
 └── /category_name
-                └──/module_name
-                    ├── main.tf
-                    ├── outputs.tf
-                    ├── providers.tf
-                    ├── variables.tf
-                    ├── diagnostics.tf
-                    ├── locals.tf
-                    ├── module_name.tf
-                    |── resource1.tf
-                    |── resource2.tf
-                    ├── resource1
-                    │   ├── resource1.tf
-                    │   ├── main.tf
-                    │   ├── output.tf
-                    │   ├── providers.tf
-                    │   └── variables.tf
-                    ├── resource2
-                    │   ├── resource2.tf
-                    │   ├── main.tf
-                    │   ├── output.tf
-                    │   ├── providers.tf
-                    │   └── variables.tf
+└──/module_name
+├── main.tf
+├── outputs.tf
+├── providers.tf
+├── variables.tf
+├── diagnostics.tf
+├── locals.tf
+├── module_name.tf
+|── resource1.tf
+|── resource2.tf
+├── resource1
+│ ├── resource1.tf
+│ ├── main.tf
+│ ├── output.tf
+│ ├── providers.tf
+│ └── variables.tf
+├── resource2
+│ ├── resource2.tf
+│ ├── main.tf
+│ ├── output.tf
+│ ├── providers.tf
+│ └── variables.tf
 /category_name_module_names.tf
-
 
 module_name is the name of the resource without the provider prefix. For example, if the resource is azurerm_container_app, the module_name would be container_app.
 
@@ -89,12 +88,9 @@ For example, if the module is `azurerm_ai_services` under the category `cognitiv
 /cognitive_services_ai_services.tf
 ```
 
+### Modify existing files
 
-
-
-## Modify existing files
-
-### /local.remote_objects.tf
+#### /local.remote_objects.tf
 
 Insert alphabetically the following code to the file inside of locals { }:
 
@@ -106,7 +102,7 @@ Example with module_nameequal to resource_groups:
 network_managers                               = try(local.combined_objects_network_managers, null)
 ```
 
-### /locals.combined_objects.tf
+#### /locals.combined_objects.tf
 
 Insert alphabetically the following code to the file inside of locals { }:
 
@@ -118,7 +114,7 @@ Example with module_name equal to resource_groups:
 combined_objects_network_managers                               = merge(tomap({ (local.client_config.landingzone_key) = module.network_managers }), lookup(var.remote_objects, "network_managers", {}), lookup(var.data_sources, "network_managers", {}))
 ```
 
-### /locals.tf
+#### /locals.tf
 
 Add the following code to the file inside of locals { }:
 
@@ -146,7 +142,7 @@ locals {
 }
 ```
 
-### /category_name_module_names.tf
+#### /category_name_module_names.tf
 
 Add the following code to the file:
 
@@ -172,7 +168,7 @@ output "module_names" {
 }
 ```
 
-### /modules/category_name/module_name/module_name.tf
+#### /modules/category_name/module_name/module_name.tf
 
 Add the following code to the file:
 
@@ -182,11 +178,11 @@ resource "azurerm_module_name" "module_name" {
   location            = local.location
   resource_group_name = local.resource_group_name
   # Other arguments
-  
+
 }
 ```
 
-### /modules/category_name/module_name/locals.tf
+#### /modules/category_name/module_name/locals.tf
 
 Add the following code to the file:
 
@@ -211,7 +207,7 @@ locals {
 }
 ```
 
-### /modules/category_name/module_name/outputs.tf
+#### /modules/category_name/module_name/outputs.tf
 
 Add the following code to the file:
 
@@ -246,11 +242,7 @@ output "custom_domain_verification_id" {
 }
 ```
 
-
-
-
-
-### /modules/category_name/module_name/providers.tf
+#### /modules/category_name/module_name/providers.tf
 
 Add the following code to the file:
 
@@ -274,7 +266,7 @@ terraform {
 }
 ```
 
-### /modules/category_name/module_name/variables.tf
+#### /modules/category_name/module_name/variables.tf
 
 Add the following code to the file:
 
@@ -302,7 +294,7 @@ variable "settings" {
 
   DESCRIPTION
   type        = any
-  
+
 }
 
 variable "resource_group" {
@@ -322,7 +314,7 @@ variable "remote_objects" {
 
 ```
 
-### /modules/category_name/module_name/diagnostics.tf
+#### /modules/category_name/module_name/diagnostics.tf
 
 Add the following code to the file:
 
@@ -338,15 +330,15 @@ module "diagnostics" {
 }
 ```
 
-### /modules/category_name/module_name/main.tf
+#### /modules/category_name/module_name/main.tf
 
 Add the following code to the file:
 
 ```hcl
 #This file is maintained by legacy purposes. Please do not modify this file.
-```	
+```
 
-### /modules/category_name/module_name/managed_identitties.tf
+#### /modules/category_name/module_name/managed_identitties.tf
 
 Add the following code to the file:
 
@@ -374,7 +366,7 @@ locals {
 }
 ```
 
-### /examples/module.tf
+#### /examples/module.tf
 
 Add the following code to the file inside of locals { }:
 
@@ -382,15 +374,16 @@ category_name = {
 module_names = var.module_names
 }
 
-Example with module_name equal to service_plans  and category_name equal to webapp:
+Example with module_name equal to service_plans and category_name equal to webapp:
 
 ```hcl
-webapp = {    
-    service_plans                                  = var.service_plans    
+webapp = {
+    service_plans                                  = var.service_plans
   }
 ```
 
-## Coding Instructions
+## Code Style
+
 
 ### Necessary Blocks
 
@@ -417,6 +410,7 @@ dynamic "block" {
     }
 }
 ```
+
 #### Optional Multiple Destination Blocks
 
 Use the following structure for optional multiple destination blocks:
@@ -441,7 +435,7 @@ Use the following structure for dynamic block identity:
 
     content {
       type         = var.settings.identity.type
-      identity_ids = contains(["userassigned", "systemassigned", "systemassigned, userassigned"], lower(var.identity.type)) ? local.managed_identities : null
+      identity_ids = contains(["userassigned", "systemassigned", "systemassigned, userassigned"], lower(var.settings.identity.type)) ? local.managed_identities : null
     }
   }
 ```
@@ -479,14 +473,11 @@ or
 
 Change null for default values if default values are provided.
 
-
-
-
 ### Arguments
 
 #### Default values
 
-For arguments that without default value, use the following structure:
+For arguments that do not have a default value, use the following structure:
 
 ```hcl
 argument_name = try(var.argument_name, null)
@@ -530,26 +521,22 @@ For location, use the following structure:
 location            = local.location
 ```
 
+##### argument service_plan_id
+
+Use the following structure for argument service_plan_id:
+
+```hcl
+
+service_plan_id = coalesce(
+    try(var.settings.service_plan_id, null),
+    try(var.remote_objects.service_plans[try(var.settings.service_plan.lz_key, var.client_config.landingzone_key)][try(var.settings.service_plan.key, var.settings.service_plan_key)].id, null),
+    try(var.remote_objects.app_service_plans[try(var.settings.app_service_plan.lz_key, var.client_config.landingzone_key)][try(var.settings.app_service_plan.key, var.settings.app_service_plan_key)].id, null)
+  )
+```
+
 ##### Other Instructions
 
 - Search in workspace for the existing argument definitions and use them as a reference, if available.
 
 
-### Commit messages
 
-Use Conventional Commits for commit messages:
-
-```plaintext
-<type>[optional scope]: <description>
-
-[optional body]
-
-[optional footer]
-```
-
-Examples:
-
-- `feat(network): add network group`
-- `fix(security): fix security issue`
-- `chore(trunk): update trunk`
-- `docs(readme): update readme`

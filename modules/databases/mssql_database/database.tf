@@ -43,8 +43,8 @@ resource "azurerm_mssql_database" "mssqldb" {
       email_account_admins       = try(threat_detection_policy.value.email_account_admins, null)
       email_addresses            = try(threat_detection_policy.value.email_addresses, null)
       retention_days             = try(threat_detection_policy.value.retention_days, null)
-      storage_endpoint           = try(data.azurerm_storage_account.mssqldb_tdp.0.primary_blob_endpoint, null)
-      storage_account_access_key = try(data.azurerm_storage_account.mssqldb_tdp.0.primary_access_key, null)
+      storage_endpoint           = try(data.azurerm_storage_account.mssqldb_tdp[0].primary_blob_endpoint, null)
+      storage_account_access_key = try(data.azurerm_storage_account.mssqldb_tdp[0].primary_access_key, null)
     }
   }
 
@@ -65,8 +65,11 @@ resource "azurerm_mssql_database" "mssqldb" {
       week_of_year      = try(long_term_retention_policy.value.week_of_year, null)
     }
   }
-
-
+  /*
+  lifecycle {
+    prevent_destroy = true
+  }
+*/
 }
 
 

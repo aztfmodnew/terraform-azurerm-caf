@@ -61,4 +61,5 @@
         "trace.server": "disabled"       
         
     },
+    "markdown.validate.enabled": true,
 }

@@ -5,9 +5,9 @@ resource "azurerm_mssql_server" "mssql" {
   version                       = try(var.settings.version, "12.0")
   administrator_login           = try(var.settings.azuread_administrator.azuread_authentication_only, false) == true ? null : var.settings.administrator_login
   administrator_login_password  = try(var.settings.azuread_administrator.azuread_authentication_only, false) == true ? null : try(var.settings.administrator_login_password, azurerm_key_vault_secret.sql_admin_password[0].value)
-  public_network_access_enabled = try(var.settings.public_network_access_enabled, true)
+  public_network_access_enabled = try(var.settings.public_network_access_enabled, false)
   connection_policy             = try(var.settings.connection_policy, null)
-  minimum_tls_version           = try(var.settings.minimum_tls_version, null)
+  minimum_tls_version           = try(var.settings.minimum_tls_version, "1.2")
   tags                          = local.tags
 
   dynamic "azuread_administrator" {
@@ -16,7 +16,7 @@ resource "azurerm_mssql_server" "mssql" {
     content {
       azuread_authentication_only = try(var.settings.azuread_administrator.azuread_authentication_only, false)
       login_username              = can(var.settings.azuread_administrator.login_username) ? var.settings.azuread_administrator.login_username : try(var.azuread_groups[var.client_config.landingzone_key][var.settings.azuread_administrator.azuread_group_key].display_name, var.azuread_groups[var.settings.azuread_administrator.lz_key][var.settings.azuread_administrator.azuread_group_key].display_name)
-      object_id                   = can(var.settings.azuread_administrator.object_id) ? var.settings.azuread_administrator.object_id : try(var.azuread_groups[var.client_config.landingzone_key][var.settings.azuread_administrator.azuread_group_key].id, var.azuread_groups[var.settings.azuread_administrator.lz_key][var.settings.azuread_administrator.azuread_group_key].id)
+      object_id                   = can(var.settings.azuread_administrator.object_id) ? var.settings.azuread_administrator.object_id : try(var.azuread_groups[var.client_config.landingzone_key][var.settings.azuread_administrator.azuread_group_key].object_id, var.azuread_groups[var.settings.azuread_administrator.lz_key][var.settings.azuread_administrator.azuread_group_key].object_id)
       tenant_id                   = can(var.settings.azuread_administrator.tenant_id) ? var.settings.azuread_administrator.tenant_id : try(var.azuread_groups[var.client_config.landingzone_key][var.settings.azuread_administrator.azuread_group_key].tenant_id, var.azuread_groups[var.settings.azuread_administrator.lz_key][var.settings.azuread_administrator.azuread_group_key].tenant_id)
     }
   }
@@ -73,9 +73,12 @@ resource "random_password" "sql_admin" {
 resource "azurerm_key_vault_secret" "sql_admin_password" {
   count = try(var.settings.administrator_login_password, null) == null ? 1 : 0
 
-  name         = can(var.settings.keyvault_secret_name) ? var.settings.keyvault_secret_name : format("%s-password", azurecaf_name.mssql.result)
-  value        = random_password.sql_admin[0].result
-  key_vault_id = var.keyvault_id
+  name            = can(var.settings.keyvault_secret_name) ? var.settings.keyvault_secret_name : format("%s-password", azurecaf_name.mssql.result)
+  value           = random_password.sql_admin[0].result
+  key_vault_id    = var.keyvault_id
+  content_type    = "text/plain"
+  not_before_date = try(var.settings.administrator_login_password_not_before, null)
+  expiration_date = try(var.settings.administrator_login_password_expiration_date, timeadd(timestamp(), "2160h")) # 2160 hours = 90 days
 
   lifecycle {
     ignore_changes = [

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 url=${1}
 pat_token=${2}
