@@ -242,7 +242,8 @@ locals {
     passthrough        = try(var.global_settings.passthrough, false)
     regions            = try(var.global_settings.regions, null)
     tags               = try(var.global_settings.tags, null)
-    use_slug           = try(var.global_settings.use_slug, true)
+    use_slug           = try(var.global_settings.use_slug, true),
+    clean_input       = try(var.global_settings.clean_input, true)
   }, var.global_settings)
 
   logic_app = {
