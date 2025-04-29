@@ -1,6 +1,6 @@
 # Global settings
 variable "global_settings" {
-  description=<<DESCRIPTION
+  description = <<DESCRIPTION
   The global_settings object is a map of settings that can be used to configure the naming convention for Azure resources. It allows you to specify a default region, environment, and other settings that will be used when generating names for resources.
   Any non-compliant characters will be removed from the name, suffix, or prefix. The generated name will be compliant with the set of allowed characters for each Azure resource type.
   These are the settings that can be configured:
@@ -57,12 +57,74 @@ DESCRIPTION
 }
 
 variable "client_config" {
-  default = {}
+
+  description = <<DESCRIPTION
+    Client configuration object primarily used for specifying the Azure client context in non-interactive environments,
+    such as CI/CD pipelines running under a Service Principal.
+
+    If this variable is left as an empty map (the default), the module will attempt to derive the client configuration
+    (like client_id, tenant_id, subscription_id, object_id) from the current Azure provider context
+    (e.g., credentials from Azure CLI, VS Code Azure login, or environment variables).
+
+    If you provide a map, it should contain the necessary authentication and context details. The structure used
+    when the default is derived includes keys like:
+    - client_id
+    - landingzone_key
+    - logged_aad_app_objectId
+    - logged_user_objectId
+    - object_id
+    - subscription_id
+    - tenant_id
+
+    Example of providing explicit configuration (e.g., for a Service Principal):
+    client_config = {
+      client_id       = "your-service-principal-client-id"
+      object_id       = "your-service-principal-object-id"
+      subscription_id = "your-target-subscription-id"
+      tenant_id       = "your-azure-ad-tenant-id"
+      landingzone_key = "my_landingzone" # Optional, defaults to var.current_landingzone_key if needed elsewhere
+      # Add other relevant keys if needed by the specific module context
+    }
+  DESCRIPTION
+  type        = map(any)
+  default     = {}
+
 }
 
 ## Cloud variables
 variable "cloud" {
-  description = "Configuration object - Cloud resources defaults to Azure public, allows you to switch to other Azure endpoints."
+  description = <<DESCRIPTION
+  Configuration object for Azure cloud environment settings.
+
+    This variable allows you to specify or override the default endpoints and resource IDs for various Azure services.
+    It's primarily used to target Azure environments other than the default Azure Public Cloud, such as Azure Government,
+    Azure China, or custom Azure Stack environments.
+
+    If left as an empty map (the default `{}`), the module will use its built-in default values, which typically correspond
+    to the Azure Public Cloud environment (e.g., `.vault.azure.net` for Key Vault, `core.windows.net` for Storage).
+
+    You can provide a map with specific keys to override these defaults. The module merges your provided map with its
+    internal defaults, with your values taking precedence.
+
+    Example keys include:
+    - acrLoginServerEndpoint
+    - keyvaultDns
+    - storageEndpoint
+    - resourceManager (ARM endpoint)
+    - activeDirectory (Microsoft Entra endpoint)
+    - microsoftGraphResourceId
+    - etc.
+
+    Example for Azure Government:
+    cloud = {
+      keyvaultDns     = ".vault.usgovcloudapi.net"
+      storageEndpoint = "core.usgovcloudapi.net"
+      resourceManager = "https://management.usgovcloudapi.net/"
+      activeDirectory = "https://login.microsoftonline.us"
+      # ... other Gov-specific endpoints
+    }
+  DESCRIPTION
+  type        = map(string)
   default = {
     acrLoginServerEndpoint                      = ".azurecr.io"
     attestationEndpoint                         = ".attest.azure.net"
@@ -76,6 +138,25 @@ variable "cloud" {
     storageEndpoint                             = "core.windows.net"
     storageSyncEndpoint                         = "afs.azure.net"
     synapseAnalyticsEndpoint                    = ".dev.azuresynapse.net"
+    communicationEndpoint                       = ".communication.azure.com"
+    cosmosdbEndpoint                            = ".documents.azure.com"
+    cognitiveServicesEndpoint                   = ".cognitiveservices.azure.com"
+    containerAppsEndpoint                       = ".azurecontainerapps.io"
+    eventgridEndpoint                           = ".eventgrid.azure.net"
+    iotCentralEndpoint                          = ".azureiotcentral.com"
+    iotHubEndpoint                              = ".azure-devices.net"
+    iotDpsEndpoint                              = ".azure-devices-provisioning.net"
+    kustoEndpoint                               = ".kusto.windows.net"
+    mapsEndpoint                                = "atlas.microsoft.com"
+    powerbiEndpoint                             = "api.powerbi.com"
+    purviewEndpoint                             = ".purview.azure.com"
+    redisCacheHostname                          = ".redis.cache.windows.net"
+    searchServiceEndpoint                       = ".search.windows.net"
+    servicebusEndpoint                          = ".servicebus.windows.net"
+    signalrEndpoint                             = ".service.signalr.net"
+    trafficManagerEndpoint                      = ".trafficmanager.net"
+    webPubsubEndpoint                           = ".webpubsub.azure.com"
+    digitalTwinsEndpoint                        = ".digitaltwins.azure.net"
     activeDirectory                             = "https://login.microsoftonline.com"
     activeDirectoryDataLakeResourceId           = "https://datalake.azure.net/"
     activeDirectoryGraphResourceId              = "https://graph.windows.net/"
