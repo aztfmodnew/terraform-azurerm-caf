@@ -1,5 +1,5 @@
 variable "global_settings" {
-  description=<<DESCRIPTION
+  description = <<DESCRIPTION
   The global_settings object is a map of settings that can be used to configure the naming convention for Azure resources. It allows you to specify a default region, environment, and other settings that will be used when generating names for resources.
   Any non-compliant characters will be removed from the name, suffix, or prefix. The generated name will be compliant with the set of allowed characters for each Azure resource type.
   These are the settings that can be configured:
@@ -62,7 +62,7 @@ variable "landingzone" {
 - key: The key of the landing zone object.
 DESCRIPTION
 
-  type        = any
+  type = any
   default = {
     backend_type        = "azurerm"
     global_settings_key = "launchpad"
