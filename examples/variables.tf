@@ -26,7 +26,7 @@ variable "global_settings" {
   - use_slug - (Optional) A boolean value that indicates whether a slug should be added to the name. Defaults to true.
 DESCRIPTION
   #type        = any
-  type = map(object({
+  type = object({
     default_region     = optional(string)
     environment        = optional(string)
     inherit_tags       = optional(bool)
@@ -43,9 +43,11 @@ DESCRIPTION
     clean_input        = optional(bool)
     passthrough        = optional(bool)
     regions            = map(string)
-  }))
+  })
   default = {
     default_region = "region1"
+    inherit_tags   = true
+    passthrough    = false
     regions = {
       region1 = "eastus2"
       region2 = "centralus"
@@ -1539,8 +1541,56 @@ variable "web_pubsub_hubs" {
   default = {}
 }
 variable "aadb2c_directory" {
-  type    = any
-  default = {}
+  description = <<DESCRIPTION
+  The aadb2c_directory object is a map of AAD B2C directory objects. Each AAD B2C directory object has the following keys:
+    - country_code - (Optional) The country code for the AAD B2C directory. This is optional and can be set to null.
+    - data_residency_location - (Required) The data residency location for the AAD B2C directory. This is required and cannot be null.
+    - display_name - (Optional) The display name for the AAD B2C directory. This is optional and can be set to null.
+    - domain_name - (Required) The domain name for the AAD B2C directory. This is required and cannot be null.
+    - sku_name - (Required) The SKU name for the AAD B2C directory. This is required and cannot be null.
+    - tags - (Optional) A mapping of tags which should be assigned to the AAD B2C Directory.
+    - resource_group_name - (Required if resource_group_key and resource_group is not set) The name of the resource group in which the AAD B2C directory will be created. This is required and cannot be null.
+    - resource_group_key - (Optional) The key of the resource group in which the AAD B2C directory will be created. This is optional and can be set to null.
+    - resource_group - (Optional) The resource group object in which the AAD B2C directory will be created. This is optional and can be set to null.
+      - lz_key - (Optional) The key of the landing zone in which the AAD B2C directory will be created. This is optional and can be set to null.
+      - key - (Optional) The key of the resource group in which the AAD B2C directory will be created. This is optional and can be set to null.
+      - name - (Optional) The name of the resource group in which the AAD B2C directory will be created. This is optional and can be set to null.
+  DESCRIPTION
+  default     = null # Make the variable nullable by default
+  type = map(object({
+    country_code            = optional(string)
+    data_residency_location = string # Required if object is provided
+    display_name            = optional(string)
+    domain_name             = string # Required if object is provided
+    resource_group_name     = optional(string)
+    sku_name                = string # Required if object is provided
+    tags                    = optional(map(string))
+    resource_group_key      = optional(string)
+    resource_group = optional(object({
+      lz_key = optional(string)
+      key    = optional(string)
+      name   = optional(string)
+    }))
+  }))
+  sensitive = false
+  validation {
+    # Check if aadb2c_directory is null OR if all keys within each directory object are valid.
+    condition = var.aadb2c_directory == null || alltrue([
+      for dir_key, dir_value in var.aadb2c_directory :
+      length(setsubtract(keys(dir_value), [
+        "country_code",
+        "data_residency_location",
+        "display_name",
+        "domain_name",
+        "resource_group_name",
+        "sku_name",
+        "tags",
+        "resource_group_key",
+        "resource_group"
+      ])) == 0
+    ])
+    error_message = "One or more entries in aadb2c_directory contain unsupported attributes. Allowed attributes are: country_code, data_residency_location, display_name, domain_name, resource_group_name, sku_name, tags, resource_group_key, resource_group."
+  }
 }
 variable "powerbi_embedded" {
   type    = any
