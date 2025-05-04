@@ -4,7 +4,7 @@ This README provides an example on how to use locally Terraform test commands.
 
 ## Running Tests
 
-To run tests in Terraform, you can use the following command:
+To run tests in Terraform, you can use the following command from the root of the repository:
 
 ```bash
 terraform -chdir=./examples test \
