@@ -1,65 +1,74 @@
 {
-    "files.eol": "\n",
-    "editor.tabSize": 2,
-    "terminal.integrated.defaultProfile.linux": "caf (zsh)",
-    "terminal.integrated.scrollback": 32000,
-    "terminal.integrated.profiles.linux": {
-        "caf (rover on docker)": {
-            "path": "docker-compose",
-            "args": ["-f", "rover_on_ssh_host.yml", "run", "-e", "ROVER_RUNNER=true", "--rm", "-w", "/tf/caf" ,"rover", "/bin/bash"],
-            "overrideName": true
-        },
-        "caf (zsh)": {
-            "path": "zsh",
-            "overrideName": true
-        }
+  "files.eol": "\n",
+  "editor.tabSize": 2,
+  "terminal.integrated.defaultProfile.linux": "caf (zsh)",
+  "terminal.integrated.scrollback": 32000,
+  "terminal.integrated.profiles.linux": {
+    "caf (rover on docker)": {
+      "path": "docker-compose",
+      "args": [
+        "-f",
+        "rover_on_ssh_host.yml",
+        "run",
+        "-e",
+        "ROVER_RUNNER=true",
+        "--rm",
+        "-w",
+        "/tf/caf",
+        "rover",
+        "/bin/bash"
+      ],
+      "overrideName": true
     },
-    "markdownlint.config": {
-        "MD028": false,
-        "MD025": {
-            "front_matter_title": ""
-        }
-    },
-    "conventionalCommits.scopes": [
-        "subnet"
-    ],
-    "workbench.colorCustomizations": {
-        "activityBar.activeBackground": "#2f7c47",
-        "activityBar.background": "#2f7c47",
-        "activityBar.foreground": "#e7e7e7",
-        "activityBar.inactiveForeground": "#e7e7e799",
-        "activityBarBadge.background": "#422c74",
-        "activityBarBadge.foreground": "#e7e7e7",
-        "commandCenter.border": "#e7e7e799",
-        "sash.hoverBorder": "#2f7c47",
-        "statusBar.background": "#215732",
-        "statusBar.foreground": "#e7e7e7",
-        "statusBarItem.hoverBackground": "#2f7c47",
-        "statusBarItem.remoteBackground": "#215732",
-        "statusBarItem.remoteForeground": "#e7e7e7",
-        "titleBar.activeBackground": "#215732",
-        "titleBar.activeForeground": "#e7e7e7",
-        "titleBar.inactiveBackground": "#21573299",
-        "titleBar.inactiveForeground": "#e7e7e799"
-    },
-    "peacock.remoteColor": "#215732",
-    "[plaintext]": {
-        "editor.quickSuggestionsDelay": 1
-    },
-    "terraform.indexing": {
-        "enabled": true,
-        "maxNumberOfProblems": 100,
-        "liveIndexing": true,
-        "delay": 500,
-        "exclude": [
-            ".terraform/**/*",
-            "**/.terraform/**/*"
-        ]
-    },
-    "terraform.languageServer": {
-        "enabled": true,
-        "trace.server": "disabled"       
-        
-    },
-    "markdown.validate.enabled": true,
+    "caf (zsh)": {
+      "path": "zsh",
+      "overrideName": true
+    }
+  },
+  "markdownlint.config": {
+    "MD028": false,
+    "MD025": {
+      "front_matter_title": ""
+    }
+  },
+  "conventionalCommits.scopes": ["subnet"],
+  "workbench.colorCustomizations": {
+    "activityBar.activeBackground": "#2f7c47",
+    "activityBar.background": "#2f7c47",
+    "activityBar.foreground": "#e7e7e7",
+    "activityBar.inactiveForeground": "#e7e7e799",
+    "activityBarBadge.background": "#422c74",
+    "activityBarBadge.foreground": "#e7e7e7",
+    "commandCenter.border": "#e7e7e799",
+    "sash.hoverBorder": "#2f7c47",
+    "statusBar.background": "#215732",
+    "statusBar.foreground": "#e7e7e7",
+    "statusBarItem.hoverBackground": "#2f7c47",
+    "statusBarItem.remoteBackground": "#215732",
+    "statusBarItem.remoteForeground": "#e7e7e7",
+    "titleBar.activeBackground": "#215732",
+    "titleBar.activeForeground": "#e7e7e7",
+    "titleBar.inactiveBackground": "#21573299",
+    "titleBar.inactiveForeground": "#e7e7e799"
+  },
+  "peacock.remoteColor": "#215732",
+  "[plaintext]": {
+    "editor.quickSuggestionsDelay": 1
+  },
+  "terraform.indexing": {
+    "enabled": true,
+    "maxNumberOfProblems": 100,
+    "liveIndexing": true,
+    "delay": 500,
+    "exclude": [".terraform/**/*", "**/.terraform/**/*"]
+  },
+  "terraform.languageServer": {
+    "enabled": true,
+    "trace.server": "disabled"
+  },
+  "markdown.validate.enabled": true,
+  "github.copilot.advanced": {
+    "debug.useNodeFetcher": true,
+    "debug.useNodeFetchFetcher": false
+  }
 }

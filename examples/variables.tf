@@ -1,8 +1,54 @@
 variable "global_settings" {
-  description = "Global settings object"
+  description = <<DESCRIPTION
+  The global_settings object is a map of settings that can be used to configure the naming convention for Azure resources. It allows you to specify a default region, environment, and other settings that will be used when generating names for resources.
+  Any non-compliant characters will be removed from the name, suffix, or prefix. The generated name will be compliant with the set of allowed characters for each Azure resource type.
+  These are the settings that can be configured:
+  - default_region - (Optional) The default region to use for the global settings object, by default it is set to "region1".
+  - environment - (Optional) The environment to use for deployments.
+  - inherit_tags - (Optional) A boolean value that indicates whether to inherit tags from the global settings object and from the resource group, by default it is set to false.
+  - prefix - (Optional) The prefix to append as the first characters of the generated name. The prefix will be separated by the separator character.
+  - suffix - (Optional) The suffix to append after the basename of the resource to create. The suffix will be separated by the separator character.
+  - prefix_with_hyphen - (Optional) A boolean value that indicates whether to add a hyphen to the prefix.
+  - prefixes - (Optional) A list of prefixes to append as the first characters of the generated name. The prefixes will be separated by the separator character.
+  - suffixes - (Optional) A list of suffixes to append after the basename of the resource to create. The suffixes will be separated by the separator character.
+  - random_length - (Optional) The length of the random string to generate. Defaults to 0.
+  - random_seed - (Optional) The seed to be used for the random generator. 0 will not be respected and will generate a seed based on the Unix time of the generation.
+  - resource_type - (Optional) The type of Azure resource you are requesting a name from (e.g., Azure Container Registry: azurerm_container_registry). See the Resource Types supported: https://github.com/aztfmod/terraform-provider-azurecaf?tab=readme-ov-file#resource-status.
+  - resource_types - (Optional) A list of additional resource types should you want to use the same settings for a set of resources.
+  - separator - (Optional) The separator character to use between prefixes, resource type, name, suffixes, and random characters. Defaults to "-".
+  - passthrough - (Optional) A boolean value that indicates whether to pass through the naming convention. In that case only the clean input option is considered and the prefixes, suffixes, random, and are ignored. The resource prefixe is not added either to the resulting string. Defaults to false.
+  - regions - (Optional) A map of regions to use for the global settings object.
+    - region1 - The name of the first region.
+    - region2 - The name of the second region.
+    - regionN - The name of the Nth region.
+  - tags - (Optional) A map of tags to be inherited from the global settings object if inherit_tags is set to true.
+  - clean_input - (Optional) A boolean value that indicates whether to remove non-compliant characters from the name, suffix, or prefix. Defaults to true.
+  - use_slug - (Optional) A boolean value that indicates whether a slug should be added to the name. Defaults to true.
+DESCRIPTION
   type        = any
+  /*type = object({
+    default_region     = optional(string)
+    environment        = optional(string)
+    inherit_tags       = optional(bool)
+    prefix             = optional(string)
+    suffix             = optional(string)
+    prefix_with_hyphen = optional(bool)
+    prefixes           = optional(list(string))
+    suffixes           = optional(list(string))
+    random_length      = optional(number)
+    random_seed        = optional(number)
+    resource_type      = optional(string)
+    resource_types     = optional(list(string))
+    separator          = optional(string)
+    clean_input        = optional(bool)
+    passthrough        = optional(bool)
+    regions            = map(string)
+    use_slug           = optional(bool)
+  })*/
   default = {
     default_region = "region1"
+    inherit_tags   = true
+    passthrough    = false
     regions = {
       region1 = "eastus2"
       region2 = "centralus"
@@ -11,8 +57,15 @@ variable "global_settings" {
 }
 
 variable "landingzone" {
-  description = "Landing zone object"
-  type        = any
+  description = <<DESCRIPTION
+  The landingzone object is a map of landing zone objects. Each landing zone object has the following keys
+- backend_type: The type of backend to use for the landing zone object. Possible values are azurerm, s3, gcs, local and remote.
+- global_settings_key: The key of the global settings object to use for the landing zone object.
+- level: The level of the landing zone object. Possible values are level0, level1, level2 and level3.
+- key: The key of the landing zone object.
+DESCRIPTION
+
+  type = any
   default = {
     backend_type        = "azurerm"
     global_settings_key = "launchpad"
@@ -1489,8 +1542,56 @@ variable "web_pubsub_hubs" {
   default = {}
 }
 variable "aadb2c_directory" {
-  type    = any
-  default = {}
+  description = <<DESCRIPTION
+  The aadb2c_directory object is a map of AAD B2C directory objects. Each AAD B2C directory object has the following keys:
+    - country_code - (Optional) The country code for the AAD B2C directory. This is optional and can be set to null.
+    - data_residency_location - (Required) The data residency location for the AAD B2C directory. This is required and cannot be null.
+    - display_name - (Optional) The display name for the AAD B2C directory. This is optional and can be set to null.
+    - domain_name - (Required) The domain name for the AAD B2C directory. This is required and cannot be null.
+    - sku_name - (Required) The SKU name for the AAD B2C directory. This is required and cannot be null.
+    - tags - (Optional) A mapping of tags which should be assigned to the AAD B2C Directory.
+    - resource_group_name - (Required if resource_group_key and resource_group is not set) The name of the resource group in which the AAD B2C directory will be created. This is required and cannot be null.
+    - resource_group_key - (Optional) The key of the resource group in which the AAD B2C directory will be created. This is optional and can be set to null.
+    - resource_group - (Optional) The resource group object in which the AAD B2C directory will be created. This is optional and can be set to null.
+      - lz_key - (Optional) The key of the landing zone in which the AAD B2C directory will be created. This is optional and can be set to null.
+      - key - (Optional) The key of the resource group in which the AAD B2C directory will be created. This is optional and can be set to null.
+      - name - (Optional) The name of the resource group in which the AAD B2C directory will be created. This is optional and can be set to null.
+  DESCRIPTION
+  default     = {} # Make the variable nullable by default
+  type = map(object({
+    country_code            = optional(string)
+    data_residency_location = string # Required if object is provided
+    display_name            = optional(string)
+    domain_name             = string # Required if object is provided
+    resource_group_name     = optional(string)
+    sku_name                = string # Required if object is provided
+    tags                    = optional(map(string))
+    resource_group_key      = optional(string)
+    resource_group = optional(object({
+      lz_key = optional(string)
+      key    = optional(string)
+      name   = optional(string)
+    }))
+  }))
+  sensitive = false
+  validation {
+    # Check if aadb2c_directory is {} OR if all keys within each directory object are valid.
+    condition = var.aadb2c_directory == {} || alltrue([
+      for dir_key, dir_value in var.aadb2c_directory :
+      length(setsubtract(keys(dir_value), [
+        "country_code",
+        "data_residency_location",
+        "display_name",
+        "domain_name",
+        "resource_group_name",
+        "sku_name",
+        "tags",
+        "resource_group_key",
+        "resource_group"
+      ])) == 0
+    ])
+    error_message = "One or more entries in aadb2c_directory contain unsupported attributes. Allowed attributes are: country_code, data_residency_location, display_name, domain_name, resource_group_name, sku_name, tags, resource_group_key, resource_group."
+  }
 }
 variable "powerbi_embedded" {
   type    = any
