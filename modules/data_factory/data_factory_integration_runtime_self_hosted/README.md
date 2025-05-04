@@ -1,6 +1,6 @@
 module "caf" {
-  source  = "aztfmod/caf/azurerm"
-  version = "5.1.0"
+  source  = "aztfmodnew/caf/azurerm"
+  version = "~>4.26.1"
 }
 
 # data_factory_integration_runtime_self_hosted
