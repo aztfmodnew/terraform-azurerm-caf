@@ -26,7 +26,7 @@ variable "global_settings" {
   - clean_input - (Optional) A boolean value that indicates whether to remove non-compliant characters from the name, suffix, or prefix. Defaults to true.
   - use_slug - (Optional) A boolean value that indicates whether a slug should be added to the name. Defaults to true.
 DESCRIPTION  
-    type        = any
+  type        = any
   /*type = object({
     default_region     = optional(string)
     environment        = optional(string)
