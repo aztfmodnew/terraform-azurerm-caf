@@ -748,7 +748,4 @@ service_plan_id = coalesce(
 
 ##### Other Instructions
 
-- Search in workspace for the existing argument definitions and use them as a reference, if available.
-
-
-
+* Search in workspace for the existing argument definitions and use them as a reference, if available.

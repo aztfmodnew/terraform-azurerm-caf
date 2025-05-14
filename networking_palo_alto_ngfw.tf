@@ -1,6 +1,6 @@
-module "palo_alto_ngfw_vnet_local_rulestacks" {
-  source   = "./modules/networking/palo_alto_ngfw_vnet_local_rulestack"
-  for_each = local.networking.palo_alto_ngfw_vnet_local_rulestack
+module "palo_alto_ngfw" {
+  source   = "./modules/networking/palo_alto_ngfw"
+  for_each = local.networking.palo_alto_ngfw
 
   client_config   = local.client_config
   global_settings = local.global_settings
@@ -10,12 +10,17 @@ module "palo_alto_ngfw_vnet_local_rulestacks" {
   settings        = each.value
 
   remote_objects = {
-    diagnostics = local.combined_objects_diagnostics # Or specific diagnostic settings if needed
-    # managed_identities = local.combined_objects_managed_identities # If NGFW or Rulestack supported them
     # Add other remote objects if the sub-modules or main module require them
+    diagnostics = local.combined_diagnostics
+    # Note: The diagnostics module is not used in the Palo Alto NGFW module, but it's included for completeness.
+    public_ip_addresses = local.combined_objects_public_ip_addresses
+    virtual_networks    = local.combined_objects_networking
+    virtual_subnets     = local.combined_objects_virtual_subnets
+
+
+
   }
 }
-
-output "palo_alto_ngfw_vnet_local_rulestacks" {
-  value = module.palo_alto_ngfw_vnet_local_rulestacks
+output "palo_alto_ngfw" {
+  value = module.palo_alto_ngfw
 }

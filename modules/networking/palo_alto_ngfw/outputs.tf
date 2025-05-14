@@ -8,11 +8,6 @@ output "name" {
   value       = azurerm_palo_alto_next_generation_firewall_virtual_network_local_rulestack.palo_alto_ngfw_vnet_local_rulestack.name
 }
 
-output "panorama" {
-  description = "A panorama block as defined by the Palo Alto Next Generation Firewall (output attribute)."
-  value       = azurerm_palo_alto_next_generation_firewall_virtual_network_local_rulestack.palo_alto_ngfw_vnet_local_rulestack.panorama
-}
-
 output "local_rulestack_id" {
   description = "The ID of the associated Local Rulestack created and managed by the sub-module."
   value       = module.local_rulestack.id
