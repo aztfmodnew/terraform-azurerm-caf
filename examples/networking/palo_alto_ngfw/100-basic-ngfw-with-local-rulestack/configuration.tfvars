@@ -23,12 +23,26 @@ vnets = {
       snet_trust = {
         name           = "snet-ngfw-trust"
         cidr = ["10.100.2.0/24"]
-        nsg_key = "ngfw_trust_nsg" # Uncomment if you have an NSG defined for this subnet
+        nsg_key = "ngfw_trust_nsg"
+        delegation = {
+          name               = "PaloAltoNetworks.Cloudngfw/firewalls"
+          service_delegation = "PaloAltoNetworks.Cloudngfw/firewalls"
+          actions = [
+            "Microsoft.Network/virtualNetworks/subnets/join/action",
+          ]
+        }
       }
       snet_untrust = {
         name           = "snet-ngfw-untrust"
         cidr = ["10.100.3.0/24"]
-        nsg_key = "ngfw_untrust_nsg" # Uncomment if you have an NSG defined for this subnet
+        nsg_key = "ngfw_untrust_nsg"
+        delegation = {
+          name               = "PaloAltoNetworks.Cloudngfw/firewalls"
+          service_delegation = "PaloAltoNetworks.Cloudngfw/firewalls"
+          actions = [
+            "Microsoft.Network/virtualNetworks/subnets/join/action",
+          ]
+        }
       }
       // AzureBastionSubnet if you plan to use Bastion for VM access
       // AzureBastionSubnet = {
@@ -94,8 +108,28 @@ palo_alto_ngfw = {
         // or that specific subnet IDs are not explicitly required at this top level of vnet_configuration.
         // If direct subnet IDs are needed by the resource, the module would need to be adapted
         // to look them up from the VNet object using these keys.
+        trusted_subnet_key   = "snet_trust" // Key of the trusted subnet defined above
+        untrusted_subnet_key = "snet_untrust" // Key of the untrusted subnet defined above
+        // If the module requires specific subnet IDs, you can also provide them here
+        // trusted_subnet_id   = "subnet-trust-id"
+        // untrusted_subnet_id = "subnet-untrust-id"
       }
-      public_ip_address_keys = ["ngfw_pip_management", "ngfw_pip_dataplane1"] // Keys of PIPs defined above
+      public_ip_address_keys = [
+        {
+          # lz_key is optional and can be used to specify the landing zone key
+          # lz_key = "my_landingzone" # Optional, if the PIP is in a different landing zone
+          key    = "ngfw_pip_management" # Clave de la PIP dentro de esa landing zone
+        },
+        {
+          # lz_key = "my_landingzone"
+          key    = "ngfw_pip_dataplane1"
+        },
+        # Add more PIPs if needed
+        # {
+        #   lz_key = "another_landingzone"
+        #   key    = "some_other_pip_key"
+        # }
+        ] // Keys of PIPs defined above
       enable_egress_nat      = true
     }
 

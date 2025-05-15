@@ -21,12 +21,13 @@ locals {
   resource_group_name = var.resource_group.name
 
   # Resolve Virtual Network ID
-  virtual_network_id = try(var.settings.network_profile.vnet_configuration.virtual_network_id, null) != null ? var.settings.network_profile.vnet_configuration.virtual_network_id : try(var.remote_objects.virtual_networks[try(var.settings.network_profile.vnet_configuration.virtual_network.lz_key, var.client_config.landingzone_key)][var.settings.network_profile.vnet_configuration.virtual_network.key].id, null)
+  virtual_network_id = try(var.settings.network_profile.vnet_configuration.virtual_network_id, null) != null ? var.settings.network_profile.vnet_configuration.virtual_network_id : try(var.remote_objects.virtual_networks[try(var.settings.network_profile.vnet_configuration.virtual_network.lz_key, var.client_config.landingzone_key)][try(var.settings.network_profile.vnet_configuration.virtual_network.key,var.settings.network_profile.vnet_configuration.virtual_network_key)].id, null)
 
   # Resolve Trusted Subnet ID
-  trusted_subnet_id = try(var.settings.network_profile.vnet_configuration.trusted_subnet_id, null) != null ? var.settings.network_profile.vnet_configuration.trusted_subnet_id : try(var.remote_objects.virtual_subnets[try(var.settings.network_profile.vnet_configuration.trusted_subnet.lz_key, var.client_config.landingzone_key)][var.settings.network_profile.vnet_configuration.trusted_subnet.key].id, null)
+  #[try(each.value.vnet.lz_key, local.client_config.landingzone_key)][each.value.vnet.key].subnets[each.value.vnet.subnet_key].id : null
+  trusted_subnet_id = try(var.settings.network_profile.vnet_configuration.trusted_subnet_id, null) != null ? var.settings.network_profile.vnet_configuration.trusted_subnet_id : try(var.remote_objects.virtual_networks[try(var.settings.network_profile.vnet_configuration.virtual_network.lz_key, var.client_config.landingzone_key)][try(var.settings.network_profile.vnet_configuration.virtual_network.key,var.settings.network_profile.vnet_configuration.virtual_network_key)].subnets[try(var.settings.network_profile.vnet_configuration.trusted_subnet.key,var.settings.network_profile.vnet_configuration.trusted_subnet_key)].id, null)
   # Resolve Untrusted Subnet ID
-  untrusted_subnet_id = try(var.settings.network_profile.vnet_configuration.untrusted_subnet_id, null) != null ? var.settings.network_profile.vnet_configuration.untrusted_subnet_id : try(var.remote_objects.virtual_subnets[try(var.settings.network_profile.vnet_configuration.untrusted_subnet.lz_key, var.client_config.landingzone_key)][var.settings.network_profile.vnet_configuration.untrusted_subnet.key].id, null)
+  untrusted_subnet_id = try(var.settings.network_profile.vnet_configuration.untrusted_subnet_id, null) != null ? var.settings.network_profile.vnet_configuration.untrusted_subnet_id : try(var.remote_objects.virtual_networks[try(var.settings.network_profile.vnet_configuration.virtual_network.lz_key, var.client_config.landingzone_key)][try(var.settings.network_profile.vnet_configuration.virtual_network.key,var.settings.network_profile.vnet_configuration.virtual_network_key)].subnets[try(var.settings.network_profile.vnet_configuration.untrusted_subnet.key,var.settings.network_profile.vnet_configuration.untrusted_subnet_key)].id, null)
 
 
   # Resolve Public IP Address IDs
