@@ -276,7 +276,10 @@ module "example" {
     vpn_gateway_connections                                 = var.vpn_gateway_connections
     vpn_gateway_nat_rules                                   = var.vpn_gateway_nat_rules
     vpn_sites                                               = var.vpn_sites
-    palo_alto_ngfw                                          = var.palo_alto_ngfw
+  }
+
+  palo_alto = {
+    cloudngfws                                          = var.palo_alto_cloudngfws
   }
 
   security = {

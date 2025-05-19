@@ -917,7 +917,7 @@ variable "vpn_sites" {
   type    = any
   default = {}
 }
-variable "palo_alto_ngfw" {
+variable "palo_alto_cloudngfws" {
   type    = any
   default = {}
 }

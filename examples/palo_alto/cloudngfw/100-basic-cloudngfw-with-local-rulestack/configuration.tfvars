@@ -2,7 +2,7 @@
 
 resource_groups = {
   ngfw_rg = {
-    name     = "rg-ngfw-example-basic"
+    name     = "ngfw-example-basic"
     location = "westeurope" # Change to your desired region
   }
 }
@@ -89,12 +89,12 @@ network_security_group_definition = {
   }
 }
 
-palo_alto_ngfw = {
+palo_alto_cloudngfws = {
   basic_ngfw_instance = {
     name                      = "pangfw-basic-example"
     resource_group_key        = "ngfw_rg" // Key of the resource group defined above
-    deployment_mode_network   = "virtual_network"
-    deployment_mode_rulestack = "local_rulestack"
+    attachment_type           = "vnet" // or "vwan" depending on your architecture
+    management_mode = "rulestack" // or "panorama" depending on your architecture
     # location            = "westeurope" # Optional, will inherit from resource_group if not specified
 
     network_profile = {
@@ -133,11 +133,6 @@ palo_alto_ngfw = {
       enable_egress_nat      = true
     }
 
-    marketplace_details = {
-      offer_id     = "paloaltonetworks.ngfw-byol" # Or the offer_id corresponding to your plan
-      publisher_id = "paloaltonetworks"
-      plan_id      = "byol" # Or the plan_id corresponding
-    }
 
     local_rulestack = {
       name        = "localrules-basic-example"

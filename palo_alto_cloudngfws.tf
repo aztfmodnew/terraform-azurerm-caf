@@ -1,6 +1,6 @@
-module "palo_alto_ngfw" {
-  source   = "./modules/networking/palo_alto_ngfw"
-  for_each = local.networking.palo_alto_ngfw
+module "palo_alto_cloudngfws" {
+  source   = "./modules/palo_alto/cloudngfw"  
+  for_each = local.palo_alto.cloudngfws
 
   client_config   = local.client_config
   global_settings = local.global_settings
@@ -21,6 +21,6 @@ module "palo_alto_ngfw" {
 
   }
 }
-output "palo_alto_ngfw" {
-  value = module.palo_alto_ngfw
+output "palo_alto_cloudngfws" {
+  value = module.palo_alto_cloudngfws
 }

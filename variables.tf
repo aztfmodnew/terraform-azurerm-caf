@@ -466,6 +466,11 @@ variable "var_folder_path" {
 #   default = {}
 # }
 
+variable "palo_alto" {
+  description = "Configuration object - Palo Alto resources"
+  default     = {}
+}
+
 # variable "packer_service_principal" {
 #   default = {}
 # }
