@@ -43,7 +43,7 @@ resource "azurerm_virtual_machine" "vm" {
   os_profile {
     computer_name  = azurecaf_name.legacy_computer_name[each.key].result
     admin_username = try(each.value.admin_username_key, null) == null ? each.value.admin_username : local.admin_username
-    admin_password = try(each.value.admin_password_key, null) == null ? random_password.legacy[local.os_type].result : local.admin_password
+    admin_password = try(each.value.admin_password_key, null) == null ? random_password.admin[local.os_type].result : local.admin_password
   }
 
   # os_profile_secrets
@@ -211,15 +211,4 @@ resource "azurerm_virtual_machine" "vm" {
   #   ]
   # }
 
-}
-
-resource "random_password" "legacy" {
-  for_each         = (local.os_type == "legacy") && (try(var.settings.virtual_machine_settings["legacy"].admin_password_key, null) == null) ? var.settings.virtual_machine_settings : {}
-  length           = 123
-  min_upper        = 2
-  min_lower        = 2
-  min_special      = 2
-  numeric          = true
-  special          = true
-  override_special = "!@#$%&"
 }
