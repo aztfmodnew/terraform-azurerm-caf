@@ -22,7 +22,7 @@ data "azurerm_key_vault_secret" "admin_password" {
 }
 
 resource "random_password" "admin" {
-  for_each = try(var.settings.virtual_machine_settings[local.os_type].admin_password_key, null) == null && (try(var.settings.virtual_machine_settings["linux"].disable_password_authentication, false) == true || try(var.settings.virtual_machine_settings["legacy"].os_profile_linux_config.disable_password_authentication, false) == true) ? var.settings.virtual_machine_settings : {}
+  count = try(var.settings.virtual_machine_settings[local.os_type].admin_password_key, null) == null && (try(var.settings.virtual_machine_settings["linux"].disable_password_authentication, false) == true || try(var.settings.virtual_machine_settings["legacy"].os_profile_linux_config.disable_password_authentication, false) == true) ? 1 : 0
 
   length           = 123
   min_upper        = 2
@@ -34,10 +34,10 @@ resource "random_password" "admin" {
 }
 
 resource "azurerm_key_vault_secret" "admin_password" {
-  for_each = try(var.settings.virtual_machine_settings[local.os_type].admin_password_key, null) == null && (try(var.settings.virtual_machine_settings["linux"].disable_password_authentication, false) == true || try(var.settings.virtual_machine_settings["legacy"].os_profile_linux_config.disable_password_authentication, false) == true) ? var.settings.virtual_machine_settings : {}
+  count = try(var.settings.virtual_machine_settings[local.os_type].admin_password_key, null) == null && (try(var.settings.virtual_machine_settings["linux"].disable_password_authentication, false) == true || try(var.settings.virtual_machine_settings["legacy"].os_profile_linux_config.disable_password_authentication, false) == true) ? 1 : 0
 
-  name         = format("%s-admin-password", data.azurecaf_name.windows_computer_name[each.key].result)
-  value        = random_password.admin[local.os_type].result
+  name         = format("%s-admin-password", var.settings.virtual_machine_settings[local.os_type].name)
+  value        = random_password.admin[0].result
   key_vault_id = local.keyvault.id
 
   lifecycle {
