@@ -917,6 +917,11 @@ variable "vpn_sites" {
   type    = any
   default = {}
 }
+variable "palo_alto_cloudngfws" {
+  type    = any
+  default = {}
+}
+
 variable "vpn_gateway_connections" {
   type    = any
   default = {}

@@ -70,5 +70,6 @@
   "github.copilot.advanced": {
     "debug.useNodeFetcher": true,
     "debug.useNodeFetchFetcher": false
-  }
+  },
+  "github.copilot.nextEditSuggestions.enabled": true
 }
