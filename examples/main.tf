@@ -46,7 +46,6 @@ provider "azurerm" {
     }
     virtual_machine {
       delete_os_disk_on_deletion     = var.provider_azurerm_features_virtual_machine.delete_os_disk_on_deletion
-      graceful_shutdown              = var.provider_azurerm_features_virtual_machine.graceful_shutdown
       skip_shutdown_and_force_delete = var.provider_azurerm_features_virtual_machine.skip_shutdown_and_force_delete
     }
     virtual_machine_scale_set {
