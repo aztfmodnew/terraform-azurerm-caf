@@ -8,8 +8,8 @@ locals {
   # Generate SSH Keys only if a public one is not provided
   create_sshkeys = ((local.os_type == "linux" || local.os_type == "legacy") && can(var.settings.public_key_pem_file) == false &&
     can(var.settings.virtual_machine_settings[var.settings.os_type].admin_ssh_keys) == false &&
-    (try(var.settings.virtual_machine_settings["linux"].disable_sshkey_generation, false) == true ||
-    try(var.settings.virtual_machine_settings["legacy"].os_profile_linux_config.disable_sshkey_generation, false) == true)
+    (try(var.settings.virtual_machine_settings["linux"].disable_sshkey_generation, false) ||
+    try(var.settings.virtual_machine_settings["legacy"].os_profile_linux_config.disable_sshkey_generation, false))
   )
 }
 
