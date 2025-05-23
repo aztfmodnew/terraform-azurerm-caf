@@ -25,6 +25,20 @@ resource "azurerm_mssql_virtual_machine" "mssqlvm" {
   ), null)
 
 
+  dynamic "sql_instance" {
+    for_each = try(each.value.mssql_settings.sql_instance, null) != null ? [1] : []
+
+    content {
+      adhoc_workloads_optimization_enabled = try(each.value.mssql_settings.sql_instance.adhoc_workloads_optimization_enabled, null)
+      collation                            = try(each.value.mssql_settings.sql_instance.collation, null)
+      instant_file_initialization_enabled  = try(each.value.mssql_settings.sql_instance.instant_file_initialization_enabled, null)
+      lock_pages_in_memory_enabled         = try(each.value.mssql_settings.sql_instance.lock_pages_in_memory_enabled, null)
+      max_dop                              = try(each.value.mssql_settings.sql_instance.max_dop, null)
+      max_server_memory_mb                 = try(each.value.mssql_settings.sql_instance.max_server_memory_mb, null)
+      min_server_memory_mb                 = try(each.value.mssql_settings.sql_instance.min_server_memory_mb, null)
+    }
+  }
+
   dynamic "auto_backup" {
     for_each = try(each.value.mssql_settings.auto_backup, null) != null ? [1] : []
 
@@ -144,6 +158,20 @@ data "azurerm_storage_account" "mssqlvm_backup_sa" {
 
 
 # Use data external to retrieve value from different subscription
+
+# data "azurerm_key_vault_secret" "sql_username" {
+#   count = try(var.settings.virtual_machine_settings[local.os_type].mssql_settings.sql_authentication.sql_credential.sql_username_key, null) == null ? 0 : 1
+
+#   name         = var.settings.virtual_machine_settings[local.os_type].mssql_settings.sql_authentication.sql_credential.sql_username_key
+#   key_vault_id = try(var.keyvaults[try(each.value.mssql_settings.sql_authentication.sql_credential.lz_key, var.client_config.landingzone_key)][each.value.mssql_settings.sql_authentication.sql_credential.keyvault_key].name, null)
+# }
+
+# data "azurerm_key_vault_secret" "sql_password_key" {
+#   count = try(var.settings.virtual_machine_settings[local.os_type].mssql_settings.sql_authentication.sql_credential.sql_password_key, null) == null ? 0 : 1
+
+#   name         = var.settings.virtual_machine_settings[local.os_type].mssql_settings.sql_authentication.sql_credential.sql_password_key
+#   key_vault_id = try(var.keyvaults[try(each.value.mssql_settings.sql_authentication.sql_credential.lz_key, var.client_config.landingzone_key)][each.value.mssql_settings.sql_authentication.sql_credential.keyvault_key].name, null)
+# }
 
 data "external" "sql_username" {
   for_each = {
