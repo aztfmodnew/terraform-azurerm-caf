@@ -10,7 +10,7 @@ resource "azurerm_palo_alto_local_rulestack_certificate" "local_rulestack_certif
     var.remote_objects.keyvault_certificates[var.client_config.landingzone_key][each.value.key_vault_secret.certificate_key].versionless_id,
     var.remote_objects.keyvault_certificate_requests[each.value.key_vault_secret.lz_key][each.value.key_vault_secret.certificate_request_key].versionless_id,
     var.remote_objects.keyvault_certificate_requests[var.client_config.landingzone_key][each.value.key_vault_secret.certificate_request_key].versionless_id,
-    each.value.key_vault_certificate_id ,
+    each.value.key_vault_certificate_id,
     null
   ) : null
   audit_comment = try(each.value.audit_comment, null)
