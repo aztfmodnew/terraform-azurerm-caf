@@ -68,7 +68,6 @@ resource "azurerm_palo_alto_next_generation_firewall_virtual_network_local_rules
     }
   }
 }
-}
 
 module "local_rulestack" {
   source = "../local_rulestack"
