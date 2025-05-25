@@ -1,6 +1,6 @@
 # Palo Alto NGFW with Local Rulestack Module Examples
 
-This directory contains examples of how to use the `palo_alto_ngfw_vnet_local_rulestack` module.
+This directory contains examples of how to use the `palo_alto/cloudngfw` module.
 
 ## Example Structure
 
@@ -22,7 +22,7 @@ Examples are organized into directories based on complexity level and scenario:
     ```
 4.  Apply the desired example configuration using the corresponding `.tfvars` file. For example, to run the basic example:
     ```bash
-    terraform apply -var-file=./networking/palo_alto_ngfw_vnet_local_rulestack/100-basic-ngfw-with-local-rulestack/configuration.tfvars
+    terraform apply -var-file=./palo_alto/cloudngfw/100-basic-cloudngfw-with-local-rulestack/configuration.tfvars
     ```
 
 ## Prerequisites

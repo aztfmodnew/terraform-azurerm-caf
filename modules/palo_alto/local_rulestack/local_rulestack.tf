@@ -1,4 +1,4 @@
-resource "azurerm_palo_alto_local_rulestack" "rulestack" {
+resource "azurerm_palo_alto_local_rulestack" "local_rulestack" {
   name                = var.settings.name
   resource_group_name = local.resource_group_name
   location            = local.location
@@ -8,11 +8,16 @@ resource "azurerm_palo_alto_local_rulestack" "rulestack" {
   anti_virus_profile    = try(var.settings.anti_virus_profile, null)
   dns_subscription      = try(var.settings.dns_subscription_enabled, null)
   file_blocking_profile = try(var.settings.file_blocking_profile, null)
-  # Removed unsupported argument: min_app_id_version
-  # Removed unsupported argument: outbound_trust_certificate_name
-  # Removed unsupported argument: outbound_untrust_certificate_name
   url_filtering_profile = try(var.settings.url_filtering_profile, null)
-  # Removed unsupported argument: vulnerability_protection_profile
+  vulnerability_profile   = try(var.settings.vulnerability_profile, null)
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
+    }
+  }
 
-  # Removed unsupported argument: tags
 }

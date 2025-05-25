@@ -362,7 +362,6 @@ locals {
     network_security_security_rules                         = try(var.networking.network_security_security_rules, {})
     network_security_perimeters                             = try(var.networking.network_security_perimeters, {})
     network_watchers                                        = try(var.networking.network_watchers, {})
-    palo_alto_ngfw                                          = try(var.networking.palo_alto_ngfw, {})
     private_dns                                             = try(var.networking.private_dns, {})
     private_dns_resolvers                                   = try(var.networking.private_dns_resolvers, {})
     private_dns_resolver_inbound_endpoints                  = try(var.networking.private_dns_resolver_inbound_endpoints, {})

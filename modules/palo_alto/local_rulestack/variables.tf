@@ -47,7 +47,7 @@ variable "settings" {
 
     prefix_lists: (Optional) A map of Prefix list objects for `azurerm_palo_alto_local_rulestack_prefix_list`.
       Each Prefix list object can have:
-        prefix_entries: (Required) A list of IP Prefixes.
+        prefix_list: (Required) A list of IP Prefixes.
         audit_comment: (Optional) Audit Comment.
         description: (Optional) Description.
 

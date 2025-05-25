@@ -10,6 +10,11 @@ output "palo_alto_next_generation_firewall_virtual_network_local_rulestack" {
   value       = length(azurerm_palo_alto_next_generation_firewall_virtual_network_local_rulestack.palo_alto_ngfw_vnet_local_rulestack) > 0 ? azurerm_palo_alto_next_generation_firewall_virtual_network_local_rulestack.palo_alto_ngfw_vnet_local_rulestack[0].id : null
 }
 
+output "palo_alto_next_generation_firewall_virtual_network_panorama_id" {
+  description = "The ID of the Palo Alto Next Generation Firewall (Virtual Network Panorama)."
+  value       = length(azurerm_palo_alto_next_generation_firewall_virtual_network_panorama.palo_alto_ngfw_vnet_panorama) > 0 ? azurerm_palo_alto_next_generation_firewall_virtual_network_panorama.palo_alto_ngfw_vnet_panorama[0].id : null
+}
+
 output "local_rulestack_id" {
   description = "The ID of the associated Local Rulestack created and managed by the sub-module."
   value       = module.local_rulestack.id

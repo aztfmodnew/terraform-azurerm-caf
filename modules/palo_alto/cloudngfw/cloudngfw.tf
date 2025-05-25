@@ -61,11 +61,13 @@ resource "azurerm_palo_alto_next_generation_firewall_virtual_network_local_rules
   dynamic "timeouts" {
     for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
     content {
-      create = timeouts.value.create
-      update = timeouts.value.update
-      delete = timeouts.value.delete
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
     }
   }
+}
 }
 
 module "local_rulestack" {

@@ -16,6 +16,8 @@ module "palo_alto_cloudngfws" {
     public_ip_addresses = local.combined_objects_public_ip_addresses
     virtual_networks    = local.combined_objects_networking
     virtual_subnets     = local.combined_objects_virtual_subnets
+    keyvault_certificates         = local.combined_objects_keyvault_certificates
+    keyvault_certificate_requests = local.combined_objects_keyvault_certificate_requests
 
 
 
