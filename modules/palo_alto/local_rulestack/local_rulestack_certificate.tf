@@ -4,13 +4,13 @@ resource "azurerm_palo_alto_local_rulestack_certificate" "local_rulestack_certif
   name         = each.key
   rulestack_id = azurerm_palo_alto_local_rulestack.local_rulestack.id
   self_signed  = each.value.self_signed
-  key_vault_secret_id = each.value.self_signed == false ? try(
+  key_vault_certificate_id = each.value.self_signed == false ? try(
     #data.azurerm_key_vault_certificate.manual_certs[each.key].secret_id,
-    var.remote_objects.keyvault_certificates[each.value.key_vault_secret.lz_key][each.value.key_vault_secret.certificate_key].secret_id,
-    var.remote_objects.keyvault_certificates[var.client_config.landingzone_key][each.value.key_vault_secret.certificate_key].secret_id,
-    var.remote_objects.keyvault_certificate_requests[each.value.key_vault_secret.lz_key][each.value.key_vault_secret.certificate_request_key].secret_id,
-    var.remote_objects.keyvault_certificate_requests[var.client_config.landingzone_key][each.value.key_vault_secret.certificate_request_key].secret_id,
-    each.value.key_vault_secret_id,
+    var.remote_objects.keyvault_certificates[each.value.key_vault_secret.lz_key][each.value.key_vault_secret.certificate_key].versionless_id,
+    var.remote_objects.keyvault_certificates[var.client_config.landingzone_key][each.value.key_vault_secret.certificate_key].versionless_id,
+    var.remote_objects.keyvault_certificate_requests[each.value.key_vault_secret.lz_key][each.value.key_vault_secret.certificate_request_key].versionless_id,
+    var.remote_objects.keyvault_certificate_requests[var.client_config.landingzone_key][each.value.key_vault_secret.certificate_request_key].versionless_id,
+    each.value.key_vault_certificate_id ,
     null
   ) : null
   audit_comment = try(each.value.audit_comment, null)
