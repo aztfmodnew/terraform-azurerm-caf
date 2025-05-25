@@ -1,8 +1,8 @@
-resource "azurerm_palo_alto_local_rulestack_rule" "rule" {
+resource "azurerm_palo_alto_local_rulestack_rule" "local_rulestack_rule" {
   for_each = try(var.settings.rules, {})
 
   name         = each.key
-  rulestack_id = azurerm_palo_alto_local_rulestack.rulestack.id
+  rulestack_id = azurerm_palo_alto_local_rulestack.local_rulestack.id
   priority     = each.value.priority
   action       = each.value.action
 
