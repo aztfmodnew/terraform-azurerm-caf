@@ -17,10 +17,13 @@ resource "azurerm_palo_alto_local_rulestack_certificate" "local_rulestack_certif
   description   = try(each.value.description, null)
 
   # Ensure compliance: Add timeouts block
-  timeouts {
-    create = "30m"
-    read   = "5m"
-    update = "30m"
-    delete = "30m"
+  dynamic "timeouts" {
+    for_each = try(each.value.timeouts, null) == null ? [] : [each.value.timeouts]
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
+    }
   }
 }
