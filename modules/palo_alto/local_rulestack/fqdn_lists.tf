@@ -1,4 +1,4 @@
-resource "azurerm_palo_alto_local_rulestack_fqdn_list" "fqdnlist" {
+resource "azurerm_palo_alto_local_rulestack_fqdn_list" "local_rulestack_fqdn_list" {
   for_each = try(var.settings.fqdn_lists, {})
 
   name                         = each.key

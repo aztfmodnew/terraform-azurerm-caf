@@ -1,4 +1,4 @@
-resource "azurerm_palo_alto_local_rulestack_outbound_untrust_certificate_association" "untrust_assoc" {
+resource "azurerm_palo_alto_local_rulestack_outbound_untrust_certificate_association" "local_rulestack_outbound_untrust_certificate_association" {
   for_each = try(var.settings.outbound_untrust_certificate_associations, {})
 
   certificate_id = try(azurerm_palo_alto_local_rulestack_certificate.local_rulestack_certificate[each.value.certificate_key].id, null)

@@ -15,7 +15,7 @@ output "certificates" {
 
 output "fqdn_lists" {
   description = "Details of the FQDN lists created in the rulestack."
-  value       = azurerm_palo_alto_local_rulestack_fqdn_list.fqdnlist
+  value       = azurerm_palo_alto_local_rulestack_fqdn_list.local_rulestack_fqdn_list
 }
 
 output "prefix_lists" {
