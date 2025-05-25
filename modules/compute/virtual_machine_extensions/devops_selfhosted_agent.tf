@@ -28,7 +28,7 @@ resource "azurerm_virtual_machine_extension" "devops_selfhosted_agent" {
     precondition {
       condition = anytrue(
         [
-          for status in jsondecode(data.azapi_resource_action.azurerm_virtual_machine_status.output).statuses : "true"
+          for status in data.azapi_resource_action.azurerm_virtual_machine_status.output.statuses : "true"
           if status.code == "PowerState/running"
         ]
       )
