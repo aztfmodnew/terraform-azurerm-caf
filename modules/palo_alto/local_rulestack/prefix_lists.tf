@@ -1,7 +1,7 @@
 resource "azurerm_palo_alto_local_rulestack_prefix_list" "local_rulestack_prefix_list" {
   for_each      = try(var.settings.prefix_lists, {})
   name          = each.key
-  rulestack_id  = azurerm_palo_alto_local_rulestack.rulestack.id
+  rulestack_id  = azurerm_palo_alto_local_rulestack.local_rulestack.id
   prefix_list   = try(each.value.prefix_list, [])
   audit_comment = try(each.value.audit_comment, null)
   description   = try(each.value.description, null)

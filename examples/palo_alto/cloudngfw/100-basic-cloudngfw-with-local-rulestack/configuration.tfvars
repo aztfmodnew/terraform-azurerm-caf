@@ -8,7 +8,7 @@ resource_groups = {
 }
 
 vnets = {
-  ngfw_vnet = {    
+  ngfw_vnet = {
     resource_group_key = "ngfw_rg"
     location           = "westeurope" # Or inherit from RG
     vnet = {
@@ -17,12 +17,12 @@ vnets = {
     }
     subnets = {
       snet_management = {
-        name           = "snet-ngfw-mgmt"
+        name = "snet-ngfw-mgmt"
         cidr = ["10.100.1.0/24"]
       }
       snet_trust = {
-        name           = "snet-ngfw-trust"
-        cidr = ["10.100.2.0/24"]
+        name    = "snet-ngfw-trust"
+        cidr    = ["10.100.2.0/24"]
         nsg_key = "ngfw_trust_nsg"
         delegation = {
           name               = "PaloAltoNetworks.Cloudngfw/firewalls"
@@ -33,8 +33,8 @@ vnets = {
         }
       }
       snet_untrust = {
-        name           = "snet-ngfw-untrust"
-        cidr = ["10.100.3.0/24"]
+        name    = "snet-ngfw-untrust"
+        cidr    = ["10.100.3.0/24"]
         nsg_key = "ngfw_untrust_nsg"
         delegation = {
           name               = "PaloAltoNetworks.Cloudngfw/firewalls"
@@ -82,19 +82,19 @@ public_ip_addresses = {
 
 network_security_group_definition = {
   ngfw_trust_nsg = {
-    nsg = [ ]         
+    nsg = []
   },
   ngfw_untrust_nsg = {
-    nsg = [ ]         
+    nsg = []
   }
 }
 
 palo_alto_cloudngfws = {
   basic_ngfw_instance = {
-    name                      = "pangfw-basic-example"
-    resource_group_key        = "ngfw_rg" // Key of the resource group defined above
-    attachment_type           = "vnet" // or "vwan" depending on your architecture
-    management_mode = "rulestack" // or "panorama" depending on your architecture
+    name               = "pangfw-basic-example"
+    resource_group_key = "ngfw_rg"   // Key of the resource group defined above
+    attachment_type    = "vnet"      // or "vwan" depending on your architecture
+    management_mode    = "rulestack" // or "panorama" depending on your architecture
     # location            = "westeurope" # Optional, will inherit from resource_group if not specified
 
     network_profile = {
@@ -108,7 +108,7 @@ palo_alto_cloudngfws = {
         // or that specific subnet IDs are not explicitly required at this top level of vnet_configuration.
         // If direct subnet IDs are needed by the resource, the module would need to be adapted
         // to look them up from the VNet object using these keys.
-        trusted_subnet_key   = "snet_trust" // Key of the trusted subnet defined above
+        trusted_subnet_key   = "snet_trust"   // Key of the trusted subnet defined above
         untrusted_subnet_key = "snet_untrust" // Key of the untrusted subnet defined above
         // If the module requires specific subnet IDs, you can also provide them here
         // trusted_subnet_id   = "subnet-trust-id"
@@ -118,19 +118,19 @@ palo_alto_cloudngfws = {
         {
           # lz_key is optional and can be used to specify the landing zone key
           # lz_key = "my_landingzone" # Optional, if the PIP is in a different landing zone
-          key    = "ngfw_pip_management" # Clave de la PIP dentro de esa landing zone
+          key = "ngfw_pip_management" # Clave de la PIP dentro de esa landing zone
         },
         {
           # lz_key = "my_landingzone"
-          key    = "ngfw_pip_dataplane1"
+          key = "ngfw_pip_dataplane1"
         },
         # Add more PIPs if needed
         # {
         #   lz_key = "another_landingzone"
         #   key    = "some_other_pip_key"
         # }
-        ] // Keys of PIPs defined above
-      enable_egress_nat      = true
+      ] // Keys of PIPs defined above
+      enable_egress_nat = true
     }
 
 

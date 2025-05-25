@@ -1,10 +1,10 @@
 # This module creates a Palo Alto Next Generation Firewall in Azure using the local rulestack deployment mode.
-resource "azurerm_palo_alto_next_generation_firewall_virtual_network_local_rulestack" "palo_alto_ngfw_vnet_local_rulestack" { 
-   count = var.settings.attachment_type == "vnet" && var.settings.management_mode == "rulestack" ? 1 : 0
+resource "azurerm_palo_alto_next_generation_firewall_virtual_network_local_rulestack" "palo_alto_ngfw_vnet_local_rulestack" {
+  count                = var.settings.attachment_type == "vnet" && var.settings.management_mode == "rulestack" ? 1 : 0
   name                 = var.settings.name
   resource_group_name  = local.resource_group_name
   rulestack_id         = module.local_rulestack.id
-  marketplace_offer_id = try(var.settings.marketplace_offer_id, "pan_swfw_cloud_ngfw")  
+  marketplace_offer_id = try(var.settings.marketplace_offer_id, "pan_swfw_cloud_ngfw")
   plan_id              = try(var.settings.plan_id, "panw-cloud-ngfw-payg")
 
   dynamic "network_profile" {
@@ -31,8 +31,8 @@ resource "azurerm_palo_alto_next_generation_firewall_virtual_network_local_rules
       dynamic "backend_config" {
         for_each = try(destination_nat.value.backend_config, null) == null ? [] : [destination_nat.value.backend_config]
         content {
-          public_ip_address    = try(backend_config.value.public_ip_address, null)
-          port                 = try(backend_config.value.port, null)
+          public_ip_address = try(backend_config.value.public_ip_address, null)
+          port              = try(backend_config.value.port, null)
         }
       }
       dynamic "frontend_config" {
@@ -82,14 +82,14 @@ module "local_rulestack" {
 }
 
 resource "azurerm_palo_alto_next_generation_firewall_virtual_network_panorama" "palo_alto_ngfw_vnet_panorama" {
-  count = var.settings.attachment_type == "vnet" && var.settings.management_mode == "panorama" ? 1 : 0
-  name                 = var.settings.name
-  resource_group_name  = local.resource_group_name
+  count               = var.settings.attachment_type == "vnet" && var.settings.management_mode == "panorama" ? 1 : 0
+  name                = var.settings.name
+  resource_group_name = local.resource_group_name
   location            = local.location
-  
 
-  plan_id              = try(var.settings.plan_id, "panw-cloud-ngfw-payg")
-  marketplace_offer_id = try(var.settings.marketplace_offer_id, "pan_swfw_cloud_ngfw")
+
+  plan_id                = try(var.settings.plan_id, "panw-cloud-ngfw-payg")
+  marketplace_offer_id   = try(var.settings.marketplace_offer_id, "pan_swfw_cloud_ngfw")
   panorama_base64_config = try(var.settings.panorama_base64_config, null)
 
   dynamic "network_profile" {
@@ -108,7 +108,7 @@ resource "azurerm_palo_alto_next_generation_firewall_virtual_network_panorama" "
       }
     }
   }
-    dynamic "destination_nat" {
+  dynamic "destination_nat" {
     for_each = try(var.settings.destination_nat, null) == null ? [] : [var.settings.destination_nat]
     content {
       name     = try(destination_nat.value.name, null)
@@ -116,8 +116,8 @@ resource "azurerm_palo_alto_next_generation_firewall_virtual_network_panorama" "
       dynamic "backend_config" {
         for_each = try(destination_nat.value.backend_config, null) == null ? [] : [destination_nat.value.backend_config]
         content {
-          public_ip_address    = try(backend_config.value.public_ip_address, null)
-          port                 = try(backend_config.value.port, null)
+          public_ip_address = try(backend_config.value.public_ip_address, null)
+          port              = try(backend_config.value.port, null)
         }
       }
       dynamic "frontend_config" {
@@ -140,7 +140,7 @@ resource "azurerm_palo_alto_next_generation_firewall_virtual_network_panorama" "
 
   tags = local.tags
 
-  
+
   dynamic "timeouts" {
     for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
     content {
@@ -153,17 +153,17 @@ resource "azurerm_palo_alto_next_generation_firewall_virtual_network_panorama" "
 }
 
 resource "azurerm_palo_alto_virtual_network_appliance" "palo_alto_virtual_network_appliance" {
-  count = var.settings.attachment_type == "vwan" ? 1 : 0
-  name                 = var.settings.name
-  virtual_hub_id        = var.settings.virtual_hub_id
+  count          = var.settings.attachment_type == "vwan" ? 1 : 0
+  name           = var.settings.name
+  virtual_hub_id = var.settings.virtual_hub_id
   dynamic "timeouts" {
     for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
     content {
       create = timeouts.value.create
-      read   = timeouts.value.read      
+      read   = timeouts.value.read
       delete = timeouts.value.delete
     }
-  }  
-  
+  }
+
 }
 

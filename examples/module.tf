@@ -279,7 +279,7 @@ module "example" {
   }
 
   palo_alto = {
-    cloudngfws                                          = var.palo_alto_cloudngfws
+    cloudngfws = var.palo_alto_cloudngfws
   }
 
   security = {

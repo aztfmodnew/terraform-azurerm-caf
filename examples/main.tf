@@ -60,8 +60,8 @@ provider "azurerm" {
   alias                           = "vhub"
   resource_provider_registrations = "none" # "none" to avoid azurerm provider registration errors
   # resource_provider_registrations = ["Microsoft.Network", "Microsoft.Storage"] # Example
-  subscription_id                 = data.azurerm_client_config.default.subscription_id
-  tenant_id                       = data.azurerm_client_config.default.tenant_id
+  subscription_id = data.azurerm_client_config.default.subscription_id
+  tenant_id       = data.azurerm_client_config.default.tenant_id
   features {}
 }
 

@@ -2,7 +2,7 @@ resource "azurerm_palo_alto_local_rulestack_certificate" "local_rulestack_certif
   for_each = try(var.settings.certificates, {})
 
   name         = each.key
-  rulestack_id = azurerm_palo_alto_local_rulestack.rulestack.id
+  rulestack_id = azurerm_palo_alto_local_rulestack.local_rulestack.id
   self_signed  = each.value.self_signed
   key_vault_secret_id = each.value.self_signed == false ? try(
     #data.azurerm_key_vault_certificate.manual_certs[each.key].secret_id,

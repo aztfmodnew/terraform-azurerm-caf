@@ -9,7 +9,7 @@ resource "azurerm_palo_alto_local_rulestack" "local_rulestack" {
   dns_subscription      = try(var.settings.dns_subscription_enabled, null)
   file_blocking_profile = try(var.settings.file_blocking_profile, null)
   url_filtering_profile = try(var.settings.url_filtering_profile, null)
-  vulnerability_profile   = try(var.settings.vulnerability_profile, null)
+  vulnerability_profile = try(var.settings.vulnerability_profile, null)
   dynamic "timeouts" {
     for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
     content {
