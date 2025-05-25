@@ -15,7 +15,7 @@ variable "location" {
 
 variable "settings" {
   description = <<DESCRIPTION
-  Settings for the Local Rulestack and its components:
+  Settings for the Local Rulestack y sus componentes.
 
   Top-level properties are for azurerm_palo_alto_local_rulestack:
     name: (Required) Name of the Local Rulestack.
@@ -35,13 +35,13 @@ variable "settings" {
     certificates: (Optional) A map of certificate objects for `azurerm_palo_alto_local_rulestack_certificate`.
       Each certificate object can have:
         self_signed: (Required) Boolean, true if self-signed, false otherwise.
-        key_vault_secret_id: (Optional) If not self_signed, the Key Vault Secret ID for the certificate.
+        key_vault_certificate_id: (Optional) If not self_signed, the Key Vault Certificate ID for the certificate.
         audit_comment: (Optional) Audit Comment for the certificate.
         description: (Optional) Description for the certificate.
 
     fqdn_lists: (Optional) A map of FQDN list objects for `azurerm_palo_alto_local_rulestack_fqdn_list`.
       Each FQDN list object can have:
-        fqdn_entries: (Required) A list of FQDNs.
+        fully_qualified_domain_names: (Required) A list of FQDNs.
         audit_comment: (Optional) Audit Comment.
         description: (Optional) Description.
 
@@ -57,20 +57,83 @@ variable "settings" {
         action: (Required) e.g., "Allow", "Deny".
         applications: (Required) List of applications.
         # ... and all other arguments supported by the azurerm_palo_alto_local_rulestack_rule resource.
-        # (e.g., audit_comment, category_url, decimal_custom_url_category, description, destination_addresses,
-        # destination_ports, destination_fqdn_lists, destination_prefix_lists, enable_logging_destination,
-        # enable_logging_source, enabled, inspection_certificate_name, negate_destination, negate_source,
-        # protocol, protocol_ports, source_addresses, source_fqdn_lists, source_prefix_lists, tags, rule_state)
 
     outbound_trust_certificate_associations: (Optional) A map for `azurerm_palo_alto_local_rulestack_outbound_trust_certificate_association`.
       Key is an arbitrary identifier for the association resource in Terraform.
       Each object must have:
-        certificate_name: (Required) The name of the certificate to associate (must exist in `certificates`).
+        certificate_key: (Required) The key of the certificate to associate (must exist in `certificates`).
 
     outbound_untrust_certificate_associations: (Optional) A map for `azurerm_palo_alto_local_rulestack_outbound_untrust_certificate_association`.
       Key is an arbitrary identifier for the association resource in Terraform.
       Each object must have:
-        certificate_name: (Required) The name of the certificate to associate (must exist in `certificates`).
+        certificate_key: (Required) The key of the certificate to associate (must exist in `certificates`).
+  
+  Example usage:
+
+  ```	hcl
+  settings = {
+    name        = "caf-demo-rulestack"
+    description = "Demo Palo Alto Local Rulestack"
+    anti_spyware_profile = "default"
+    anti_virus_profile   = "default"
+    dns_subscription_enabled = true
+    file_blocking_profile = "default"
+    min_app_id_version = "1.0"
+    outbound_trust_certificate_name  = "my-trust-cert"
+    outbound_untrust_certificate_name = "my-untrust-cert"
+    url_filtering_profile = "default"
+    vulnerability_protection_profile = "default"
+    tags = {
+      environment = "dev"
+    }
+    certificates = {
+      my-trust-cert = {
+        self_signed = true
+        audit_comment = "Trust cert for outbound"
+        description  = "Trust certificate"
+      }
+      my-untrust-cert = {
+        self_signed = false
+        # key_vault_certificate_id debe usarse, no key_vault_secret_id
+        key_vault_certificate_id = "/subscriptions/xxx/resourceGroups/xxx/providers/Microsoft.KeyVault/vaults/xxx/certificates/xxx"
+        audit_comment = "Untrust cert for outbound"
+        description  = "Untrust certificate"
+      }
+    }
+    fqdn_lists = {
+      allowed_sites = {
+        fully_qualified_domain_names  = ["*.example.com", "another.domain.net"]
+        audit_comment = "Allow these FQDNs"
+        description   = "Allowed FQDNs"
+      }
+    }
+    prefix_lists = {
+      trusted_ips = {
+        prefix_list   = ["10.0.0.0/8", "192.168.0.0/16"]
+        audit_comment = "Trusted IPs"
+        description   = "Trusted IP ranges"
+      }
+    }
+    rules = {
+      allow-web = {
+        priority     = 100
+        action       = "Allow"
+        applications = ["web-browsing"]
+        # ... other rule properties ...
+      }
+    }
+    outbound_trust_certificate_associations = {
+      trust_assoc = {
+        certificate_key = "my-trust-cert"
+      }
+    }
+    outbound_untrust_certificate_associations = {
+      untrust_assoc = {
+        certificate_key = "my-untrust-cert"
+      }
+    }
+  }
+  ```
   DESCRIPTION
   type        = any
 }
