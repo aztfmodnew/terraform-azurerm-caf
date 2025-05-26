@@ -24,7 +24,7 @@ data "azurerm_key_vault_secret" "admin_password" {
 resource "random_password" "admin" {
   for_each = try(var.settings.virtual_machine_settings[local.os_type].admin_password_key, null) == null && (local.os_type == "windows" || try(var.settings.virtual_machine_settings["linux"].disable_password_authentication, true) == false || try(var.settings.virtual_machine_settings["legacy"].os_profile_linux_config.disable_password_authentication, true) == false) ? var.settings.virtual_machine_settings : {}
 
-  length           = local.os_type == "linux" ? 72 : 123
+  length           = local.os_type == "windows" ? 123 : 72
   min_upper        = 2
   min_lower        = 2
   min_special      = 2
