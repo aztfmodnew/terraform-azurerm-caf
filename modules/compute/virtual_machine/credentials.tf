@@ -22,7 +22,7 @@ data "azurerm_key_vault_secret" "admin_password" {
 }
 
 resource "random_password" "admin" {
-  count = try(var.settings.virtual_machine_settings[local.os_type].admin_password_key, null) == null && (try(var.settings.virtual_machine_settings["linux"].disable_password_authentication, false) == true || try(var.settings.virtual_machine_settings["legacy"].os_profile_linux_config.disable_password_authentication, false) == true) ? 1 : 0
+  for_each = try(var.settings.virtual_machine_settings[local.os_type].admin_password_key, null) == null && (local.os_type == "windows" || try(var.settings.virtual_machine_settings["linux"].disable_password_authentication, true) == false || try(var.settings.virtual_machine_settings["legacy"].os_profile_linux_config.disable_password_authentication, true) == false) ? var.settings.virtual_machine_settings : {}
 
   length           = 123
   min_upper        = 2
@@ -34,10 +34,10 @@ resource "random_password" "admin" {
 }
 
 resource "azurerm_key_vault_secret" "admin_password" {
-  count = try(var.settings.virtual_machine_settings[local.os_type].admin_password_key, null) == null && (try(var.settings.virtual_machine_settings["linux"].disable_password_authentication, false) == true || try(var.settings.virtual_machine_settings["legacy"].os_profile_linux_config.disable_password_authentication, false) == true) ? 1 : 0
+  for_each = try(var.settings.virtual_machine_settings[local.os_type].admin_password_key, null) == null && (local.os_type == "windows" || try(var.settings.virtual_machine_settings["linux"].disable_password_authentication, true) == false || try(var.settings.virtual_machine_settings["legacy"].os_profile_linux_config.disable_password_authentication, true) == false) ? var.settings.virtual_machine_settings : {}
 
-  name         = format("%s-admin-password", var.settings.virtual_machine_settings[local.os_type].name)
-  value        = random_password.admin[0].result
+  name         = format("%s-admin-password", try(data.azurecaf_name.windows_computer_name[each.key].result, data.azurecaf_name.linux_computer_name[each.key].result, azurecaf_name.legacy_computer_name[each.key].result))
+  value        = random_password.admin[local.os_type].result
   key_vault_id = local.keyvault.id
 
   lifecycle {

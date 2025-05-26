@@ -54,7 +54,7 @@ resource "local_sensitive_file" "custom_data" {
 resource "azurerm_linux_virtual_machine" "vm" {
   for_each = local.os_type == "linux" ? var.settings.virtual_machine_settings : {}
 
-  admin_password                                         = each.value.disable_password_authentication == false ? (try(each.value.admin_password_key, null) == null ? each.value.admin_password : local.admin_password) : null
+  admin_password                                         = each.value.disable_password_authentication == false ? (try(each.value.admin_password_key, null) == null ? random_password.admin[local.os_type].result : local.admin_password) : null
   admin_username                                         = try(each.value.admin_username_key, null) == null ? each.value.admin_username : local.admin_username
   allow_extension_operations                             = try(each.value.allow_extension_operations, null)
   availability_set_id                                    = can(each.value.availability_set_key) || can(each.value.availability_set.key) ? var.availability_sets[try(var.client_config.landingzone_key, each.value.availability_set.lz_key)][try(each.value.availability_set_key, each.value.availability_set.key)].id : try(each.value.availability_set.id, each.value.availability_set_id, null)

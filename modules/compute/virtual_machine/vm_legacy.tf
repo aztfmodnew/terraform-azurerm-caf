@@ -43,7 +43,7 @@ resource "azurerm_virtual_machine" "vm" {
   os_profile {
     computer_name  = azurecaf_name.legacy_computer_name[each.key].result
     admin_username = try(each.value.admin_username_key, null) == null ? each.value.admin_username : local.admin_username
-    admin_password = try(each.value.admin_password_key, null) == null ? random_password.admin[0].result : local.admin_password
+    admin_password = try(each.value.admin_password_key, null) == null ? random_password.admin[local.os_type].result : local.admin_password
   }
 
   # os_profile_secrets

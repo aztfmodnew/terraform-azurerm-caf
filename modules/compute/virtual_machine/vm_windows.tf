@@ -41,7 +41,7 @@ resource "azurerm_windows_virtual_machine" "vm" {
   depends_on = [azurerm_network_interface.nic, azurerm_network_interface_security_group_association.nic_nsg]
   for_each   = local.os_type == "windows" ? var.settings.virtual_machine_settings : {}
 
-  admin_password                                         = try(each.value.admin_password_key, null) == null ? random_password.admin[0].result : local.admin_password
+  admin_password                                         = try(each.value.admin_password_key, null) == null ? random_password.admin[local.os_type].result : local.admin_password
   admin_username                                         = try(each.value.admin_username_key, null) == null ? each.value.admin_username : local.admin_username
   allow_extension_operations                             = try(each.value.allow_extension_operations, null)
   availability_set_id                                    = can(each.value.availability_set_key) || can(each.value.availability_set.key) ? var.availability_sets[try(var.client_config.landingzone_key, each.value.availability_set.lz_key)][try(each.value.availability_set_key, each.value.availability_set.key)].id : try(each.value.availability_set.id, each.value.availability_set_id, null)
