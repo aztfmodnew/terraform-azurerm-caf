@@ -590,24 +590,6 @@ variable "aadb2c" {
     })))
   })
   sensitive = false
-  validation {
-    # Check if aadb2c_directory is null OR if all keys within each directory object are valid.
-    condition = var.aadb2c.aadb2c_directory == {} || alltrue([
-      for dir_key, dir_value in var.aadb2c.aadb2c_directory :
-      length(setsubtract(keys(dir_value), [
-        "country_code",
-        "data_residency_location",
-        "display_name",
-        "domain_name",
-        "resource_group_name",
-        "sku_name",
-        "tags",
-        "resource_group_key",
-        "resource_group"
-      ])) == 0
-    ])
-    error_message = "One or more entries in aadb2c.aadb2c_directory contain unsupported attributes. Allowed attributes are: country_code, data_residency_location, display_name, domain_name, resource_group_name, sku_name, tags, resource_group_key, resource_group."
-  }
 }
 variable "preview_features" {
   default = {}

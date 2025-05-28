@@ -16,7 +16,7 @@ resource "random_string" "suffix" {
 
 locals {
   aadb2c = {
-    aadb2c_directory = try(var.aadb2c.aadb2c_directory, {})
+    aadb2c_directory = coalesce(try(var.aadb2c.aadb2c_directory, {}), {})
   }
 
   azuread = {
