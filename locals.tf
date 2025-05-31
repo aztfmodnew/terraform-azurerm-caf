@@ -356,6 +356,7 @@ locals {
     network_manager_scope_connections                       = try(var.networking.network_manager_scope_connection, {})
     network_manager_static_members                          = try(var.networking.network_manager_static_members, {})
     network_manager_subscription_connections                = try(var.networking.network_manager_subscription_connections, {})
+    network_interface_ip_configurations                     = try(var.networking.network_interface_ip_configurations, {})
     network_profiles                                        = try(var.networking.network_profiles, {})
     network_security_group_definition                       = try(var.networking.network_security_group_definition, {})
     network_security_security_rules                         = try(var.networking.network_security_security_rules, {})
@@ -394,6 +395,10 @@ locals {
     vpn_gateway_connections                                 = try(var.networking.vpn_gateway_connections, {})
     vpn_gateway_nat_rules                                   = try(var.networking.vpn_gateway_nat_rules, {})
     vpn_sites                                               = try(var.networking.vpn_sites, {})
+  }
+
+  palo_alto = {
+    cloudngfws = try(var.palo_alto.cloudngfws, {})
   }
 
   object_id = coalesce(var.logged_user_objectId, var.logged_aad_app_objectId, try(data.azuread_client_config.current.object_id, null), try(data.azuread_service_principal.logged_in_app[0].object_id, null))

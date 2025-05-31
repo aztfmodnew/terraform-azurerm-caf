@@ -278,6 +278,10 @@ module "example" {
     vpn_sites                                               = var.vpn_sites
   }
 
+  palo_alto = {
+    cloudngfws = var.palo_alto_cloudngfws
+  }
+
   security = {
     disk_encryption_sets                  = var.disk_encryption_sets
     dynamic_keyvault_secrets              = var.dynamic_keyvault_secrets

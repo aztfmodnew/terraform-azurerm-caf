@@ -1,4 +1,5 @@
-# Global settings
+# This file contains the variables used in the module.
+## Global settings
 variable "global_settings" {
   description = <<DESCRIPTION
   The global_settings object is a map of settings that can be used to configure the naming convention for Azure resources. It allows you to specify a default region, environment, and other settings that will be used when generating names for resources.
@@ -26,7 +27,7 @@ variable "global_settings" {
   - clean_input - (Optional) A boolean value that indicates whether to remove non-compliant characters from the name, suffix, or prefix. Defaults to true.
   - use_slug - (Optional) A boolean value that indicates whether a slug should be added to the name. Defaults to true.
 DESCRIPTION  
-    type        = any
+  type        = any
   /*type = object({
     default_region     = optional(string)
     environment        = optional(string)
@@ -57,6 +58,7 @@ DESCRIPTION
     }
   }
 }
+## Client configuration
 
 variable "client_config" {
 
@@ -463,6 +465,11 @@ variable "var_folder_path" {
 # variable "image_definitions" {
 #   default = {}
 # }
+
+variable "palo_alto" {
+  description = "Configuration object - Palo Alto resources"
+  default     = {}
+}
 
 # variable "packer_service_principal" {
 #   default = {}
