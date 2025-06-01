@@ -1,8 +1,3 @@
-provider_azurerm_features_virtual_machine = {
-  # To allow in-vm sheduled event to be sent and de-register properly the agents
-  graceful_shutdown = true
-}
-
 virtual_machines = {
   azdo_level0 = {
     resource_group_key = "agents"

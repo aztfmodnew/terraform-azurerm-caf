@@ -1,4 +1,6 @@
 locals {
+  keyvault = try(var.keyvaults[try(var.settings.keyvault.lz_key, var.settings.lz_key, var.client_config.landingzone_key)][try(var.settings.keyvault.key, var.settings.keyvault_key)], null)
+
   os_type = lower(var.settings.os_type)
   module_tag = {
     "module" = basename(abspath(path.module))
