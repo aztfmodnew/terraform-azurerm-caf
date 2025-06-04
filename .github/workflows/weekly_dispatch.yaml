@@ -16,6 +16,8 @@ env:
 jobs:
   dispatch:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     strategy:
       matrix:
         scenario:
