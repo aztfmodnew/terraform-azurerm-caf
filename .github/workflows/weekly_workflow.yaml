@@ -26,6 +26,7 @@ env:
   DEFAULT_SCENARIO: standalone-networking.json
   TF_VERSION: 1.9.8
   TF_LINT_VERSION: latest
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
 jobs:
   load_scenarios:
