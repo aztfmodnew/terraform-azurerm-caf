@@ -38,7 +38,7 @@ jobs:
           tflint_version: ${{ env.TF_LINT_VERSION }}
 
       - name: Run TFLint with reviewdog
-        uses: reviewdog/action-tflint@v1
+        uses: reviewdog/action-tflint@v1.24.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-check
