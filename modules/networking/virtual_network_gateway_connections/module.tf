@@ -15,6 +15,15 @@ resource "azurerm_virtual_network_gateway_connection" "vngw_connection" {
   #only ExpressRoute and IPSec are supported. Vnet2Vnet is excluded.
   type                       = var.settings.type
   virtual_network_gateway_id = var.virtual_network_gateway_id
+  # The following arguments are applicable only if the type is VNet-to-VNet
+  peer_virtual_network_gateway_id = coalesce(
+    try(var.settings.peer_virtual_network_gateway_id, null),
+    try(
+      var.remote_objects.virtual_network_gateways[try(var.settings.peer_virtual_network_gateway.lz_key, var.client_config.landingzone_key)][try(var.settings.peer_virtual_network_gateway.key, var.settings.peer_virtual_network_gateway_key)].id,
+      null
+    ),
+    null
+  )
 
   # The following arguments are applicable only if the type is ExpressRoute
   express_route_circuit_id = try(var.express_route_circuit_id, null)
@@ -29,8 +38,13 @@ resource "azurerm_virtual_network_gateway_connection" "vngw_connection" {
   routing_weight                     = try(var.settings.routing_weight, null)
   use_policy_based_traffic_selectors = try(var.settings.use_policy_based_traffic_selectors, false) #if set true, IPsec Policy block has to be set
   tags                               = local.tags
+  local_azure_ip_address_enabled     = try(var.settings.local_azure_ip_address_enabled, null)
+  connection_mode                    = try(var.settings.connection_mode, null)
+  express_route_gateway_bypass       = try(var.settings.express_route_gateway_bypass, null)
+  private_link_fast_path_enabled     = try(var.settings.private_link_fast_path_enabled, null)
+  egress_nat_rule_ids                = try(var.settings.egress_nat_rule_ids, null)
+  ingress_nat_rule_ids               = try(var.settings.ingress_nat_rule_ids, null)
 
-  #Only one IP Sec Policy block per connection
   dynamic "ipsec_policy" {
     for_each = try(var.settings.ipsec_policy, {})
     content {
@@ -45,10 +59,27 @@ resource "azurerm_virtual_network_gateway_connection" "vngw_connection" {
     }
   }
 
-  timeouts {
-    create = "60m"
-    delete = "60m"
+  dynamic "custom_bgp_addresses" {
+    for_each = try(var.settings.custom_bgp_addresses, null) == null ? [] : [var.settings.custom_bgp_addresses]
+    content {
+      primary   = custom_bgp_addresses.value.primary
+      secondary = try(custom_bgp_addresses.value.secondary, null)
+    }
   }
 
+  dynamic "traffic_selector_policy" {
+    for_each = try(var.settings.traffic_selector_policy, null) == null ? [] : var.settings.traffic_selector_policy
+    content {
+      local_address_cidrs  = traffic_selector_policy.value.local_address_cidrs
+      remote_address_cidrs = traffic_selector_policy.value.remote_address_cidrs
+    }
+  }
+
+  timeouts {
+    create = try(var.settings.timeouts.create, "60m")
+    update = try(var.settings.timeouts.update, "60m")
+    read   = try(var.settings.timeouts.read, "5m")
+    delete = try(var.settings.timeouts.delete, "60m")
+  }
 
 }
