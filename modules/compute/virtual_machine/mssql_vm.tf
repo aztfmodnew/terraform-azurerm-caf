@@ -29,7 +29,6 @@ resource "azurerm_mssql_virtual_machine" "mssqlvm" {
     for_each = try(each.value.mssql_settings.auto_backup, null) != null ? [1] : []
 
     content {
-      encryption_enabled = try(each.value.mssql_settings.auto_backup.encryption_password, null) != null ? true : false
       encryption_password = try(each.value.mssql_settings.auto_backup.encryption_password, null) != null ? try(coalesce(
         try(random_password.encryption_password[each.key].result, null),
         try(data.external.backup_encryption_password[each.key].result.value, null)
