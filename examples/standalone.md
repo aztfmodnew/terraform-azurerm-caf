@@ -11,16 +11,12 @@ terraform {
 
 provider "azurerm" {
   features {}
-}
-
-provider "azurerm" {
-  features {}
-  skip_provider_registration = true
+  resource_provider_registrations = "none"
 }
 
 module "caf" {
-  source  = "aztfmod/caf/azurerm"
-  version = "5.7.0"
+  source  = "aztfmodnew/caf/azurerm"
+  version = "~>4.30.0"
 
 
 

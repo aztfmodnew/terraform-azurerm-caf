@@ -6,8 +6,8 @@ You can instantiate this directly using the following parameters:
 
 ```hcl
 module "caf" {
-  source  = "aztfmod/caf/azurerm"
-  version = "~>5.5.0"
+  source  = "aztfmodnew/caf/azurerm"
+  version = "~>4.30.0"
 
   # Add object as described below
 }
@@ -30,14 +30,14 @@ resource_to_be_created = {
 
 The following examples are available:
 
-| Scenario                                                     | Description                                                  |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| [100-consumption-budget-rg](./100-consumption-budget-rg)     | Simple example for consumption budget deployed at resource group scope. |
-| [101-consumption-budget-subscription](./101-consumption-budget-subscription) | Simple example for consumption budget deployed at subscription scope. |
-| [102-consumption-budget-rg-alerts](./102-consumption-budget-rg-alerts) | Simple example for consumption budget deployed at resource group scope, integrated with action groups. |
-| [103-consumption-budget-subscription-alerts](./103-consumption-budget-subscription-alerts) | Simple example for consumption budget deployed at subscription scope, integrated with action groups. |
-| [104-consumption-budget-subscription-vm](./104-consumption-budget-subscription-vm) | Consumption budget deployed at subscription scope, integrated with Azure windows virtual machine. |
-| [105-consumption-budget-subscription-aks](./105-consumption-budget-subscription-vm) | Consumption budget deployed at subscription scope, integrated with Azure Kubernetes Service single cluster |
+| Scenario                                                                                   | Description                                                                                                |
+| ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| [100-consumption-budget-rg](./100-consumption-budget-rg)                                   | Simple example for consumption budget deployed at resource group scope.                                    |
+| [101-consumption-budget-subscription](./101-consumption-budget-subscription)               | Simple example for consumption budget deployed at subscription scope.                                      |
+| [102-consumption-budget-rg-alerts](./102-consumption-budget-rg-alerts)                     | Simple example for consumption budget deployed at resource group scope, integrated with action groups.     |
+| [103-consumption-budget-subscription-alerts](./103-consumption-budget-subscription-alerts) | Simple example for consumption budget deployed at subscription scope, integrated with action groups.       |
+| [104-consumption-budget-subscription-vm](./104-consumption-budget-subscription-vm)         | Consumption budget deployed at subscription scope, integrated with Azure windows virtual machine.          |
+| [105-consumption-budget-subscription-aks](./105-consumption-budget-subscription-vm)        | Consumption budget deployed at subscription scope, integrated with Azure Kubernetes Service single cluster |
 
 ## Run this example
 
