@@ -6,8 +6,8 @@ You can instantiate this directly using the following parameters:
 
 ```hcl
 module "caf" {
-  source  = "aztfmod/caf/azurerm"
-  version = "~>5.5.0"
+  source  = "aztfmodnew/caf/azurerm"
+  version = "~>4.30.0"
 
   # Add object as described below
 }
@@ -26,9 +26,8 @@ resource_to_be_created = {
 }
 ```
 
-
-
 ## Usage
+
 You can go to the examples folder, however the usage of the module could be like this in your own main.tf file:
 
 ```hcl
@@ -55,27 +54,28 @@ logic_app_integration_account = {
   }
 }
 ```
+
 # logic_app_integration_account
+
 Estimated execution time
-|    Apply    |  Time     |
+| Apply | Time |
 |------|-------------|
-|real    |4m15.726s|
-|user    |3m45.886s|
-|sys     |0m21.019s|
+|real |4m15.726s|
+|user |3m45.886s|
+|sys |0m21.019s|
 
-| Destroy|  Time     |
-|------|-------------|
-|real    |2m54.874s|
-|user    |0m38.613s|
-|sys     |0m9.297s|
-
+| Destroy | Time      |
+| ------- | --------- |
+| real    | 2m54.874s |
+| user    | 0m38.613s |
+| sys     | 0m9.297s  |
 
 ## Inputs
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
 
+| Name | Description | Type | Default | Required |
+| ---- | ----------- | ---- | ------- | :------: |
 
 ## Outputs
-| Name | Description |
-|------|-------------|
 
+| Name | Description |
+| ---- | ----------- |

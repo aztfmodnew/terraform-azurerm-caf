@@ -3,19 +3,21 @@
 # Licensed under the MIT License.
 #
 
-name: PR Dispatch Workflow
+name: PR Integration TestsDispatch Workflow
 
 on:
   schedule:
     - cron: 0 5 * * 5
 
 env:
-  TF_VERSION: 1.9.8
+  TF_VERSION: 1.12.1
   TF_LINT_VERSION: latest
 
 jobs:
   dispatch:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     strategy:
       matrix:
         scenario:

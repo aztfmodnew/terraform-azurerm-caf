@@ -79,6 +79,16 @@ resource "azurerm_network_interface" "nic" {
       public_ip_address_id          = can(ip_configuration.value.public_address_id) || can(try(ip_configuration.value.public_address_id.key, ip_configuration.value.public_ip_address_key)) == false ? try(ip_configuration.value.public_address_id, null) : var.public_ip_addresses[try(ip_configuration.value.public_ip_address.lz_key, var.client_config.landingzone_key)][try(ip_configuration.value.public_ip_address.key, ip_configuration.value.public_ip_address_key)].id
     }
   }
+
+  dynamic "timeouts" {
+    for_each = try(each.value.timeouts, null) == null ? [] : [each.value.timeouts]
+    content {
+      create = try(each.value.timeouts.create, null)
+      update = try(each.value.timeouts.update, null)
+      read   = try(each.value.timeouts.read, null)
+      delete = try(each.value.timeouts.delete, null)
+    }
+  }
 }
 
 # Example of a nic configuration with vnet on a remote state

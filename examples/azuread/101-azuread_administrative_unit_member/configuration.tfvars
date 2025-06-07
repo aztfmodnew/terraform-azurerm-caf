@@ -20,17 +20,23 @@ azuread_groups = {
       }
     }
   }
+  # Uncomment the following block and customize to create a new Azure administrative unit
+  # Commented to avoid errors in integration tests
+  /*
   group3 = {
     display_name     = "group3"
     description      = "Group only created in existing Azure administrative unit"
     security_enabled = true
     administrative_units = {
       admu1 = {
+        # Specify the ID of the existing Azure administrative unit
         id = "a4f6b07c-cca0-4442-ba6f-6f8321f8ccc2"
       }
     }
   }
+  */
 }
+
 azuread_administrative_units = {
   admu1 = {
     display_name              = "Example-AU"
