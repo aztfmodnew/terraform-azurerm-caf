@@ -3,7 +3,7 @@
 # Licensed under the MIT License.
 #
 
-name: PR tests
+name: Integration tests
 
 on:
   repository_dispatch:

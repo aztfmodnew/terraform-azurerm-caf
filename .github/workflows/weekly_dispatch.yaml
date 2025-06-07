@@ -3,7 +3,7 @@
 # Licensed under the MIT License.
 #
 
-name: PR Dispatch Workflow
+name: PR Integration TestsDispatch Workflow
 
 on:
   schedule:
