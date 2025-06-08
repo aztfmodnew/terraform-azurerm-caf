@@ -16,7 +16,7 @@ resource "azurerm_storage_management_policy" "mgmt_policy" {
           blob_types   = try(filters.value.blob_types, null)
 
           dynamic "match_blob_index_tag" {
-            for_each = try(filters.match_blob_index_tag, {})
+            for_each = try(bluetlue.match_blob_index_tag, {})
 
             content {
               name      = try(match_blob_index_tag.value.name, null)
@@ -72,12 +72,11 @@ resource "azurerm_storage_management_policy" "mgmt_policy" {
             delete_after_days_since_creation                               = try(version.value.delete_after_days_since_creation, null)
           }
         }
-      }
     }
   }
-
+}
   dynamic "timeouts" {
-    for_each = try(rule.value.timeouts, null) == null ? [] : [rule.value.timeouts]
+    for_each = try(var.settings.timeouts, {})
     content {
       create = try(timeouts.value.create, null)
       read   = try(timeouts.value.read, null)
