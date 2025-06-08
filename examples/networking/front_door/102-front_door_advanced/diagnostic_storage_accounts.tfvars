@@ -13,7 +13,7 @@ diagnostic_storage_accounts = {
           name    = "Diagnostics Settings Retention Rule"
           enabled = true
           filters = {
-            #prefix_match = ["$logs/FrontDoorWebApplicationFirewallLog", "$logs/FrontDoorAccessLog"]
+            prefix_match = ["$logs/FrontDoorWebApplicationFirewallLog", "$logs/FrontDoorAccessLog"]
             blob_types   = ["appendBlob"]
 
           }
