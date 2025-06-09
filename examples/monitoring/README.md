@@ -6,8 +6,8 @@ You can instantiate this directly using the following parameters:
 
 ```hcl
 module "caf" {
-  source  = "aztfmod/caf/azurerm"
-  version = "~>5.5.0"
+  source  = "aztfmodnew/caf/azurerm"
+  version = "~>4.30.0"
 
   # Add object as described below
 }
@@ -26,7 +26,7 @@ resource_to_be_created = {
 }
 ```
 
-You can review complete set of examples on the [GitHub repository](https://github.com/aztfmod/terraform-azurerm-caf/tree/master/examples/monitoring).
+You can review complete set of examples on the [GitHub repository](https://github.com/aztfmod/terraform-azurerm-caf/tree/main/examples/monitoring).
 
 ## Azure Service Healths Alerts
 
@@ -40,11 +40,12 @@ This module tracks the following types of health events (subscription wide) and 
 
 4. Security advisories - Security related notifications or violations that may affect the availability of your Azure services.
 
-Ref : https://docs.microsoft.com/en-us/azure/service-health/service-health-overview
+Ref : [Service Health Overview](https://docs.microsoft.com/en-us/azure/service-health/service-health-overview)
 
 An Action Group will be created and your choice of Notifications type can be chosen dynamically (refer input syntax).
 
-##  Input Syntax
+## Input Syntax
+
 ```hcl
   # refer example configuration file
    monitoring = {
@@ -100,5 +101,4 @@ An Action Group will be created and your choice of Notifications type can be cho
 
 }
 
-}
 ```

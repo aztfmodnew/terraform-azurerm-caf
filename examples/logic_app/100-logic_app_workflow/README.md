@@ -6,8 +6,8 @@ You can instantiate this directly using the following parameters:
 
 ```hcl
 module "caf" {
-  source  = "aztfmod/caf/azurerm"
-  version = "~>5.5.0"
+  source  = "aztfmodnew/caf/azurerm"
+  version = "~>4.30.0"
 
   # Add object as described below
 }
@@ -26,9 +26,8 @@ resource_to_be_created = {
 }
 ```
 
-
-
 ## Usage
+
 You can go to the examples folder, however the usage of the module could be like this in your own main.tf file:
 
 ```hcl
@@ -60,26 +59,26 @@ logic_app_workflow = {
   }
 }
 ```
-# logic_app_workflow
-Estimated execution time
-|    Apply    |  Time     |
-|------|-------------|
-|real    |3m37.529s  |
-|user    |3m47.249s |
-|sys     |0m18.925s |
 
-| Destroy|  Time     |
+Estimated execution time
+| Apply | Time |
 |------|-------------|
-|real    |2m52.582s  |
-|user    |0m40.169s |
-|sys     |0m8.247s |
+|real |3m37.529s |
+|user |3m47.249s |
+|sys |0m18.925s |
+
+| Destroy | Time      |
+| ------- | --------- |
+| real    | 2m52.582s |
+| user    | 0m40.169s |
+| sys     | 0m8.247s  |
 
 ## Inputs
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
 
+| Name | Description | Type | Default | Required |
+| ---- | ----------- | ---- | ------- | :------: |
 
 ## Outputs
-| Name | Description |
-|------|-------------|
 
+| Name | Description |
+| ---- | ----------- |

@@ -18,7 +18,6 @@ data "azurecaf_name" "linux" {
   use_slug      = var.global_settings.use_slug
 }
 
-
 # Name of the Linux computer name
 data "azurecaf_name" "linux_computer_name" {
   depends_on = [azurerm_network_interface.nic, azurerm_network_interface_security_group_association.nic_nsg]
@@ -197,6 +196,16 @@ resource "azurerm_linux_virtual_machine" "vm" {
       name      = each.value.plan.name
       product   = each.value.plan.product
       publisher = each.value.plan.publisher
+    }
+  }
+
+  dynamic "timeouts" {
+    for_each = try(each.value.timeouts, null) == null ? [] : [each.value.timeouts]
+    content {
+      create = try(each.value.timeouts.create, null)
+      update = try(each.value.timeouts.update, null)
+      read   = try(each.value.timeouts.read, null)
+      delete = try(each.value.timeouts.delete, null)
     }
   }
 

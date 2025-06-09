@@ -1,4 +1,4 @@
-# Azure Active Directory B2C
+# Azure AI Services
 
 This module is part of Cloud Adoption Framework landing zones for Azure on Terraform.
 
@@ -6,7 +6,7 @@ You can instantiate this directly using the following parameters:
 
 ```hcl
 module "caf" {
-  source  = "aztfmod/caf/azurerm"
+  source  = "aztfmodnew/caf/azurerm"
   version = "~>4.26.1"
 
   # Add object as described below
@@ -26,5 +26,4 @@ resource_to_be_created = {
 }
 ```
 
-You can review complete set of examples on the [GitHub repository](https://github.com/aztfmodnew/terraform-azurerm-caf/tree/master/examples/aadb2c).
-
+You can review complete set of examples on the [GitHub repository](https://github.com/aztfmodnew/terraform-azurerm-caf/tree/master/examples/ai_services).
