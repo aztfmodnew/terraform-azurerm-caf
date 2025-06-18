@@ -44,7 +44,8 @@ resource "azurerm_monitor_diagnostic_setting" "diagnostics" {
     for_each = lookup(var.diagnostics.diagnostics_definition[each.value.definition_key].categories, "metric", {})
     content {
       category = enabled_metric.value[0]
-      enabled  = enabled_metric.value[1]
+      #enabled  = enabled_metric.value[1] is deprecated.
+      #retention_policy = enabled_metric.value[2]
 
       # retention_policy is deprecated. For metrics sent to a storage account,
       # manage retention using the azurerm_storage_management_policy resource.
