@@ -2,7 +2,7 @@ resource "azurerm_storage_management_policy" "mgmt_policy" {
   storage_account_id = var.storage_account_id
 
   dynamic "rule" {
-    for_each = var.settings.rules
+    for_each = try(var.settings.rules, [])
 
     content {
       name    = rule.value.name
@@ -16,7 +16,7 @@ resource "azurerm_storage_management_policy" "mgmt_policy" {
           blob_types   = try(filters.value.blob_types, null)
 
           dynamic "match_blob_index_tag" {
-            for_each = try(bluetlue.match_blob_index_tag, {})
+            for_each = try(filters.value.match_blob_index_tag, {})
 
             content {
               name      = try(match_blob_index_tag.value.name, null)
@@ -35,7 +35,7 @@ resource "azurerm_storage_management_policy" "mgmt_policy" {
             tier_to_cool_after_days_since_modification_greater_than        = try(base_blob.value.tier_to_cool_after_days_since_modification_greater_than, null)
             tier_to_cool_after_days_since_last_access_time_greater_than    = try(base_blob.value.tier_to_cool_after_days_since_last_access_time_greater_than, null)
             tier_to_cool_after_days_since_creation_greater_than            = try(base_blob.value.tier_to_cool_after_days_since_creation_greater_than, null)
-            auto_tier_to_hot_from_cool_enabled                            = try(base_blob.value.auto_tier_to_hot_from_cool_enabled, null)
+            auto_tier_to_hot_from_cool_enabled                             = try(base_blob.value.auto_tier_to_hot_from_cool_enabled, null)
             tier_to_archive_after_days_since_modification_greater_than     = try(base_blob.value.tier_to_archive_after_days_since_modification_greater_than, null)
             tier_to_archive_after_days_since_last_access_time_greater_than = try(base_blob.value.tier_to_archive_after_days_since_last_access_time_greater_than, null)
             tier_to_archive_after_days_since_creation_greater_than         = try(base_blob.value.tier_to_archive_after_days_since_creation_greater_than, null)
@@ -72,9 +72,9 @@ resource "azurerm_storage_management_policy" "mgmt_policy" {
             delete_after_days_since_creation                               = try(version.value.delete_after_days_since_creation, null)
           }
         }
+      }
     }
   }
-}
   dynamic "timeouts" {
     for_each = try(var.settings.timeouts, {})
     content {

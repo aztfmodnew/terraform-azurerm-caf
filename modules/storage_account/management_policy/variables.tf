@@ -76,5 +76,5 @@ variable "storage_account_id" {
   The ID of the Azure Storage Account to which the management policy will be applied.
   Example: "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.Storage/storageAccounts/mystorageaccount"
 DESCRIPTION
-  type = string
+  type        = string
 }
