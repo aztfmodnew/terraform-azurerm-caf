@@ -2,10 +2,7 @@ virtual_machines = {
   winvm1 = {
     resource_group_key     = "rg"
     os_type                = "windows"
-    size                   = "Standard_DS1_v2"
-    admin_username         = "azureuser"
-    admin_password         = "P@ssw0rd1234!"
-    network_interface_keys = ["nic0"]
+    size                   = "Standard_DS1_v2"    
     virtual_machine_settings = {
       windows = {
         name                   = "winvm1"
@@ -13,7 +10,7 @@ virtual_machines = {
         admin_username         = "azureuser"
         admin_password         = "P@ssw0rd1234!"
         patch_mode             = "AutomaticByOS"
-        network_interface_keys = ["nic0"]
+        network_interface_keys = ["winvm1_nic0"]
         os_disk = {
           name                 = "winvm1-os"
           caching              = "ReadWrite"
@@ -31,8 +28,8 @@ virtual_machines = {
       }
     }
     networking_interfaces = {
-      nic0 = {
-        vnet_key   = "vnet_aadds"
+      winvm1_nic0 = {
+        vnet_key   = "vnet_aadds_re1"
         subnet_key = "vms"
         name       = "0"
       }
@@ -41,10 +38,7 @@ virtual_machines = {
   winvm2 = {
     resource_group_key     = "rg"
     os_type                = "windows"
-    size                   = "Standard_DS1_v2"
-    admin_username         = "azureuser"
-    admin_password         = "P@ssw0rd1234!"
-    network_interface_keys = ["nic0"]
+    size                   = "Standard_DS1_v2"    
     virtual_machine_settings = {
       windows = {
         name                   = "winvm2"
@@ -52,7 +46,7 @@ virtual_machines = {
         admin_username         = "azureuser"
         admin_password         = "P@ssw0rd1234!"
         patch_mode             = "AutomaticByOS"
-        network_interface_keys = ["nic0"]
+        network_interface_keys = ["winvm2_nic0"]
         os_disk = {
           name                 = "winvm2-os"
           caching              = "ReadWrite"
@@ -70,8 +64,8 @@ virtual_machines = {
       }
     }
     networking_interfaces = {
-      nic0 = {
-        vnet_key   = "vnet_aadds"
+      winvm2_nic0 = {
+        vnet_key   = "vnet_aadds_re1"
         subnet_key = "vms"
         name       = "0"
       }

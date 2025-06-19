@@ -1,7 +1,7 @@
 public_ip_addresses = {
   vngw_pip = {
     name               = "vngw_pip1"
-    resource_group_key = "vgnw"
+    resource_group_key = "rg"
     sku                = "Standard"
     allocation_method  = "Static"
     # allocation method needs to be Static
@@ -11,7 +11,7 @@ public_ip_addresses = {
 
   vngw_pip2 = {
     name               = "vngw_pip2"
-    resource_group_key = "vgnw"
+    resource_group_key = "rg"
     sku                = "Standard"
     allocation_method  = "Static"
     # allocation method needs to be Static
@@ -20,7 +20,7 @@ public_ip_addresses = {
   }
   vngw2_pip = {
     name               = "vngw2_pip1"
-    resource_group_key = "vgnw"
+    resource_group_key = "rg_remote"
     sku                = "Standard"
     allocation_method  = "Static"
     # allocation method needs to be Static
@@ -29,7 +29,7 @@ public_ip_addresses = {
   }
   vngw2_pip2 = {
     name               = "vngw2_pip2"
-    resource_group_key = "vgnw"
+    resource_group_key = "rg_remote"
     sku                = "Standard"
     allocation_method  = "Static"
     # allocation method needs to be Static
@@ -41,7 +41,7 @@ public_ip_addresses = {
 virtual_network_gateways = {
   gateway1 = {
     name                       = "mygateway"
-    resource_group_key         = "vgnw"
+    resource_group_key         = "rg"
     type                       = "Vpn"
     sku                        = "VpnGw2AZ"
     private_ip_address_enabled = true
@@ -80,7 +80,7 @@ virtual_network_gateways = {
   }
   gateway2 = {
     name                       = "mygateway2"
-    resource_group_key         = "vgnw"
+    resource_group_key         = "rg_remote"
     type                       = "Vpn"
     sku                        = "VpnGw2AZ"
     private_ip_address_enabled = true
@@ -122,7 +122,7 @@ virtual_network_gateways = {
 virtual_network_gateway_connections = {
   connection1 = {
     name               = "connection-vnet1-to-vnet2"
-    resource_group_key = "vgnw"
+    resource_group_key = "rg"
     # type can be Vnet, IPsec, or ExpressRoute
     type                             = "Vnet2Vnet"
     region                           = "region1"
@@ -132,10 +132,10 @@ virtual_network_gateway_connections = {
   }
   connection2 = {
     name               = "connection-vnet2-to-vnet1"
-    resource_group_key = "vgnw"
+    resource_group_key = "rg_remote"
     # type can be Vnet, IPsec, or ExpressRoute
     type                             = "Vnet2Vnet"
-    region                           = "region1"
+    region                           = "region2"
     virtual_network_gateway_key      = "gateway2"
     peer_virtual_network_gateway_key = "gateway1"
     # peer_virtual_network_gateway_key is required for VVnet2Vnet type

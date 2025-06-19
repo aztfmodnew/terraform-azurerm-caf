@@ -9,4 +9,4 @@ azuread_service_principals = {
   }
 }
 
-### The principal running this Terraform deployment must be Global Admin to deploy AADDS
+### The principal running this Terraform deployment must be Global Admin to deploy AADDS101-active_directory_domain_service-replica-Vnet2Vnet

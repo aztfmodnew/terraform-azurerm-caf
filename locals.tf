@@ -35,6 +35,11 @@ locals {
     azuread_users                       = try(var.azuread.azuread_users, {})
   }
 
+  cdn = {
+    cdn_frontdoor_profile = try(var.cdn.cdn_frontdoor_profile, {})
+  }
+
+
   client_config = var.client_config == {} ? {
     client_id               = data.azuread_client_config.current.client_id
     landingzone_key         = var.current_landingzone_key
@@ -479,6 +484,8 @@ locals {
   identity = {
     active_directory_domain_service             = try(var.identity.active_directory_domain_service, {})
     active_directory_domain_service_replica_set = try(var.identity.active_directory_domain_service_replica_set, {})
+    active_directory_domain_service_trust       = try(var.identity.active_directory_domain_service_trust, {})
+
   }
 
   apim = {

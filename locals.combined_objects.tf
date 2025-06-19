@@ -2,6 +2,9 @@ locals {
   # CAF landing zones can retrieve remote objects from a different landing zone and the
   # combined_objects will merge it with the local objects
   combined_objects_aadb2c_directory                               = merge(tomap({ (local.client_config.landingzone_key) = module.aadb2c_directory }), lookup(var.remote_objects, "aadb2c_directory", {}))
+  combined_objects_active_directory_domain_service                = merge(tomap({ (local.client_config.landingzone_key) = module.active_directory_domain_service }), lookup(var.remote_objects, "active_directory_domain_service", {}))
+  combined_objects_active_directory_domain_service_replica_set    = merge(tomap({ (local.client_config.landingzone_key) = module.active_directory_domain_service_replica_set }), lookup(var.remote_objects, "active_directory_domain_service_replica_set", {}))
+  combined_objects_active_directory_domain_service_trust          = merge(tomap({ (local.client_config.landingzone_key) = module.active_directory_domain_service_trust }), lookup(var.remote_objects, "active_directory_domain_service_trust", {}))
   combined_objects_ai_services                                    = merge(tomap({ (local.client_config.landingzone_key) = module.ai_services }), lookup(var.remote_objects, "ai_services", {}))
   combined_objects_aks_clusters                                   = merge(tomap({ (local.client_config.landingzone_key) = module.aks_clusters }), lookup(var.remote_objects, "aks_clusters", {}), lookup(var.data_sources, "aks_clusters", {}))
   combined_objects_api_management                                 = merge(tomap({ (local.client_config.landingzone_key) = module.api_management }), lookup(var.remote_objects, "api_management", {}), lookup(var.data_sources, "api_management", {}))
@@ -44,6 +47,7 @@ locals {
   combined_objects_batch_jobs                                     = merge(tomap({ (local.client_config.landingzone_key) = module.batch_jobs }), lookup(var.remote_objects, "batch_jobs", {}))
   combined_objects_batch_pools                                    = merge(tomap({ (local.client_config.landingzone_key) = module.batch_pools }), lookup(var.remote_objects, "batch_pools", {}))
   combined_objects_cdn_profile                                    = merge(tomap({ (local.client_config.landingzone_key) = module.cdn_profile }), lookup(var.remote_objects, "cdn_profile", {}), lookup(var.data_sources, "cdn_profile", {}))
+  combined_objects_cdn_frontdoor_profile                          = merge(tomap({ (local.client_config.landingzone_key) = module.cdn_frontdoor_profile }), lookup(var.remote_objects, "cdn_frontdoor_profile", {}), lookup(var.data_sources, "cdn_frontdoor_profile", {}))
   combined_objects_cognitive_services_accounts                    = merge(tomap({ (local.client_config.landingzone_key) = module.cognitive_services_account }), lookup(var.remote_objects, "cognitive_services_account", {}), lookup(var.data_sources, "cognitive_services_account", {}))
   combined_objects_cognitive_account_customer_managed_key         = merge(tomap({ (local.client_config.landingzone_key) = module.cognitive_account_customer_managed_key }), try(var.remote_objects.cognitive_account_customer_managed_key, {}))
   combined_objects_cognitive_deployment                           = merge(tomap({ (local.client_config.landingzone_key) = module.cognitive_deployment }), try(var.remote_objects.cognitive_deployment, {}))

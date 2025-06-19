@@ -1,6 +1,9 @@
 locals {
   remote_objects = {
     aadb2c_directory                               = try(local.combined_objects_aadb2c_directory, null)
+    active_directory_domain_service                = try(local.combined_objects_active_directory_domain_service, null)
+    active_directory_domain_service_replica_set    = try(local.combined_objects_active_directory_domain_service_replica_set, null)
+    active_directory_domain_service_trust          = try(local.combined_objects_active_directory_domain_service_trust, null)
     aks_clusters                                   = try(local.combined_objects_aks_clusters, null)
     ai_services                                    = try(local.combined_objects_ai_services, null)
     api_management                                 = try(local.combined_objects_api_management, null)
@@ -37,6 +40,7 @@ locals {
     batch_jobs                                     = try(local.combined_objects_batch_jobs, null)
     batch_pools                                    = try(local.combined_objects_batch_pools, null)
     cdn_profile                                    = try(local.combined_objects_cdn_profile, null)
+    cdn_frontdoor_profile                          = try(local.combined_objects_cdn_frontdoor_profile, null)
     cognitive_services_accounts                    = try(local.combined_objects_cognitive_services_accounts, null)
     cognitive_account_customer_managed_key         = try(local.combined_objects_cognitive_account_customer_managed_key, null)
     cognitive_deployment                           = try(local.combined_objects_cognitive_deployment, null)

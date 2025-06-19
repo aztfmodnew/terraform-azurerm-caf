@@ -3,13 +3,14 @@ network_security_group_definition = {
     version            = 1
     resource_group_key = "rg"
     region             = "region1"
-    name               = "nsg-aadds-re1"
+    name               = "aadds-re1"
     tags = {
       application_category = "domain controllers"
     }
     nsg = [
       {
-        name                       = "Debugging for support."
+        # The name can be up to 80 characters long. It must begin with a word character, and it must end with a word character or with '_'. The name may contain word characters or '.', '-', '_'.
+        name                       = "Debugging-for-support"
         priority                   = "400"
         direction                  = "Inbound"
         access                     = "Allow"
@@ -20,7 +21,7 @@ network_security_group_definition = {
         destination_address_prefix = "*"
       },
       {
-        name                       = "Powershell remoting."
+        name                       = "Powershell-remoting"
         priority                   = "401"
         direction                  = "Inbound"
         access                     = "Allow"
@@ -31,7 +32,7 @@ network_security_group_definition = {
         destination_address_prefix = "*"
       },
       {
-        name                       = "Communication with the Azure AD Domain Services management service."
+        name                       = "Communication-with-the-Azure-AD-Domain-Services-management-service"
         priority                   = "400"
         direction                  = "Outbound"
         access                     = "Allow"
@@ -42,7 +43,7 @@ network_security_group_definition = {
         destination_address_prefix = "AzureActiveDirectoryDomainServices"
       },
       {
-        name                       = "Monitoring of the virtual machines."
+        name                       = "Monitoring-of-the-virtual-machines"
         priority                   = "401"
         direction                  = "Outbound"
         access                     = "Allow"
@@ -53,7 +54,7 @@ network_security_group_definition = {
         destination_address_prefix = "AzureMonitor"
       },
       {
-        name                       = "Communication with Azure Storage."
+        name                       = "Communication-with-Azure-Storage"
         priority                   = "402"
         direction                  = "Outbound"
         access                     = "Allow"
@@ -64,7 +65,7 @@ network_security_group_definition = {
         destination_address_prefix = "Storage"
       },
       {
-        name                       = "Communication with Azure Active Directory."
+        name                       = "Communication-with-Azure-Active-Directory"
         priority                   = "403"
         direction                  = "Outbound"
         access                     = "Allow"
@@ -75,7 +76,7 @@ network_security_group_definition = {
         destination_address_prefix = "AzureActiveDirectory"
       },
       {
-        name                       = "Communication with Windows Update."
+        name                       = "Communication-with-Windows-Update"
         priority                   = "404"
         direction                  = "Outbound"
         access                     = "Allow"
@@ -86,7 +87,7 @@ network_security_group_definition = {
         destination_address_prefix = "AzureUpdateDelivery"
       },
       {
-        name                       = "Download of patches from Windows Update."
+        name                       = "Download-of-patches-from-Windows-Update"
         priority                   = "405"
         direction                  = "Outbound"
         access                     = "Allow"
@@ -97,7 +98,7 @@ network_security_group_definition = {
         destination_address_prefix = "AzureFrontDoor.FirstParty"
       },
       {
-        name                       = "Automated management of security patches."
+        name                       = "Automated-management-of-security-patches"
         priority                   = "406"
         direction                  = "Outbound"
         access                     = "Allow"
@@ -111,12 +112,12 @@ network_security_group_definition = {
   }
   aadds_re2 = {
     version            = 1
-    resource_group_key = "rg"
+    resource_group_key = "rg_remote"
     region             = "region2"
-    name               = "nsg-aadds-re2"
+    name               = "aadds-re2"
     nsg = [
       {
-        name                       = "Debugging for support."
+        name                       = "Debugging-for-support"
         priority                   = "400"
         direction                  = "Inbound"
         access                     = "Allow"
@@ -127,7 +128,7 @@ network_security_group_definition = {
         destination_address_prefix = "*"
       },
       {
-        name                       = "Powershell remoting."
+        name                       = "Powershell-remoting"
         priority                   = "401"
         direction                  = "Inbound"
         access                     = "Allow"
@@ -138,7 +139,7 @@ network_security_group_definition = {
         destination_address_prefix = "*"
       },
       {
-        name                       = "Communication with the Azure AD Domain Services management service."
+        name                       = "Communication-with-the-Azure-AD-Domain-Services-management-service"
         priority                   = "400"
         direction                  = "Outbound"
         access                     = "Allow"
@@ -149,7 +150,7 @@ network_security_group_definition = {
         destination_address_prefix = "AzureActiveDirectoryDomainServices"
       },
       {
-        name                       = "Monitoring of the virtual machines."
+        name                       = "Monitoring-of-the-virtual-machines"
         priority                   = "401"
         direction                  = "Outbound"
         access                     = "Allow"
@@ -160,7 +161,7 @@ network_security_group_definition = {
         destination_address_prefix = "AzureMonitor"
       },
       {
-        name                       = "Communication with Azure Storage."
+        name                       = "Communication-with-Azure-Storage"
         priority                   = "402"
         direction                  = "Outbound"
         access                     = "Allow"
@@ -171,7 +172,7 @@ network_security_group_definition = {
         destination_address_prefix = "Storage"
       },
       {
-        name                       = "Communication with Azure Active Directory."
+        name                       = "Communication-with-Azure-Active-Directory"
         priority                   = "403"
         direction                  = "Outbound"
         access                     = "Allow"
@@ -182,7 +183,7 @@ network_security_group_definition = {
         destination_address_prefix = "AzureActiveDirectory"
       },
       {
-        name                       = "Communication with Windows Update."
+        name                       = "Communication-with-Windows-Update"
         priority                   = "404"
         direction                  = "Outbound"
         access                     = "Allow"
@@ -193,7 +194,7 @@ network_security_group_definition = {
         destination_address_prefix = "AzureUpdateDelivery"
       },
       {
-        name                       = "Download of patches from Windows Update."
+        name                       = "Download-of-patches-from-Windows-Update"
         priority                   = "405"
         direction                  = "Outbound"
         access                     = "Allow"
@@ -204,7 +205,7 @@ network_security_group_definition = {
         destination_address_prefix = "AzureFrontDoor.FirstParty"
       },
       {
-        name                       = "Automated management of security patches."
+        name                       = "Automated-management-of-security-patches"
         priority                   = "406"
         direction                  = "Outbound"
         access                     = "Allow"
