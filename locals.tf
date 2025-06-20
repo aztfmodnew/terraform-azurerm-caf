@@ -34,10 +34,7 @@ locals {
     azuread_service_principals          = try(var.azuread.azuread_service_principals, {})
     azuread_users                       = try(var.azuread.azuread_users, {})
   }
-
-  cdn = {
-    cdn_frontdoor_profile = try(var.cdn.cdn_frontdoor_profile, {})
-  }
+  
 
 
   client_config = var.client_config == {} ? {
