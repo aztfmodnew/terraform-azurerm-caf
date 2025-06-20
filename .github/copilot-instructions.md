@@ -1,6 +1,7 @@
 # Instructions for Creating a Terraform Module
 
 ## For new modules
+
 ### Directory Structure
 
 / is the root directory of the repository. Create the following directory structure for the Terraform module:
@@ -454,45 +455,46 @@ The `/examples` directory provides a framework to demonstrate and test the modul
 
 ### Root Example Configuration Files (within `/examples/`)
 
-*   **`main.tf`**: Contains the primary example configuration, including provider setup. It's designed to be generic enough to work with different `.tfvars` files.
-*   **`variables.tf`**: Defines all possible input variables that might be used by any module being demonstrated. The actual values will come from the `.tfvars` files.
-*   **`outputs.tf`**: Defines outputs for the examples.
-*   **`module.tf`**: This crucial file instantiates the various modules from the repository. It should be written to accept configurations for these modules from the variables defined in `variables.tf` (which are populated by `.tfvars` files).
-    *   **Pattern for `module.tf` `locals`:**
-        When referencing module configurations within `locals` in `/examples/module.tf`, use the following pattern:
-        ```hcl
-        locals {
-          category_name = {
-            module_name_plural = var.module_name_plural // Corresponds to a variable in /examples/variables.tf
-          }
-        }
-        ```
-        *Replace `category_name` with the actual category (e.g., `networking`).*
-        *Replace `module_name_plural` with the pluralized name of the module as defined in `/examples/variables.tf` (e.g., `virtual_networks`).*
+- **`main.tf`**: Contains the primary example configuration, including provider setup. It's designed to be generic enough to work with different `.tfvars` files.
+- **`variables.tf`**: Defines all possible input variables that might be used by any module being demonstrated. The actual values will come from the `.tfvars` files.
+- **`outputs.tf`**: Defines outputs for the examples.
+- **`module.tf`**: This crucial file instantiates the various modules from the repository. It should be written to accept configurations for these modules from the variables defined in `variables.tf` (which are populated by `.tfvars` files).
 
-*   **`variables.provider.tf`**: Contains provider-specific variable definitions.
-*   **`backend.azurerm`**: Configures the Azure Blob Storage backend for Terraform state for the examples.
+  - **Pattern for `module.tf` `locals`:**
+    When referencing module configurations within `locals` in `/examples/module.tf`, use the following pattern:
+    ```hcl
+    locals {
+      category_name = {
+        module_name_plural = var.module_name_plural // Corresponds to a variable in /examples/variables.tf
+      }
+    }
+    ```
+    _Replace `category_name` with the actual category (e.g., `networking`)._
+    _Replace `module_name_plural` with the pluralized name of the module as defined in `/examples/variables.tf` (e.g., `virtual_networks`)._
+
+- **`variables.provider.tf`**: Contains provider-specific variable definitions.
+- **`backend.azurerm`**: Configures the Azure Blob Storage backend for Terraform state for the examples.
 
 ### Example `.tfvars` File Structure and Naming
 
 Input variable files (`.tfvars`) are organized hierarchically. Within each specific example directory (`<level-nameoftheexample>`), the `.tfvars` files should be named as follows:
 
-*   **Option 1 (Single Configuration File):**
-    Use a single file named `configuration.tfvars` if the example primarily configures one main resource or a tightly coupled set of resources.
-    *Path: `examples/<category_name>/<module_name>/<level-nameoftheexample>/configuration.tfvars`*
+- **Option 1 (Single Configuration File):**
+  Use a single file named `configuration.tfvars` if the example primarily configures one main resource or a tightly coupled set of resources.
+  _Path: `examples/<category_name>/<module_name>/<level-nameoftheexample>/configuration.tfvars`_
 
-*   **Option 2 (Multiple Resource-Specific Files):**
-    If the example demonstrates the creation of several distinct types of resources that can be configured somewhat independently, create a separate `.tfvars` file for each major resource type.
-    *Paths:
-    `examples/<category_name>/<module_name>/<level-nameoftheexample>/<resource_type1_config>.tfvars`
-    `examples/<category_name>/<module_name>/<level-nameoftheexample>/<resource_type2_config>.tfvars`
-    (e.g., `virtual_network.tfvars`, `storage_account.tfvars`)*
+- **Option 2 (Multiple Resource-Specific Files):**
+  If the example demonstrates the creation of several distinct types of resources that can be configured somewhat independently, create a separate `.tfvars` file for each major resource type.
+  _Paths:
+  `examples/<category_name>/<module_name>/<level-nameoftheexample>/<resource_type1_config>.tfvars`
+  `examples/<category_name>/<module_name>/<level-nameoftheexample>/<resource_type2_config>.tfvars`
+  (e.g., `virtual_network.tfvars`, `storage_account.tfvars`)_
 
 **Directory Structure Overview:**
 
-*   **`<category_name>`**: A directory representing the module category (e.g., `networking`, `compute`, `storage`).
-*   **`<module_name>`**: A directory representing the specific module being demonstrated (e.g., `virtual_network`, `container_app`, `storage_account`). This should match the `module_name` used in the module's own directory structure (e.g., `/modules/category_name/module_name/`).
-*   **`<level-nameoftheexample>`**: A directory whose name starts with the level (`100-`, `200-`, `300-`) followed by a descriptive name for the type or complexity of the example (e.g., `100-basic-default`, `200-hub-spoke-config`, `300-advanced-security-rules`).
+- **`<category_name>`**: A directory representing the module category (e.g., `networking`, `compute`, `storage`).
+- **`<module_name>`**: A directory representing the specific module being demonstrated (e.g., `virtual_network`, `container_app`, `storage_account`). This should match the `module_name` used in the module's own directory structure (e.g., `/modules/category_name/module_name/`).
+- **`<level-nameoftheexample>`**: A directory whose name starts with the level (`100-`, `200-`, `300-`) followed by a descriptive name for the type or complexity of the example (e.g., `100-basic-default`, `200-hub-spoke-config`, `300-advanced-security-rules`).
 
 ### Adding a New Example (Directory and `.tfvars` file)
 
@@ -503,13 +505,15 @@ When adding examples for a new module `module_name` under `category_name`:
 
 2.  **Create `README.md` in Module Example Directory:**
     Inside `examples/<category_name>/<module_name>/`, create a `README.md` file. This file should:
-    *   Explain the purpose of the examples for this module.
-    *   Describe the different levels (`100-xxx`, `200-xxx`, etc.) and what they represent.
-    *   Provide instructions on how to run these examples, including the `terraform apply -var-file=...` command structure, covering both single and multiple `.tfvars` file scenarios.
-    *   List any prerequisites or special considerations.
+
+    - Explain the purpose of the examples for this module.
+    - Describe the different levels (`100-xxx`, `200-xxx`, etc.) and what they represent.
+    - Provide instructions on how to run these examples, including the `terraform apply -var-file=...` command structure, covering both single and multiple `.tfvars` file scenarios.
+    - List any prerequisites or special considerations.
 
 3.  **Create `main.tf` in Module Example Directory:**
     Inside `examples/<category_name>/<module_name>/`, create a `main.tf` file with the following content:
+
     ```hcl
     # trunk-ignore-all(tflint/terraform_required_version)
     # This is an empty file for Terraform registry visibility.
@@ -522,12 +526,14 @@ When adding examples for a new module `module_name` under `category_name`:
 
 5.  **Create and Populate `.tfvars` File(s):**
     Inside the newly created `<level-nameoftheexample>` directory:
-    *   If using a single configuration file, create `configuration.tfvars`.
-    *   If using multiple resource-specific files, create them accordingly (e.g., `virtual_networks.tfvars`, `subnets.tfvars`).
+
+    - If using a single configuration file, create `configuration.tfvars`.
+    - If using multiple resource-specific files, create them accordingly (e.g., `virtual_networks.tfvars`, `subnets.tfvars`).
 
     Populate these file(s) with the necessary variables and their values to configure the module(s) for this specific scenario. These variables must correspond to those defined in the root `/examples/variables.tf`.
 
     Example (`examples/networking/virtual_network/100-basic-default/configuration.tfvars`):
+
     ```hcl
     # examples/networking/virtual_network/100-basic-default/configuration.tfvars
 
@@ -548,8 +554,8 @@ When adding examples for a new module `module_name` under `category_name`:
     ```
 
 6.  **Ensure Root `module.tf` and `variables.tf` Support:**
-    *   Verify that the root `/examples/module.tf` is set up to instantiate the target module(s) using the variable structure you're defining in the `.tfvars` file(s).
-    *   Verify that all top-level variables used in your `.tfvars` files are declared in the root `/examples/variables.tf`.
+    - Verify that the root `/examples/module.tf` is set up to instantiate the target module(s) using the variable structure you're defining in the `.tfvars` file(s).
+    - Verify that all top-level variables used in your `.tfvars` files are declared in the root `/examples/variables.tf`.
 
 ### Running an Example
 
@@ -559,43 +565,46 @@ To run a specific example:
 2.  Initialize Terraform: `terraform init`
 3.  Plan or apply using the desired `.tfvars` file(s):
 
-    *   **Single `configuration.tfvars` file:**
-        ```bash
-        terraform plan -var-file=./<category_name>/<module_name>/<level-nameoftheexample>/configuration.tfvars
-        terraform apply -var-file=./<category_name>/<module_name>/<level-nameoftheexample>/configuration.tfvars
-        ```
-        Example:
-        ```bash
-        terraform apply -var-file=./networking/virtual_network/100-basic-default/configuration.tfvars
-        ```
+    - **Single `configuration.tfvars` file:**
 
-    *   **Multiple resource-specific `.tfvars` files:**
-        ```bash
-        terraform plan \
-          -var-file=./<category_name>/<module_name>/<level-nameoftheexample>/<resource_type1_config>.tfvars \
-          -var-file=./<category_name>/<module_name>/<level-nameoftheexample>/<resource_type2_config>.tfvars
+      ```bash
+      terraform plan -var-file=./<category_name>/<module_name>/<level-nameoftheexample>/configuration.tfvars
+      terraform apply -var-file=./<category_name>/<module_name>/<level-nameoftheexample>/configuration.tfvars
+      ```
 
-        terraform apply \
-          -var-file=./<category_name>/<module_name>/<level-nameoftheexample>/<resource_type1_config>.tfvars \
-          -var-file=./<category_name>/<module_name>/<level-nameoftheexample>/<resource_type2_config>.tfvars
-        ```
-        Example:
-        ```bash
-        terraform apply \
-          -var-file=./networking/complex_setup_module/200-multi-resource/virtual_networks.tfvars \
-          -var-file=./networking/complex_setup_module/200-multi-resource/storage_accounts.tfvars
-        ```
+      Example:
+
+      ```bash
+      terraform apply -var-file=./networking/virtual_network/100-basic-default/configuration.tfvars
+      ```
+
+    - **Multiple resource-specific `.tfvars` files:**
+
+      ```bash
+      terraform plan \
+        -var-file=./<category_name>/<module_name>/<level-nameoftheexample>/<resource_type1_config>.tfvars \
+        -var-file=./<category_name>/<module_name>/<level-nameoftheexample>/<resource_type2_config>.tfvars
+
+      terraform apply \
+        -var-file=./<category_name>/<module_name>/<level-nameoftheexample>/<resource_type1_config>.tfvars \
+        -var-file=./<category_name>/<module_name>/<level-nameoftheexample>/<resource_type2_config>.tfvars
+      ```
+
+      Example:
+
+      ```bash
+      terraform apply \
+        -var-file=./networking/complex_setup_module/200-multi-resource/virtual_networks.tfvars \
+        -var-file=./networking/complex_setup_module/200-multi-resource/storage_accounts.tfvars
+      ```
 
 ### Documentation
 
-*   Update the root `/examples/README.md` to include information about new module example structures or significant scenarios if necessary.
-*   The primary documentation for a module's examples should reside in `examples/<category_name>/<module_name>/README.md`.
-*   Ensure that the documentation is clear, concise, and provides enough context for users to understand how to use the examples effectively.
-
-
+- Update the root `/examples/README.md` to include information about new module example structures or significant scenarios if necessary.
+- The primary documentation for a module's examples should reside in `examples/<category_name>/<module_name>/README.md`.
+- Ensure that the documentation is clear, concise, and provides enough context for users to understand how to use the examples effectively.
 
 ## Code Style
-
 
 ### Necessary Blocks
 
@@ -607,33 +616,66 @@ block_name {
 }
 ```
 
+Of course! Here is the English translation of the provided guide.
+
+---
+
 ### Dynamic Blocks
 
-#### Optional Single Destination Block
+These are the recommended patterns for creating configuration blocks dynamically and optionally in Terraform.
 
-Use the following structure for optional single destination blocks:
+#### Optional Single Block
+
+Used when a configuration block can exist zero or one time. The controlling variable (`var.settings.block` in this case) should be an object that can be `null`.
 
 ```hcl
 dynamic "block" {
-    for_each = try(var.settings.block, null) == null ? [] : [var.settings.block]
-    content {
-        name = block.value.name
-        value = block.value.value
-    }
+  # This pattern creates a list with 0 or 1 element.
+  # It's the clearest way to handle a single optional block.
+  for_each = var.settings.block == null ? [] : [var.settings.block]
+
+  content {
+    # Since there's only one element, its content is accessed with "block.value".
+    name  = block.value.name
+    value = block.value.value
+  }
 }
 ```
 
-#### Optional Multiple Destination Blocks
+#### Optional Multiple Blocks (from a List)
 
-Use the following structure for optional multiple destination blocks:
+Used to create multiple blocks from a list of objects (`list(object)`). This is ideal when the order of the blocks is important and they are identified by their position.
 
 ```hcl
 dynamic "block" {
-    for_each = try(var.settings.block, null) == null ? [] : var.settings.block
-    content {
-        name = block.value.name
-        value = block.value.value
-    }
+  # Iterates over the list. If the variable is null, "try" converts it
+  # into an empty list [] so that no block is generated.
+  for_each = try(var.settings.block, [])
+
+  content {
+    # "block.value" represents each object within the list.
+    name  = block.value.name
+    value = block.value.value
+  }
+}
+```
+
+#### Optional Multiple Blocks (from a Map)
+
+Used to create multiple blocks from a map of objects (`map(object)`). It's the best option when each block needs a unique and stable identifier (the map key) and the order is not important.
+
+```hcl
+dynamic "block" {
+  # Iterates over the map. If the variable is null, "try" converts it
+  # into an empty map {} so that no block is generated.
+  for_each = try(var.settings.block, {})
+
+  content {
+    # "block.key" is the unique identifier for each element (the map key).
+    # "block.value" is the object associated with that key.
+    name  = block.key
+    value = block.value.value
+  }
 }
 ```
 
@@ -686,6 +728,16 @@ or
 Change null for default values if default values are provided.
 
 ### Arguments
+
+#### Identify the changes needed in resources and variables for the existing module
+
+Determine what needs to be added, modified, or removed in the module.
+
+For that review [https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/nameofresource , for example, if resource is `azurerm_container_app`, review https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/container_app](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/nameofresource).
+
+If a version of the provider is not specified, use the latest version available in the provider documentation.
+
+If a version of the provider is specified, use `https://registry.terraform.io/providers/hashicorp/azurerm/version/docs/resources/nameofresource` , for example, if resource is `azurerm_container_app` and version is 4.32.0, review [https://registry.terraform.io/providers/hashicorp/azurerm/4.32.0/docs/resources/container_app](https://registry.terraform.io/providers/hashicorp/azurerm/version/docs/resources/nameofresource).
 
 #### Default values
 
@@ -748,4 +800,12 @@ service_plan_id = coalesce(
 
 ##### Other Instructions
 
-* Search in workspace for the existing argument definitions and use them as a reference, if available.
+- Search in workspace for the existing argument definitions and use them as a reference, if available.
+
+## Updating Existing Modules
+
+When updating existing modules, follow these steps:
+
+1.  **Review the existing module structure**: Understand how the current module is organized, including its variables, outputs, and resources.
+2.  **Identify the changes needed in resources and variables for the existing module**: Determine what needs to be added, modified, or removed in the module. For that review https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/nameofresource , for example, if resource is `azurerm_container_app`, review https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/container_app.
+3.  **Update the module files**: Make the necessary changes in the related files, such as `main.tf`, `variables.tf`, `outputs.tf`, and any other relevant files.

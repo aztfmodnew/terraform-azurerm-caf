@@ -28,7 +28,7 @@ output "admin_password_secret_id" {
 }
 
 output "winrm" {
-  value = local.os_type == "windows" ? {
+  value = local.os_type == "windows" && local.keyvault != null ? {
     keyvault_id     = local.keyvault.id
     certificate_url = try(azurerm_key_vault_certificate.self_signed_winrm[local.os_type].secret_id, null)
   } : null

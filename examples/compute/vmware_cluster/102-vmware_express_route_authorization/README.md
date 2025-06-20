@@ -6,8 +6,8 @@ You can instantiate this directly using the following parameters:
 
 ```hcl
 module "caf" {
-  source  = "aztfmod/caf/azurerm"
-  version = "5.1.0"
+  source  = "aztfmodnew/caf/azurerm"
+  version = "~>4.30.0"
   # insert the 7 required variables here
 }
 
@@ -23,3 +23,4 @@ module "caf" {
 |id | The ID of the Vmware Authorization.|
 | express_route_authorization_id | The ID of the Express Route Circuit Authorization.|
 | express_route_authorization_key | The key of the Express Route Circuit Authorization.|
+```

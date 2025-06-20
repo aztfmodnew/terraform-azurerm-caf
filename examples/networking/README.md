@@ -6,8 +6,8 @@ You can instantiate this directly using the following parameters:
 
 ```hcl
 module "caf" {
-  source  = "aztfmod/caf/azurerm"
-  version = "~>5.5.0"
+  source  = "aztfmodnew/caf/azurerm"
+  version = "~>4.30.0"
 
   # Add object as described below
 }
@@ -29,7 +29,7 @@ resource_to_be_created = {
 Under the networking category you can create the following resources, with their examples:
 
 | Technology                               | Examples Directory                                                                                                                        |
-|------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | Azure Bastion                            | [GitHub repository](https://github.com/aztfmod/terraform-azurerm-caf/tree/master/examples/networking/bastion/)                            |
 | Azure CDN                                | [GitHub repository](https://github.com/aztfmod/terraform-azurerm-caf/tree/master/examples/networking/cdn)                                 |
 | Azure DNS Zones                          | [GitHub repository](https://github.com/aztfmod/terraform-azurerm-caf/tree/master/examples/networking/dns_zones)                           |

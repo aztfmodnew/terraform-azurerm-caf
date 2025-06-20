@@ -34,6 +34,8 @@ locals {
     azuread_service_principals          = try(var.azuread.azuread_service_principals, {})
     azuread_users                       = try(var.azuread.azuread_users, {})
   }
+  
+
 
   client_config = var.client_config == {} ? {
     client_id               = data.azuread_client_config.current.client_id
@@ -479,6 +481,8 @@ locals {
   identity = {
     active_directory_domain_service             = try(var.identity.active_directory_domain_service, {})
     active_directory_domain_service_replica_set = try(var.identity.active_directory_domain_service_replica_set, {})
+    active_directory_domain_service_trust       = try(var.identity.active_directory_domain_service_trust, {})
+
   }
 
   apim = {
