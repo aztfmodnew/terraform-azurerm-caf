@@ -5,7 +5,12 @@ vnets = {
     vnet = {
       name          = "aadds"
       address_space = ["10.10.0.0/16"]
-      dns_servers   = []
+      dns_servers = [
+        "10.10.1.4",
+        "10.10.1.5",
+        "10.20.1.4",
+        "10.20.1.5"
+      ]
     }
     specialsubnets = {
       GatewaySubnet = {
@@ -32,7 +37,12 @@ vnets = {
     vnet = {
       name          = "remote"
       address_space = ["10.20.0.0/16"]
-      dns_servers   = []
+      dns_servers = [
+        "10.10.1.4",
+        "10.10.1.5",
+        "10.20.1.4",
+        "10.20.1.5"
+      ]
     }
     specialsubnets = {
       GatewaySubnet = {

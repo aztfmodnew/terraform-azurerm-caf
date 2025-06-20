@@ -43,9 +43,9 @@ active_directory_domain_service_replica_set = {
     active_directory_domain_service = {
       key = "adds"
     }
-      subnet = {
-        vnet_key = "vnet_aadds_re2"
-        key      = "aadds"
-      }
+    subnet = {
+      vnet_key = "vnet_aadds_re2"
+      key      = "aadds"
+    }
   }
 }

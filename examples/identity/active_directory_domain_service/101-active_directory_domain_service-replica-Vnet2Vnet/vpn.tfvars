@@ -127,6 +127,7 @@ virtual_network_gateway_connections = {
     type                             = "Vnet2Vnet"
     region                           = "region1"
     virtual_network_gateway_key      = "gateway1"
+    shared_key                       = "P@ssw0rd1234!"
     peer_virtual_network_gateway_key = "gateway2"
     # peer_virtual_network_gateway_key is required for VVnet2Vnet type
   }
@@ -137,6 +138,7 @@ virtual_network_gateway_connections = {
     type                             = "Vnet2Vnet"
     region                           = "region2"
     virtual_network_gateway_key      = "gateway2"
+    shared_key                       = "P@ssw0rd1234!"
     peer_virtual_network_gateway_key = "gateway1"
     # peer_virtual_network_gateway_key is required for VVnet2Vnet type
   }

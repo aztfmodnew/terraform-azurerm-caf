@@ -1,8 +1,8 @@
 virtual_machines = {
   winvm1 = {
-    resource_group_key     = "rg"
-    os_type                = "windows"
-    size                   = "Standard_DS1_v2"    
+    resource_group_key = "rg"
+    os_type            = "windows"
+    size               = "Standard_DS1_v2"
     virtual_machine_settings = {
       windows = {
         name                   = "winvm1"
@@ -31,14 +31,14 @@ virtual_machines = {
       winvm1_nic0 = {
         vnet_key   = "vnet_aadds_re1"
         subnet_key = "vms"
-        name       = "0"
+        name       = "winvm1-0"
       }
     }
   }
   winvm2 = {
-    resource_group_key     = "rg"
-    os_type                = "windows"
-    size                   = "Standard_DS1_v2"    
+    resource_group_key = "rg"
+    os_type            = "windows"
+    size               = "Standard_DS1_v2"
     virtual_machine_settings = {
       windows = {
         name                   = "winvm2"
@@ -67,7 +67,7 @@ virtual_machines = {
       winvm2_nic0 = {
         vnet_key   = "vnet_aadds_re1"
         subnet_key = "vms"
-        name       = "0"
+        name       = "winvm2-0"
       }
     }
   }
