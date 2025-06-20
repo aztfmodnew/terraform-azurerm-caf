@@ -1701,3 +1701,8 @@ variable "load_test" {
   default = {}
   type    = any
 }
+variable "cdn_frontdoor_profiles" {
+  description = "Configuring Front Door Profiles."
+  default     = {}
+  type        = any
+}

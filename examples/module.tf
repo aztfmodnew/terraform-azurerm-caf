@@ -82,6 +82,10 @@ module "example" {
   #   vmImageAliasDoc                             = var.vmImageAliasDoc
   # }
 
+  cdn = {
+    cdn_frontdoor_profile = var.cdn_frontdoor_profiles
+  }
+
   cognitive_services = {
     ai_services                            = var.ai_services
     cognitive_services_account             = var.cognitive_services_account

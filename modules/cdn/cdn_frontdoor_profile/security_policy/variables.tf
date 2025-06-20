@@ -1,0 +1,19 @@
+variable "global_settings" {
+  description = "Global settings for naming conventions and tags."
+  type        = any
+}
+
+variable "client_config" {
+  description = "Client configuration for Azure authentication."
+  type        = any
+}
+
+variable "settings" {
+  description = "Configuration settings for the CDN Front Door Security Policy."
+  type        = any
+}
+
+variable "remote_objects" {
+  description = "Remote objects required for the module, such as existing resources."
+  type        = any
+}

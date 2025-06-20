@@ -1,0 +1,33 @@
+# origin.tf
+# Placeholder for azurerm_cdn_frontdoor_origin resource implementation
+
+resource "azurerm_cdn_frontdoor_origin" "origin" {
+  name                           = var.settings.name
+  cdn_frontdoor_origin_group_id  = var.settings.cdn_frontdoor_origin_group_id
+  host_name                      = var.settings.host_name
+  certificate_name_check_enabled = var.settings.certificate_name_check_enabled
+  enabled                        = try(var.settings.enabled, true)
+  http_port                      = try(var.settings.http_port, 80)
+  https_port                     = try(var.settings.https_port, 443)
+  origin_host_header             = try(var.settings.origin_host_header, null)
+  priority                       = try(var.settings.priority, 1)
+  weight                         = try(var.settings.weight, 500)
+  dynamic "private_link" {
+    for_each = try(var.settings.private_link, null) == null ? [] : [var.settings.private_link]
+    content {
+      request_message        = try(private_link.value.request_message, null)
+      target_type            = try(private_link.value.target_type, null)
+      location               = private_link.value.location
+      private_link_target_id = private_link.value.private_link_target_id
+    }
+  }
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+    content {
+      create = try(timeouts.value.create, null)
+      update = try(timeouts.value.update, null)
+      read   = try(timeouts.value.read, null)
+      delete = try(timeouts.value.delete, null)
+    }
+  }
+}
