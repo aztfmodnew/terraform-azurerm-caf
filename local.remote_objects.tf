@@ -1,6 +1,9 @@
 locals {
   remote_objects = {
     aadb2c_directory                               = try(local.combined_objects_aadb2c_directory, null)
+    active_directory_domain_service                = try(local.combined_objects_active_directory_domain_service, null)
+    active_directory_domain_service_replica_set    = try(local.combined_objects_active_directory_domain_service_replica_set, null)
+    active_directory_domain_service_trust          = try(local.combined_objects_active_directory_domain_service_trust, null)
     aks_clusters                                   = try(local.combined_objects_aks_clusters, null)
     ai_services                                    = try(local.combined_objects_ai_services, null)
     api_management                                 = try(local.combined_objects_api_management, null)
@@ -36,7 +39,7 @@ locals {
     batch_certificates                             = try(local.combined_objects_batch_certificates, null)
     batch_jobs                                     = try(local.combined_objects_batch_jobs, null)
     batch_pools                                    = try(local.combined_objects_batch_pools, null)
-    cdn_profile                                    = try(local.combined_objects_cdn_profile, null)
+    cdn_profile                                    = try(local.combined_objects_cdn_profile, null)    
     cognitive_services_accounts                    = try(local.combined_objects_cognitive_services_accounts, null)
     cognitive_account_customer_managed_key         = try(local.combined_objects_cognitive_account_customer_managed_key, null)
     cognitive_deployment                           = try(local.combined_objects_cognitive_deployment, null)
@@ -150,6 +153,7 @@ locals {
     virtual_hubs                                   = try(local.combined_objects_virtual_hubs, null)
     virtual_machine_scale_sets                     = try(local.combined_objects_virtual_machine_scale_sets, null)
     virtual_machines                               = try(local.combined_objects_virtual_machines, null)
+    virtual_network_gateways                       = try(local.combined_objects_virtual_network_gateways, null)
     virtual_subnets                                = try(local.combined_objects_virtual_subnets, null)
     virtual_wans                                   = try(local.combined_objects_virtual_wans, null)
     vmware_clusters                                = try(local.combined_objects_vmware_clusters, null)

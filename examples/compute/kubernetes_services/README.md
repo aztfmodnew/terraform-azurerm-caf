@@ -5,19 +5,21 @@ This sub module is part of Cloud Adoption Framework landing zones for Azure on T
 You can instantiate this module inside your Terraform code either as a module or as a sub module directly from the [Terraform Registry](https://registry.terraform.io/modules/aztfmod/caf/azurerm/latest) using the following calls:
 
 Complete module:
+
 ```hcl
 module "caf" {
-  source  = "aztfmod/caf/azurerm"
+  source  = "aztfmodnew/caf/azurerm"
   version = "4.21.2"
   # insert the 6 required variables here
 }
 ```
+
 ## Example scenarios
 
 The following examples are available:
 
 | Scenario                                     | Description                                                                                      |
-|----------------------------------------------|--------------------------------------------------------------------------------------------------|
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------ |
 | [101-single-cluster](./101-single-cluster)   | Simple example for AKS cluster with public IP load balancer.                                     |
 | [102-multi-nodepools](./102-multi-nodepools) | Simple example for AKS cluster with public IP load balancer and multiple node pools.             |
 | [103-multi-clusters](./103-multi-clusters)   | Simple example for multi regions AKS clusters with public IP load balancer, multiple node pools. |

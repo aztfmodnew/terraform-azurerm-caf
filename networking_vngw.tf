@@ -53,6 +53,10 @@ module "virtual_network_gateway_connections" {
     null
   )
 
+  remote_objects = {
+    virtual_network_gateways = local.combined_objects_virtual_network_gateways
+  }
+
 }
 
 module "local_network_gateways" {

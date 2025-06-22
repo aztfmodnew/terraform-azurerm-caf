@@ -95,6 +95,50 @@ variable "client_config" {
 
 }
 
+variable "cdn" {
+  description = <<DESCRIPTION
+  Configuration object - Azure CDN resources"
+
+  This variable is used to define the settings for Azure CDN resources, such as profiles, endpoints, origin groups, origins, rule sets, and rules.
+  These are the settings that can be configured:
+  - profiles: (Optional) A map of CDN profiles, where each key is a unique identifier for the profile and the value is an object containing the profile settings.
+    - name: (Required) The name of the CDN profile.
+    - location: (Required) The Azure region where the CDN profile will be created.
+    - resource_group_key: (Optional) The key of the resource group in which the CDN profile will be created. If not provided, it defaults to the current landing zone's resource group.
+    - sku_name: (Required) The SKU name for the CDN profile, such as "Standard_AzureFrontDoor" or "Premium_AzureFrontDoor".
+  - base_tags: (Optional) A map of tags to be applied to the CDN resources. If not provided, it defaults to the global settings' inherited tags.
+  - location: (Optional) The Azure region where the CDN resources will be created. If not provided, it defaults to the profile's location.
+  - endpoints: (Optional) A map of CDN endpoints, where each key is a unique identifier for the endpoint and the value is an object containing the endpoint settings.
+  - origin_groups: (Optional) A map of CDN origin groups, where each key is a unique identifier for the origin group and the value is an object containing the origin group settings.
+  - origins: (Optional) A map of CDN origins, where each key is a unique identifier for the origin and the value is an object containing the origin settings.
+  - rule_sets: (Optional) A map of CDN rule sets, where each key is a unique identifier for the rule set and the value is an object containing the rule set settings.
+  - rules: (Optional) A map of CDN rules, where each key is a unique identifier for the rule and the value is an object containing the rule settings.
+  - custom_domains: (Optional) A map of custom domains, where each key is a unique identifier for the custom domain and the value is an object containing the custom domain settings.
+
+
+  For example, you can define a CDN profile with the following structure:
+  cdn = {
+    profiles = {
+      profile1 = {
+        name                = "my-cdn-profile"
+        location            = "westeurope"
+        resource_group_key  = "my_resource_group"
+        sku_name            = "Standard_AzureFrontDoor"
+        custom_domains      = {}
+        endpoints           = {}
+        origin_groups       = {}
+        origins             = {}
+        rule_sets           = {}
+        rules               = {}
+      }
+    }
+  }
+  This allows you to create and manage Azure CDN resources in a structured way, making it easier to deploy and maintain your CDN configurations.
+  DESCRIPTION
+  type        = any
+  default     = {}
+}
+
 ## Cloud variables
 variable "cloud" {
   description = <<DESCRIPTION
@@ -534,8 +578,91 @@ variable "communication" {
 }
 
 variable "identity" {
-  description = "Configuration object - identity resources"
-  default     = {}
+  description = <<DESCRIPTION
+  Configuration object - Identity resources
+  This variable is used to define the settings for Azure Active Directory Domain Services (AAD DS)
+  and its replica sets. It allows you to configure the AAD DS instance, including its name, location, resource group,
+  domain name, SKU, and other settings. Additionally, it allows you to define replica sets
+  for the AAD DS instance, specifying the region, subnet, and other relevant details.
+
+  - active_directory_domain_service: (Optional) A map of AAD DS instances, where each key is a unique identifier for the instance and the value is an object containing the instance settings.
+    - name: (Required) The name of the AAD DS instance.
+    - location: (Optional) The Azure region where the AAD DS instance will be created. If not defined, it defaults to the current landing zone's location.
+    - resource_group_key: (Optional) The key of the resource group in which the AAD DS instance will be created. If not provided, it defaults to the current landing zone's resource group.
+    - domain_name: (Required) The domain name for the AAD DS instance.
+    - sku: (Required) The SKU for the AAD DS instance, such as "Standard" or "Premium".
+    - filtered_sync_enabled: (Optional) Whether filtered sync is enabled for the AAD DS instance. Defaults to false.
+    - domain_configuration_type: (Optional) The type of domain configuration, such as "FullySynced". Defaults to "FullySynced".
+    - initial_replica_set: (Optional) An object defining the initial replica set for the AAD DS instance, including region and subnet details.
+      - region: (Required) The Azure region where the initial replica set will be created.
+      - subnet: (Required) An object defining the subnet details for the initial replica set, including the virtual network key and subnet key.
+        - vnet_key: (Required) The key of the virtual network in which the initial replica set's subnet is located.
+        - key: (Required) The key of the subnet in which the initial replica set will be created.
+        - id: (Optional) The ID of the subnet if it is already created and you want to use it directly.
+    - notifications: (Optional) An object defining notification settings for the AAD DS instance, such as additional recipients and whether to notify DC admins or global admins.
+      - additional_recipients: (Optional) A list of additional email addresses to notify about AAD DS instance events.
+      - notify_dc_admins: (Optional) Whether to notify domain controller administrators about AAD DS instance events. Defaults to false.
+      - notify_global_admins: (Optional) Whether to notify global administrators about AAD DS instance events. Defaults to false.
+    - security: (Optional) An object defining security settings for the AAD DS instance, such as whether to sync Kerberos passwords, NTLM passwords, and on-premises passwords.
+      - sync_kerberos_passwords: (Optional) Whether to sync Kerberos passwords. Defaults to true.
+      - sync_ntlm_passwords: (Optional) Whether to sync NTLM passwords. Defaults to true.
+      - sync_on_prem_passwords: (Optional) Whether to sync on-premises passwords. Defaults to true.
+    - tags: (Optional) A map of tags to be applied to the AAD DS instance.
+
+  - active_directory_domain_service_replica_set: (Optional) A map of AAD DS replica sets, where each key is a unique identifier for the replica set and the value is an object containing the replica set settings.
+    - region: (Optional) The Azure region where the replica set will be created. If not defined, it defaults to the region of the AAD DS instance.
+    - active_directory_domain_service: (Required) An object containing the key of the AAD DS instance that this replica set belongs to.
+      - key: (Required) The key of the AAD DS instance in which the replica set will be created.
+    - subnet: (Required) An object defining the subnet details for the replica set, including the virtual network key and subnet key.
+      - vnet_key: (Required) The key of the virtual network in which the replica set's subnet is located.
+      - key: (Required) The key of the subnet in which the replica set will be created.
+      - id: (Optional) The ID of the subnet if it is already created and you want to use it directly.
+
+  DESCRIPTION
+  /*type = object({
+    active_directory_domain_service = optional(map(object({
+      name                      = string
+      location                  = optional(string)
+      resource_group_key        = optional(string)
+      domain_name               = string
+      sku                       = string
+      filtered_sync_enabled     = optional(bool, false)
+      domain_configuration_type = optional(string, "FullySynced")
+      initial_replica_set = optional(map(object({
+        region = string
+        subnet = object({
+          vnet_key = optional(string)
+          key      = optional(string)
+          id       = optional(string)
+        })
+      })), {})
+      notifications = optional(object({
+        additional_recipients = optional(list(string), [])
+        notify_dc_admins      = optional(bool, false)
+        notify_global_admins  = optional(bool, false)
+      }), {})
+      security = optional(object({
+        sync_kerberos_passwords = optional(bool, true)
+        sync_ntlm_passwords     = optional(bool, true)
+        sync_on_prem_passwords  = optional(bool, true)
+      }), {})
+      tags = optional(map(string), {})
+    })))
+    active_directory_domain_service_replica_set = optional(map(object({
+      region = optional(string)
+      active_directory_domain_service = object({
+        key = string
+      })
+      subnet = object({
+        vnet_key = optional(string)
+        key      = optional(string)
+        id       = optional(string)
+      })
+    })), {})
+  })*/
+  type        = any
+
+  default = {}
 }
 variable "apim" {
   default = {}

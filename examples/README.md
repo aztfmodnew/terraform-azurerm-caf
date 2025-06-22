@@ -8,7 +8,7 @@ You can instantiate this module directly using the following syntax:
 
 ```hcl
 module "caf" {
-  source  = "aztfmod/caf/azurerm"
+  source  = "aztfmodnew/caf/azurerm"
   version = "5.4.2"
   # insert the 7 required variables here
 }
@@ -20,7 +20,7 @@ A minimal example could be:
 
 ```hcl
 module "caf" {
-  source  = "aztfmod/caf/azurerm"
+  source  = "aztfmodnew/caf/azurerm"
   version = "5.4.2"
 
   global_settings = var.global_settings

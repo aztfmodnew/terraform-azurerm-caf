@@ -11,13 +11,22 @@ resource "azurerm_active_directory_domain_service_replica_set" "aaddsrs" {
   subnet_id = coalesce(
     try(var.remote_objects.vnets[var.settings.subnet.lz_key][var.settings.subnet.vnet_key].subnets[var.settings.subnet.key].id, null),
     try(var.remote_objects.vnets[var.client_config.landingzone_key][var.settings.subnet.vnet_key].subnets[var.settings.subnet.key].id, null),
-    try(var.settings.subnet.id, null),
-    try(var.settings.subnet_id, null)
+    try(var.settings.subnet.id, null)
   )
+
+
 
   lifecycle {
     ignore_changes = [
       subnet_id
     ]
+  }
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      delete = try(timeouts.value.delete, null)
+    }
   }
 }

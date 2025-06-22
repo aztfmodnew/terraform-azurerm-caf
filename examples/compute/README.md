@@ -6,8 +6,8 @@ You can instantiate this directly using the following parameters:
 
 ```hcl
 module "caf" {
-  source  = "aztfmod/caf/azurerm"
-  version = "~>5.5.0"
+  source  = "aztfmodnew/caf/azurerm"
+  version = "~>4.30.0"
 
   # Add object as described below
 }
@@ -29,7 +29,7 @@ resource_to_be_created = {
 Under the compute category you can create the following resources, with their examples:
 
 | Technology                  | Examples Directory                                                                                                           |
-|-----------------------------|------------------------------------------------------------------------------------------------------------------------------|
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
 | Availability Sets           | [GitHub repository](https://github.com/aztfmod/terraform-azurerm-caf/tree/master/examples/compute/availability_set/)         |
 | Azure Container Instances   | [GitHub repository](https://github.com/aztfmod/terraform-azurerm-caf/tree/master/examples/compute/container_groups)          |
 | Azure Container Registry    | [GitHub repository](https://github.com/aztfmod/terraform-azurerm-caf/tree/master/examples/compute/container_registry)        |

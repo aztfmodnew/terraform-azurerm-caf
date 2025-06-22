@@ -8,15 +8,15 @@ For an overview of the service, please refer to [Azure documentation](https://az
 
 The following examples are available:
 
-| Scenario                                                     | Description                                                  |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| [100-dms](./100-dms)     | Simple example to create a database migration service and an associated projects. |
+| Scenario             | Description                                                                       |
+| -------------------- | --------------------------------------------------------------------------------- |
+| [100-dms](./100-dms) | Simple example to create a database migration service and an associated projects. |
 
 You can instantiate this directly using the following parameters:
 
 ```hcl
 module "caf" {
-source  = "aztfmod/caf/azurerm"
+source  = "aztfmodnew/caf/azurerm"
 version = "5.4.3"
 
 #pass the required variables

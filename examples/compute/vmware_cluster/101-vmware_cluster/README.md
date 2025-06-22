@@ -6,8 +6,8 @@ You can instantiate this directly using the following parameters:
 
 ```hcl
 module "caf" {
-  source  = "aztfmod/caf/azurerm"
-  version = "5.1.0"
+  source  = "aztfmodnew/caf/azurerm"
+  version = "~>4.30.0"
   # insert the 7 required variables here
 }
 
@@ -35,3 +35,4 @@ module "caf" {
 | id | The ID of the created vmware_cluster |
 |cluster_number | A number that identifies this Vmware Cluster in its Vmware Private Cloud. |
 |hosts | A list of host of the Vmware Cluster.
+```
