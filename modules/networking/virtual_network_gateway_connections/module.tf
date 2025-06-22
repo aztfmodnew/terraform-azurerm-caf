@@ -15,15 +15,19 @@ resource "azurerm_virtual_network_gateway_connection" "vngw_connection" {
   #only ExpressRoute and IPSec are supported. Vnet2Vnet is excluded.
   type                       = var.settings.type
   virtual_network_gateway_id = var.virtual_network_gateway_id
-  # The following arguments are applicable only if the type is VNet-to-VNet
-  peer_virtual_network_gateway_id = coalesce(
-    try(var.settings.peer_virtual_network_gateway_id, null),
-    try(
-      var.remote_objects.virtual_network_gateways[try(var.settings.peer_virtual_network_gateway.lz_key, var.client_config.landingzone_key)][try(var.settings.peer_virtual_network_gateway.key, var.settings.peer_virtual_network_gateway_key)].id,
-      null
-    ),
-    null
-  )
+  # The following argument is only set if the type is Vnet2Vnet and a value is available
+  peer_virtual_network_gateway_id = (
+    var.settings.type == "Vnet2Vnet" && (
+      try(var.settings.peer_virtual_network_gateway_id, null) != null ||
+      try(var.remote_objects.virtual_network_gateways[try(var.settings.peer_virtual_network_gateway.lz_key, var.client_config.landingzone_key)][try(var.settings.peer_virtual_network_gateway.key, var.settings.peer_virtual_network_gateway_key)].id, null) != null
+    )
+  ) ? coalesce(
+        try(var.settings.peer_virtual_network_gateway_id, null),
+        try(
+          var.remote_objects.virtual_network_gateways[try(var.settings.peer_virtual_network_gateway.lz_key, var.client_config.landingzone_key)][try(var.settings.peer_virtual_network_gateway.key, var.settings.peer_virtual_network_gateway_key)].id,
+          null
+        )
+      ) : null
 
   # The following arguments are applicable only if the type is ExpressRoute
   express_route_circuit_id = try(var.express_route_circuit_id, null)
