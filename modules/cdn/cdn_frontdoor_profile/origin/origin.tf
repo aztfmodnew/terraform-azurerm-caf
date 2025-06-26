@@ -1,5 +1,5 @@
 # origin.tf
-# Placeholder for azurerm_cdn_frontdoor_origin resource implementation
+# azurerm_cdn_frontdoor_origin resource implementation
 
 resource "azurerm_cdn_frontdoor_origin" "origin" {
   name                           = var.settings.name
@@ -12,15 +12,17 @@ resource "azurerm_cdn_frontdoor_origin" "origin" {
   origin_host_header             = try(var.settings.origin_host_header, null)
   priority                       = try(var.settings.priority, 1)
   weight                         = try(var.settings.weight, 500)
+  
   dynamic "private_link" {
     for_each = try(var.settings.private_link, null) == null ? [] : [var.settings.private_link]
     content {
-      request_message        = try(private_link.value.request_message, null)
+      request_message        = try(private_link.value.request_message, "Access request for CDN FrontDoor Private Link Origin")
       target_type            = try(private_link.value.target_type, null)
       location               = private_link.value.location
       private_link_target_id = private_link.value.private_link_target_id
     }
   }
+  
   dynamic "timeouts" {
     for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
     content {
