@@ -449,6 +449,169 @@ locals {
 }
 ```
 
+## Submodule Dependency Pattern
+
+When creating modules with multiple submodules (subresources), follow the established pattern used by modules like `network_manager` and `cdn_frontdoor_profile`. This pattern ensures proper dependency management and consistency across the CAF framework.
+
+### Key Principles
+
+1. **All dependencies between submodules must be passed through `var.remote_objects`**
+2. **Never pass resource IDs directly as separate variables between modules**
+3. **Use `coalesce()` with `try()` pattern to resolve resource dependencies**
+4. **Use pluralized names for module calls (e.g., `endpoints`, `origins`, not `endpoint`, `origin`)**
+
+### Pattern Implementation
+
+#### Parent Module Submodule Calls
+
+In the parent module, call submodules using this pattern:
+
+```hcl
+# Example: calling endpoints submodule
+module "endpoints" {
+  source   = "./endpoint"
+  for_each = try(var.settings.endpoints, {})
+
+  global_settings = var.global_settings
+  client_config   = var.client_config
+  location        = var.location
+  resource_group  = var.resource_group
+  base_tags       = var.base_tags
+  settings        = each.value
+
+  remote_objects = merge(var.remote_objects, {
+    cdn_frontdoor_profile = azurerm_cdn_frontdoor_profile.cdn_frontdoor_profile
+  })
+}
+
+# Example: calling origins submodule that depends on origin_groups
+module "origins" {
+  source   = "./origin"
+  for_each = try(var.settings.origins, {})
+
+  global_settings = var.global_settings
+  client_config   = var.client_config
+  location        = var.location
+  resource_group  = var.resource_group
+  base_tags       = var.base_tags
+  settings        = each.value
+
+  remote_objects = merge(var.remote_objects, {
+    cdn_frontdoor_origin_groups = module.origin_groups
+  })
+
+  depends_on = [module.origin_groups]
+}
+```
+
+#### Submodule Variables
+
+Submodule `variables.tf` files should only contain the standard variables:
+
+```hcl
+variable "global_settings" {
+  description = "Global settings for naming conventions and tags."
+  type        = any
+}
+
+variable "client_config" {
+  description = "Client configuration for Azure authentication."
+  type        = any
+}
+
+variable "location" {
+  description = "Specifies the Azure location where the resource will be created."
+  type        = string
+}
+
+variable "settings" {
+  description = "Configuration settings for the resource."
+  type        = any
+}
+
+variable "resource_group" {
+  description = "Resource group object."
+  type        = any
+}
+
+variable "base_tags" {
+  description = "Flag to determine if tags should be inherited."
+  type        = bool
+}
+
+variable "remote_objects" {
+  description = "Remote objects for dependencies."
+  type        = any
+}
+```
+
+**❌ DO NOT include direct ID variables like:**
+
+- `variable "cdn_frontdoor_profile_id"`
+- `variable "origin_groups"`
+- `variable "rule_sets"`
+
+#### Submodule Resource Implementation
+
+In submodule resources, use the `coalesce()` pattern to resolve dependencies:
+
+```hcl
+resource "azurerm_cdn_frontdoor_endpoint" "endpoint" {
+  name = var.settings.name
+  cdn_frontdoor_profile_id = coalesce(
+    try(var.settings.cdn_frontdoor_profile_id, null),
+    try(var.remote_objects.cdn_frontdoor_profile.id, null),
+    try(var.remote_objects.cdn_frontdoor_profiles[try(var.settings.cdn_frontdoor_profile.lz_key, var.client_config.landingzone_key)][var.settings.cdn_frontdoor_profile.key].id, null)
+  )
+  enabled = try(var.settings.enabled, true)
+
+  # ... other configuration
+}
+
+# Example with dependency on other submodule
+resource "azurerm_cdn_frontdoor_origin" "origin" {
+  name = var.settings.name
+  cdn_frontdoor_origin_group_id = coalesce(
+    try(var.settings.cdn_frontdoor_origin_group_id, null),
+    try(var.remote_objects.cdn_frontdoor_origin_groups[var.settings.origin_group_key].id, null),
+    try(var.remote_objects.cdn_frontdoor_origin_groups[try(var.settings.origin_group.lz_key, var.client_config.landingzone_key)][var.settings.origin_group.key].id, null)
+  )
+
+  # ... other configuration
+}
+```
+
+#### Parent Module Outputs
+
+Use pluralized names in outputs:
+
+```hcl
+output "endpoints" {
+  value = module.endpoints
+}
+
+output "origin_groups" {
+  value = module.origin_groups
+}
+
+output "origins" {
+  value = module.origins
+}
+```
+
+### Benefits of This Pattern
+
+1. **Consistency**: All modules follow the same dependency resolution pattern
+2. **Flexibility**: Resources can be referenced by direct ID or by key lookup
+3. **Maintainability**: Clear separation of concerns between modules
+4. **Scalability**: Supports complex dependency chains between submodules
+5. **CAF Compliance**: Aligns with the established Cloud Adoption Framework standards
+
+### Example Reference Modules
+
+- `modules/networking/network_manager` - Reference implementation
+- `modules/cdn/cdn_frontdoor_profile` - Recently refactored to follow this pattern
+
 ## Instructions for Working with the `/examples` Directory
 
 The `/examples` directory provides a framework to demonstrate and test the modules in this repository using various configurations loaded from `.tfvars` files.
@@ -615,6 +778,59 @@ block_name {
     argument_name = var.settings.argument_name
 }
 ```
+
+### Dependency Resolution Pattern
+
+When resolving dependencies to other resources (especially between submodules), always use the `coalesce()` pattern with `try()` functions to support multiple ways of providing resource IDs:
+
+#### Standard Pattern for Resource ID Resolution
+
+```hcl
+resource_id = coalesce(
+  try(var.settings.direct_resource_id, null),
+  try(var.remote_objects.resource_name.id, null),
+  try(var.remote_objects.resource_names[try(var.settings.resource_reference.lz_key, var.client_config.landingzone_key)][var.settings.resource_reference.key].id, null)
+)
+```
+
+#### Examples
+
+**Profile ID Resolution:**
+
+```hcl
+cdn_frontdoor_profile_id = coalesce(
+  try(var.settings.cdn_frontdoor_profile_id, null),
+  try(var.remote_objects.cdn_frontdoor_profile.id, null),
+  try(var.remote_objects.cdn_frontdoor_profiles[try(var.settings.cdn_frontdoor_profile.lz_key, var.client_config.landingzone_key)][var.settings.cdn_frontdoor_profile.key].id, null)
+)
+```
+
+**Origin Group ID Resolution:**
+
+```hcl
+cdn_frontdoor_origin_group_id = coalesce(
+  try(var.settings.cdn_frontdoor_origin_group_id, null),
+  try(var.remote_objects.cdn_frontdoor_origin_groups[var.settings.origin_group_key].id, null),
+  try(var.remote_objects.cdn_frontdoor_origin_groups[try(var.settings.origin_group.lz_key, var.client_config.landingzone_key)][var.settings.origin_group.key].id, null)
+)
+```
+
+**Service Plan ID Resolution:**
+
+```hcl
+service_plan_id = coalesce(
+  try(var.settings.service_plan_id, null),
+  try(var.remote_objects.service_plans[try(var.settings.service_plan.lz_key, var.client_config.landingzone_key)][try(var.settings.service_plan.key, var.settings.service_plan_key)].id, null),
+  try(var.remote_objects.app_service_plans[try(var.settings.app_service_plan.lz_key, var.client_config.landingzone_key)][try(var.settings.app_service_plan.key, var.settings.app_service_plan_key)].id, null)
+)
+```
+
+#### Benefits of This Pattern
+
+1. **Flexibility**: Supports direct ID passing, current module references, and cross-landing zone references
+2. **Backward Compatibility**: Maintains support for existing configuration patterns
+3. **Consistency**: Standardized approach across all CAF modules
+4. **Error Prevention**: Graceful handling of missing or null values
 
 Of course! Here is the English translation of the provided guide.
 
