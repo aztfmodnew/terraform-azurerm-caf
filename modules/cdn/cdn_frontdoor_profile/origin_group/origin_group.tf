@@ -1,5 +1,5 @@
 # origin_group.tf
-# Placeholder for azurerm_cdn_frontdoor_origin_group resource implementation
+# azurerm_cdn_frontdoor_origin_group resource implementation
 
 resource "azurerm_cdn_frontdoor_origin_group" "origin_group" {
   name                                                      = var.settings.name
@@ -16,7 +16,7 @@ resource "azurerm_cdn_frontdoor_origin_group" "origin_group" {
   dynamic "health_probe" {
     for_each = try(var.settings.health_probe, null) == null ? [] : [var.settings.health_probe]
     content {
-      interval_in_seconds = try(health_probe.value.interval_in_seconds, 240)
+      interval_in_seconds = health_probe.value.interval_in_seconds
       path                = try(health_probe.value.path, "/")
       protocol            = health_probe.value.protocol
       request_type        = try(health_probe.value.request_type, "HEAD")
