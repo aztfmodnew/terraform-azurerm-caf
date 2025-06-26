@@ -8,9 +8,24 @@ variable "client_config" {
   type        = any
 }
 
+variable "location" {
+  description = "Specifies the Azure location where the resource will be created."
+  type        = string
+}
+
 variable "settings" {
   description = "Configuration settings for the CDN Front Door Security Policy."
   type        = any
+}
+
+variable "resource_group" {
+  description = "Resource group object."
+  type        = any
+}
+
+variable "base_tags" {
+  description = "Flag to determine if tags should be inherited."
+  type        = bool
 }
 
 variable "remote_objects" {
