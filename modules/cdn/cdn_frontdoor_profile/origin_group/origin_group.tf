@@ -2,8 +2,12 @@
 # azurerm_cdn_frontdoor_origin_group resource implementation
 
 resource "azurerm_cdn_frontdoor_origin_group" "origin_group" {
-  name                                                      = var.settings.name
-  cdn_frontdoor_profile_id                                  = var.settings.cdn_frontdoor_profile_id
+  name = var.settings.name
+  cdn_frontdoor_profile_id = coalesce(
+    try(var.settings.cdn_frontdoor_profile_id, null),
+    try(var.remote_objects.cdn_frontdoor_profile.id, null),
+    try(var.remote_objects.cdn_frontdoor_profiles[try(var.settings.cdn_frontdoor_profile.lz_key, var.client_config.landingzone_key)][var.settings.cdn_frontdoor_profile.key].id, null)
+  )
   session_affinity_enabled                                  = try(var.settings.session_affinity_enabled, true)
   restore_traffic_time_to_healed_or_new_endpoint_in_minutes = try(var.settings.restore_traffic_time_to_healed_or_new_endpoint_in_minutes, 10)
 

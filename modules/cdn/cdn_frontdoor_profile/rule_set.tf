@@ -1,13 +1,16 @@
-# rule_set.tf
-# Placeholder for azurerm_cdn_frontdoor_rule_set resource implementation
-
-module "rule_set" {
+module "rule_sets" {
   source          = "./rule_set"
+  for_each        = try(var.settings.rule_sets, {})
+  
   global_settings = var.global_settings
   client_config   = var.client_config
   location        = var.location
-  settings        = var.settings
   resource_group  = var.resource_group
   base_tags       = var.base_tags
-  remote_objects  = var.remote_objects
+  settings        = each.value
+  
+  remote_objects = merge(var.remote_objects, {
+    cdn_frontdoor_profile    = azurerm_cdn_frontdoor_profile.cdn_frontdoor_profile
+    cdn_frontdoor_profiles   = { "${var.client_config.landingzone_key}" = { "${local.profile_key}" = azurerm_cdn_frontdoor_profile.cdn_frontdoor_profile } }
+  })
 }

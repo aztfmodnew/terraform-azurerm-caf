@@ -2,10 +2,14 @@
 # Placeholder for azurerm_cdn_frontdoor_rule resource implementation
 
 resource "azurerm_cdn_frontdoor_rule" "rule" {
-  name                      = var.settings.name
-  cdn_frontdoor_rule_set_id = var.settings.cdn_frontdoor_rule_set_id
-  order                     = var.settings.order
-  behavior_on_match         = try(var.settings.behavior_on_match, "Continue")
+  name = var.settings.name
+  cdn_frontdoor_rule_set_id = coalesce(
+    try(var.settings.cdn_frontdoor_rule_set_id, null),
+    try(var.remote_objects.cdn_frontdoor_rule_sets[var.settings.rule_set_key].id, null),
+    try(var.remote_objects.cdn_frontdoor_rule_sets[try(var.settings.rule_set.lz_key, var.client_config.landingzone_key)][var.settings.rule_set.key].id, null)
+  )
+  order         = var.settings.order
+  behavior_on_match = try(var.settings.behavior_on_match, "Continue")
   dynamic "actions" {
     for_each = try(var.settings.actions, [])
     content {

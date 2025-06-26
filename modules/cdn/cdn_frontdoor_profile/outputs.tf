@@ -1,38 +1,47 @@
 output "id" {
-  value = module.profile.id
+  value = azurerm_cdn_frontdoor_profile.cdn_frontdoor_profile.id
 }
+
 output "resource_guid" {
-  value = module.profile.resource_guid
+  value = azurerm_cdn_frontdoor_profile.cdn_frontdoor_profile.resource_guid
 }
 
-output "endpoint_id" {
-  value = module.endpoint.endpoint_id
+output "endpoints" {
+  value = module.endpoints
 }
 
-output "origin_group_id" {
-  value = module.origin_group.origin_group_id
+output "origin_groups" {
+  value = module.origin_groups
 }
 
-output "origin_id" {
-  value = module.origin.origin_id
+output "origins" {
+  value = module.origins
 }
 
-output "rule_set_id" {
-  value = module.rule_set.rule_set_id
+output "rule_sets" {
+  value = module.rule_sets
 }
 
-output "frontdoor_rule_id" {
-  value = module.rule.frontdoor_rule_id
+output "rules" {
+  value = module.rules
 }
 
-output "secret_id" {
-  value = module.secret.secret_id
+output "secrets" {
+  value = module.secrets
 }
 
-output "security_policy_id" {
-  value = module.security_policy.id
+output "security_policies" {
+  value = module.security_policies
 }
 
-output "custom_domain_association_id" {
-  value = module.custom_domain_association.custom_domain_association_id
+output "routes" {
+  value = module.routes
+}
+
+output "frontdoor_custom_domains" {
+  value = module.frontdoor_custom_domains
+}
+
+output "firewall_policies" {
+  value = module.firewall_policies
 }

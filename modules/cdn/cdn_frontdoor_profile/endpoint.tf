@@ -1,13 +1,15 @@
-# endpoint.tf
-# Placeholder for azurerm_cdn_frontdoor_endpoint resource implementation
-
-module "endpoint" {
-  source          = "./endpoint"
+module "endpoints" {
+  source   = "./endpoint"
+  for_each = try(var.settings.endpoints, {})
+  
   global_settings = var.global_settings
   client_config   = var.client_config
   location        = var.location
-  settings        = var.settings
   resource_group  = var.resource_group
   base_tags       = var.base_tags
-  remote_objects  = var.remote_objects
+  settings        = each.value
+  
+  remote_objects = merge(var.remote_objects, {
+    cdn_frontdoor_profile = azurerm_cdn_frontdoor_profile.cdn_frontdoor_profile
+  })
 }

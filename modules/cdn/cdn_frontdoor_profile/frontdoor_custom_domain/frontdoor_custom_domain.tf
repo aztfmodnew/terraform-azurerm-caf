@@ -1,8 +1,12 @@
 resource "azurerm_cdn_frontdoor_custom_domain" "custom_domain" {
-  name                     = var.settings.name
-  cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.profile.id
-  host_name                = var.settings.host_name
-  dns_zone_id              = try(var.settings.dns_zone_id, null)
+  name = var.settings.name
+  cdn_frontdoor_profile_id = coalesce(
+    try(var.settings.cdn_frontdoor_profile_id, null),
+    try(var.remote_objects.cdn_frontdoor_profile.id, null),
+    try(var.remote_objects.cdn_frontdoor_profiles[try(var.settings.cdn_frontdoor_profile.lz_key, var.client_config.landingzone_key)][var.settings.cdn_frontdoor_profile.key].id, null)
+  )
+  host_name   = var.settings.host_name
+  dns_zone_id = try(var.settings.dns_zone_id, null)
 
   tls {
     certificate_type = try(var.settings.tls.certificate_type, null)

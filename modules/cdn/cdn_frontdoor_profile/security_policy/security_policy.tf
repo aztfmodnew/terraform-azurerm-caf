@@ -2,22 +2,36 @@
 # azurerm_cdn_frontdoor_security_policy resource implementation
 
 resource "azurerm_cdn_frontdoor_security_policy" "security_policy" {
-  name                     = var.settings.name
-  cdn_frontdoor_profile_id = var.settings.cdn_frontdoor_profile_id
+  name = var.settings.name
+  cdn_frontdoor_profile_id = coalesce(
+    try(var.settings.cdn_frontdoor_profile_id, null),
+    try(var.remote_objects.cdn_frontdoor_profile.id, null),
+    try(var.remote_objects.cdn_frontdoor_profiles[try(var.settings.cdn_frontdoor_profile.lz_key, var.client_config.landingzone_key)][var.settings.cdn_frontdoor_profile.key].id, null)
+  )
 
   security_policies {
     firewall {
-      cdn_frontdoor_firewall_policy_id = var.settings.security_policies.firewall.cdn_frontdoor_firewall_policy_id
+      cdn_frontdoor_firewall_policy_id = coalesce(
+        try(var.settings.security_policies.firewall.cdn_frontdoor_firewall_policy_id, null),
+        try(var.remote_objects.cdn_frontdoor_firewall_policies[try(var.settings.security_policies.firewall.cdn_frontdoor_firewall_policy.lz_key, var.client_config.landingzone_key)][var.settings.security_policies.firewall.cdn_frontdoor_firewall_policy.key].id, null)
+      )
 
-      association {
-        dynamic "domain" {
-          for_each = try(var.settings.security_policies.firewall.association.domain, [])
-          content {
-            cdn_frontdoor_domain_id = domain.value.cdn_frontdoor_domain_id
+      dynamic "association" {
+        for_each = try(var.settings.security_policies.firewall.association, [])
+        content {
+          dynamic "domain" {
+            for_each = try(association.value.domain, [])
+            content {
+              cdn_frontdoor_domain_id = coalesce(
+                try(domain.value.cdn_frontdoor_domain_id, null),
+                try(var.remote_objects.cdn_frontdoor_custom_domains[try(domain.value.cdn_frontdoor_custom_domain.lz_key, var.client_config.landingzone_key)][domain.value.cdn_frontdoor_custom_domain.key].id, null),
+                try(var.remote_objects.cdn_frontdoor_endpoints[try(domain.value.cdn_frontdoor_endpoint.lz_key, var.client_config.landingzone_key)][domain.value.cdn_frontdoor_endpoint.key].id, null)
+              )
+            }
           }
-        }
 
-        patterns_to_match = try(var.settings.security_policies.firewall.association.patterns_to_match, ["/*"])
+          patterns_to_match = association.value.patterns_to_match
+        }
       }
     }
   }

@@ -13,7 +13,4 @@ locals {
   )
   location            = coalesce(var.location, var.resource_group.location)
   resource_group_name = var.resource_group.name
-  
-  # Generate a key for the current profile based on settings or use "default"
-  profile_key = try(var.settings.key, "default")
 }
