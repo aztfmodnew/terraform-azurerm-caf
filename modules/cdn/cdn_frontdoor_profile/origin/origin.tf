@@ -2,9 +2,10 @@
 # azurerm_cdn_frontdoor_origin resource implementation
 
 resource "azurerm_cdn_frontdoor_origin" "origin" {
-  name = var.settings.name
+  name = azurecaf_name.origin.result
   cdn_frontdoor_origin_group_id = coalesce(
     try(var.settings.cdn_frontdoor_origin_group_id, null),
+    try(var.remote_objects.cdn_frontdoor_origin_groups[var.settings.cdn_frontdoor_origin_group_key].id, null),
     try(var.remote_objects.cdn_frontdoor_origin_groups[var.settings.origin_group_key].id, null),
     try(var.remote_objects.cdn_frontdoor_origin_groups[try(var.settings.origin_group.lz_key, var.client_config.landingzone_key)][var.settings.origin_group.key].id, null)
   )

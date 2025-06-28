@@ -2,7 +2,7 @@
 # Placeholder for azurerm_cdn_frontdoor_rule_set resource implementation
 
 resource "azurerm_cdn_frontdoor_rule_set" "rule_set" {
-  name = var.settings.name
+  name = azurecaf_name.rule_set.result
   cdn_frontdoor_profile_id = coalesce(
     try(var.settings.cdn_frontdoor_profile_id, null),
     try(var.remote_objects.cdn_frontdoor_profile.id, null),

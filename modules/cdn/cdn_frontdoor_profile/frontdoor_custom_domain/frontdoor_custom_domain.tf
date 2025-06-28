@@ -1,5 +1,5 @@
 resource "azurerm_cdn_frontdoor_custom_domain" "custom_domain" {
-  name = var.settings.name
+  name = azurecaf_name.custom_domain.result
   cdn_frontdoor_profile_id = coalesce(
     try(var.settings.cdn_frontdoor_profile_id, null),
     try(var.remote_objects.cdn_frontdoor_profile.id, null),

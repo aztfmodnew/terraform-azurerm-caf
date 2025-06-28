@@ -2,7 +2,7 @@
 # azurerm_cdn_frontdoor_security_policy resource implementation
 
 resource "azurerm_cdn_frontdoor_security_policy" "security_policy" {
-  name = var.settings.name
+  name = azurecaf_name.security_policy.result
   cdn_frontdoor_profile_id = coalesce(
     try(var.settings.cdn_frontdoor_profile_id, null),
     try(var.remote_objects.cdn_frontdoor_profile.id, null),

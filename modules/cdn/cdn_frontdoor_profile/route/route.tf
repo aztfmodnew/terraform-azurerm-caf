@@ -2,7 +2,7 @@
 # azurerm_cdn_frontdoor_route resource implementation
 
 resource "azurerm_cdn_frontdoor_route" "route" {
-  name = var.settings.name
+  name = azurecaf_name.route.result
   cdn_frontdoor_endpoint_id = coalesce(
     try(var.settings.cdn_frontdoor_endpoint_id, null),
     try(var.remote_objects.cdn_frontdoor_endpoints[var.settings.endpoint_key].id, null),

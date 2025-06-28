@@ -10,7 +10,9 @@ module "cdn_frontdoor_profile" {
   settings        = each.value
 
   remote_objects = {
-    diagnostics = local.combined_diagnostics
+    diagnostics                   = local.combined_diagnostics
+    keyvault_certificate_requests = local.combined_objects_keyvault_certificate_requests
+    managed_identities           = local.combined_objects_managed_identities
   }
 }
 

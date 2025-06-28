@@ -1,5 +1,5 @@
 resource "azurerm_cdn_frontdoor_firewall_policy" "firewall_policy" {
-  name                = var.settings.name
+  name                = azurecaf_name.firewall_policy.result
   resource_group_name = local.resource_group_name
   sku_name            = coalesce(
     try(var.settings.sku_name, null),
