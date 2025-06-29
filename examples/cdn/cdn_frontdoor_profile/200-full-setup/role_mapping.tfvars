@@ -12,7 +12,7 @@ role_mapping = {
           }
         }
         # Managed identity needs access to certificates and secrets for CDN Front Door
-        "Key Vault Certificates User" = {
+        "Key Vault Certificate User" = {
           managed_identities = {
             keys = ["cdn_identity"]
           }
