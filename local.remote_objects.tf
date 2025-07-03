@@ -86,6 +86,7 @@ locals {
     iot_dps_shared_access_policy                   = try(local.combined_objects_iot_dps_shared_access_policy, null)
     iot_hub_consumer_groups                        = try(local.combined_objects_iot_hub_consumer_groups, null)
     keyvault_certificates                          = try(local.combined_objects_keyvault_certificates, null)
+    keyvault_certificate_issuers                   = try(local.combined_objects_keyvault_certificate_issuers, null)
     keyvault_certificate_requests                  = try(local.combined_objects_keyvault_certificate_requests, null)
     keyvault_keys                                  = try(local.combined_objects_keyvault_keys, null)
     keyvaults                                      = try(local.combined_objects_keyvaults, null)
