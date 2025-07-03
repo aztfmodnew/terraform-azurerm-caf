@@ -17,7 +17,7 @@ resource "azurerm_cdn_frontdoor_origin" "origin" {
   origin_host_header             = try(var.settings.origin_host_header, null)
   priority                       = try(var.settings.priority, 1)
   weight                         = try(var.settings.weight, 500)
-  
+
   dynamic "private_link" {
     for_each = try(var.settings.private_link, null) == null ? [] : [var.settings.private_link]
     content {
@@ -27,7 +27,7 @@ resource "azurerm_cdn_frontdoor_origin" "origin" {
       private_link_target_id = private_link.value.private_link_target_id
     }
   }
-  
+
   dynamic "timeouts" {
     for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
     content {

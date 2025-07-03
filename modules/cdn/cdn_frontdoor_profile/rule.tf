@@ -1,17 +1,17 @@
 module "rules" {
-  source          = "./rule"
-  for_each        = try(var.settings.rules, {})
-  
+  source   = "./rule"
+  for_each = try(var.settings.rules, {})
+
   global_settings = var.global_settings
   client_config   = var.client_config
   location        = var.location
   resource_group  = var.resource_group
   base_tags       = var.base_tags
   settings        = each.value
-  
+
   remote_objects = merge(var.remote_objects, {
     cdn_frontdoor_rule_sets = module.rule_sets
   })
-  
+
   depends_on = [module.rule_sets]
 }

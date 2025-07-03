@@ -13,7 +13,7 @@ module "custom_domain_associations" {
 
   remote_objects = merge(var.remote_objects, {
     cdn_frontdoor_custom_domains = module.frontdoor_custom_domains
-    cdn_frontdoor_routes        = module.routes
+    cdn_frontdoor_routes         = module.routes
   })
 
   depends_on = [module.frontdoor_custom_domains, module.routes]

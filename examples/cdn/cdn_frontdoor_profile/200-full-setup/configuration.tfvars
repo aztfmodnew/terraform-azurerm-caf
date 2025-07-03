@@ -33,9 +33,9 @@ cdn_frontdoor_profiles = {
     }
     origins = {
       origin1 = {
-        name                    = "caf-origin1"
-        origin_group_key        = "og1"
-        host_name               = "myapp-backend.example.com"
+        name                           = "caf-origin1"
+        origin_group_key               = "og1"
+        host_name                      = "myapp-backend.example.com"
         certificate_name_check_enabled = false
       }
     }
@@ -51,8 +51,8 @@ cdn_frontdoor_profiles = {
         order        = 1
         actions = [{
           route_configuration_override_action = {
-            origin_group_key       = "og1"
-            forwarding_protocol    = "HttpsOnly"
+            origin_group_key    = "og1"
+            forwarding_protocol = "HttpsOnly"
           }
         }]
       }

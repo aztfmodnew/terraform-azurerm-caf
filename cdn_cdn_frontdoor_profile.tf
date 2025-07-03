@@ -12,7 +12,7 @@ module "cdn_frontdoor_profile" {
   remote_objects = {
     diagnostics                   = local.combined_diagnostics
     keyvault_certificate_requests = local.combined_objects_keyvault_certificate_requests
-    managed_identities           = local.combined_objects_managed_identities
+    managed_identities            = local.combined_objects_managed_identities
   }
 }
 

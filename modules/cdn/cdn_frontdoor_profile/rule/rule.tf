@@ -8,7 +8,7 @@ resource "azurerm_cdn_frontdoor_rule" "rule" {
     try(var.remote_objects.cdn_frontdoor_rule_sets[var.settings.rule_set_key].id, null),
     try(var.remote_objects.cdn_frontdoor_rule_sets[try(var.settings.rule_set.lz_key, var.client_config.landingzone_key)][var.settings.rule_set.key].id, null)
   )
-  order         = var.settings.order
+  order             = var.settings.order
   behavior_on_match = try(var.settings.behavior_on_match, "Continue")
   dynamic "actions" {
     for_each = try(var.settings.actions, [])

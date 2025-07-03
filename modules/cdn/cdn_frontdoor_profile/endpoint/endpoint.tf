@@ -9,9 +9,9 @@ resource "azurerm_cdn_frontdoor_endpoint" "endpoint" {
     try(var.remote_objects.cdn_frontdoor_profiles[try(var.settings.cdn_frontdoor_profile.lz_key, var.client_config.landingzone_key)][var.settings.cdn_frontdoor_profile.key].id, null)
   )
   enabled = try(var.settings.enabled, true)
-  
+
   tags = merge(local.tags, try(var.settings.tags, null))
-  
+
   dynamic "timeouts" {
     for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
     content {
