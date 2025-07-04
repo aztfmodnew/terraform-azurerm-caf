@@ -53,6 +53,7 @@ cdn_frontdoor_profiles = {
           route_configuration_override_action = {
             origin_group_key    = "og1"
             forwarding_protocol = "HttpsOnly"
+            cache_behavior      = "HonorOrigin"
           }
         }]
       }
