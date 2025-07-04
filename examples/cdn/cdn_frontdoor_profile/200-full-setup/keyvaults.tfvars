@@ -9,9 +9,6 @@ keyvaults = {
     # Enable RBAC authorization instead of access policies
     enable_rbac_authorization = true
 
-
-
-
     tags = {
       purpose = "cdn-frontdoor"
     }
@@ -26,7 +23,7 @@ keyvault_certificate_requests = {
     keyvault_key = "cdn_kv"
 
     certificate_policy = {
-      issuer_key_or_name  = "self"
+      issuer_key_or_name  = "DigiCert"
       exportable          = true
       key_size            = 2048
       key_type            = "RSA"
