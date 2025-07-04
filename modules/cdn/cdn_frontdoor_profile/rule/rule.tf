@@ -46,7 +46,7 @@ resource "azurerm_cdn_frontdoor_rule" "rule" {
             try(var.remote_objects.cdn_frontdoor_origin_groups[try(route_configuration_override_action.value.origin_group.lz_key, var.client_config.landingzone_key)][route_configuration_override_action.value.origin_group.key].id, null)
           )
           forwarding_protocol           = try(route_configuration_override_action.value.forwarding_protocol, null)
-          query_string_caching_behavior = try(route_configuration_override_action.value.query_string_caching_behavior, null)
+          query_string_caching_behavior = try(route_configuration_override_action.value.query_string_caching_behavior, "IgnoreQueryString")
           query_string_parameters       = try(route_configuration_override_action.value.query_string_parameters, null)
           compression_enabled           = try(route_configuration_override_action.value.compression_enabled, null)
           cache_behavior                = try(route_configuration_override_action.value.cache_behavior, "HonorOrigin")
