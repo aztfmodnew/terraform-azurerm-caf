@@ -10,8 +10,9 @@ module "rules" {
   settings        = each.value
 
   remote_objects = merge(var.remote_objects, {
-    cdn_frontdoor_rule_sets = module.rule_sets
+    cdn_frontdoor_rule_sets     = module.rule_sets
+    cdn_frontdoor_origin_groups = module.origin_groups
   })
 
-  depends_on = [module.rule_sets]
+  depends_on = [module.rule_sets, module.origin_groups]
 }
