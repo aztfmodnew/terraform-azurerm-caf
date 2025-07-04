@@ -4,6 +4,13 @@ cdn_frontdoor_profiles = {
     location           = "westeurope"
     resource_group_key = "cdn_rg"
     sku_name           = "Premium_AzureFrontDoor"
+
+    # Enable managed identity for secure Key Vault access
+    identity = {
+      type                  = "UserAssigned"
+      managed_identity_keys = ["cdn_identity"]
+    }
+
     custom_domains = {
       domain1 = {
         name      = "caf-custom-domain"
@@ -51,9 +58,10 @@ cdn_frontdoor_profiles = {
         order        = 1
         actions = [{
           route_configuration_override_action = {
-            origin_group_key    = "og1"
-            forwarding_protocol = "HttpsOnly"
-            cache_behavior      = "HonorOrigin"
+            origin_group_key              = "og1"
+            forwarding_protocol           = "HttpsOnly"
+            cache_behavior                = "HonorOrigin"
+            query_string_caching_behavior = "IgnoreQueryString"
           }
         }]
       }
