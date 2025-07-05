@@ -31,7 +31,7 @@
     "automation/103-automation-private-endpoints",
     "automation/104-automation-schedule-runbook",
     "cdn/cdn_frontdoor_profile/100-basic",
-    "cdn/cdn_frontdoor_profile/200-full-setup",
+    "cdn/cdn_frontdoor_profile/200-full-setup-custom-certificates",
     "cognitive_services/100-cognitive-services-account-OpenAI",
     "communication/communication_services/101-communication_service",
     "diagnostics_profiles/100-multiple-destinations",
