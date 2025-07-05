@@ -13,9 +13,15 @@ resource "azurerm_cdn_frontdoor_route" "route" {
     try(var.remote_objects.cdn_frontdoor_origin_groups[var.settings.origin_group_key].id, null),
     try(var.remote_objects.cdn_frontdoor_origin_groups[try(var.settings.origin_group.lz_key, var.client_config.landingzone_key)][var.settings.origin_group.key].id, null)
   )
-  cdn_frontdoor_origin_ids = try(var.settings.cdn_frontdoor_origin_ids, null)
-  patterns_to_match        = var.settings.patterns_to_match
-  supported_protocols      = var.settings.supported_protocols
+  cdn_frontdoor_origin_ids = coalesce(
+    try(var.settings.cdn_frontdoor_origin_ids, null),
+    try([
+      for origin_key in try(var.settings.origin_ids, []) :
+      var.remote_objects.cdn_frontdoor_origins[origin_key].id
+    ], null)
+  )
+  patterns_to_match   = var.settings.patterns_to_match
+  supported_protocols = var.settings.supported_protocols
 
   forwarding_protocol             = try(var.settings.forwarding_protocol, "MatchRequest")
   cdn_frontdoor_custom_domain_ids = try(var.settings.cdn_frontdoor_custom_domain_ids, null)
