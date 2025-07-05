@@ -5,16 +5,14 @@ cdn_frontdoor_profiles = {
     resource_group_key = "cdn_rg"
     sku_name           = "Premium_AzureFrontDoor"
 
-    # Enable managed identity for secure Key Vault access
-    identity = {
-      type                  = "UserAssigned"
-      managed_identity_keys = ["cdn_identity"]
-    }
-
     custom_domains = {
       domain1 = {
         name      = "caf-custom-domain"
         host_name = "myapp.example.com"
+        tls = {
+          certificate_type    = "ManagedCertificate"
+          minimum_tls_version = "TLS12"
+        }
       }
     }
     endpoints = {
@@ -66,19 +64,44 @@ cdn_frontdoor_profiles = {
         }]
       }
     }
-    secrets = {
-      secret1 = {
-        name = "caf-secret1"
-        secret = {
-          customer_certificate = {
-            certificate_request = {
-              key = "cdn_certificate"
-              # lz_key = "remote_lz"  # Optional for remote landing zone
-            }
-          }
+
+    # Routes to associate custom domains with endpoints
+    routes = {
+      route1 = {
+        name                = "caf-route1"
+        endpoint_key        = "endpoint1"
+        origin_group_key    = "og1"
+        supported_protocols = ["Http", "Https"]
+        patterns_to_match   = ["/*"]
+        forwarding_protocol = "HttpsOnly"
+
+        # Associate with custom domain (commented for simplicity)
+        # custom_domain_keys = ["domain1"]
+
+        # Specify origin IDs explicitly
+        origin_ids = ["origin1"]
+
+        # Associate rule set to apply rules to this route
+        rule_set_keys = ["ruleset1"]
+
+        cache = {
+          query_string_caching_behavior = "IgnoreQueryString"
+          compression_enabled           = true
+          content_types_to_compress = [
+            "application/javascript",
+            "application/json",
+            "text/css",
+            "text/html",
+            "text/javascript",
+            "text/plain"
+          ]
         }
       }
     }
+
+    # Remove secrets section since we're using managed certificates
+    # secrets = { ... }
+
     # Agrega más configuraciones según sea necesario
   }
 }
