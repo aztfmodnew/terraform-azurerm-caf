@@ -21,6 +21,9 @@ role_mapping = {
           managed_identities = {
             keys = ["cdn_identity"]
           }
+          # NOTE: Microsoft.AzureFrontDoor-Cdn service principal is automatically
+          # granted access by Azure when Front Door uses managed identity.
+          # No manual configuration needed.
         }
       }
     }

@@ -15,6 +15,11 @@ cdn_frontdoor_profiles = {
       domain1 = {
         name      = "caf-custom-domain"
         host_name = "myapp.example.com"
+        tls = {
+          certificate_type         = "CustomerCertificate"
+          minimum_tls_version      = "TLS12"
+          cdn_frontdoor_secret_key = "secret1" # Reference to the certificate secret
+        }
       }
     }
     endpoints = {
@@ -66,6 +71,41 @@ cdn_frontdoor_profiles = {
         }]
       }
     }
+
+    # Routes to associate custom domains with endpoints
+    routes = {
+      route1 = {
+        name                = "caf-route1"
+        endpoint_key        = "endpoint1"
+        origin_group_key    = "og1"
+        supported_protocols = ["Http", "Https"]
+        patterns_to_match   = ["/*"]
+        forwarding_protocol = "HttpsOnly"
+
+        # Associate with custom domain
+        custom_domain_keys = ["domain1"]
+
+        # Specify origin IDs explicitly
+        origin_ids = ["origin1"]
+
+        # Associate rule set to apply rules to this route
+        rule_set_keys = ["ruleset1"]
+
+        cache = {
+          query_string_caching_behavior = "IgnoreQueryString"
+          compression_enabled           = true
+          content_types_to_compress = [
+            "application/javascript",
+            "application/json",
+            "text/css",
+            "text/html",
+            "text/javascript",
+            "text/plain"
+          ]
+        }
+      }
+    }
+
     secrets = {
       secret1 = {
         name = "caf-secret1"
