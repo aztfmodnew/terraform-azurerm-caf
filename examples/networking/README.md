@@ -36,7 +36,6 @@ Under the networking category you can create the following resources, with their
 | Azure Domain Name Registration           | [GitHub repository](https://github.com/aztfmod/terraform-azurerm-caf/tree/master/examples/networking/domain_name_registrations)           |
 | ExpressRoute                             | [GitHub repository](https://github.com/aztfmod/terraform-azurerm-caf/tree/master/examples/networking/express_routes)                      |
 | Azure Firewall                           | [GitHub repository](https://github.com/aztfmod/terraform-azurerm-caf/tree/master/examples/networking/firewall)                            |
-| Azure FrontDoor                          | [GitHub repository](https://github.com/aztfmod/terraform-azurerm-caf/tree/master/examples/networking/front_door)                          |
 | Azure Load Balancers                     | [GitHub repository](https://github.com/aztfmod/terraform-azurerm-caf/tree/master/examples/networking/lb)                                  |
 | Azure NAT Gateways                       | [GitHub repository](https://github.com/aztfmod/terraform-azurerm-caf/tree/master/examples/networking/nat_gateways)                        |
 | Azure Private DNS                        | [GitHub repository](https://github.com/aztfmod/terraform-azurerm-caf/tree/master/examples/networking/private_dns)                         |

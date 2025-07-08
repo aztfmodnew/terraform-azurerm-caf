@@ -34,9 +34,12 @@ locals {
     azuread_service_principals          = try(var.azuread.azuread_service_principals, {})
     azuread_users                       = try(var.azuread.azuread_users, {})
   }
+
+  cdn = {
+    cdn_frontdoor_profile = try(var.cdn.cdn_frontdoor_profile)
+  }
+
   
-
-
   client_config = var.client_config == {} ? {
     client_id               = data.azuread_client_config.current.client_id
     landingzone_key         = var.current_landingzone_key
@@ -327,9 +330,7 @@ locals {
     express_route_circuit_authorizations                    = try(var.networking.express_route_circuit_authorizations, {})
     express_route_circuit_peerings                          = try(var.networking.express_route_circuit_peerings, {})
     express_route_circuits                                  = try(var.networking.express_route_circuits, {})
-    express_route_connections                               = try(var.networking.express_route_connections, {})
-    front_door_waf_policies                                 = try(var.networking.front_door_waf_policies, {})
-    front_doors                                             = try(var.networking.front_doors, {})
+    express_route_connections                               = try(var.networking.express_route_connections, {})    
     frontdoor_custom_https_configuration                    = try(var.networking.frontdoor_custom_https_configuration, {})
     frontdoor_rules_engine                                  = try(var.networking.frontdoor_rules_engine, {})
     ip_groups                                               = try(var.networking.ip_groups, {})

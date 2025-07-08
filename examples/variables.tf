@@ -710,14 +710,6 @@ variable "dynamic_keyvault_certificates" {
   type    = any
   default = {}
 }
-variable "front_doors" {
-  type    = any
-  default = {}
-}
-variable "front_door_waf_policies" {
-  type    = any
-  default = {}
-}
 variable "dns_zones" {
   type    = any
   default = {}
