@@ -187,7 +187,7 @@ storage_account_blobs = {
         document.addEventListener('DOMContentLoaded', function() {
             const features = document.querySelectorAll('.feature');
             features.forEach((feature, index) => {
-                feature.style.animationDelay = `${index * 0.1}s`;
+                feature.style.animationDelay = `$${index * 0.1}s`;
                 feature.style.animation = 'fadeInUp 0.6s ease forwards';
             });
         });
