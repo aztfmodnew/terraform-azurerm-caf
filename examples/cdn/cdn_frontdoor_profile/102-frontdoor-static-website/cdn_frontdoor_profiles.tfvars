@@ -44,12 +44,13 @@ cdn_frontdoor_profiles = {
       storage_origin = {
         name                           = "storage-static-website"
         origin_group_key               = "storage_origin_group"
-        host_name                      = "ststaticwebsite.z13.web.core.windows.net"
+        storage_account = {
+          key = "static_website"
+        }
         certificate_name_check_enabled = true
         enabled                        = true
         http_port                      = 80
         https_port                     = 443
-        origin_host_header            = "ststaticwebsite.z13.web.core.windows.net"
         priority                       = 1
         weight                         = 1000
       }
@@ -83,8 +84,8 @@ cdn_frontdoor_profiles = {
           route_configuration_override_action = {
             origin_group_key              = "storage_origin_group"
             forwarding_protocol           = "HttpsOnly"
-            cache_behavior                = "Override"
-            cache_duration                = "P7D"  # Cache for 7 days
+            cache_behavior                = "OverrideAlways"
+            cache_duration                = "7.00:00:00"  # Cache for 7 days
             query_string_caching_behavior = "IgnoreQueryString"
           }
         }]
@@ -109,8 +110,8 @@ cdn_frontdoor_profiles = {
           route_configuration_override_action = {
             origin_group_key              = "storage_origin_group"
             forwarding_protocol           = "HttpsOnly"
-            cache_behavior                = "Override"
-            cache_duration                = "PT1H"  # Cache for 1 hour
+            cache_behavior                = "OverrideAlways"
+            cache_duration                = "01:00:00"  # Cache for 1 hour
             query_string_caching_behavior = "IgnoreQueryString"
           }
         }]

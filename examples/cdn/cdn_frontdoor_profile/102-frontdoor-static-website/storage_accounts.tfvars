@@ -59,14 +59,8 @@ storage_accounts = {
   }
 }
 
-# Storage containers to organize content
-storage_containers = {
-  web_content = {
-    name                  = "$web"
-    storage_account_key   = "static_website"
-    container_access_type = "blob"
-  }
-}
+# Storage containers are automatically created by static website configuration
+# The $web container is created automatically when static_website block is enabled
 
 # Upload sample files for the website
 storage_account_blobs = {

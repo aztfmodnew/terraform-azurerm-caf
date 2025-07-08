@@ -37,7 +37,7 @@ diagnostics_destinations = {
 }
 
 # Log Analytics Workspace to centralize logs
-log_analytics = {
+diagnostic_log_analytics = {
   central_logs = {
     name               = "law-frontdoor-logs"
     resource_group_key = "static_website"

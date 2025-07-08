@@ -211,11 +211,7 @@ module "example" {
     dns_zones                                               = var.dns_zones
     domain_name_registrations                               = var.domain_name_registrations
     express_route_circuit_authorizations                    = var.express_route_circuit_authorizations
-    express_route_circuits                                  = var.express_route_circuits
-    front_door_waf_policies                                 = var.front_door_waf_policies
-    front_doors                                             = var.front_doors
-    frontdoor_rules_engine                                  = var.frontdoor_rules_engine
-    frontdoor_custom_https_configuration                    = var.frontdoor_custom_https_configuration
+    express_route_circuits                                  = var.express_route_circuits    
     ip_groups                                               = var.ip_groups
     lb                                                      = var.lb
     lb_backend_address_pool                                 = var.lb_backend_address_pool

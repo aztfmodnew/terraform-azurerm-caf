@@ -13,6 +13,7 @@ module "cdn_frontdoor_profile" {
     diagnostics                   = local.combined_diagnostics
     keyvault_certificate_requests = local.combined_objects_keyvault_certificate_requests
     managed_identities            = local.combined_objects_managed_identities
+    storage_accounts              = local.combined_objects_storage_accounts
   }
 }
 
