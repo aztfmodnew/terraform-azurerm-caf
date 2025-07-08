@@ -202,7 +202,7 @@ resource "random_password" "admin" {
 }
 
 resource "azurerm_key_vault_secret" "admin_password" {
-  for_each = local.keyvault != null && local.os_type == "windows" && try(var.settings.virtual_machine_settings[local.os_type].admin_password_key, null) == null ? var.settings.virtual_machine_settings : {}
+  for_each = local.os_type == "windows" && try(var.settings.virtual_machine_settings[local.os_type].admin_password_key, null) == null && try(var.settings.virtual_machine_settings[local.os_type].admin_password, null) == null ? var.settings.virtual_machine_settings : {}
 
   name         = format("%s-admin-password", data.azurecaf_name.windows_computer_name[each.key].result)
   value        = random_password.admin[local.os_type].result
