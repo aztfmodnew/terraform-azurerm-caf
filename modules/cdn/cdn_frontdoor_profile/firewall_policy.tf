@@ -9,5 +9,7 @@ module "firewall_policies" {
   base_tags       = var.base_tags
   settings        = each.value
 
-  remote_objects = var.remote_objects
+  remote_objects = merge(var.remote_objects, {
+    cdn_frontdoor_profile = azurerm_cdn_frontdoor_profile.cdn_frontdoor_profile
+  })
 }

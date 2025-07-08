@@ -10,6 +10,10 @@ module "security_policies" {
   settings        = each.value
 
   remote_objects = merge(var.remote_objects, {
-    cdn_frontdoor_profile = azurerm_cdn_frontdoor_profile.cdn_frontdoor_profile
+    cdn_frontdoor_profile           = azurerm_cdn_frontdoor_profile.cdn_frontdoor_profile
+    cdn_frontdoor_firewall_policies = module.firewall_policies
+    cdn_frontdoor_endpoints         = module.endpoints
   })
+
+  depends_on = [module.firewall_policies, module.endpoints]
 }
