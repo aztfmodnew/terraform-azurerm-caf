@@ -47,5 +47,10 @@ active_directory_domain_service_replica_set = {
       vnet_key = "vnet_aadds_re2"
       key      = "aadds"
     }
+    timeouts = {
+      create = "120m"  # 2 horas
+      read   = "5m"
+      delete = "60m"
+    }
   }
 }
