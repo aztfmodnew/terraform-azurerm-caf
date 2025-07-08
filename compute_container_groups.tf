@@ -15,7 +15,7 @@ module "container_groups" {
   dynamic_keyvault_secrets = try(local.security.dynamic_keyvault_secrets, {})
 
   remote_objects = {
-    # Depurar en algún moment para pasar la logica de la subnet_id a remote_objects, error: The given key does not identify an element in this collection value.
+    # TODO: Debug at some point to pass the subnet_id logic to remote_objects, error: The given key does not identify an element in this collection value.
     #subnet_id = can(each.value.network_acls.virtual_network_rules.subnet_key) ? local.combined_objects_networking[try(each.value.network_acls.virtual_network_rules.lz_key, local.client_config.landingzone_key)][each.value.network_acls.virtual_network_rules.vnet_key].subnets[each.value.network_acls.virtual_network_rules.subnet_key].id : null
     #subnet_id           = can(each.value.vnet.subnet_key) ? local.combined_objects_networking[try(each.value.vnet.lz_key, local.client_config.landingzone_key)][each.value.vnet.key].subnets[each.value.vnet.subnet_key].id : null
     vnets           = local.combined_objects_networking
@@ -50,4 +50,3 @@ module "network_profiles" {
 output "container_groups" {
   value = module.container_groups
 }
-
