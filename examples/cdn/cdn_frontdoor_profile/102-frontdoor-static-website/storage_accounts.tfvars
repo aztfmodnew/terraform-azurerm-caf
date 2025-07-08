@@ -5,7 +5,7 @@ storage_accounts = {
     account_tier             = "Standard"
     account_replication_type = "LRS"
     account_kind             = "StorageV2"
-    
+
     # Enable static website hosting
     static_website = {
       index_document     = "index.html"
@@ -14,9 +14,9 @@ storage_accounts = {
 
     # Configure blob properties with retention policies
     blob_properties = {
-      versioning_enabled       = false
-      change_feed_enabled      = false
-      delete_retention_policy  = {
+      versioning_enabled  = false
+      change_feed_enabled = false
+      delete_retention_policy = {
         days = 7
       }
       container_delete_retention_policy = {
@@ -29,17 +29,17 @@ storage_accounts = {
       {
         name    = "static_website_lifecycle"
         enabled = true
-        
+
         filter = {
           prefix_match = ["$web/"]
         }
-        
+
         rule = {
           delete_after_days_since_modification_greater_than = 365
-          
+
           # Move to cool tier after 30 days for infrequently accessed content
           tier_to_cool_after_days_since_modification_greater_than = 30
-          
+
           # Move to archive tier after 90 days
           tier_to_archive_after_days_since_modification_greater_than = 90
         }
@@ -75,8 +75,8 @@ storage_account_blobs = {
     storage_account_key    = "static_website"
     storage_container_name = "$web"
     type                   = "Block"
-    content_type          = "text/html"
-    source_content        = <<-HTML
+    content_type           = "text/html"
+    source_content         = <<-HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -209,14 +209,14 @@ storage_account_blobs = {
 </html>
 HTML
   }
-  
+
   error_404 = {
     name                   = "404.html"
     storage_account_key    = "static_website"
     storage_container_name = "$web"
     type                   = "Block"
-    content_type          = "text/html"
-    source_content        = <<-HTML
+    content_type           = "text/html"
+    source_content         = <<-HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -292,8 +292,8 @@ HTML
     storage_account_key    = "static_website"
     storage_container_name = "$web"
     type                   = "Block"
-    content_type          = "text/html"
-    source_content        = <<-HTML
+    content_type           = "text/html"
+    source_content         = <<-HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>

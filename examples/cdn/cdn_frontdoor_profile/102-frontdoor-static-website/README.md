@@ -63,7 +63,7 @@ The diagnostic storage account includes specialized retention policies:
 ## Files Structure
 
 ```
-103-frontdoor-static-website/
+102-frontdoor-static-website/
 ├── README.md                    # This documentation
 ├── configuration.tfvars         # Main configuration
 ├── resource_groups.tfvars       # Resource group definitions
@@ -90,7 +90,7 @@ The diagnostic storage account includes specialized retention policies:
 
 2. **Navigate to the example**:
    ```bash
-   cd examples/networking/front_door/103-frontdoor-static-website
+   cd examples/cdn/cdn_frontdoor_profile/102-frontdoor-static-website
    ```
 
 3. **Initialize Terraform**: 
