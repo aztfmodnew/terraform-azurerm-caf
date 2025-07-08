@@ -41,6 +41,7 @@ cdn_frontdoor_profiles = {
         name                           = "caf-origin1"
         origin_group_key               = "og1"
         host_name                      = "myapp-backend.example.com"
+        origin_host_header             = "myapp-backend.example.com"
         certificate_name_check_enabled = false
       }
     }
