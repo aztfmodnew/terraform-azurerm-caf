@@ -11,6 +11,11 @@ resource "azurerm_cdn_frontdoor_origin_group" "origin_group" {
   session_affinity_enabled                                  = try(var.settings.session_affinity_enabled, true)
   restore_traffic_time_to_healed_or_new_endpoint_in_minutes = try(var.settings.restore_traffic_time_to_healed_or_new_endpoint_in_minutes, 10)
 
+  # Lifecycle rule to prevent premature destruction when associated with routes
+  lifecycle {
+    create_before_destroy = true
+  }
+
   load_balancing {
     additional_latency_in_milliseconds = try(var.settings.load_balancing.additional_latency_in_milliseconds, 50)
     sample_size                        = try(var.settings.load_balancing.sample_size, 4)

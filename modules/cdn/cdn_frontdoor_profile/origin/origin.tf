@@ -26,6 +26,11 @@ resource "azurerm_cdn_frontdoor_origin" "origin" {
   priority                       = try(var.settings.priority, 1)
   weight                         = try(var.settings.weight, 500)
 
+  # Lifecycle rule to prevent premature destruction when associated with routes
+  lifecycle {
+    create_before_destroy = true
+  }
+
   dynamic "private_link" {
     for_each = try(var.settings.private_link, null) == null ? [] : [var.settings.private_link]
     content {
