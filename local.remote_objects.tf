@@ -39,7 +39,6 @@ locals {
     batch_certificates                             = try(local.combined_objects_batch_certificates, null)
     batch_jobs                                     = try(local.combined_objects_batch_jobs, null)
     batch_pools                                    = try(local.combined_objects_batch_pools, null)
-    cdn_profile                                    = try(local.combined_objects_cdn_profile, null)
     cdn_frontdoor_profile                          = try(local.combined_objects_cdn_frontdoor_profile, null)
     cognitive_services_accounts                    = try(local.combined_objects_cognitive_services_accounts, null)
     cognitive_account_customer_managed_key         = try(local.combined_objects_cognitive_account_customer_managed_key, null)

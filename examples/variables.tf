@@ -1191,14 +1191,7 @@ variable "frontdoor_custom_https_configuration" {
   type    = any
   default = {}
 }
-variable "cdn_endpoint" {
-  type    = any
-  default = {}
-}
-variable "cdn_profile" {
-  type    = any
-  default = {}
-}
+
 variable "function_apps" {
   type    = any
   default = {}
