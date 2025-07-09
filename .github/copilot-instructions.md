@@ -89,6 +89,767 @@ For example, if the module is `azurerm_ai_services` under the category `cognitiv
 /cognitive_services_ai_services.tf
 ```
 
+## Azure CAF Naming Convention Implementation
+
+Implement Azure Cloud Adoption Framework (CAF) naming conventions using the `aztfmod/azurecaf` provider for ALL modules to ensure consistent, compliant, and standardized resource names across the entire CAF framework.
+
+### Core Requirements
+
+1. **Every module with named Azure resources MUST implement azurecaf naming**
+2. **Create `azurecaf_name.tf` file in every module and submodule directory**
+3. **All Azure resource names MUST use azurecaf generated names**
+4. **Support global naming settings (prefixes, suffixes, use_slug, separator)**
+
+### Provider Configuration
+
+Include azurecaf provider in ALL `providers.tf` files for modules with named resources:
+
+```hcl
+terraform {
+  required_version = ">= 1.6.0"
+  required_providers {
+    azapi = {
+      source  = "azure/azapi"
+      version = ">= 2.1.0"
+    }
+    azurecaf = {
+      source  = "aztfmod/azurecaf"
+      version = "~> 1.2.0"
+    }
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = ">= 4.0"
+    }
+  }
+}
+```
+
+### Universal azurecaf_name.tf Pattern
+
+Create `azurecaf_name.tf` file in EVERY module and submodule that creates named Azure resources:
+
+#### For Main Modules
+
+```hcl
+resource "azurecaf_name" "main_resource" {
+  name          = var.settings.name
+  resource_type = "azurerm_[resource_type]"  # e.g., azurerm_storage_account
+  prefixes      = var.global_settings.prefixes
+  suffixes      = var.global_settings.suffixes
+  use_slug      = var.global_settings.use_slug
+  clean_input   = true
+  separator     = "-"
+}
+```
+
+#### For Submodules
+
+```hcl
+resource "azurecaf_name" "subresource" {
+  name          = var.settings.name
+  resource_type = "azurerm_[subresource_type]"  # e.g., azurerm_storage_container
+  prefixes      = var.global_settings.prefixes
+  suffixes      = var.global_settings.suffixes
+  use_slug      = var.global_settings.use_slug
+  clean_input   = true
+  separator     = "-"
+}
+```
+
+### Resource Type Mapping
+
+Map each Azure resource to its corresponding azurecaf resource type. Common mappings:
+
+| Azure Resource | azurecaf Resource Type |
+|---------------|----------------------|
+| azurerm_resource_group | `azurerm_resource_group` |
+| azurerm_storage_account | `azurerm_storage_account` |
+| azurerm_storage_container | `azurerm_storage_container` |
+| azurerm_key_vault | `azurerm_key_vault` |
+| azurerm_virtual_network | `azurerm_virtual_network` |
+| azurerm_subnet | `azurerm_subnet` |
+| azurerm_network_security_group | `azurerm_network_security_group` |
+| azurerm_public_ip | `azurerm_public_ip` |
+| azurerm_application_gateway | `azurerm_application_gateway` |
+| azurerm_kubernetes_cluster | `azurerm_kubernetes_cluster` |
+| azurerm_container_registry | `azurerm_container_registry` |
+| azurerm_app_service_plan | `azurerm_app_service_plan` |
+| azurerm_linux_web_app | `azurerm_linux_web_app` |
+| azurerm_windows_web_app | `azurerm_windows_web_app` |
+| azurerm_function_app | `azurerm_function_app` |
+| azurerm_mssql_server | `azurerm_mssql_server` |
+| azurerm_mssql_database | `azurerm_mssql_database` |
+| azurerm_cosmosdb_account | `azurerm_cosmosdb_account` |
+| azurerm_cdn_profile | `azurerm_cdn_profile` |
+| azurerm_cdn_frontdoor_profile | `azurerm_cdn_frontdoor_profile` |
+| azurerm_cdn_frontdoor_endpoint | `azurerm_cdn_frontdoor_endpoint` |
+
+### Universal Resource Implementation
+
+Update ALL resource definitions to use azurecaf generated names:
+
+```hcl
+# ❌ INCORRECT - Direct name usage
+resource "azurerm_[resource_type]" "resource_name" {
+  name = var.settings.name
+  # ... other attributes
+}
+
+# ✅ CORRECT - azurecaf generated name
+resource "azurerm_[resource_type]" "resource_name" {
+  name = azurecaf_name.main_resource.result
+  # ... other attributes
+}
+```
+
+### Universal Outputs Pattern
+
+Add `name` output to ALL modules with named resources:
+
+```hcl
+# ALWAYS include the CAF-compliant name output
+output "name" {
+  value       = azurecaf_name.main_resource.result
+  description = "The CAF-compliant name of the [resource_type]"
+}
+
+# Standard resource outputs
+output "id" {
+  value = azurerm_[resource_type].resource_name.id
+}
+
+# ... other specific outputs for the resource type
+```
+
+### Implementation Steps for Any Module
+
+1. **Add azurecaf provider** to `providers.tf`
+2. **Create `azurecaf_name.tf`** file with appropriate resource type
+3. **Update resource definition** to use `azurecaf_name.resource.result`
+4. **Add name output** to expose CAF-compliant name
+5. **Test with examples** that include azurecaf provider
+
+### Common Implementation Patterns
+
+#### Single Resource Module
+```hcl
+# azurecaf_name.tf
+resource "azurecaf_name" "storage_account" {
+  name          = var.settings.name
+  resource_type = "azurerm_storage_account"
+  prefixes      = var.global_settings.prefixes
+  suffixes      = var.global_settings.suffixes
+  use_slug      = var.global_settings.use_slug
+  clean_input   = true
+  separator     = "-"
+}
+
+# storage_account.tf
+resource "azurerm_storage_account" "storage_account" {
+  name                = azurecaf_name.storage_account.result
+  resource_group_name = local.resource_group_name
+  location            = local.location
+  # ... other configuration
+}
+```
+
+#### Multi-Resource Module with Submodules
+```hcl
+# Main module azurecaf_name.tf
+resource "azurecaf_name" "main_resource" {
+  name          = var.settings.name
+  resource_type = "azurerm_main_resource_type"
+  prefixes      = var.global_settings.prefixes
+  suffixes      = var.global_settings.suffixes
+  use_slug      = var.global_settings.use_slug
+  clean_input   = true
+  separator     = "-"
+}
+
+# Submodule azurecaf_name.tf
+resource "azurecaf_name" "subresource" {
+  name          = var.settings.name
+  resource_type = "azurerm_subresource_type"
+  prefixes      = var.global_settings.prefixes
+  suffixes      = var.global_settings.suffixes
+  use_slug      = var.global_settings.use_slug
+  clean_input   = true
+  separator     = "-"
+}
+```
+
+### Global Settings Integration
+
+Ensure EVERY module properly integrates with global naming settings:
+
+```hcl
+# variables.tf - Standard global_settings variable (ALWAYS include this)
+variable "global_settings" {
+  description = <<DESCRIPTION
+  The global_settings object is a map of settings that can be used to configure the naming convention for Azure resources. It allows you to specify a default region, environment, and other settings that will be used when generating names for resources.
+  Any non-compliant characters will be removed from the name, suffix, or prefix. The generated name will be compliant with the set of allowed characters for each Azure resource type.
+  
+  These are the key naming settings:
+  - prefixes - (Optional) A list of prefixes to append as the first characters of the generated name.
+  - suffixes - (Optional) A list of suffixes to append after the basename of the resource.
+  - use_slug - (Optional) A boolean value that indicates whether a slug should be added to the name. Defaults to true.
+  - separator - (Optional) The separator character to use between prefixes, resource type, name, suffixes, and random characters. Defaults to "-".
+  - clean_input - (Optional) A boolean value that indicates whether to remove non-compliant characters from the name. Defaults to true.
+  DESCRIPTION
+  type = any
+}
+```
+
+### Examples Integration
+
+Update ALL examples to include azurecaf provider:
+
+```hcl
+# examples/main.tf - ALWAYS include azurecaf provider
+terraform {
+  required_providers {
+    azuread = {
+      source  = "hashicorp/azuread"
+      version = ">= 3.0.0"
+    }
+    azurecaf = {
+      source  = "aztfmod/azurecaf"
+      version = "~> 1.2.0"
+    }
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = ">= 4.0.0"
+    }
+  }
+}
+```
+
+### Benefits for ALL Modules
+
+1. **Consistency**: Standardized naming across ALL Azure resources in CAF
+2. **Compliance**: Automatic adherence to Azure naming conventions
+3. **Validation**: Built-in validation of name length and character restrictions
+4. **Flexibility**: Configurable prefixes, suffixes, and separators per environment
+5. **Cleanliness**: Automatic removal of invalid characters
+6. **Identification**: Clear resource type identification through naming slugs
+7. **Scalability**: Works across all Azure resource types and landing zones
+
+### Implementation Priority
+
+1. **New Modules**: MUST implement azurecaf naming from creation
+2. **Existing Critical Modules**: Update high-usage modules first
+3. **Legacy Modules**: Gradual migration with backward compatibility
+4. **Examples**: Update to support azurecaf in all example configurations
+
+### Reference Implementations
+
+- `modules/cdn/cdn_frontdoor_profile/` - Complete example with azurecaf naming
+- `modules/networking/network_manager/` - Multi-resource module pattern
+- `examples/` - Updated with azurecaf provider support
+
+## Submodule Dependency Pattern
+
+When creating modules with multiple submodules (subresources), follow the established pattern used by modules like `network_manager` and `cdn_frontdoor_profile`. This pattern ensures proper dependency management and consistency across the CAF framework.
+
+### Key Principles
+
+1. **All dependencies between submodules must be passed through `var.remote_objects`**
+2. **Never pass resource IDs directly as separate variables between modules**
+3. **Use `coalesce()` with `try()` pattern to resolve resource dependencies**
+4. **Use pluralized names for module calls (e.g., `endpoints`, `origins`, not `endpoint`, `origin`)**
+
+### Pattern Implementation
+
+#### Parent Module Submodule Calls
+
+In the parent module, call submodules using this pattern:
+
+```hcl
+# Example: calling endpoints submodule
+module "endpoints" {
+  source   = "./endpoint"
+  for_each = try(var.settings.endpoints, {})
+
+  global_settings = var.global_settings
+  client_config   = var.client_config
+  location        = var.location
+  resource_group  = var.resource_group
+  base_tags       = var.base_tags
+  settings        = each.value
+
+  remote_objects = merge(var.remote_objects, {
+    cdn_frontdoor_profile = azurerm_cdn_frontdoor_profile.cdn_frontdoor_profile
+  })
+}
+
+# Example: calling origins submodule that depends on origin_groups
+module "origins" {
+  source   = "./origin"
+  for_each = try(var.settings.origins, {})
+
+  global_settings = var.global_settings
+  client_config   = var.client_config
+  location        = var.location
+  resource_group  = var.resource_group
+  base_tags       = var.base_tags
+  settings        = each.value
+
+  remote_objects = merge(var.remote_objects, {
+    cdn_frontdoor_origin_groups = module.origin_groups
+  })
+
+  depends_on = [module.origin_groups]
+}
+```
+
+#### Submodule Variables
+
+Submodule `variables.tf` files should only contain the standard variables:
+
+```hcl
+variable "global_settings" {
+  description = "Global settings for naming conventions and tags."
+  type        = any
+}
+
+variable "client_config" {
+  description = "Client configuration for Azure authentication."
+  type        = any
+}
+
+variable "location" {
+  description = "Specifies the Azure location where the resource will be created."
+  type        = string
+}
+
+variable "settings" {
+  description = "Configuration settings for the resource."
+  type        = any
+}
+
+variable "resource_group" {
+  description = "Resource group object."
+  type        = any
+}
+
+variable "base_tags" {
+  description = "Flag to determine if tags should be inherited."
+  type        = bool
+}
+
+variable "remote_objects" {
+  description = "Remote objects for dependencies."
+  type        = any
+}
+```
+
+**❌ DO NOT include direct ID variables like:**
+
+- `variable "cdn_frontdoor_profile_id"`
+- `variable "origin_groups"`
+- `variable "rule_sets"`
+
+#### Submodule Resource Implementation
+
+In submodule resources, use the `coalesce()` pattern to resolve dependencies:
+
+```hcl
+resource "azurerm_cdn_frontdoor_endpoint" "endpoint" {
+  name = azurecaf_name.endpoint.result
+  cdn_frontdoor_profile_id = coalesce(
+    try(var.settings.cdn_frontdoor_profile_id, null),
+    try(var.remote_objects.cdn_frontdoor_profile.id, null),
+    try(var.remote_objects.cdn_frontdoor_profiles[try(var.settings.cdn_frontdoor_profile.lz_key, var.client_config.landingzone_key)][var.settings.cdn_frontdoor_profile.key].id, null)
+  )
+  enabled = try(var.settings.enabled, true)
+
+  # ... other configuration
+}
+
+# Example with dependency on other submodule
+resource "azurerm_cdn_frontdoor_origin" "origin" {
+  name = azurecaf_name.origin.result
+  cdn_frontdoor_origin_group_id = coalesce(
+    try(var.settings.cdn_frontdoor_origin_group_id, null),
+    try(var.remote_objects.cdn_frontdoor_origin_groups[var.settings.origin_group_key].id, null),
+    try(var.remote_objects.cdn_frontdoor_origin_groups[try(var.settings.origin_group.lz_key, var.client_config.landingzone_key)][var.settings.origin_group.key].id, null)
+  )
+
+  # ... other configuration
+}
+```
+
+#### Parent Module Outputs
+
+Use pluralized names in outputs:
+
+```hcl
+output "endpoints" {
+  value = module.endpoints
+}
+
+output "origin_groups" {
+  value = module.origin_groups
+}
+
+output "origins" {
+  value = module.origins
+}
+```
+
+### Benefits of This Pattern
+
+1. **Consistency**: All modules follow the same dependency resolution pattern
+2. **Flexibility**: Resources can be referenced by direct ID or by key lookup
+3. **Maintainability**: Clear separation of concerns between modules
+4. **Scalability**: Supports complex dependency chains between submodules
+5. **CAF Compliance**: Aligns with the established Cloud Adoption Framework standards
+
+### Example Reference Modules
+
+- `modules/networking/network_manager` - Reference implementation
+- `modules/cdn/cdn_frontdoor_profile` - Recently refactored to follow this pattern
+
+## Key Vault Certificates and Managed Identity Pattern
+
+When working with modules that require SSL/TLS certificates from Key Vault, follow these established patterns for security, maintainability, and CAF compliance.
+
+### Key Principles
+
+1. **Always use certificate keys instead of direct Key Vault certificate IDs**
+2. **Use managed identities for secure access to Key Vault**
+3. **Separate configuration concerns into multiple `.tfvars` files**
+4. **Follow the `coalesce(try(...))` pattern for certificate resolution**
+
+### Certificate Reference Pattern
+
+#### ❌ DO NOT use direct certificate IDs:
+
+```hcl
+# Wrong approach - direct ID
+secrets = {
+  secret1 = {
+    name = "my-secret"
+    secret = {
+      customer_certificate = {
+        key_vault_certificate_id = "/subscriptions/.../certificates/cert1"
+      }
+    }
+  }
+}
+```
+
+#### ✅ DO use certificate keys with proper resolution:
+
+```hcl
+# Correct approach - key reference
+secrets = {
+  secret1 = {
+    name = "my-secret"
+    secret = {
+      customer_certificate = {
+        certificate_request = {
+          key = "my_certificate_key"
+          # lz_key = "remote_lz"  # Optional for remote landing zone
+        }
+      }
+    }
+  }
+}
+```
+
+### Key Vault Certificate Request Structure
+
+Use this structure for `keyvault_certificate_requests`:
+
+```hcl
+keyvault_certificate_requests = {
+  my_certificate_key = {
+    name         = "my-certificate"
+    keyvault_key = "my_keyvault_key"
+
+    certificate_policy = {
+      issuer_key_or_name  = "self"  # or certificate authority name
+      exportable          = true
+      key_size            = 2048    # 2048, 3072, or 4096
+      key_type            = "RSA"
+      reuse_key           = true
+      renewal_action      = "AutoRenew"  # or "EmailContacts"
+      lifetime_percentage = 90
+      content_type        = "application/x-pkcs12"
+
+      x509_certificate_properties = {
+        extended_key_usage = ["1.3.6.1.5.5.7.3.1"]  # Server Authentication
+        key_usage = [
+          "cRLSign",
+          "dataEncipherment",
+          "digitalSignature",
+          "keyAgreement",
+          "keyCertSign",
+          "keyEncipherment",
+        ]
+
+        subject_alternative_names = {
+          dns_names = ["example.com", "www.example.com"]
+          emails    = []
+          upns      = []
+        }
+
+        subject            = "CN=example.com"
+        validity_in_months = 12
+      }
+    }
+
+    tags = {
+      purpose = "ssl-certificate"
+    }
+  }
+}
+```
+
+### Managed Identity Configuration
+
+For secure access to Key Vault certificates, configure managed identities:
+
+```hcl
+managed_identities = {
+  my_service_identity = {
+    name               = "my-service-identity"
+    resource_group_key = "my_rg"
+
+    tags = {
+      purpose = "service-authentication"
+    }
+  }
+}
+```
+
+### Key Vault Access Pattern (RBAC Recommended)
+
+Configure Key Vault with RBAC authorization for better security and modern patterns:
+
+#### ✅ Recommended: RBAC Pattern
+
+```hcl
+keyvaults = {
+  my_kv = {
+    name               = "my-keyvault"
+    resource_group_key = "my_rg"
+    sku_name           = "standard"
+    soft_delete_enabled = true
+    
+    # Enable RBAC authorization (recommended)
+    enable_rbac_authorization = true
+
+    creation_policies = {
+      logged_in_user = {
+        certificate_permissions = ["Get", "List", "Update", "Create", "Import", "Delete", "Purge", "Recover", "GetIssuers", "SetIssuers", "ListIssuers", "DeleteIssuers", "ManageIssuers", "Restore", "ManageContacts"]
+        key_permissions         = ["Get", "List", "Update", "Create", "Import", "Delete", "Recover", "Backup", "Restore"]
+        secret_permissions      = ["Set", "Get", "List", "Delete", "Purge", "Recover", "Backup", "Restore"]
+      }
+    }
+  }
+}
+
+# RBAC role assignments (separate file: role_mapping.tfvars)
+role_mapping = {
+  built_in_role_mapping = {
+    keyvaults = {
+      my_kv = {
+        # Current user/service principal needs admin access to manage certificates
+        "Key Vault Administrator" = {
+          logged_in = {
+            keys = ["user"]
+          }
+        }
+        "Key Vault Certificates User" = {
+          managed_identities = {
+            keys = ["my_service_identity"]
+          }
+        }
+        "Key Vault Secrets User" = {
+          managed_identities = {
+            keys = ["my_service_identity"]
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+#### ⚠️ Legacy: Access Policies Pattern (for backwards compatibility)
+
+```hcl
+keyvaults = {
+  my_kv = {
+    name               = "my-keyvault"
+    resource_group_key = "my_rg"
+    sku_name           = "standard"
+    soft_delete_enabled = true
+
+    creation_policies = {
+      logged_in_user = {
+        certificate_permissions = ["Get", "List", "Update", "Create", "Import", "Delete", "Recover", "Backup", "Restore", "ManageContacts", "ManageIssuers", "GetIssuers", "ListIssuers", "SetIssuers", "DeleteIssuers"]
+        key_permissions         = ["Get", "List", "Update", "Create", "Import", "Delete", "Recover", "Backup", "Restore"]
+        secret_permissions      = ["Get", "List", "Set", "Delete", "Recover", "Backup", "Restore"]
+      }
+    }
+  }
+}
+
+# Separate access policies (legacy pattern)
+keyvault_access_policies = {
+  my_kv = {
+    my_service_identity = {
+      managed_identity_key    = "my_service_identity"
+      certificate_permissions = ["Get", "List"]
+      secret_permissions      = ["Get", "List"]
+    }
+  }
+}
+```
+
+**RBAC vs Access Policies:**
+
+| Feature | RBAC (Recommended) | Access Policies (Legacy) |
+|---------|-------------------|-------------------------|
+| Security | ✅ More granular with built-in roles | ⚠️ Manual permission sets |
+| Azure AD Integration | ✅ Full integration | ❌ Limited |
+| Conditional Access | ✅ Supported | ❌ Not supported |
+| Audit & Compliance | ✅ Better audit trails | ⚠️ Basic logging |
+| Microsoft Recommendation | ✅ Current best practice | ⚠️ Legacy approach |
+| Future Support | ✅ Actively developed | ⚠️ Maintenance mode |
+
+### Certificate Resolution in Module Resources
+
+In module resource files, use the `coalesce(try(...))` pattern:
+
+```hcl
+resource "azurerm_cdn_frontdoor_secret" "secret" {
+  name                     = azurecaf_name.secret.result
+  cdn_frontdoor_profile_id = var.remote_objects.cdn_frontdoor_profile.id
+
+  dynamic "secret" {
+    for_each = try(var.settings.secret, {}) != {} ? [var.settings.secret] : []
+
+    content {
+      dynamic "customer_certificate" {
+        for_each = try(secret.value.customer_certificate, {}) != {} ? [secret.value.customer_certificate] : []
+
+        content {
+          key_vault_certificate_id = coalesce(
+            try(var.settings.secret.customer_certificate.key_vault_certificate_id, null),
+            try(var.remote_objects.keyvault_certificate_requests[try(var.settings.secret.customer_certificate.certificate_request.lz_key, var.client_config.landingzone_key)][var.settings.secret.customer_certificate.certificate_request.key].secret_id, null),
+            try(var.remote_objects.keyvault_certificates[try(var.settings.secret.customer_certificate.keyvault_certificate.lz_key, var.client_config.landingzone_key)][var.settings.secret.customer_certificate.keyvault_certificate.key].secret_id, null)
+          )
+        }
+      }
+    }
+  }
+}
+```
+
+### Root Module Remote Objects Configuration
+
+Ensure the parent module passes necessary remote objects:
+
+```hcl
+module "my_service" {
+  source   = "./modules/category/my_service"
+  for_each = local.category.my_service
+
+  # ... standard variables ...
+
+  remote_objects = {
+    diagnostics                   = local.combined_diagnostics
+    keyvault_certificate_requests = local.combined_objects_keyvault_certificate_requests
+    managed_identities           = local.combined_objects_managed_identities
+    keyvaults                    = local.combined_objects_keyvaults
+  }
+}
+```
+
+### Modular Configuration with Multiple `.tfvars` Files
+
+For complex configurations involving certificates, organize into separate files:
+
+#### `resource_groups.tfvars`
+
+```hcl
+resource_groups = {
+  my_rg = {
+    name     = "rg-my-service"
+    location = "West Europe"
+    tags = {
+      environment = "production"
+    }
+  }
+}
+```
+
+#### `keyvaults.tfvars`
+
+```hcl
+keyvaults = {
+  # Key Vault configuration as shown above
+}
+
+keyvault_certificate_requests = {
+  # Certificate requests as shown above
+}
+```
+
+#### `managed_identities.tfvars`
+
+```hcl
+managed_identities = {
+  # Managed identity configuration as shown above
+}
+```
+
+#### `configuration.tfvars`
+
+```hcl
+my_services = {
+  service1 = {
+    name               = "my-service"
+    resource_group_key = "my_rg"
+
+    secrets = {
+      ssl_cert = {
+        name = "ssl-certificate"
+        secret = {
+          customer_certificate = {
+            certificate_request = {
+              key = "my_certificate_key"
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+### Usage Commands
+
+Deploy with multiple configuration files:
+
+```bash
+terraform plan \
+  -var-file=./category/service/level-example/resource_groups.tfvars \
+  -var-file=./category/service/level-example/keyvaults.tfvars \
+  -var-file=./category/service/level-example/managed_identities.tfvars \
+  -var-file=./category/service/level-example/configuration.tfvars
+```
+
+### Documentation
+
+- Update the root `/examples/README.md` to include information about new module example structures or significant scenarios if necessary.
+- The primary documentation for a module's examples should reside in `examples/<category_name>/<module_name>/README.md`.
+- Ensure that the documentation is clear, concise, and provides enough context for users to understand how to use the examples effectively.
+
 ### Modify existing files
 
 #### /local.remote_objects.tf
@@ -449,160 +1210,282 @@ locals {
 }
 ```
 
-## Instructions for Working with the `/examples` Directory
+## Submodule Dependency Pattern
 
-The `/examples` directory provides a framework to demonstrate and test the modules in this repository using various configurations loaded from `.tfvars` files.
+When creating modules with multiple submodules (subresources), follow the established pattern used by modules like `network_manager` and `cdn_frontdoor_profile`. This pattern ensures proper dependency management and consistency across the CAF framework.
 
-### Root Example Configuration Files (within `/examples/`)
+### Key Principles
 
-- **`main.tf`**: Contains the primary example configuration, including provider setup. It's designed to be generic enough to work with different `.tfvars` files.
-- **`variables.tf`**: Defines all possible input variables that might be used by any module being demonstrated. The actual values will come from the `.tfvars` files.
-- **`outputs.tf`**: Defines outputs for the examples.
-- **`module.tf`**: This crucial file instantiates the various modules from the repository. It should be written to accept configurations for these modules from the variables defined in `variables.tf` (which are populated by `.tfvars` files).
+1. **All dependencies between submodules must be passed through `var.remote_objects`**
+2. **Never pass resource IDs directly as separate variables between modules**
+3. **Use `coalesce()` with `try()` pattern to resolve resource dependencies**
+4. **Use pluralized names for module calls (e.g., `endpoints`, `origins`, not `endpoint`, `origin`)**
 
-  - **Pattern for `module.tf` `locals`:**
-    When referencing module configurations within `locals` in `/examples/module.tf`, use the following pattern:
-    ```hcl
-    locals {
-      category_name = {
-        module_name_plural = var.module_name_plural // Corresponds to a variable in /examples/variables.tf
+### Pattern Implementation
+
+#### Parent Module Submodule Calls
+
+In the parent module, call submodules using this pattern:
+
+```hcl
+# Example: calling endpoints submodule
+module "endpoints" {
+  source   = "./endpoint"
+  for_each = try(var.settings.endpoints, {})
+
+  global_settings = var.global_settings
+  client_config   = var.client_config
+  location        = var.location
+  resource_group  = var.resource_group
+  base_tags       = var.base_tags
+  settings        = each.value
+
+  remote_objects = merge(var.remote_objects, {
+    cdn_frontdoor_profile = azurerm_cdn_frontdoor_profile.cdn_frontdoor_profile
+  })
+}
+
+# Example: calling origins submodule that depends on origin_groups
+module "origins" {
+  source   = "./origin"
+  for_each = try(var.settings.origins, {})
+
+  global_settings = var.global_settings
+  client_config   = var.client_config
+  location        = var.location
+  resource_group  = var.resource_group
+  base_tags       = var.base_tags
+  settings        = each.value
+
+  remote_objects = merge(var.remote_objects, {
+    cdn_frontdoor_origin_groups = module.origin_groups
+  })
+
+  depends_on = [module.origin_groups]
+}
+```
+
+#### Submodule Variables
+
+Submodule `variables.tf` files should only contain the standard variables:
+
+```hcl
+variable "global_settings" {
+  description = "Global settings for naming conventions and tags."
+  type        = any
+}
+
+variable "client_config" {
+  description = "Client configuration for Azure authentication."
+  type        = any
+}
+
+variable "location" {
+  description = "Specifies the Azure location where the resource will be created."
+  type        = string
+}
+
+variable "settings" {
+  description = "Configuration settings for the resource."
+  type        = any
+}
+
+variable "resource_group" {
+  description = "Resource group object."
+  type        = any
+}
+
+variable "base_tags" {
+  description = "Flag to determine if tags should be inherited."
+  type        = bool
+}
+
+variable "remote_objects" {
+  description = "Remote objects for dependencies."
+  type        = any
+}
+```
+
+**❌ DO NOT include direct ID variables like:**
+
+- `variable "cdn_frontdoor_profile_id"`
+- `variable "origin_groups"`
+- `variable "rule_sets"`
+
+#### Submodule Resource Implementation
+
+In submodule resources, use the `coalesce()` pattern to resolve dependencies:
+
+```hcl
+resource "azurerm_cdn_frontdoor_endpoint" "endpoint" {
+  name = var.settings.name
+  cdn_frontdoor_profile_id = coalesce(
+    try(var.settings.cdn_frontdoor_profile_id, null),
+    try(var.remote_objects.cdn_frontdoor_profile.id, null),
+    try(var.remote_objects.cdn_frontdoor_profiles[try(var.settings.cdn_frontdoor_profile.lz_key, var.client_config.landingzone_key)][var.settings.cdn_frontdoor_profile.key].id, null)
+  )
+  enabled = try(var.settings.enabled, true)
+
+  # ... other configuration
+}
+
+# Example with dependency on other submodule
+resource "azurerm_cdn_frontdoor_origin" "origin" {
+  name = var.settings.name
+  cdn_frontdoor_origin_group_id = coalesce(
+    try(var.settings.cdn_frontdoor_origin_group_id, null),
+    try(var.remote_objects.cdn_frontdoor_origin_groups[var.settings.origin_group_key].id, null),
+    try(var.remote_objects.cdn_frontdoor_origin_groups[try(var.settings.origin_group.lz_key, var.client_config.landingzone_key)][var.settings.origin_group.key].id, null)
+  )
+
+  # ... other configuration
+}
+```
+
+#### Parent Module Outputs
+
+Use pluralized names in outputs:
+
+```hcl
+output "endpoints" {
+  value = module.endpoints
+}
+
+output "origin_groups" {
+  value = module.origin_groups
+}
+
+output "origins" {
+  value = module.origins
+}
+```
+
+### Benefits of This Pattern
+
+1. **Consistency**: All modules follow the same dependency resolution pattern
+2. **Flexibility**: Resources can be referenced by direct ID or by key lookup
+3. **Maintainability**: Clear separation of concerns between modules
+4. **Scalability**: Supports complex dependency chains between submodules
+5. **CAF Compliance**: Aligns with the established Cloud Adoption Framework standards
+
+### Example Reference Modules
+
+- `modules/networking/network_manager` - Reference implementation
+- `modules/cdn/cdn_frontdoor_profile` - Recently refactored to follow this pattern
+
+## Key Vault Certificates and Managed Identity Pattern
+
+When working with modules that require SSL/TLS certificates from Key Vault, follow these established patterns for security, maintainability, and CAF compliance.
+
+### Key Principles
+
+1. **Always use certificate keys instead of direct Key Vault certificate IDs**
+2. **Use managed identities for secure access to Key Vault**
+3. **Separate configuration concerns into multiple `.tfvars` files**
+4. **Follow the `coalesce(try(...))` pattern for certificate resolution**
+
+### Certificate Reference Pattern
+
+#### ❌ DO NOT use direct certificate IDs:
+
+```hcl
+# Wrong approach - direct ID
+secrets = {
+  secret1 = {
+    name = "my-secret"
+    secret = {
+      customer_certificate = {
+        key_vault_certificate_id = "/subscriptions/.../certificates/cert1"
       }
     }
-    ```
-    _Replace `category_name` with the actual category (e.g., `networking`)._
-    _Replace `module_name_plural` with the pluralized name of the module as defined in `/examples/variables.tf` (e.g., `virtual_networks`)._
+  }
+}
+```
 
-- **`variables.provider.tf`**: Contains provider-specific variable definitions.
-- **`backend.azurerm`**: Configures the Azure Blob Storage backend for Terraform state for the examples.
+#### ✅ DO use certificate keys with proper resolution:
 
-### Example `.tfvars` File Structure and Naming
+```hcl
+# Correct approach - key reference
+secrets = {
+  secret1 = {
+    name = "my-secret"
+    secret = {
+      customer_certificate = {
+        certificate_request = {
+          key = "my_certificate_key"
+          # lz_key = "remote_lz"  # Optional for remote landing zone
+        }
+      }
+    }
+  }
+}
+```
 
-Input variable files (`.tfvars`) are organized hierarchically. Within each specific example directory (`<level-nameoftheexample>`), the `.tfvars` files should be named as follows:
+### Key Vault Certificate Request Structure
 
-- **Option 1 (Single Configuration File):**
-  Use a single file named `configuration.tfvars` if the example primarily configures one main resource or a tightly coupled set of resources.
-  _Path: `examples/<category_name>/<module_name>/<level-nameoftheexample>/configuration.tfvars`_
+Use this structure for `keyvault_certificate_requests`:
 
-- **Option 2 (Multiple Resource-Specific Files):**
-  If the example demonstrates the creation of several distinct types of resources that can be configured somewhat independently, create a separate `.tfvars` file for each major resource type.
-  _Paths:
-  `examples/<category_name>/<module_name>/<level-nameoftheexample>/<resource_type1_config>.tfvars`
-  `examples/<category_name>/<module_name>/<level-nameoftheexample>/<resource_type2_config>.tfvars`
-  (e.g., `virtual_network.tfvars`, `storage_account.tfvars`)_
+```hcl
+keyvault_certificate_requests = {
+  my_certificate_key = {
+    name         = "my-certificate"
+    keyvault_key = "my_keyvault_key"
 
-**Directory Structure Overview:**
+    certificate_policy = {
+      issuer_key_or_name  = "self"  # or certificate authority name
+      exportable          = true
+      key_size            = 2048    # 2048, 3072, or 4096
+      key_type            = "RSA"
+      reuse_key           = true
+      renewal_action      = "AutoRenew"  # or "EmailContacts"
+      lifetime_percentage = 90
+      content_type        = "application/x-pkcs12"
 
-- **`<category_name>`**: A directory representing the module category (e.g., `networking`, `compute`, `storage`).
-- **`<module_name>`**: A directory representing the specific module being demonstrated (e.g., `virtual_network`, `container_app`, `storage_account`). This should match the `module_name` used in the module's own directory structure (e.g., `/modules/category_name/module_name/`).
-- **`<level-nameoftheexample>`**: A directory whose name starts with the level (`100-`, `200-`, `300-`) followed by a descriptive name for the type or complexity of the example (e.g., `100-basic-default`, `200-hub-spoke-config`, `300-advanced-security-rules`).
+      x509_certificate_properties = {
+        extended_key_usage = ["1.3.6.1.5.5.7.3.1"]  # Server Authentication
+        key_usage = [
+          "cRLSign",
+          "dataEncipherment",
+          "digitalSignature",
+          "keyAgreement",
+          "keyCertSign",
+          "keyEncipherment",
+        ]
 
-### Adding a New Example (Directory and `.tfvars` file)
+        subject_alternative_names = {
+          dns_names = ["example.com", "www.example.com"]
+          emails    = []
+          upns      = []
+        }
 
-When adding examples for a new module `module_name` under `category_name`:
-
-1.  **Create Module Example Directory:**
-    Create the directory `examples/<category_name>/<module_name>/`.
-
-2.  **Create `README.md` in Module Example Directory:**
-    Inside `examples/<category_name>/<module_name>/`, create a `README.md` file. This file should:
-
-    - Explain the purpose of the examples for this module.
-    - Describe the different levels (`100-xxx`, `200-xxx`, etc.) and what they represent.
-    - Provide instructions on how to run these examples, including the `terraform apply -var-file=...` command structure, covering both single and multiple `.tfvars` file scenarios.
-    - List any prerequisites or special considerations.
-
-3.  **Create `main.tf` in Module Example Directory:**
-    Inside `examples/<category_name>/<module_name>/`, create a `main.tf` file with the following content:
-
-    ```hcl
-    # trunk-ignore-all(tflint/terraform_required_version)
-    # This is an empty file for Terraform registry visibility.
-    # For examples on how to consume the CAF module, please refer to https://github.com/aztfmodnew/terraform-azurerm-caf/tree/master/examples
-    ```
-
-4.  **Create Specific Example Level Directory:**
-    Inside `examples/<category_name>/<module_name>/`, create a directory for the specific example type, following the `level-nameoftheexample` pattern.
-    Example: `examples/networking/virtual_network/100-basic-default/`
-
-5.  **Create and Populate `.tfvars` File(s):**
-    Inside the newly created `<level-nameoftheexample>` directory:
-
-    - If using a single configuration file, create `configuration.tfvars`.
-    - If using multiple resource-specific files, create them accordingly (e.g., `virtual_networks.tfvars`, `subnets.tfvars`).
-
-    Populate these file(s) with the necessary variables and their values to configure the module(s) for this specific scenario. These variables must correspond to those defined in the root `/examples/variables.tf`.
-
-    Example (`examples/networking/virtual_network/100-basic-default/configuration.tfvars`):
-
-    ```hcl
-    # examples/networking/virtual_network/100-basic-default/configuration.tfvars
-
-    virtual_networks = {
-      default_vnet_key = {
-        name            = "my-basic-vnet"
-        address_space   = ["10.2.0.0/16"]
-        # ... other necessary attributes
+        subject            = "CN=example.com"
+        validity_in_months = 12
       }
     }
 
-    resource_groups = {
-      default_rg_key = {
-        name     = "my-basic-rg"
-        location = "westeurope"
-      }
+    tags = {
+      purpose = "ssl-certificate"
     }
-    ```
+  }
+}
+```
 
-6.  **Ensure Root `module.tf` and `variables.tf` Support:**
-    - Verify that the root `/examples/module.tf` is set up to instantiate the target module(s) using the variable structure you're defining in the `.tfvars` file(s).
-    - Verify that all top-level variables used in your `.tfvars` files are declared in the root `/examples/variables.tf`.
+### Managed Identity Configuration
 
-### Running an Example
+For secure access to Key Vault certificates, configure managed identities:
 
-To run a specific example:
+```hcl
+managed_identities = {
+  my_service_identity = {
+    name               = "my-service-identity"
+    resource_group_key = "my_rg"
 
-1.  Navigate to the `/examples` root directory in your terminal.
-2.  Initialize Terraform: `terraform init`
-3.  Plan or apply using the desired `.tfvars` file(s):
-
-    - **Single `configuration.tfvars` file:**
-
-      ```bash
-      terraform plan -var-file=./<category_name>/<module_name>/<level-nameoftheexample>/configuration.tfvars
-      terraform apply -var-file=./<category_name>/<module_name>/<level-nameoftheexample>/configuration.tfvars
-      ```
-
-      Example:
-
-      ```bash
-      terraform apply -var-file=./networking/virtual_network/100-basic-default/configuration.tfvars
-      ```
-
-    - **Multiple resource-specific `.tfvars` files:**
-
-      ```bash
-      terraform plan \
-        -var-file=./<category_name>/<module_name>/<level-nameoftheexample>/<resource_type1_config>.tfvars \
-        -var-file=./<category_name>/<module_name>/<level-nameoftheexample>/<resource_type2_config>.tfvars
-
-      terraform apply \
-        -var-file=./<category_name>/<module_name>/<level-nameoftheexample>/<resource_type1_config>.tfvars \
-        -var-file=./<category_name>/<module_name>/<level-nameoftheexample>/<resource_type2_config>.tfvars
-      ```
-
-      Example:
-
-      ```bash
-      terraform apply \
-        -var-file=./networking/complex_setup_module/200-multi-resource/virtual_networks.tfvars \
-        -var-file=./networking/complex_setup_module/200-multi-resource/storage_accounts.tfvars
-      ```
-
-### Documentation
-
-- Update the root `/examples/README.md` to include information about new module example structures or significant scenarios if necessary.
-- The primary documentation for a module's examples should reside in `examples/<category_name>/<module_name>/README.md`.
-- Ensure that the documentation is clear, concise, and provides enough context for users to understand how to use the examples effectively.
+    tags = {
+      purpose = "service-authentication"
+    }
+  }
+}
+```
 
 ## Code Style
 
@@ -616,9 +1499,58 @@ block_name {
 }
 ```
 
-Of course! Here is the English translation of the provided guide.
+### Dependency Resolution Pattern
 
----
+When resolving dependencies to other resources (especially between submodules), always use the `coalesce()` pattern with `try()` functions to support multiple ways of providing resource IDs:
+
+#### Standard Pattern for Resource ID Resolution
+
+```hcl
+resource_id = coalesce(
+  try(var.settings.direct_resource_id, null),
+  try(var.remote_objects.resource_name.id, null),
+  try(var.remote_objects.resource_names[try(var.settings.resource_reference.lz_key, var.client_config.landingzone_key)][var.settings.resource_reference.key].id, null)
+)
+```
+
+#### Examples
+
+**Profile ID Resolution:**
+
+```hcl
+cdn_frontdoor_profile_id = coalesce(
+  try(var.settings.cdn_frontdoor_profile_id, null),
+  try(var.remote_objects.cdn_frontdoor_profile.id, null),
+  try(var.remote_objects.cdn_frontdoor_profiles[try(var.settings.cdn_frontdoor_profile.lz_key, var.client_config.landingzone_key)][var.settings.cdn_frontdoor_profile.key].id, null)
+)
+```
+
+**Origin Group ID Resolution:**
+
+```hcl
+cdn_frontdoor_origin_group_id = coalesce(
+  try(var.settings.cdn_frontdoor_origin_group_id, null),
+  try(var.remote_objects.cdn_frontdoor_origin_groups[var.settings.origin_group_key].id, null),
+  try(var.remote_objects.cdn_frontdoor_origin_groups[try(var.settings.origin_group.lz_key, var.client_config.landingzone_key)][var.settings.origin_group.key].id, null)
+)
+```
+
+**Service Plan ID Resolution:**
+
+```hcl
+service_plan_id = coalesce(
+    try(var.settings.service_plan_id, null),
+    try(var.remote_objects.service_plans[try(var.settings.service_plan.lz_key, var.client_config.landingzone_key)][try(var.settings.service_plan.key, var.settings.service_plan_key)].id, null),
+    try(var.remote_objects.app_service_plans[try(var.settings.app_service_plan.lz_key, var.client_config.landingzone_key)][try(var.settings.app_service_plan.key, var.settings.app_service_plan_key)].id, null)
+  )
+```
+
+#### Benefits of This Pattern
+
+1. **Flexibility**: Supports direct ID passing, current module references, and cross-landing zone references
+2. **Backward Compatibility**: Maintains support for existing configuration patterns
+3. **Consistency**: Standardized approach across all CAF modules
+4. **Error Prevention**: Graceful handling of missing or null values
 
 ### Dynamic Blocks
 
@@ -809,3 +1741,5 @@ When updating existing modules, follow these steps:
 1.  **Review the existing module structure**: Understand how the current module is organized, including its variables, outputs, and resources.
 2.  **Identify the changes needed in resources and variables for the existing module**: Determine what needs to be added, modified, or removed in the module. For that review https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/nameofresource , for example, if resource is `azurerm_container_app`, review https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/container_app.
 3.  **Update the module files**: Make the necessary changes in the related files, such as `main.tf`, `variables.tf`, `outputs.tf`, and any other relevant files.
+
+````

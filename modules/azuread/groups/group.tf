@@ -2,7 +2,7 @@ resource "azuread_group" "group" {
 
   administrative_unit_ids = can(var.azuread_groups.administrative_unit_ids) || can(var.azuread_groups.administrative_units) == false ? try(var.azuread_groups.administrative_unit_ids, null) : local.administrative_unit_ids
   assignable_to_role      = try(var.azuread_groups.assignable_to_role, null)
-  display_name            = var.global_settings.passthrough || try(var.azuread_groups.global_settings.passthrough, false) == true ? format("%s", local.display_name) : format("%s%s", try(format("%s-", var.global_settings.prefixes.0), ""), local.display_name)
+  display_name            = var.global_settings.passthrough || try(var.azuread_groups.global_settings.passthrough, false) == true ? format("%s", local.display_name) : format("%s%s", try(format("%s-", var.global_settings.prefixes[0]), ""), local.display_name)
   description             = lookup(var.azuread_groups, "description", null)
   prevent_duplicate_names = lookup(var.azuread_groups, "prevent_duplicate_names", null)
   owners                  = length(local.owners) > 0 ? local.owners : null

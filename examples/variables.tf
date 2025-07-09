@@ -710,14 +710,6 @@ variable "dynamic_keyvault_certificates" {
   type    = any
   default = {}
 }
-variable "front_doors" {
-  type    = any
-  default = {}
-}
-variable "front_door_waf_policies" {
-  type    = any
-  default = {}
-}
 variable "dns_zones" {
   type    = any
   default = {}
@@ -1191,14 +1183,7 @@ variable "frontdoor_custom_https_configuration" {
   type    = any
   default = {}
 }
-variable "cdn_endpoint" {
-  type    = any
-  default = {}
-}
-variable "cdn_profile" {
-  type    = any
-  default = {}
-}
+
 variable "function_apps" {
   type    = any
   default = {}
@@ -1700,4 +1685,9 @@ variable "search_services" {
 variable "load_test" {
   default = {}
   type    = any
+}
+variable "cdn_frontdoor_profiles" {
+  description = "Configuring Front Door Profiles."
+  default     = {}
+  type        = any
 }

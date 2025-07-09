@@ -660,7 +660,7 @@ variable "identity" {
       })
     })), {})
   })*/
-  type        = any
+  type = any
 
   default = {}
 }

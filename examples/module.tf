@@ -82,6 +82,10 @@ module "example" {
   #   vmImageAliasDoc                             = var.vmImageAliasDoc
   # }
 
+  cdn = {
+    cdn_frontdoor_profile = var.cdn_frontdoor_profiles
+  }
+
   cognitive_services = {
     ai_services                            = var.ai_services
     cognitive_services_account             = var.cognitive_services_account
@@ -202,18 +206,12 @@ module "example" {
     azurerm_firewall_policy_rule_collection_groups          = var.azurerm_firewall_policy_rule_collection_groups
     azurerm_firewalls                                       = var.azurerm_firewalls
     azurerm_routes                                          = var.azurerm_routes
-    cdn_profile                                             = var.cdn_profile
-    cdn_endpoint                                            = var.cdn_endpoint
     ddos_services                                           = var.ddos_services
     dns_zone_records                                        = var.dns_zone_records
     dns_zones                                               = var.dns_zones
     domain_name_registrations                               = var.domain_name_registrations
     express_route_circuit_authorizations                    = var.express_route_circuit_authorizations
-    express_route_circuits                                  = var.express_route_circuits
-    front_door_waf_policies                                 = var.front_door_waf_policies
-    front_doors                                             = var.front_doors
-    frontdoor_rules_engine                                  = var.frontdoor_rules_engine
-    frontdoor_custom_https_configuration                    = var.frontdoor_custom_https_configuration
+    express_route_circuits                                  = var.express_route_circuits    
     ip_groups                                               = var.ip_groups
     lb                                                      = var.lb
     lb_backend_address_pool                                 = var.lb_backend_address_pool
