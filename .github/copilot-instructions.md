@@ -1487,6 +1487,281 @@ managed_identities = {
 }
 ```
 
+## Azure Front Door and WAF Patterns
+
+When working with Azure Front Door and Web Application Firewall (WAF), follow these established patterns for security, performance, and CAF compliance.
+
+### Front Door Resource Dependencies
+
+Front Door resources have specific dependency requirements that must be managed carefully:
+
+#### Critical Dependency Order
+
+1. **Profile** → **Origin Groups** → **Origins** → **Endpoints** → **Routes**
+2. **WAF Policy** → **Security Policy** (links WAF to domains/endpoints)
+3. **Custom Domains** → **Routes** (routes reference domains)
+
+#### Lifecycle Management for Front Door
+
+Use `create_before_destroy` for resources that may need replacement:
+
+```hcl
+resource "azurerm_cdn_frontdoor_origin_group" "origin_group" {
+  # ... configuration ...
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "azurerm_cdn_frontdoor_origin" "origin" {
+  # ... configuration ...
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+```
+
+#### Explicit Dependencies in Parent Modules
+
+Ensure proper destruction order in parent modules:
+
+```hcl
+module "origins" {
+  source = "./origin"
+  # ... configuration ...
+
+  depends_on = [module.origin_groups]
+}
+
+module "routes" {
+  source = "./route"
+  # ... configuration ...
+
+  depends_on = [module.endpoints, module.origins, module.origin_groups]
+}
+```
+
+### WAF Policy Configuration
+
+#### Standard WAF Policy Structure
+
+```hcl
+resource "azurerm_cdn_frontdoor_firewall_policy" "waf_policy" {
+  name                = azurecaf_name.waf_policy.result
+  resource_group_name = local.resource_group_name
+  sku_name            = var.settings.sku_name  # Must match Front Door profile SKU
+  enabled             = try(var.settings.enabled, true)
+  mode                = try(var.settings.mode, "Prevention")
+
+  # Managed rules are essential for security
+  dynamic "managed_rule" {
+    for_each = try(var.settings.managed_rules, {})
+    content {
+      type    = managed_rule.value.type
+      version = managed_rule.value.version
+      action  = try(managed_rule.value.action, "Block")
+
+      dynamic "exclusion" {
+        for_each = try(managed_rule.value.exclusions, {})
+        content {
+          match_variable = exclusion.value.match_variable
+          operator       = exclusion.value.operator
+          selector       = exclusion.value.selector
+        }
+      }
+
+      dynamic "override" {
+        for_each = try(managed_rule.value.overrides, {})
+        content {
+          rule_group_name = override.value.rule_group_name
+
+          dynamic "rule" {
+            for_each = try(override.value.rules, {})
+            content {
+              rule_id = rule.value.rule_id
+              action  = rule.value.action
+              enabled = try(rule.value.enabled, true)
+            }
+          }
+        }
+      }
+    }
+  }
+
+  # Custom rules for specific requirements
+  dynamic "custom_rule" {
+    for_each = try(var.settings.custom_rules, {})
+    content {
+      name     = custom_rule.value.name
+      action   = custom_rule.value.action
+      enabled  = try(custom_rule.value.enabled, true)
+      priority = custom_rule.value.priority
+      type     = custom_rule.value.type
+
+      dynamic "match_condition" {
+        for_each = custom_rule.value.match_conditions
+        content {
+          match_variable     = match_condition.value.match_variable
+          match_values       = match_condition.value.match_values
+          operator           = match_condition.value.operator
+          selector           = try(match_condition.value.selector, null)
+          negation_condition = try(match_condition.value.negation_condition, false)
+          transforms         = try(match_condition.value.transforms, [])
+        }
+      }
+    }
+  }
+}
+```
+
+#### WAF Policy Best Practices
+
+1. **SKU Compatibility**: WAF policy SKU must match Front Door profile SKU (`Standard_AzureFrontDoor` or `Premium_AzureFrontDoor`)
+2. **Managed Rules**: Always include Microsoft_DefaultRuleSet and Microsoft_BotManagerRuleSet
+3. **Custom Rules**: Use for application-specific security requirements
+4. **Exclusions**: Configure carefully to avoid false positives
+5. **Testing**: Use "Detection" mode first, then switch to "Prevention"
+
+### Front Door Custom Domain with Certificates
+
+#### Certificate Resolution Pattern
+
+```hcl
+resource "azurerm_cdn_frontdoor_custom_domain" "custom_domain" {
+  name                     = azurecaf_name.custom_domain.result
+  cdn_frontdoor_profile_id = var.remote_objects.cdn_frontdoor_profile.id
+  dns_zone_id              = try(var.settings.dns_zone_id, null)
+  host_name                = var.settings.host_name
+
+  dynamic "tls" {
+    for_each = try(var.settings.tls, null) == null ? [] : [var.settings.tls]
+    content {
+      certificate_type    = try(tls.value.certificate_type, "ManagedCertificate")
+      minimum_tls_version = try(tls.value.minimum_tls_version, "TLS12")
+
+      # Certificate resolution using coalesce pattern
+      cdn_frontdoor_secret_id = tls.value.certificate_type == "CustomerCertificate" ? coalesce(
+        try(tls.value.cdn_frontdoor_secret_id, null),
+        try(var.remote_objects.cdn_frontdoor_secrets[try(tls.value.secret.lz_key, var.client_config.landingzone_key)][tls.value.secret.key].id, null)
+      ) : null
+    }
+  }
+}
+```
+
+#### DNS Validation Token Output
+
+Always expose DNS validation tokens for certificate validation:
+
+```hcl
+output "dns_validation_token" {
+  value       = azurerm_cdn_frontdoor_custom_domain.custom_domain.validation_token
+  description = "DNS validation token for custom domain certificate validation"
+}
+
+output "id" {
+  value       = azurerm_cdn_frontdoor_custom_domain.custom_domain.id
+  description = "The ID of the Front Door custom domain"
+}
+```
+
+### Security Policy Linking
+
+Link WAF policies to Front Door domains using security policies:
+
+```hcl
+resource "azurerm_cdn_frontdoor_security_policy" "security_policy" {
+  name                     = azurecaf_name.security_policy.result
+  cdn_frontdoor_profile_id = var.remote_objects.cdn_frontdoor_profile.id
+
+  security_policies {
+    firewall {
+      cdn_frontdoor_firewall_policy_id = coalesce(
+        try(var.settings.firewall_policy_id, null),
+        try(var.remote_objects.cdn_frontdoor_firewall_policies[try(var.settings.firewall_policy.lz_key, var.client_config.landingzone_key)][var.settings.firewall_policy.key].id, null)
+      )
+
+      association {
+        # Link to custom domains
+        dynamic "domain" {
+          for_each = try(var.settings.domains, [])
+          content {
+            cdn_frontdoor_domain_id = coalesce(
+              try(domain.value.cdn_frontdoor_domain_id, null),
+              try(var.remote_objects.cdn_frontdoor_custom_domains[try(domain.value.lz_key, var.client_config.landingzone_key)][domain.value.key].id, null)
+            )
+          }
+        }
+
+        # Link to endpoints
+        dynamic "domain" {
+          for_each = try(var.settings.endpoints, [])
+          content {
+            cdn_frontdoor_domain_id = coalesce(
+              try(domain.value.cdn_frontdoor_domain_id, null),
+              try(var.remote_objects.cdn_frontdoor_endpoints[try(domain.value.lz_key, var.client_config.landingzone_key)][domain.value.key].id, null)
+            )
+          }
+        }
+
+        patterns_to_match = try(var.settings.patterns_to_match, ["/*"])
+      }
+    }
+  }
+}
+```
+
+### Front Door Common Issues and Solutions
+
+#### SKU Mismatch Resolution
+
+**Problem**: WAF policy SKU doesn't match Front Door profile SKU
+**Solution**: Ensure both resources use the same SKU tier
+
+```hcl
+# Front Door Profile
+resource "azurerm_cdn_frontdoor_profile" "profile" {
+  sku_name = "Premium_AzureFrontDoor"  # or "Standard_AzureFrontDoor"
+}
+
+# WAF Policy must match
+resource "azurerm_cdn_frontdoor_firewall_policy" "waf" {
+  sku_name = "Premium_AzureFrontDoor"  # Must match profile SKU
+}
+```
+
+#### Certificate Validation Issues
+
+**Problem**: Custom domain certificate validation fails
+**Solution**: Properly configure DNS validation tokens
+
+```hcl
+# Output validation token for DNS configuration
+output "dns_validation_token" {
+  value = azurerm_cdn_frontdoor_custom_domain.custom_domain.validation_token
+}
+
+# DNS record for validation (external to Terraform)
+# Create DNS TXT record: _dnsauth.yourdomain.com -> validation_token
+```
+
+#### Resource Destruction Order
+
+**Problem**: Resources fail to destroy due to dependencies
+**Solution**: Use lifecycle rules and explicit dependencies
+
+```hcl
+# In parent module
+depends_on = [module.routes, module.security_policies]
+
+# In resources
+lifecycle {
+  create_before_destroy = true
+}
+```
+
 ## Code Style
 
 ### Necessary Blocks
@@ -1551,6 +1826,227 @@ service_plan_id = coalesce(
 2. **Backward Compatibility**: Maintains support for existing configuration patterns
 3. **Consistency**: Standardized approach across all CAF modules
 4. **Error Prevention**: Graceful handling of missing or null values
+
+### Resource Lifecycle Management
+
+When working with resources that have complex dependencies or need specific creation/destruction order, use these patterns:
+
+#### Create Before Destroy Pattern
+
+For resources that may need to be replaced and have dependent resources, use `create_before_destroy`:
+
+```hcl
+resource "azurerm_resource_type" "resource_name" {
+  # ... configuration ...
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+```
+
+**When to use:**
+- Resources that are referenced by other resources
+- Resources that cannot have downtime during replacement
+- Resources with complex dependencies (e.g., Front Door origins, origin groups)
+
+#### Explicit Dependencies
+
+Use `depends_on` in parent modules to ensure proper destruction order:
+
+```hcl
+module "dependent_resource" {
+  source = "./submodule"
+  # ... configuration ...
+
+  depends_on = [module.prerequisite_resource]
+}
+```
+
+**When to use:**
+- When Terraform cannot automatically detect dependencies
+- When destruction order is critical
+- When submodules have circular or complex dependencies
+
+#### Prevent Destroy Pattern
+
+For critical resources that should never be accidentally destroyed:
+
+```hcl
+resource "azurerm_resource_type" "critical_resource" {
+  # ... configuration ...
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+```
+
+**When to use:**
+- Production databases
+- Key Vaults with critical secrets
+- Networking resources that would cause widespread outages
+
+### Module Integration and Wiring Patterns
+
+When adding new modules to the CAF framework, follow these integration patterns:
+
+#### CAF Module Integration Checklist
+
+1. **Add module variable to `examples/variables.tf`**:
+   ```hcl
+   variable "new_module_name" {
+     description = "Configuration for new module"
+     type        = any
+     default     = {}
+   }
+   ```
+
+2. **Add module call to `examples/module.tf`**:
+   ```hcl
+   module "new_module_name" {
+     source   = "../modules/category/new_module"
+     for_each = local.category.new_module_name
+
+     # Standard variables
+     global_settings = local.global_settings
+     client_config   = local.client_config
+     # ... other standard variables
+
+     remote_objects = {
+       # Required remote objects
+     }
+   }
+   ```
+
+3. **Add to `locals.tf`**:
+   ```hcl
+   locals {
+     category = {
+       new_module_name = try(var.category.new_module_name, {})
+     }
+   }
+   ```
+
+4. **Add combined objects to `locals.combined_objects.tf`**:
+   ```hcl
+   combined_objects_new_module_name = merge(
+     tomap({ (local.client_config.landingzone_key) = module.new_module_name }),
+     lookup(var.remote_objects, "new_module_name", {}),
+     lookup(var.data_sources, "new_module_name", {})
+   )
+   ```
+
+5. **Add to `local.remote_objects.tf`**:
+   ```hcl
+   new_module_name = try(local.combined_objects_new_module_name, null)
+   ```
+
+6. **Create root module file `category_new_module_name.tf`**:
+   ```hcl
+   module "new_module_name" {
+     source   = "./modules/category/new_module"
+     for_each = local.category.new_module_name
+
+     # Standard configuration
+   }
+
+   output "new_module_name" {
+     value = module.new_module_name
+   }
+   ```
+
+### Migration from Deprecated Resources
+
+When migrating from deprecated Azure resources to their modern equivalents:
+
+#### Common Migration Patterns
+
+**App Service Migration:**
+```hcl
+# ❌ Deprecated - DO NOT USE
+resource "azurerm_app_service" "example" {
+  # ... configuration
+}
+
+# ✅ Modern - USE INSTEAD
+resource "azurerm_linux_web_app" "example" {
+  # ... configuration
+}
+# OR
+resource "azurerm_windows_web_app" "example" {
+  # ... configuration
+}
+```
+
+**Front Door Migration:**
+```hcl
+# ❌ Deprecated - DO NOT USE
+resource "azurerm_frontdoor" "example" {
+  # ... configuration
+}
+
+# ✅ Modern - USE INSTEAD
+resource "azurerm_cdn_frontdoor_profile" "example" {
+  # ... configuration
+}
+```
+
+#### Migration Best Practices
+
+1. **Always check the Azure provider documentation** for the latest resource schemas
+2. **Use MCP Terraform tools** to verify resource arguments and best practices
+3. **Update examples** to use modern resources only
+4. **Maintain backward compatibility** where possible using the coalesce pattern
+5. **Document breaking changes** in module documentation and changelogs
+
+### Example Testing Pattern
+
+When creating or updating examples, follow these critical testing patterns:
+
+#### Example Structure Requirements
+
+1. **All examples must be tested from the `/examples` directory**
+2. **Examples must use the root CAF module, not custom `main.tf` files**
+3. **Examples must include all required CAF framework wiring**
+4. **Examples must demonstrate real-world scenarios**
+
+#### Testing Commands
+
+```bash
+# Navigate to examples directory
+cd /path/to/terraform-azurerm-caf/examples
+
+# Test example with specific configuration
+terraform init
+terraform plan -var-file=./category/module/scenario/configuration.tfvars
+terraform apply -var-file=./category/module/scenario/configuration.tfvars
+terraform destroy -var-file=./category/module/scenario/configuration.tfvars
+```
+
+#### Example Configuration Pattern
+
+Examples should be organized as:
+```
+examples/
+└── category/
+    └── module_name/
+        └── scenario/
+            ├── README.md
+            ├── configuration.tfvars
+            ├── resource_groups.tfvars (if needed)
+            ├── keyvaults.tfvars (if needed)
+            └── managed_identities.tfvars (if needed)
+```
+
+#### Example Documentation
+
+Each example must have a `README.md` that includes:
+- Purpose and use case
+- Prerequisites and dependencies
+- Step-by-step deployment instructions
+- Expected outputs and validation steps
+- Cleanup instructions
 
 ### Dynamic Blocks
 
@@ -1738,8 +2234,80 @@ service_plan_id = coalesce(
 
 When updating existing modules, follow these steps:
 
-1.  **Review the existing module structure**: Understand how the current module is organized, including its variables, outputs, and resources.
-2.  **Identify the changes needed in resources and variables for the existing module**: Determine what needs to be added, modified, or removed in the module. For that review https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/nameofresource , for example, if resource is `azurerm_container_app`, review https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/container_app.
-3.  **Update the module files**: Make the necessary changes in the related files, such as `main.tf`, `variables.tf`, `outputs.tf`, and any other relevant files.
+### Module Modernization Process
+
+1. **Review the existing module structure**: Understand how the current module is organized, including its variables, outputs, and resources.
+
+2. **Identify the changes needed in resources and variables for the existing module**: Determine what needs to be added, modified, or removed in the module. For that review https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/nameofresource, for example, if resource is `azurerm_container_app`, review https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/container_app.
+
+3. **Update the module files**: Make the necessary changes in the related files, such as `main.tf`, `variables.tf`, `outputs.tf`, and any other relevant files.
+
+### Deprecated Resource Migration
+
+When migrating from deprecated resources:
+
+#### Pre-Migration Checklist
+
+1. **Identify deprecated resources** in the current module
+2. **Find the modern equivalent** using Azure provider documentation
+3. **Assess breaking changes** between old and new resources
+4. **Plan migration strategy** (in-place vs. new module)
+5. **Update examples** to use modern resources
+
+#### Migration Steps
+
+1. **Update resource definitions** to use modern Azure resources
+2. **Update variable schemas** to match new resource requirements
+3. **Update outputs** to expose new resource attributes
+4. **Add lifecycle management** if needed for complex dependencies
+5. **Update documentation** and examples
+6. **Test thoroughly** with example configurations
+
+#### Post-Migration Validation
+
+1. **Verify all arguments** are correctly mapped
+2. **Test resource creation/update/deletion** cycles
+3. **Validate outputs** are accessible and correct
+4. **Check dependency resolution** works properly
+5. **Ensure backward compatibility** where possible
+
+### Testing and Validation
+
+When updating modules, always test from the `/examples` directory:
+
+```bash
+# Navigate to examples directory
+cd /home/fdr001/source/github/aztfmodnew/terraform-azurerm-caf/examples
+
+# Test with specific module configuration
+terraform_with_var_files --dir /category/module/example/  --action plan  --auto auto  --workspace example
+
+# Full deployment test
+terraform_with_var_files --dir /category/module/example/  --action apply  --auto auto  --workspace example
+
+# Cleanup test
+terraform_with_var_files --dir /category/module/example/  --action destroy  --auto auto  --workspace example
+```
+
+### Documentation Updates
+
+When updating modules, ensure:
+
+1. **Update module README.md** with new configuration examples
+2. **Update example documentation** in `/examples/category/module/README.md`
+3. **Document breaking changes** in appropriate changelog or migration guide
+4. **Update variable descriptions** to reflect new functionality
+5. **Add examples** for new features or patterns
+
+### Quality Assurance
+
+Before considering a module update complete:
+
+1. **All examples must work** when tested from `/examples` directory
+2. **No deprecated resources** should be used in new code
+3. **Proper lifecycle management** must be implemented where needed
+4. **Dependency resolution** must follow established patterns
+5. **Integration with CAF framework** must be properly wired
+6. **Documentation** must be updated and accurate
 
 ````
