@@ -1498,6 +1498,26 @@ variable "aro_clusters" {
   type    = any
   default = {}
 }
+variable "linux_web_apps" {
+  description = <<DESCRIPTION
+  The linux_web_apps object is a map of linux web app objects. Each linux web app object has the following keys:
+- resource_group_key: The key of the resource group object to deploy the Azure resource.
+- name: (Required) The name of the linux web app.
+- service_plan_key: (Required) The key of the service plan object to deploy the Azure resource.
+- location: The location of the linux web app. If not provided, the location of the resource group will be used.
+- settings: (Optional) The settings for the linux web app.
+- app_settings: (Optional) The app settings for the linux web app.
+- connection_string: (Optional) The connection string for the linux web app.
+- identity: (Optional) The identity for the linux web app.
+- identity_type: (Optional) The identity type for the linux web app. Possible values are SystemAssigned, UserAssigned and None.
+- identity_ids: (Optional) The identity IDs for the linux web app.
+- https_only: (Optional) Should the linux web app enforce HTTPS only. Changing this forces a new resource to be created.
+- client_cert_enabled: (Optional) Should the linux web app require client certificates. Changing this forces a new resource to be created.
+- client_cert_mode: (Optional) The client certificate mode for the linux web app. Possible values are Require and Allow.
+DESCRIPTION
+  type    = any
+  default = {}
+}
 variable "windows_web_apps" {
   description = <<DESCRIPTION
   The windows_web_appss object is a map of windows web app objects. Each windows web app object has the following keys:
