@@ -6,10 +6,13 @@ resource "azurerm_cdn_frontdoor_custom_domain_association" "custom_domain_associ
     try(var.remote_objects.cdn_frontdoor_custom_domains[try(var.settings.cdn_frontdoor_custom_domain.lz_key, var.client_config.landingzone_key)][var.settings.cdn_frontdoor_custom_domain.key].id, null)
   )
 
-  cdn_frontdoor_route_ids = try(var.settings.cdn_frontdoor_route_ids, null) != null ? var.settings.cdn_frontdoor_route_ids : [
-    for route_key in try(var.settings.cdn_frontdoor_route_keys, []) :
-    try(var.remote_objects.cdn_frontdoor_routes[route_key].id, null)
-  ]
+  cdn_frontdoor_route_ids = coalesce(
+    var.settings.cdn_frontdoor_route_ids,
+    [
+      for route_key in try(var.settings.cdn_frontdoor_route_keys, []) :
+      try(var.remote_objects.cdn_frontdoor_routes[route_key].id, null)
+    ]
+  )
 
   dynamic "timeouts" {
     for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
