@@ -1,5 +1,19 @@
 # Instructions for Creating a Terraform Module
 
+## Language Requirements
+
+**All generated content for this repository must be in English.** This includes:
+- Code comments
+- Documentation
+- Variable descriptions
+- Resource names and descriptions
+- Error messages
+- README files
+- Commit messages
+- Any other text content
+
+This ensures consistency and accessibility for the international development team and community.
+
 ## For new modules
 
 ### Directory Structure
@@ -2309,5 +2323,3 @@ Before considering a module update complete:
 4. **Dependency resolution** must follow established patterns
 5. **Integration with CAF framework** must be properly wired
 6. **Documentation** must be updated and accurate
-
-````
