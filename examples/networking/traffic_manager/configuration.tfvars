@@ -117,9 +117,9 @@ traffic_manager_azure_endpoint = {
   }
 
   example_2 = {
-    name   = "app_services_example"
+    name   = "linux_web_apps_example"
     weight = 101
-    app_services = {
+    linux_web_apps = {
       key = "webapp1"
       # lz_key = ""
     }
@@ -130,9 +130,9 @@ traffic_manager_azure_endpoint = {
   }
 
   example_3 = {
-    name   = "app_services_slot_example"
+    name   = "linux_web_apps_slot_example"
     weight = 103
-    app_services = {
+    linux_web_apps = {
       slot_key = "smoke_test"
       key      = "webapp2"
       # lz_key = ""
@@ -159,53 +159,45 @@ public_ip_addresses = {
   }
 }
 
-app_service_plans = {
+service_plans = {
   asp1 = {
     resource_group_key = "traffic_manager1"
     name               = "asp-simple-caf1"
-
-    sku = {
-      tier = "Basic"
-      size = "S1"
-    }
-
+    os_type            = "Linux"
+    sku_name           = "S1"
   }
   asp2 = {
     resource_group_key = "traffic_manager1"
     name               = "asp-simple-caf2"
-
-    sku = {
-      tier = "Basic"
-      size = "S1"
-    }
-
+    os_type            = "Linux"
+    sku_name           = "S1"
   }
 }
 
-app_services = {
+linux_web_apps = {
   webapp1 = {
-    resource_group_key   = "traffic_manager1"
-    name                 = "webapp-simple-caf1"
-    app_service_plan_key = "asp1"
+    resource_group_key = "traffic_manager1"
+    name               = "webapp-simple-caf1"
+    service_plan_key   = "asp1"
 
-    settings = {
-      enabled = true
-    }
+    site_config = {}
   }
   webapp2 = {
-    resource_group_key   = "traffic_manager1"
-    name                 = "webapp-simple-caf2"
-    app_service_plan_key = "asp2"
+    resource_group_key = "traffic_manager1"
+    name               = "webapp-simple-caf2"
+    service_plan_key   = "asp2"
+    
+    site_config = {}
+    
     slots = {
       smoke_test = {
         name = "smoke-test1"
+        site_config = {}
       }
       ab_test = {
         name = "AB-testing1"
+        site_config = {}
       }
-    }
-    settings = {
-      enabled = true
     }
   }
 }

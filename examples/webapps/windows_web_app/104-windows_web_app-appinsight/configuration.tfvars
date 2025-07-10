@@ -21,7 +21,7 @@ azurerm_application_insights = {
 }
 
 # By default sp1 will inherit from the resource group location
-app_service_plans = {
+service_plans = {
   sp1 = {
     resource_group_key = "webapp_simple"
     name               = "asp-simple"

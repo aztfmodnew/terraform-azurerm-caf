@@ -21,17 +21,13 @@ resource_groups = {
 }
 
 # By default asp1 will inherit from the resource group location
-app_service_plans = {
+service_plans = {
   asp1 = {
     resource_group_key = "funapp"
     name               = "asp-simple"
-    kind               = "linux"
-    reserved           = true
-
-    sku = {
-      tier = "Standard"
-      size = "S1"
-    }
+    os_type            = "Linux"
+    sku_name           = "S1"
+    
     tags = {
       project = "Mobile"
     }
@@ -44,7 +40,7 @@ function_apps = {
     resource_group_key = "funapp"
     region             = "region1"
 
-    app_service_plan_key = "asp1"
+    service_plan_key = "asp1"
     storage_account_key  = "sa1"
 
     settings = {

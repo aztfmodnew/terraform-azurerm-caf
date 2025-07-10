@@ -1,3 +1,8 @@
+output "name" {
+  value       = azurecaf_name.windows_web_app.result
+  description = "The CAF-compliant name of the Windows Web App"
+}
+
 output "id" {
   description = "The ID of the Windows Web App."
   value       = azurerm_windows_web_app.windows_web_app.id

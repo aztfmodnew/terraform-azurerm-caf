@@ -20,16 +20,12 @@ storage_accounts = {
   }
 }
 
-app_service_plans = {
+service_plans = {
   asp1 = {
     name               = "appserviceplan1"
     resource_group_key = "rg1"
-    kind               = "elastic"
-
-    sku = {
-      tier = "WorkflowStandard"
-      size = "WS1"
-    }
+    os_type            = "Windows"
+    sku_name           = "WS1"
   }
 }
 
@@ -37,7 +33,7 @@ logic_app_standard = {
   las1 = {
     name                 = "logicapp1"
     resource_group_key   = "rg1"
-    app_service_plan_key = "asp1"
+    service_plan_key = "asp1"
     storage_account_key  = "sa1"
 
     # Required for virtual network integration

@@ -11,7 +11,11 @@ application_gateway_applications_v1 = {
 
         # ip_addresses = ["10.0.0.4", "10.0.0.5"]
 
-        # app_services = {
+        # linux_web_apps = {
+        #   lz_key = ""
+        #   key = ""
+        # }
+        # windows_web_apps = {
         #   lz_key = ""
         #   key = ""
         # }
@@ -170,5 +174,3 @@ application_gateway_applications_v1 = {
     }
   }
 }
-
-

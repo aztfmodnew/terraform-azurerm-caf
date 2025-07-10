@@ -110,8 +110,8 @@ locals {
     app_config                                 = local.combined_objects_app_config
     app_service_environments                   = local.combined_objects_app_service_environments
     app_service_environments_v3                = local.combined_objects_app_service_environments_v3
-    app_service_plans                          = local.combined_objects_app_service_plans
-    app_services                               = local.combined_objects_app_services
+    linux_web_apps                            = local.combined_objects_linux_web_apps
+    windows_web_apps                           = local.combined_objects_windows_web_apps
     application_gateway_platforms              = local.combined_objects_application_gateway_platforms
     application_gateways                       = local.combined_objects_application_gateways
     automations                                = local.combined_objects_automations
@@ -159,6 +159,7 @@ locals {
     recovery_vaults                            = local.combined_objects_recovery_vaults
     resource_groups                            = local.combined_objects_resource_groups
     route_tables                               = local.combined_objects_route_tables
+    service_plans                              = local.combined_objects_service_plans
     servicebus_namespaces                      = local.combined_objects_servicebus_namespaces
     servicebus_topics                          = local.combined_objects_servicebus_topics
     storage_accounts                           = local.combined_objects_storage_accounts

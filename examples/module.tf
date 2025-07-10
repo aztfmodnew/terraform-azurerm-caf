@@ -340,8 +340,6 @@ module "example" {
     azurerm_application_insights_standard_web_test = var.azurerm_application_insights_standard_web_test
     app_service_environments                       = var.app_service_environments
     app_service_environments_v3                    = var.app_service_environments_v3
-    app_service_plans                              = var.app_service_plans
-    app_services                                   = var.app_services
     linux_function_apps                            = var.linux_function_apps
     linux_web_apps                                 = var.linux_web_apps
     function_apps                                  = var.function_apps

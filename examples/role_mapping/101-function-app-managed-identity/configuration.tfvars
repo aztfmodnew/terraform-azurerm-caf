@@ -20,17 +20,13 @@ storage_accounts = {
   }
 }
 
-app_service_plans = {
+service_plans = {
   asp = {
     name               = "asp-example"
     resource_group_key = "rg"
     region             = "region1"
-    kind               = "functionapp"
-
-    sku = {
-      tier = "Standard"
-      size = "S1"
-    }
+    os_type            = "Windows"
+    sku_name           = "S1"
   }
 }
 
@@ -40,7 +36,7 @@ function_apps = {
     resource_group_key = "rg"
 
     region               = "region1"
-    app_service_plan_key = "asp"
+    service_plan_key = "asp"
     storage_account_key  = "stg"
     settings = {
       version = "~4"

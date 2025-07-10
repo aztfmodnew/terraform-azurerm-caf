@@ -133,7 +133,7 @@ application_gateway_applications = {
   }
 }
 
-app_service_plans = {
+service_plans = {
   asp_webapp_appgw = {
     resource_group_key = "webapp_appgw"
     name               = "asp-webapp-appgw"

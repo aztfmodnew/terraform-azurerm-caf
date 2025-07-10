@@ -217,14 +217,7 @@ variable "app_service_environments_v3" {
   type    = any
   default = {}
 }
-variable "app_service_plans" {
-  type    = any
-  default = {}
-}
-variable "app_services" {
-  type    = any
-  default = {}
-}
+
 variable "consumption_budgets" {
   type    = any
   default = {}

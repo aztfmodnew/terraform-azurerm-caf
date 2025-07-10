@@ -1,5 +1,6 @@
 locals {
   remote_objects = {
+    app_service_environments                       = try(local.combined_objects_app_service_environments_all, null)
     aadb2c_directory                               = try(local.combined_objects_aadb2c_directory, null)
     active_directory_domain_service                = try(local.combined_objects_active_directory_domain_service, null)
     active_directory_domain_service_replica_set    = try(local.combined_objects_active_directory_domain_service_replica_set, null)
@@ -12,9 +13,7 @@ locals {
     management_logger                              = try(local.combined_objects_api_management_logger, null)
     app_config                                     = try(local.combined_objects_app_config, null)
     app_service_environments                       = try(local.combined_objects_app_service_environments, null)
-    app_service_environments_v3                    = try(local.combined_objects_app_service_environments_v3, null)
-    app_service_plans                              = try(local.combined_objects_app_service_plans, null)
-    app_services                                   = try(local.combined_objects_app_services, null)
+    app_service_environments_v3                    = try(local.combined_objects_app_service_environments_v3, null)    
     application_gateway_platforms                  = try(local.combined_objects_application_gateway_platforms, null)
     application_gateway_waf_policies               = try(local.combined_objects_application_gateway_waf_policies, null)
     application_gateways                           = try(local.combined_objects_application_gateways, null)
@@ -155,6 +154,7 @@ locals {
     virtual_machines                               = try(local.combined_objects_virtual_machines, null)
     virtual_network_gateways                       = try(local.combined_objects_virtual_network_gateways, null)
     virtual_subnets                                = try(local.combined_objects_virtual_subnets, null)
+    vnets                                          = try(local.combined_objects_vnets, null)
     virtual_wans                                   = try(local.combined_objects_virtual_wans, null)
     vmware_clusters                                = try(local.combined_objects_vmware_clusters, null)
     vmware_express_route_authorizations            = try(local.combined_objects_vmware_express_route_authorizations, null)

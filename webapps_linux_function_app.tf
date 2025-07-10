@@ -12,7 +12,7 @@ module "linux_function_apps" {
   settings          = each.value
 
   remote_objects = {
-    app_service_plans    = local.combined_objects_app_service_plans
+    service_plans        = local.combined_objects_service_plans
     service_plans        = local.combined_objects_service_plans
     combined_objects     = local.dynamic_app_settings_combined_objects
     diagnostics          = local.combined_diagnostics

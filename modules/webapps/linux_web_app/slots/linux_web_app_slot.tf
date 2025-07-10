@@ -1,13 +1,8 @@
 resource "azurerm_linux_web_app_slot" "linux_web_app_slot" {
-  name           = var.settings.name
+  name           = azurecaf_name.linux_web_app_slot.result
   app_service_id = var.remote_objects.app_service_id
-  service_plan_id = coalesce(
-    try(var.settings.service_plan_id, null),
-    try(var.remote_objects.service_plans[try(var.settings.service_plan.lz_key, var.client_config.landingzone_key)][try(var.settings.service_plan.key, var.settings.service_plan_key)].id, null),
-    try(var.remote_objects.app_service_plans[try(var.settings.app_service_plan.lz_key, var.client_config.landingzone_key)][try(var.settings.app_service_plan.key, var.settings.app_service_plan_key)].id, null)
-  )
   
-  app_settings                                       = try(var.settings.app_settings, null)
+  app_settings                                       = try(local.app_settings, null)
   client_affinity_enabled                            = try(var.settings.client_affinity_enabled, null)
   client_certificate_enabled                        = try(var.settings.client_certificate_enabled, null)
   client_certificate_mode                           = try(var.settings.client_certificate_mode, "Required")
@@ -16,9 +11,16 @@ resource "azurerm_linux_web_app_slot" "linux_web_app_slot" {
   ftp_publish_basic_authentication_enabled          = try(var.settings.ftp_publish_basic_authentication_enabled, true)
   https_only                                         = try(var.settings.https_only, false)
   public_network_access_enabled                     = try(var.settings.public_network_access_enabled, true)
-  key_vault_reference_identity_id                   = try(var.settings.key_vault_reference_identity_id, null)
-  virtual_network_backup_restore_enabled            = try(var.settings.virtual_network_backup_restore_enabled, false)
-  virtual_network_subnet_id                         = try(var.settings.virtual_network_subnet_id, null)
+  key_vault_reference_identity_id = try(
+    var.settings.key_vault_reference_identity_id,
+    try(var.remote_objects.managed_identities[try(var.settings.key_vault_reference_identity.lz_key, var.client_config.landingzone_key)][try(var.settings.key_vault_reference_identity.key, var.settings.key_vault_reference_identity_key)].id, null),
+    null
+  )
+  virtual_network_subnet_id                         = try(
+    var.settings.virtual_network_subnet_id,
+    try(var.remote_objects.vnets[try(var.settings.virtual_network_subnet.lz_key, var.client_config.landingzone_key)][var.settings.virtual_network_subnet.vnet_key].subnets[var.settings.virtual_network_subnet.subnet_key].id, null),
+    null
+  )
   webdeploy_publish_basic_authentication_enabled    = try(var.settings.webdeploy_publish_basic_authentication_enabled, true)
   zip_deploy_file                                    = try(var.settings.zip_deploy_file, null)
   tags                                               = merge(local.tags, try(var.settings.tags, null))
@@ -387,7 +389,11 @@ resource "azurerm_linux_web_app_slot" "linux_web_app_slot" {
     content {
       name                = backup.value.name
       enabled             = try(backup.value.enabled, true)
-      storage_account_url = backup.value.storage_account_url
+      storage_account_url = try(
+        backup.value.storage_account_url,
+        try(var.remote_objects.storage_accounts[try(backup.value.storage_account.lz_key, var.client_config.landingzone_key)][try(backup.value.storage_account.key, backup.value.storage_account_key)].primary_blob_connection_string, null),
+        local.backup_sas_url
+      )
 
       dynamic "schedule" {
         for_each = try(backup.value.schedule, null) == null ? [] : [backup.value.schedule]
@@ -403,7 +409,7 @@ resource "azurerm_linux_web_app_slot" "linux_web_app_slot" {
   }
 
   dynamic "connection_string" {
-    for_each = try(var.settings.connection_string, [])
+    for_each = try(local.connection_strings, {})
     content {
       name  = connection_string.value.name
       type  = connection_string.value.type
@@ -433,9 +439,9 @@ resource "azurerm_linux_web_app_slot" "linux_web_app_slot" {
           dynamic "azure_blob_storage" {
             for_each = try(application_logs.value.azure_blob_storage, null) == null ? [] : [application_logs.value.azure_blob_storage]
             content {
-              level             = azure_blob_storage.value.level
-              retention_in_days = azure_blob_storage.value.retention_in_days
-              sas_url           = azure_blob_storage.value.sas_url
+              level             = try(azure_blob_storage.value.level, "Error")
+              retention_in_days = try(azure_blob_storage.value.retention_in_days, 7)
+              sas_url           = try(azure_blob_storage.value.sas_url, local.logs_sas_url)
             }
           }
         }
@@ -447,16 +453,16 @@ resource "azurerm_linux_web_app_slot" "linux_web_app_slot" {
           dynamic "azure_blob_storage" {
             for_each = try(http_logs.value.azure_blob_storage, null) == null ? [] : [http_logs.value.azure_blob_storage]
             content {
-              retention_in_days = try(azure_blob_storage.value.retention_in_days, null)
-              sas_url           = azure_blob_storage.value.sas_url
+              retention_in_days = try(azure_blob_storage.value.retention_in_days, 7)
+              sas_url           = try(azure_blob_storage.value.sas_url, local.http_logs_sas_url)
             }
           }
 
           dynamic "file_system" {
             for_each = try(http_logs.value.file_system, null) == null ? [] : [http_logs.value.file_system]
             content {
-              retention_in_days = file_system.value.retention_in_days
-              retention_in_mb   = file_system.value.retention_in_mb
+              retention_in_days = try(file_system.value.retention_in_days, 7)
+              retention_in_mb   = try(file_system.value.retention_in_mb, 35)
             }
           }
         }
@@ -467,12 +473,18 @@ resource "azurerm_linux_web_app_slot" "linux_web_app_slot" {
   dynamic "storage_account" {
     for_each = try(var.settings.storage_account, [])
     content {
-      access_key   = storage_account.value.access_key
-      account_name = storage_account.value.account_name
-      name         = storage_account.value.name
-      share_name   = storage_account.value.share_name
-      type         = storage_account.value.type
-      mount_path   = try(storage_account.value.mount_path, null)
+      access_key = try(
+        storage_account.value.access_key,
+        try(var.remote_objects.storage_accounts[try(storage_account.value.lz_key, var.client_config.landingzone_key)][try(storage_account.value.key, storage_account.value.storage_account_key)].primary_access_key, null)
+      )
+      account_name = try(
+        storage_account.value.account_name,
+        try(var.remote_objects.storage_accounts[try(storage_account.value.lz_key, var.client_config.landingzone_key)][try(storage_account.value.key, storage_account.value.storage_account_key)].name, null)
+      )
+      name       = storage_account.value.name
+      share_name = storage_account.value.share_name
+      type       = storage_account.value.type
+      mount_path = try(storage_account.value.mount_path, null)
     }
   }
 

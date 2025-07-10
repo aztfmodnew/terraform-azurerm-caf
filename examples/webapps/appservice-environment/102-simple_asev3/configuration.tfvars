@@ -41,7 +41,7 @@ app_service_environments_v3 = {
   }
 }
 
-app_service_plans = {
+service_plans = {
   asp1 = {
     app_service_environment_key = "ase1"
     resource_group_key          = "asp_project1_region1"

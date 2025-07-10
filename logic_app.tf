@@ -125,7 +125,7 @@ module "logic_app_standard" {
   settings          = each.value
   resource_groups   = local.combined_objects_resource_groups
   storage_accounts  = local.combined_objects_storage_accounts
-  app_service_plans = local.combined_objects_app_service_plans
+  service_plans = local.combined_objects_service_plans
   app_settings      = try(each.value.app_settings, null)
   subnets           = local.combined_objects_networking
   identity          = try(each.value.identity, null)

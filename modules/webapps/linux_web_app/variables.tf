@@ -62,3 +62,9 @@ variable "remote_objects" {
   type        = any
   description = "Remote objects"
 }
+
+variable "private_endpoints" {
+  type        = any
+  description = "Private endpoints configuration"
+  default     = {}
+}

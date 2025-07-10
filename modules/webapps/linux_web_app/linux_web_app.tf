@@ -4,11 +4,10 @@ resource "azurerm_linux_web_app" "linux_web_app" {
   resource_group_name = local.resource_group_name
   service_plan_id = coalesce(
     try(var.settings.service_plan_id, null),
-    try(var.remote_objects.service_plans[try(var.settings.service_plan.lz_key, var.client_config.landingzone_key)][try(var.settings.service_plan.key, var.settings.service_plan_key)].id, null),
-    try(var.remote_objects.app_service_plans[try(var.settings.app_service_plan.lz_key, var.client_config.landingzone_key)][try(var.settings.app_service_plan.key, var.settings.app_service_plan_key)].id, null)
+    try(var.remote_objects.service_plans[try(var.settings.service_plan.lz_key, var.client_config.landingzone_key)][try(var.settings.service_plan.key, var.settings.service_plan_key)].id, null)
   )
 
-  app_settings                                       = try(var.settings.app_settings, null)
+  app_settings                                       = try(local.app_settings, null)
   client_affinity_enabled                            = try(var.settings.client_affinity_enabled, null)
   client_certificate_enabled                        = try(var.settings.client_certificate_enabled, null)
   client_certificate_mode                           = try(var.settings.client_certificate_mode, "Required")
@@ -17,9 +16,16 @@ resource "azurerm_linux_web_app" "linux_web_app" {
   ftp_publish_basic_authentication_enabled          = try(var.settings.ftp_publish_basic_authentication_enabled, true)
   https_only                                         = try(var.settings.https_only, false)
   public_network_access_enabled                     = try(var.settings.public_network_access_enabled, true)
-  key_vault_reference_identity_id                   = try(var.settings.key_vault_reference_identity_id, null)
-  virtual_network_backup_restore_enabled            = try(var.settings.virtual_network_backup_restore_enabled, false)
-  virtual_network_subnet_id                         = try(var.settings.virtual_network_subnet_id, null)
+  key_vault_reference_identity_id = try(
+    var.settings.key_vault_reference_identity_id,
+    var.remote_objects.managed_identities[try(var.settings.identity.lz_key, var.client_config.landingzone_key)][try(var.settings.key_vault_reference_identity.key, var.settings.key_vault_reference_identity_key)].id,
+    null
+  )
+  virtual_network_subnet_id = try(
+    var.settings.virtual_network_subnet_id,
+    var.remote_objects.vnets[try(var.settings.virtual_network_subnet.lz_key, var.client_config.landingzone_key)][var.settings.virtual_network_subnet.vnet_key].subnets[var.settings.virtual_network_subnet.subnet_key].id,
+    null
+  )
   webdeploy_publish_basic_authentication_enabled    = try(var.settings.webdeploy_publish_basic_authentication_enabled, true)
   zip_deploy_file                                    = try(var.settings.zip_deploy_file, null)
   tags                                               = merge(local.tags, try(var.settings.tags, null))
@@ -266,6 +272,104 @@ resource "azurerm_linux_web_app" "linux_web_app" {
       forward_proxy_custom_host_header_name   = try(auth_settings_v2.value.forward_proxy_custom_host_header_name, null)
       forward_proxy_custom_scheme_header_name = try(auth_settings_v2.value.forward_proxy_custom_scheme_header_name, null)
 
+      dynamic "apple_v2" {
+        for_each = try(auth_settings_v2.value.apple_v2, {}) != {} ? [auth_settings_v2.value.apple_v2] : []
+        content {
+          client_id                  = apple_v2.value.client_id
+          client_secret_setting_name = apple_v2.value.client_secret_setting_name
+          login_scopes               = try(apple_v2.value.login_scopes, null)
+        }
+      }
+
+      dynamic "active_directory_v2" {
+        for_each = try(auth_settings_v2.value.active_directory_v2, {}) != {} ? [auth_settings_v2.value.active_directory_v2] : []
+        content {
+          client_id                            = active_directory_v2.value.client_id
+          tenant_auth_endpoint                 = active_directory_v2.value.tenant_auth_endpoint
+          client_secret_setting_name           = try(active_directory_v2.value.client_secret_setting_name, null)
+          client_secret_certificate_thumbprint = try(active_directory_v2.value.client_secret_certificate_thumbprint, null)
+          jwt_allowed_groups                   = try(active_directory_v2.value.jwt_allowed_groups, null)
+          jwt_allowed_client_applications      = try(active_directory_v2.value.jwt_allowed_client_applications, null)
+          www_authentication_disabled          = try(active_directory_v2.value.www_authentication_disabled, false)
+          allowed_groups                       = try(active_directory_v2.value.allowed_groups, null)
+          allowed_identities                   = try(active_directory_v2.value.allowed_identities, null)
+          allowed_applications                 = try(active_directory_v2.value.allowed_applications, null)
+          login_parameters                     = try(active_directory_v2.value.login_parameters, null)
+          allowed_audiences                    = try(active_directory_v2.value.allowed_audiences, null)
+        }
+      }
+
+      dynamic "azure_static_web_app_v2" {
+        for_each = try(auth_settings_v2.value.azure_static_web_app_v2, {}) != {} ? [auth_settings_v2.value.azure_static_web_app_v2] : []
+        content {
+          client_id = azure_static_web_app_v2.value.client_id
+        }
+      }
+
+      dynamic "custom_oidc_v2" {
+        for_each = try(auth_settings_v2.value.custom_oidc_v2, [])
+        content {
+          name                          = custom_oidc_v2.value.name
+          client_id                     = custom_oidc_v2.value.client_id
+          openid_configuration_endpoint = custom_oidc_v2.value.openid_configuration_endpoint
+          name_claim_type               = try(custom_oidc_v2.value.name_claim_type, null)
+          scopes                        = try(custom_oidc_v2.value.scopes, null)
+          client_credential_method      = try(custom_oidc_v2.value.client_credential_method, null)
+          client_secret_setting_name    = try(custom_oidc_v2.value.client_secret_setting_name, null)
+          authorisation_endpoint        = try(custom_oidc_v2.value.authorisation_endpoint, null)
+          token_endpoint                = try(custom_oidc_v2.value.token_endpoint, null)
+          issuer_endpoint               = try(custom_oidc_v2.value.issuer_endpoint, null)
+          certification_uri             = try(custom_oidc_v2.value.certification_uri, null)
+        }
+      }
+
+      dynamic "facebook_v2" {
+        for_each = try(auth_settings_v2.value.facebook_v2, {}) != {} ? [auth_settings_v2.value.facebook_v2] : []
+        content {
+          app_id                  = facebook_v2.value.app_id
+          app_secret_setting_name = facebook_v2.value.app_secret_setting_name
+          graph_api_version       = try(facebook_v2.value.graph_api_version, null)
+          login_scopes            = try(facebook_v2.value.login_scopes, null)
+        }
+      }
+
+      dynamic "github_v2" {
+        for_each = try(auth_settings_v2.value.github_v2, {}) != {} ? [auth_settings_v2.value.github_v2] : []
+        content {
+          client_id                  = github_v2.value.client_id
+          client_secret_setting_name = github_v2.value.client_secret_setting_name
+          login_scopes               = try(github_v2.value.login_scopes, null)
+        }
+      }
+
+      dynamic "google_v2" {
+        for_each = try(auth_settings_v2.value.google_v2, {}) != {} ? [auth_settings_v2.value.google_v2] : []
+        content {
+          client_id                  = google_v2.value.client_id
+          client_secret_setting_name = google_v2.value.client_secret_setting_name
+          allowed_audiences          = try(google_v2.value.allowed_audiences, null)
+          login_scopes               = try(google_v2.value.login_scopes, null)
+        }
+      }
+
+      dynamic "microsoft_v2" {
+        for_each = try(auth_settings_v2.value.microsoft_v2, {}) != {} ? [auth_settings_v2.value.microsoft_v2] : []
+        content {
+          client_id                  = microsoft_v2.value.client_id
+          client_secret_setting_name = microsoft_v2.value.client_secret_setting_name
+          allowed_audiences          = try(microsoft_v2.value.allowed_audiences, null)
+          login_scopes               = try(microsoft_v2.value.login_scopes, null)
+        }
+      }
+
+      dynamic "twitter_v2" {
+        for_each = try(auth_settings_v2.value.twitter_v2, {}) != {} ? [auth_settings_v2.value.twitter_v2] : []
+        content {
+          consumer_key                 = twitter_v2.value.consumer_key
+          consumer_secret_setting_name = twitter_v2.value.consumer_secret_setting_name
+        }
+      }
+
       login {
         logout_endpoint                   = try(auth_settings_v2.value.login.logout_endpoint, null)
         token_store_enabled               = try(auth_settings_v2.value.login.token_store_enabled, false)
@@ -283,24 +387,28 @@ resource "azurerm_linux_web_app" "linux_web_app" {
   }
 
   dynamic "backup" {
-    for_each = try(var.settings.backup, null) == null ? [] : [var.settings.backup]
+    for_each = try(var.settings.backup, {}) != {} ? [var.settings.backup] : []
     content {
-      name                = backup.value.name
-      storage_account_url = backup.value.storage_account_url
-      enabled             = try(backup.value.enabled, true)
-
+      name = backup.value.name
       schedule {
-        frequency_interval     = backup.value.schedule.frequency_interval
-        frequency_unit         = backup.value.schedule.frequency_unit
+        frequency_interval       = backup.value.schedule.frequency_interval
+        frequency_unit           = backup.value.schedule.frequency_unit
         keep_at_least_one_backup = try(backup.value.schedule.keep_at_least_one_backup, false)
-        retention_period_days  = try(backup.value.schedule.retention_period_days, 30)
-        start_time             = try(backup.value.schedule.start_time, null)
+        retention_period_days    = try(backup.value.schedule.retention_period_days, 30)
+        start_time               = try(backup.value.schedule.start_time, null)
       }
+      storage_account_url = try(
+        backup.value.storage_account_url,
+        var.remote_objects.storage_accounts[try(backup.value.storage_account.lz_key, var.client_config.landingzone_key)][try(backup.value.storage_account.key, backup.value.storage_account_key)].primary_blob_connection_string,
+        local.backup_sas_url
+      )
+      enabled = try(backup.value.enabled, true)
     }
   }
 
   dynamic "connection_string" {
-    for_each = try(var.settings.connection_string, [])
+    #for_each = try(var.settings.connection_string, null) == null ? [] : var.settings.connection_string
+    for_each = local.connection_strings
     content {
       name  = connection_string.value.name
       type  = connection_string.value.type
@@ -317,43 +425,43 @@ resource "azurerm_linux_web_app" "linux_web_app" {
   }
 
   dynamic "logs" {
-    for_each = try(var.settings.logs, null) == null ? [] : [var.settings.logs]
+    for_each = try(var.settings.logs, {}) != {} ? [var.settings.logs] : []
     content {
-      detailed_error_messages = try(logs.value.detailed_error_messages, null)
-      failed_request_tracing  = try(logs.value.failed_request_tracing, null)
+      detailed_error_messages = try(logs.value.detailed_error_messages, true)
+      failed_request_tracing  = try(logs.value.failed_request_tracing, true)
 
       dynamic "application_logs" {
-        for_each = try(logs.value.application_logs, null) == null ? [] : [logs.value.application_logs]
+        for_each = try(logs.value.application_logs, {}) != {} ? [logs.value.application_logs] : []
         content {
-          file_system_level = application_logs.value.file_system_level
+          file_system_level = try(application_logs.value.file_system_level, "Error")
 
           dynamic "azure_blob_storage" {
-            for_each = try(application_logs.value.azure_blob_storage, null) == null ? [] : [application_logs.value.azure_blob_storage]
+            for_each = try(application_logs.value.azure_blob_storage, {}) != {} ? [application_logs.value.azure_blob_storage] : []
             content {
-              level             = azure_blob_storage.value.level
-              retention_in_days = azure_blob_storage.value.retention_in_days
-              sas_url           = azure_blob_storage.value.sas_url
+              level             = try(azure_blob_storage.value.level, "Error")
+              retention_in_days = try(azure_blob_storage.value.retention_in_days, 7)
+              sas_url           = try(azure_blob_storage.value.sas_url, local.logs_sas_url)
             }
           }
         }
       }
 
       dynamic "http_logs" {
-        for_each = try(logs.value.http_logs, null) == null ? [] : [logs.value.http_logs]
+        for_each = try(logs.value.http_logs, {}) != {} ? [logs.value.http_logs] : []
         content {
           dynamic "azure_blob_storage" {
-            for_each = try(http_logs.value.azure_blob_storage, null) == null ? [] : [http_logs.value.azure_blob_storage]
+            for_each = try(http_logs.value.azure_blob_storage, {}) != {} ? [http_logs.value.azure_blob_storage] : []
             content {
-              retention_in_days = try(azure_blob_storage.value.retention_in_days, 0)
-              sas_url           = azure_blob_storage.value.sas_url
+              retention_in_days = try(azure_blob_storage.value.retention_in_days, 7)
+              sas_url           = try(azure_blob_storage.value.sas_url, local.http_logs_sas_url)
             }
           }
 
           dynamic "file_system" {
-            for_each = try(http_logs.value.file_system, null) == null ? [] : [http_logs.value.file_system]
+            for_each = try(http_logs.value.file_system, {}) != {} ? [http_logs.value.file_system] : []
             content {
-              retention_in_days = file_system.value.retention_in_days
-              retention_in_mb   = file_system.value.retention_in_mb
+              retention_in_days = try(file_system.value.retention_in_days, 7)
+              retention_in_mb   = try(file_system.value.retention_in_mb, 35)
             }
           }
         }
@@ -362,9 +470,12 @@ resource "azurerm_linux_web_app" "linux_web_app" {
   }
 
   dynamic "storage_account" {
-    for_each = try(var.settings.storage_account, [])
+    for_each = try(var.settings.storage_account, {}) != {} ? [var.settings.storage_account] : []
     content {
-      access_key   = storage_account.value.access_key
+      access_key = try(
+        storage_account.value.access_key,
+        var.remote_objects.storage_accounts[try(storage_account.value.lz_key, var.client_config.landingzone_key)][try(storage_account.value.key, storage_account.value.storage_account_key)].primary_access_key
+      )
       account_name = storage_account.value.account_name
       name         = storage_account.value.name
       share_name   = storage_account.value.share_name

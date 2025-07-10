@@ -4,8 +4,8 @@ output "id" {
 }
 
 output "name" {
-  value       = azurerm_linux_web_app_slot.linux_web_app_slot.name
-  description = "The name of the Linux Web App Slot"
+  value       = azurecaf_name.linux_web_app_slot.result
+  description = "The CAF-compliant name of the Linux Web App Slot"
 }
 
 output "default_hostname" {

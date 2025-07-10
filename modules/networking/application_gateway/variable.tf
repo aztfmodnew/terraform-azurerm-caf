@@ -27,7 +27,10 @@ variable "public_ip_addresses" {
   default = {}
 }
 variable "application_gateway_applications" {}
-variable "app_services" {
+variable "linux_web_apps" {
+  default = {}
+}
+variable "windows_web_apps" {
   default = {}
 }
 variable "vnets" {

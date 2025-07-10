@@ -48,8 +48,8 @@ module "traffic_manager_azure_endpoint" {
 
   remote_objects = {
     public_ip_addresses = try(local.combined_objects_public_ip_addresses[try(each.value.public_ip_addresses.lz_key, local.client_config.landingzone_key)][each.value.public_ip_address.key].id, null)
-    app_services        = try(local.combined_objects_app_services[try(each.value.app_services.lz_key, local.client_config.landingzone_key)][each.value.app_services.key].id, null)
-    app_services_slot   = try(local.combined_objects_app_services[try(each.value.app_services.lz_key, local.client_config.landingzone_key)][each.value.app_services.key].slot[each.value.app_services.slot_key].id, null)
+    linux_web_apps      = try(local.combined_objects_linux_web_apps[try(each.value.linux_web_apps.lz_key, local.client_config.landingzone_key)][each.value.linux_web_apps.key].id, null)
+    windows_web_apps    = try(local.combined_objects_windows_web_apps[try(each.value.windows_web_apps.lz_key, local.client_config.landingzone_key)][each.value.windows_web_apps.key].id, null)
   }
 }
 

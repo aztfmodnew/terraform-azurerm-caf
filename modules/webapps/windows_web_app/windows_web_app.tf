@@ -1,11 +1,10 @@
 resource "azurerm_windows_web_app" "windows_web_app" {
-  name                = azurecaf_name.windows_web_app.name
+  name                = azurecaf_name.windows_web_app.result
   location            = local.location
   resource_group_name = local.resource_group_name
   service_plan_id = coalesce(
     try(var.settings.service_plan_id, null),
-    try(var.remote_objects.service_plans[try(var.settings.service_plan.lz_key, var.client_config.landingzone_key)][try(var.settings.service_plan.key, var.settings.service_plan_key)].id, null),
-    try(var.remote_objects.app_service_plans[try(var.settings.app_service_plan.lz_key, var.client_config.landingzone_key)][try(var.settings.app_service_plan.key, var.settings.app_service_plan_key)].id, null)
+    try(var.remote_objects.service_plans[try(var.settings.service_plan.lz_key, var.client_config.landingzone_key)][try(var.settings.service_plan.key, var.settings.service_plan_key)].id, null)
   )
   site_config {
     always_on                                     = try(var.settings.site_config.always_on, true)

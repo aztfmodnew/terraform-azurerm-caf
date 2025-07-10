@@ -14,7 +14,11 @@ variable "client_config" {
 variable "application_gateway" {
   type = any
 }
-variable "app_services" {
+variable "linux_web_apps" {
+  default = {}
+  type    = map(any)
+}
+variable "windows_web_apps" {
   default = {}
   type    = map(any)
 }
@@ -34,5 +38,3 @@ variable "application_gateway_waf_policies" {
   default = {}
   type    = map(any)
 }
-
-

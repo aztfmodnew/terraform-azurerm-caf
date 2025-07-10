@@ -15,8 +15,8 @@ variable "resource_groups" {
 variable "storage_accounts" {
   description = "Storage Accounts"
 }
-variable "app_service_plans" {
-  description = "App Service Plans"
+variable "service_plans" {
+  description = "Service Plans"
 }
 variable "app_settings" {
   description = "Application settings"

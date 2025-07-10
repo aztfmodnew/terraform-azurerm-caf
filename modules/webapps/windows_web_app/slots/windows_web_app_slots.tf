@@ -1,11 +1,6 @@
 resource "azurerm_windows_web_app_slot" "windows_web_app_slot" {
-  name           = var.settings.name
+  name           = azurecaf_name.windows_web_app_slot.result
   app_service_id = var.remote_objects.app_service_id
-  service_plan_id = coalesce(
-    try(var.settings.service_plan_id, null),
-    try(var.remote_objects.service_plans[try(var.settings.service_plan.lz_key, var.client_config.landingzone_key)][try(var.settings.service_plan.key, var.settings.service_plan_key)].id, null),
-    try(var.remote_objects.app_service_plans[try(var.settings.app_service_plan.lz_key, var.client_config.landingzone_key)][try(var.settings.app_service_plan.key, var.settings.app_service_plan_key)].id, null)
-  )
   site_config {
     always_on                                     = try(var.settings.site_config.always_on, true)
     api_definition_url                            = try(var.settings.site_config.api_definition_url, null)
@@ -355,11 +350,11 @@ resource "azurerm_windows_web_app_slot" "windows_web_app_slot" {
   client_certificate_mode            = try(var.settings.client_certificate_mode, null)
   client_certificate_exclusion_paths = try(var.settings.client_certificate_exclusion_paths, null)
   dynamic "connection_string" {
-    for_each = try(var.settings.connection_string, {}) != {} ? var.settings.connection_string : []
+    for_each = try(local.connection_strings, {})
     content {
-      name  = var.settings.connection_string.name
-      type  = var.settings.connection_string.type
-      value = var.settings.connection_string.value
+      name  = connection_string.value.name
+      type  = connection_string.value.type
+      value = connection_string.value.value
     }
   }
   enabled                                  = try(var.settings.enabled, true)
