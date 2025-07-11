@@ -11,11 +11,11 @@ vnets = {
       app = {
         name = "snet-functions"
         cidr = ["10.1.0.0/26"]
+        nsg_key = "functions_nsg"
         delegation = {
           name               = "Microsoft.Web.serverFarms"
           service_delegation = "Microsoft.Web/serverFarms"
           actions            = ["Microsoft.Network/virtualNetworks/subnets/action"]
-          nsg_key = "functions_nsg"
         }
       }
       private_endpoints = {

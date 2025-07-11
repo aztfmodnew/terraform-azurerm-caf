@@ -18,7 +18,7 @@ Demonstrates a simple Windows Function App deployment with:
 Demonstrates a secure Windows Function App deployment with:
 
 - **Private Endpoint**: Function app accessible only through private IP
-- **VNet Integration**: Outbound traffic routed through VNet  
+- **VNet Integration**: Outbound traffic routed through VNet
 - **Storage Private Endpoints**: Storage accessible only through private network
 - **Network Security Groups**: Traffic filtering at subnet level
 - **Managed Identity**: Secure authentication to storage without connection strings
@@ -49,13 +49,17 @@ For the secure private endpoint deployment:
 cd /home/fdr001/source/github/aztfmodnew/terraform-azurerm-caf/examples
 
 terraform plan \
+  -var-file=./webapps/windows_function_app/102-windows_function_app-private/global_settings.tfvars \
   -var-file=./webapps/windows_function_app/102-windows_function_app-private/resource_groups.tfvars \
   -var-file=./webapps/windows_function_app/102-windows_function_app-private/service_plans.tfvars \
   -var-file=./webapps/windows_function_app/102-windows_function_app-private/storage_accounts.tfvars \
+  -var-file=./webapps/windows_function_app/102-windows_function_app-private/vnets.tfvars \
+  -var-file=./webapps/windows_function_app/102-windows_function_app-private/nsg.tfvars \
   -var-file=./webapps/windows_function_app/102-windows_function_app-private/networking.tfvars \
+  -var-file=./webapps/windows_function_app/102-windows_function_app-private/private_dns.tfvars \
   -var-file=./webapps/windows_function_app/102-windows_function_app-private/private_endpoints.tfvars \
-  -var-file=./webapps/windows_function_app/102-windows_function_app-private/windows_function_apps.tfvars \
-  -var-file=./webapps/windows_function_app/102-windows_function_app-private/configuration.tfvars
+  -var-file=./webapps/windows_function_app/102-windows_function_app-private/application_insights.tfvars \
+  -var-file=./webapps/windows_function_app/102-windows_function_app-private/windows_function_apps.tfvars
 ```
 
 ## Module Information

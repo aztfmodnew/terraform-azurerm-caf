@@ -17,6 +17,7 @@ This deployment creates:
 ## Security Features
 
 ### Network Isolation
+
 - ✅ **Private Endpoint**: Function app accessible only through private IP
 - ✅ **VNet Integration**: Outbound traffic routed through VNet
 - ✅ **Storage Private Endpoints**: Storage accessible only through private network
@@ -24,12 +25,14 @@ This deployment creates:
 - ✅ **Network Security Groups**: Traffic filtering at subnet level
 
 ### Access Control
+
 - ✅ **Managed Identity**: Secure authentication to storage without connection strings
 - ✅ **IP Restrictions**: Function app accessible only from VNet
 - ✅ **HTTPS Only**: All traffic encrypted in transit
 - ✅ **Minimum TLS 1.2**: Modern encryption standards
 
 ### Compliance
+
 - ✅ **Zero Trust Architecture**: All resources isolated by default
 - ✅ **Private DNS Resolution**: Proper name resolution within VNet
 - ✅ **Audit Trail**: All access through private endpoints logged
@@ -60,10 +63,10 @@ terraform apply \
 
 ## Configuration Files
 
-| File | Purpose |
-|------|---------|
+| File                   | Purpose                               |
+| ---------------------- | ------------------------------------- |
 | `configuration.tfvars` | Main configuration with all resources |
-| `nsg.tfvars` | Network Security Groups definitions |
+| `nsg.tfvars`           | Network Security Groups definitions   |
 
 ## Network Architecture
 
@@ -93,6 +96,7 @@ terraform apply \
 ### Testing Connectivity
 
 1. **Private Endpoint Resolution**:
+
    ```bash
    # From within the VNet, resolve the private endpoint
    nslookup winfunapp-private.azurewebsites.net
@@ -100,6 +104,7 @@ terraform apply \
    ```
 
 2. **Function App Access**:
+
    ```bash
    # From within the VNet
    curl https://winfunapp-private.azurewebsites.net/api/healthcheck
