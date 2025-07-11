@@ -49,12 +49,10 @@ service_plans = {
     name = "ase1-asp01"
     kind = "Windows"
 
-    sku = {
-      tier             = "IsolatedV2"
-      size             = "I1v2"
-      capacity         = "1"
-      per_site_scaling = true
-    }
+    sku_name = "I1v2"
+    per_site_scaling_enabled = true
+    worker_count = 1
+
   },
   asp2 = {
     app_service_environment_key = "ase1"
@@ -66,12 +64,10 @@ service_plans = {
     //When creating a Linux App Service Plan, the reserved field must be set to true
     reserved = true
 
-    sku = {
-      tier             = "IsolatedV2"
-      size             = "I1v2"
-      capacity         = "1"
-      per_site_scaling = true
-    }
+    sku_name = "I1v2"
+    per_site_scaling_enabled = true
+    worker_count = 1
+
     tags = {
       project = "mobile app"
     }
