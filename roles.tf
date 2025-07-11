@@ -112,6 +112,8 @@ locals {
     app_service_environments_v3                = local.combined_objects_app_service_environments_v3
     linux_web_apps                             = local.combined_objects_linux_web_apps
     windows_web_apps                           = local.combined_objects_windows_web_apps
+    linux_function_apps                        = local.combined_objects_linux_function_apps
+    windows_function_apps                      = local.combined_objects_windows_function_apps
     application_gateway_platforms              = local.combined_objects_application_gateway_platforms
     application_gateways                       = local.combined_objects_application_gateways
     automations                                = local.combined_objects_automations
