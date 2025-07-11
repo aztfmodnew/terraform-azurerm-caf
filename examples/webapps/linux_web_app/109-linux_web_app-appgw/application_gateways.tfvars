@@ -4,11 +4,8 @@ application_gateways = {
     name               = "appgw"
     vnet_key           = "webapp_appgw"
     subnet_key         = "appgw"
-    sku = {
-      name     = "Standard_v2"
-      tier     = "Standard_v2"
-      capacity = 2
-    }
+    sku_name           = "Standard_v2"
+    sku_tier           = "Standard_v2"
 
     frontend_ports = {
       port_80 = {
