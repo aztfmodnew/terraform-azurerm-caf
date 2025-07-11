@@ -1,6 +1,6 @@
 resource "azurecaf_name" "static_site" {
   name          = var.name
-  resource_type = "azurerm_static_site"  # Using supported resource type until azurecaf supports azurerm_static_web_app
+  resource_type = "azurerm_static_site" # Using supported resource type until azurecaf supports azurerm_static_web_app
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
   clean_input   = true

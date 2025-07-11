@@ -30,12 +30,12 @@ vnets = {
 
 public_ip_addresses = {
   vngw_pip = {
-    name               = "vngw_pip1"
-    resource_group_key = "vpngw"
-    sku                = "Standard" # Standard for VPN Gateway
-    allocation_method  = "Static"   # Static for Standard SKU
-    zones = []
-    ip_version         = "IPv4"
+    name                    = "vngw_pip1"
+    resource_group_key      = "vpngw"
+    sku                     = "Standard" # Standard for VPN Gateway
+    allocation_method       = "Static"   # Static for Standard SKU
+    zones                   = []
+    ip_version              = "IPv4"
     idle_timeout_in_minutes = "4"
   }
 }

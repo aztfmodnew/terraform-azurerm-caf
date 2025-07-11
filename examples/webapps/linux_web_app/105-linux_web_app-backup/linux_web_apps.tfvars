@@ -38,8 +38,8 @@ linux_web_apps = {
       application_logs = {
         file_system_level = "Information"
         azure_blob_storage = {
-          level             = "Information"
-          retention_in_days = 7
+          level               = "Information"
+          retention_in_days   = 7
           storage_account_key = "logs"
           container_key       = "logs"
         }

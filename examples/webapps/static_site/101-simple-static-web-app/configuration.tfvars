@@ -5,7 +5,7 @@ global_settings = {
   }
   inherit_tags = true
   tags = {
-    env = "demo"
+    env     = "demo"
     project = "static-web-app"
   }
 }
@@ -27,27 +27,27 @@ static_sites = {
     region             = "region1"
 
     # SKU Configuration for azurerm_static_web_app
-    sku_tier = "Standard"  # Free or Standard
-    sku_size = "Standard"  # Free or Standard
-    
+    sku_tier = "Standard" # Free or Standard
+    sku_size = "Standard" # Free or Standard
+
     # Optional settings
     configuration_file_changes_enabled = true
     preview_environments_enabled       = true
-    public_network_access_enabled     = true
-    
+    public_network_access_enabled      = true
+
     # Optional app settings
     app_settings = {
       "CUSTOM_SETTING" = "value"
       "ENVIRONMENT"    = "demo"
     }
-    
+
     # Optional repository configuration (if using GitHub integration)
     # repository_url    = "https://github.com/user/repo"
     # repository_branch = "main"
     # repository_token  = "github_token" # Store securely
-    
+
     tags = {
-      tier = "standard"
+      tier    = "standard"
       purpose = "demo"
     }
   }

@@ -14,12 +14,12 @@ linux_web_apps = {
     https_only              = false
 
     site_config = {
-      number_of_workers        = 2
-      default_documents        = ["index.html"]
-      always_on                = true
-      app_command_line         = null
-      ftps_state               = "AllAllowed" //AllAllowed, FtpsOnly and Disabled
-      http2_enabled            = false
+      number_of_workers = 2
+      default_documents = ["index.html"]
+      always_on         = true
+      app_command_line  = null
+      ftps_state        = "AllAllowed" //AllAllowed, FtpsOnly and Disabled
+      http2_enabled     = false
 
       application_stack = {
         python_version = "3.8"
@@ -31,18 +31,18 @@ linux_web_apps = {
 
       ip_restriction = {
         ip_restriction_1 = {
-          name     = "test"
-          priority = 100
-          action   = "Allow"
+          name       = "test"
+          priority   = 100
+          action     = "Allow"
           ip_address = "10.0.0.0/8"
         }
       }
 
       scm_ip_restriction = {
         scm_ip_restriction_1 = {
-          name     = "test"
-          priority = 100
-          action   = "Allow"
+          name       = "test"
+          priority   = 100
+          action     = "Allow"
           ip_address = "10.0.0.0/8"
         }
       }

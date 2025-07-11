@@ -5,7 +5,7 @@ global_settings = {
   }
   inherit_tags = true
   tags = {
-    env = "demo"
+    env     = "demo"
     project = "static-web-app-custom-domain"
   }
 }
@@ -27,14 +27,14 @@ static_sites = {
     region             = "region1"
 
     # SKU Configuration for azurerm_static_web_app
-    sku_tier = "Standard"  # Free or Standard (custom domains require Standard)
-    sku_size = "Standard"  # Free or Standard
-    
+    sku_tier = "Standard" # Free or Standard (custom domains require Standard)
+    sku_size = "Standard" # Free or Standard
+
     # Optional settings
     configuration_file_changes_enabled = true
     preview_environments_enabled       = true
-    public_network_access_enabled     = true
-    
+    public_network_access_enabled      = true
+
     # Custom domains configuration
     custom_domains = {
       # Root domain with TXT token validation
@@ -46,7 +46,7 @@ static_sites = {
         domain_name     = "mystaticsite.com"
         validation_type = "dns-txt-token"
       }
-      
+
       # Subdomain with CNAME delegation validation
       # Requirements:
       # 1. Create a CNAME record: subdomain.mystaticsite.com
@@ -56,7 +56,7 @@ static_sites = {
         domain_name     = "subdomain.mystaticsite.com"
         validation_type = "cname-delegation"
       }
-      
+
       # WWW subdomain with CNAME delegation validation
       # Requirements:
       # 1. Create a CNAME record: www.mystaticsite.com
@@ -66,15 +66,15 @@ static_sites = {
         validation_type = "cname-delegation"
       }
     }
-    
+
     # Optional app settings
     app_settings = {
       "CUSTOM_SETTING" = "value"
       "ENVIRONMENT"    = "demo"
     }
-    
+
     tags = {
-      tier = "standard"
+      tier    = "standard"
       purpose = "custom-domain-demo"
     }
   }

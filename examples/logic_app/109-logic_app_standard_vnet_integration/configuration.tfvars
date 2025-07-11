@@ -31,10 +31,10 @@ service_plans = {
 
 logic_app_standard = {
   las1 = {
-    name                 = "logicapp1"
-    resource_group_key   = "rg1"
-    service_plan_key = "asp1"
-    storage_account_key  = "sa1"
+    name                = "logicapp1"
+    resource_group_key  = "rg1"
+    service_plan_key    = "asp1"
+    storage_account_key = "sa1"
 
     # Required for virtual network integration
     vnet_integration = {

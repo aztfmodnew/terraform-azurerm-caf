@@ -28,11 +28,11 @@ service_plans = {
 
 function_apps = {
   faaps1 = {
-    name                 = "test-azure-functions"
-    resource_group_key   = "dmz-rt-dev-network"
-    region               = "region1"
-    service_plan_key = "asp1"
-    storage_account_key  = "sa1"
+    name                = "test-azure-functions"
+    resource_group_key  = "dmz-rt-dev-network"
+    region              = "region1"
+    service_plan_key    = "asp1"
+    storage_account_key = "sa1"
     settings = {
       os_type = "linux"
       version = "~3"

@@ -3,7 +3,7 @@ private_endpoints = {
   spoke = {
     vnet_key    = "spoke"
     subnet_keys = ["private_endpoints"]
-    
+
     # Private endpoint for storage account
     storage_accounts = {
       sa1 = {
@@ -12,14 +12,14 @@ private_endpoints = {
           name              = "psc-storage-sa1"
           subresource_names = ["blob", "file"]
         }
-        
+
         private_dns = {
           zone_group_name = "storage-zone-group"
-          keys = ["privatelink.blob.core.windows.net", "privatelink.file.core.windows.net"]
+          keys            = ["privatelink.blob.core.windows.net", "privatelink.file.core.windows.net"]
         }
       }
     }
-    
+
     # Private endpoint for Windows Function App
     windows_function_apps = {
       function_app1 = {
@@ -28,10 +28,10 @@ private_endpoints = {
           name              = "psc-function-app1"
           subresource_names = ["sites"]
         }
-        
+
         private_dns = {
           zone_group_name = "function-app-zone-group"
-          keys = ["privatelink.azurewebsites.net"]
+          keys            = ["privatelink.azurewebsites.net"]
         }
       }
     }

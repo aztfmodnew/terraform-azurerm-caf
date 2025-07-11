@@ -27,7 +27,7 @@ linux_web_apps = {
         vnet_key           = "spoke"
         subnet_key         = "app"
         resource_group_key = "webapp_simple"
-        
+
         private_service_connection = {
           name                 = "webapp-private-connection"
           is_manual_connection = false

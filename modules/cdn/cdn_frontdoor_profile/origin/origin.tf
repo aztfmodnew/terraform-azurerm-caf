@@ -9,7 +9,7 @@ resource "azurerm_cdn_frontdoor_origin" "origin" {
     try(var.remote_objects.cdn_frontdoor_origin_groups[var.settings.origin_group_key].id, null),
     try(var.remote_objects.cdn_frontdoor_origin_groups[try(var.settings.origin_group.lz_key, var.client_config.landingzone_key)][var.settings.origin_group.key].id, null)
   )
-  host_name                      = coalesce(
+  host_name = coalesce(
     try(var.settings.host_name, null),
     try(var.remote_objects.storage_accounts[try(var.settings.storage_account.lz_key, var.client_config.landingzone_key)][var.settings.storage_account.key].primary_web_host, null),
     try(var.remote_objects.storage_accounts[var.client_config.landingzone_key][var.settings.storage_account.key].primary_web_host, null)
@@ -18,13 +18,13 @@ resource "azurerm_cdn_frontdoor_origin" "origin" {
   enabled                        = try(var.settings.enabled, true)
   http_port                      = try(var.settings.http_port, 80)
   https_port                     = try(var.settings.https_port, 443)
-  origin_host_header             = coalesce(
+  origin_host_header = coalesce(
     try(var.settings.origin_host_header, null),
     try(var.remote_objects.storage_accounts[try(var.settings.storage_account.lz_key, var.client_config.landingzone_key)][var.settings.storage_account.key].primary_web_host, null),
     try(var.remote_objects.storage_accounts[var.client_config.landingzone_key][var.settings.storage_account.key].primary_web_host, null)
   )
-  priority                       = try(var.settings.priority, 1)
-  weight                         = try(var.settings.weight, 500)
+  priority = try(var.settings.priority, 1)
+  weight   = try(var.settings.weight, 500)
 
   # Lifecycle rule to prevent premature destruction when associated with routes
   lifecycle {

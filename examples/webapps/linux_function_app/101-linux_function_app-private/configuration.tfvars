@@ -27,7 +27,7 @@ service_plans = {
     name               = "asp-simple"
     os_type            = "Linux"
     sku_name           = "S1"
-    
+
     tags = {
       project = "Mobile"
     }
@@ -40,8 +40,8 @@ linux_function_apps = {
     resource_group_key = "funapp"
     region             = "region1"
 
-    service_plan_key = "asp1"
-    storage_account_key  = "sa1"
+    service_plan_key    = "asp1"
+    storage_account_key = "sa1"
 
     settings = {
       vnet_key   = "spoke"

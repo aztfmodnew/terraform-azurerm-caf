@@ -21,8 +21,8 @@ network_security_group_definition = {
         protocol                   = "*"
         source_port_range          = "*"
         destination_port_range     = "53"
-        source_address_prefix      = "10.20.1.0/24"  # Remote AADDS subnet
-        destination_address_prefix = "10.10.1.0/24"  # Local AADDS subnet
+        source_address_prefix      = "10.20.1.0/24" # Remote AADDS subnet
+        destination_address_prefix = "10.10.1.0/24" # Local AADDS subnet
       },
       {
         name                       = "DNS-Outbound"
@@ -32,8 +32,8 @@ network_security_group_definition = {
         protocol                   = "*"
         source_port_range          = "*"
         destination_port_range     = "53"
-        source_address_prefix      = "10.10.1.0/24"  # Local AADDS subnet
-        destination_address_prefix = "10.20.1.0/24"  # Remote AADDS subnet
+        source_address_prefix      = "10.10.1.0/24" # Local AADDS subnet
+        destination_address_prefix = "10.20.1.0/24" # Remote AADDS subnet
       },
       # Kerberos authentication
       {
@@ -221,7 +221,7 @@ network_security_group_definition = {
       }
     ]
   }
-  
+
   # Reglas adicionales para aadds_re2 - replicación DC
   aadds_re2_replication = {
     version            = 1
@@ -241,8 +241,8 @@ network_security_group_definition = {
         protocol                   = "*"
         source_port_range          = "*"
         destination_port_range     = "53"
-        source_address_prefix      = "10.10.1.0/24"  # Remote AADDS subnet
-        destination_address_prefix = "10.20.1.0/24"  # Local AADDS subnet
+        source_address_prefix      = "10.10.1.0/24" # Remote AADDS subnet
+        destination_address_prefix = "10.20.1.0/24" # Local AADDS subnet
       },
       {
         name                       = "DNS-Outbound"
@@ -252,8 +252,8 @@ network_security_group_definition = {
         protocol                   = "*"
         source_port_range          = "*"
         destination_port_range     = "53"
-        source_address_prefix      = "10.20.1.0/24"  # Local AADDS subnet
-        destination_address_prefix = "10.10.1.0/24"  # Remote AADDS subnet
+        source_address_prefix      = "10.20.1.0/24" # Local AADDS subnet
+        destination_address_prefix = "10.10.1.0/24" # Remote AADDS subnet
       },
       # Kerberos authentication
       {

@@ -5,7 +5,7 @@ global_settings = {
   }
   inherit_tags = true
   tags = {
-    env = "production"
+    env     = "production"
     project = "windows-functions-private"
   }
 }

@@ -1,29 +1,29 @@
 resource "azurerm_linux_web_app_slot" "linux_web_app_slot" {
   name           = azurecaf_name.linux_web_app_slot.result
   app_service_id = var.remote_objects.app_service_id
-  
-  app_settings                                       = try(local.app_settings, null)
-  client_affinity_enabled                            = try(var.settings.client_affinity_enabled, null)
-  client_certificate_enabled                        = try(var.settings.client_certificate_enabled, null)
-  client_certificate_mode                           = try(var.settings.client_certificate_mode, "Required")
-  client_certificate_exclusion_paths                = try(var.settings.client_certificate_exclusion_paths, null)
-  enabled                                            = try(var.settings.enabled, true)
-  ftp_publish_basic_authentication_enabled          = try(var.settings.ftp_publish_basic_authentication_enabled, true)
-  https_only                                         = try(var.settings.https_only, false)
-  public_network_access_enabled                     = try(var.settings.public_network_access_enabled, true)
+
+  app_settings                             = try(local.app_settings, null)
+  client_affinity_enabled                  = try(var.settings.client_affinity_enabled, null)
+  client_certificate_enabled               = try(var.settings.client_certificate_enabled, null)
+  client_certificate_mode                  = try(var.settings.client_certificate_mode, "Required")
+  client_certificate_exclusion_paths       = try(var.settings.client_certificate_exclusion_paths, null)
+  enabled                                  = try(var.settings.enabled, true)
+  ftp_publish_basic_authentication_enabled = try(var.settings.ftp_publish_basic_authentication_enabled, true)
+  https_only                               = try(var.settings.https_only, false)
+  public_network_access_enabled            = try(var.settings.public_network_access_enabled, true)
   key_vault_reference_identity_id = try(
     var.settings.key_vault_reference_identity_id,
     try(var.remote_objects.managed_identities[try(var.settings.key_vault_reference_identity.lz_key, var.client_config.landingzone_key)][try(var.settings.key_vault_reference_identity.key, var.settings.key_vault_reference_identity_key)].id, null),
     null
   )
-  virtual_network_subnet_id                         = try(
+  virtual_network_subnet_id = try(
     var.settings.virtual_network_subnet_id,
     try(var.remote_objects.vnets[try(var.settings.virtual_network_subnet.lz_key, var.client_config.landingzone_key)][var.settings.virtual_network_subnet.vnet_key].subnets[var.settings.virtual_network_subnet.subnet_key].id, null),
     null
   )
-  webdeploy_publish_basic_authentication_enabled    = try(var.settings.webdeploy_publish_basic_authentication_enabled, true)
-  zip_deploy_file                                    = try(var.settings.zip_deploy_file, null)
-  tags                                               = merge(local.tags, try(var.settings.tags, null))
+  webdeploy_publish_basic_authentication_enabled = try(var.settings.webdeploy_publish_basic_authentication_enabled, true)
+  zip_deploy_file                                = try(var.settings.zip_deploy_file, null)
+  tags                                           = merge(local.tags, try(var.settings.tags, null))
 
   site_config {
     always_on                                     = try(var.settings.site_config.always_on, true)
@@ -140,7 +140,7 @@ resource "azurerm_linux_web_app_slot" "linux_web_app_slot" {
         service_tag               = try(ip_restriction.value.service_tag, null)
         virtual_network_subnet_id = try(ip_restriction.value.virtual_network_subnet_id, null)
         description               = try(ip_restriction.value.description, null)
-        
+
         dynamic "headers" {
           for_each = try(ip_restriction.value.headers, null) == null ? [] : [ip_restriction.value.headers]
           content {
@@ -163,7 +163,7 @@ resource "azurerm_linux_web_app_slot" "linux_web_app_slot" {
         service_tag               = try(scm_ip_restriction.value.service_tag, null)
         virtual_network_subnet_id = try(scm_ip_restriction.value.virtual_network_subnet_id, null)
         description               = try(scm_ip_restriction.value.description, null)
-        
+
         dynamic "headers" {
           for_each = try(scm_ip_restriction.value.headers, null) == null ? [] : [scm_ip_restriction.value.headers]
           content {
@@ -321,17 +321,17 @@ resource "azurerm_linux_web_app_slot" "linux_web_app_slot" {
       dynamic "custom_oidc_v2" {
         for_each = try(auth_settings_v2.value.custom_oidc_v2, [])
         content {
-          name                      = custom_oidc_v2.value.name
-          client_id                 = custom_oidc_v2.value.client_id
+          name                          = custom_oidc_v2.value.name
+          client_id                     = custom_oidc_v2.value.client_id
           openid_configuration_endpoint = custom_oidc_v2.value.openid_configuration_endpoint
-          name_claim_type           = try(custom_oidc_v2.value.name_claim_type, null)
-          scopes                    = try(custom_oidc_v2.value.scopes, null)
-          client_credential_method  = try(custom_oidc_v2.value.client_credential_method, null)
-          client_secret_setting_name = try(custom_oidc_v2.value.client_secret_setting_name, null)
-          authorisation_endpoint    = try(custom_oidc_v2.value.authorisation_endpoint, null)
-          token_endpoint            = try(custom_oidc_v2.value.token_endpoint, null)
-          issuer_endpoint           = try(custom_oidc_v2.value.issuer_endpoint, null)
-          certification_uri         = try(custom_oidc_v2.value.certification_uri, null)
+          name_claim_type               = try(custom_oidc_v2.value.name_claim_type, null)
+          scopes                        = try(custom_oidc_v2.value.scopes, null)
+          client_credential_method      = try(custom_oidc_v2.value.client_credential_method, null)
+          client_secret_setting_name    = try(custom_oidc_v2.value.client_secret_setting_name, null)
+          authorisation_endpoint        = try(custom_oidc_v2.value.authorisation_endpoint, null)
+          token_endpoint                = try(custom_oidc_v2.value.token_endpoint, null)
+          issuer_endpoint               = try(custom_oidc_v2.value.issuer_endpoint, null)
+          certification_uri             = try(custom_oidc_v2.value.certification_uri, null)
         }
       }
 
@@ -387,8 +387,8 @@ resource "azurerm_linux_web_app_slot" "linux_web_app_slot" {
   dynamic "backup" {
     for_each = try(var.settings.backup, null) == null ? [] : [var.settings.backup]
     content {
-      name                = backup.value.name
-      enabled             = try(backup.value.enabled, true)
+      name    = backup.value.name
+      enabled = try(backup.value.enabled, true)
       storage_account_url = try(
         backup.value.storage_account_url,
         try(var.remote_objects.storage_accounts[try(backup.value.storage_account.lz_key, var.client_config.landingzone_key)][try(backup.value.storage_account.key, backup.value.storage_account_key)].primary_blob_connection_string, null),

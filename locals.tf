@@ -39,7 +39,7 @@ locals {
     cdn_frontdoor_profiles = try(var.cdn.cdn_frontdoor_profiles, {})
   }
 
-  
+
   client_config = var.client_config == {} ? {
     client_id               = data.azuread_client_config.current.client_id
     landingzone_key         = var.current_landingzone_key
@@ -330,7 +330,7 @@ locals {
     express_route_circuit_authorizations                    = try(var.networking.express_route_circuit_authorizations, {})
     express_route_circuit_peerings                          = try(var.networking.express_route_circuit_peerings, {})
     express_route_circuits                                  = try(var.networking.express_route_circuits, {})
-    express_route_connections                               = try(var.networking.express_route_connections, {})    
+    express_route_connections                               = try(var.networking.express_route_connections, {})
     frontdoor_custom_https_configuration                    = try(var.networking.frontdoor_custom_https_configuration, {})
     frontdoor_rules_engine                                  = try(var.networking.frontdoor_rules_engine, {})
     ip_groups                                               = try(var.networking.ip_groups, {})
@@ -464,12 +464,12 @@ locals {
     azurerm_application_insights_web_test          = try(var.webapp.azurerm_application_insights_web_test, {})
     azurerm_application_insights_standard_web_test = try(var.webapp.azurerm_application_insights_standard_web_test, {})
 
-    linux_function_apps                            = try(var.webapp.linux_function_apps, {})
-    linux_web_apps                                 = try(var.webapp.linux_web_apps, {})
-    windows_function_apps                          = try(var.webapp.windows_function_apps, {})
-    windows_web_apps                               = try(var.webapp.windows_web_apps, {})
-    static_sites                                   = try(var.webapp.static_sites, {})
-    service_plans                                  = try(var.webapp.service_plans, {})
+    linux_function_apps   = try(var.webapp.linux_function_apps, {})
+    linux_web_apps        = try(var.webapp.linux_web_apps, {})
+    windows_function_apps = try(var.webapp.windows_function_apps, {})
+    windows_web_apps      = try(var.webapp.windows_web_apps, {})
+    static_sites          = try(var.webapp.static_sites, {})
+    service_plans         = try(var.webapp.service_plans, {})
   }
 
   enable = {

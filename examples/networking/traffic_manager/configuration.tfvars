@@ -186,16 +186,16 @@ linux_web_apps = {
     resource_group_key = "traffic_manager1"
     name               = "webapp-simple-caf2"
     service_plan_key   = "asp2"
-    
+
     site_config = {}
-    
+
     slots = {
       smoke_test = {
-        name = "smoke-test1"
+        name        = "smoke-test1"
         site_config = {}
       }
       ab_test = {
-        name = "AB-testing1"
+        name        = "AB-testing1"
         site_config = {}
       }
     }

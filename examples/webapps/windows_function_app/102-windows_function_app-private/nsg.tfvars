@@ -37,7 +37,7 @@ network_security_group_definition = {
       }
     ]
   }
-  
+
   private_endpoints_nsg = {
     nsg = [
       {
@@ -53,7 +53,7 @@ network_security_group_definition = {
       }
     ]
   }
-  
+
   bastion_nsg = {
     nsg = [
       {

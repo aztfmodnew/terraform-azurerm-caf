@@ -7,15 +7,15 @@ resource "azurerm_linux_web_app" "linux_web_app" {
     try(var.remote_objects.service_plans[try(var.settings.service_plan.lz_key, var.client_config.landingzone_key)][try(var.settings.service_plan.key, var.settings.service_plan_key)].id, null)
   )
 
-  app_settings                                       = try(local.app_settings, null)
-  client_affinity_enabled                            = try(var.settings.client_affinity_enabled, null)
-  client_certificate_enabled                        = try(var.settings.client_certificate_enabled, null)
-  client_certificate_mode                           = try(var.settings.client_certificate_mode, "Required")
-  client_certificate_exclusion_paths                = try(var.settings.client_certificate_exclusion_paths, null)
-  enabled                                            = try(var.settings.enabled, true)
-  ftp_publish_basic_authentication_enabled          = try(var.settings.ftp_publish_basic_authentication_enabled, true)
-  https_only                                         = try(var.settings.https_only, false)
-  public_network_access_enabled                     = try(var.settings.public_network_access_enabled, true)
+  app_settings                             = try(local.app_settings, null)
+  client_affinity_enabled                  = try(var.settings.client_affinity_enabled, null)
+  client_certificate_enabled               = try(var.settings.client_certificate_enabled, null)
+  client_certificate_mode                  = try(var.settings.client_certificate_mode, "Required")
+  client_certificate_exclusion_paths       = try(var.settings.client_certificate_exclusion_paths, null)
+  enabled                                  = try(var.settings.enabled, true)
+  ftp_publish_basic_authentication_enabled = try(var.settings.ftp_publish_basic_authentication_enabled, true)
+  https_only                               = try(var.settings.https_only, false)
+  public_network_access_enabled            = try(var.settings.public_network_access_enabled, true)
   key_vault_reference_identity_id = try(
     var.settings.key_vault_reference_identity_id,
     var.remote_objects.managed_identities[try(var.settings.identity.lz_key, var.client_config.landingzone_key)][try(var.settings.key_vault_reference_identity.key, var.settings.key_vault_reference_identity_key)].id,
@@ -26,9 +26,9 @@ resource "azurerm_linux_web_app" "linux_web_app" {
     var.remote_objects.vnets[try(var.settings.virtual_network_subnet.lz_key, var.client_config.landingzone_key)][var.settings.virtual_network_subnet.vnet_key].subnets[var.settings.virtual_network_subnet.subnet_key].id,
     null
   )
-  webdeploy_publish_basic_authentication_enabled    = try(var.settings.webdeploy_publish_basic_authentication_enabled, true)
-  zip_deploy_file                                    = try(var.settings.zip_deploy_file, null)
-  tags                                               = merge(local.tags, try(var.settings.tags, null))
+  webdeploy_publish_basic_authentication_enabled = try(var.settings.webdeploy_publish_basic_authentication_enabled, true)
+  zip_deploy_file                                = try(var.settings.zip_deploy_file, null)
+  tags                                           = merge(local.tags, try(var.settings.tags, null))
 
   site_config {
     always_on                                     = try(var.settings.site_config.always_on, true)

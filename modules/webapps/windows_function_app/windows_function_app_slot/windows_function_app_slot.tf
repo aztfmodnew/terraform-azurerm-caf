@@ -5,8 +5,8 @@ resource "azurerm_windows_function_app_slot" "windows_function_app_slot" {
   function_app_id = var.remote_objects.function_app_id
 
   site_config {
-    always_on                              = try(var.settings.site_config.always_on, null)
-    api_definition_url                     = try(var.settings.site_config.api_definition_url, null)
+    always_on          = try(var.settings.site_config.always_on, null)
+    api_definition_url = try(var.settings.site_config.api_definition_url, null)
     api_management_api_id = coalesce(
       try(var.settings.site_config.api_management_api_id, null),
       try(var.remote_objects.api_management_apis[try(var.settings.site_config.api_management_api.lz_key, var.client_config.landingzone_key)][var.settings.site_config.api_management_api.key].id, null)
@@ -344,10 +344,10 @@ resource "azurerm_windows_function_app_slot" "windows_function_app_slot" {
     }
   }
 
-  builtin_logging_enabled                       = try(var.settings.builtin_logging_enabled, true)
-  client_certificate_enabled                   = try(var.settings.client_certificate_enabled, false)
-  client_certificate_mode                      = try(var.settings.client_certificate_mode, null)
-  client_certificate_exclusion_paths           = try(var.settings.client_certificate_exclusion_paths, null)
+  builtin_logging_enabled            = try(var.settings.builtin_logging_enabled, true)
+  client_certificate_enabled         = try(var.settings.client_certificate_enabled, false)
+  client_certificate_mode            = try(var.settings.client_certificate_mode, null)
+  client_certificate_exclusion_paths = try(var.settings.client_certificate_exclusion_paths, null)
 
   dynamic "connection_string" {
     for_each = try(var.settings.connection_string, [])

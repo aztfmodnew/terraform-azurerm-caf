@@ -14,11 +14,11 @@ linux_web_apps = {
     https_only              = false
 
     site_config = {
-      default_documents        = ["index.html"]
-      always_on                = true
-      app_command_line         = null
-      ftps_state               = "AllAllowed" //AllAllowed, FtpsOnly and Disabled
-      http2_enabled            = false
+      default_documents = ["index.html"]
+      always_on         = true
+      app_command_line  = null
+      ftps_state        = "AllAllowed" //AllAllowed, FtpsOnly and Disabled
+      http2_enabled     = false
 
       application_stack = {
         python_version = "3.8"

@@ -43,7 +43,7 @@ diagnostic_log_analytics = {
     resource_group_key = "static_website"
     retention_in_days  = 30
     sku                = "PerGB2018"
-    
+
     tags = {
       purpose = "centralized logging"
     }
@@ -57,13 +57,13 @@ diagnostic_storage_accounts = {
     resource_group_key       = "static_website"
     account_tier             = "Standard"
     account_replication_type = "LRS"
-    account_kind            = "StorageV2"
-    
+    account_kind             = "StorageV2"
+
     # Configuration for log retention
     blob_properties = {
-      versioning_enabled       = false
-      change_feed_enabled      = false
-      delete_retention_policy  = {
+      versioning_enabled  = false
+      change_feed_enabled = false
+      delete_retention_policy = {
         days = 30
       }
       container_delete_retention_policy = {
@@ -76,18 +76,18 @@ diagnostic_storage_accounts = {
       {
         name    = "diagnostic_logs_lifecycle"
         enabled = true
-        
+
         filter = {
           prefix_match = ["frontdoor/"]
         }
-        
+
         rule = {
           # Delete diagnostic logs after 90 days to control costs
           delete_after_days_since_modification_greater_than = 90
-          
+
           # Move to cool tier after 7 days for cost optimization
           tier_to_cool_after_days_since_modification_greater_than = 7
-          
+
           # Move to archive tier after 30 days for long-term retention
           tier_to_archive_after_days_since_modification_greater_than = 30
         }
@@ -95,24 +95,24 @@ diagnostic_storage_accounts = {
       {
         name    = "general_logs_lifecycle"
         enabled = true
-        
+
         filter = {
           prefix_match = ["logs/"]
         }
-        
+
         rule = {
           # Keep general logs for 365 days for compliance
           delete_after_days_since_modification_greater_than = 365
-          
+
           # Move to cool tier after 30 days
           tier_to_cool_after_days_since_modification_greater_than = 30
-          
+
           # Move to archive tier after 90 days
           tier_to_archive_after_days_since_modification_greater_than = 90
         }
       }
     ]
-    
+
     # Allow access from Azure services
     network_rules = {
       default_action = "Allow"

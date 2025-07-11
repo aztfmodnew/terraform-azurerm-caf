@@ -17,8 +17,6 @@ module "application_gateways" {
   private_dns                      = lookup(each.value, "private_dns_records", null) == null ? {} : local.combined_objects_private_dns
   public_ip_addresses              = local.combined_objects_public_ip_addresses
   settings                         = each.value
-  sku_name                         = each.value.sku_name
-  sku_tier                         = each.value.sku_tier
   vnets                            = local.combined_objects_networking
 
   application_gateway_applications = {

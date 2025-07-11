@@ -35,9 +35,9 @@ windows_function_apps = {
     name               = "app-example"
     resource_group_key = "rg"
 
-    service_plan_key = "asp"
-    storage_account_key  = "stg"
-    
+    service_plan_key    = "asp"
+    storage_account_key = "stg"
+
     application_stack = {
       dotnet_version = "v6.0"
     }

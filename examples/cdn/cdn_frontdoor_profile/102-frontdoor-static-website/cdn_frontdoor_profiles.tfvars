@@ -4,7 +4,7 @@ cdn_frontdoor_profiles = {
     location           = "global"
     resource_group_key = "static_website"
     sku_name           = "Standard_AzureFrontDoor"
-    
+
     response_timeout_seconds = 120
 
     # Main endpoint for the website
@@ -23,13 +23,13 @@ cdn_frontdoor_profiles = {
       storage_origin_group = {
         name                     = "storage-origin-group"
         session_affinity_enabled = false
-        
+
         load_balancing = {
           additional_latency_in_milliseconds = 50
           sample_size                        = 4
           successful_samples_required        = 3
         }
-        
+
         health_probe = {
           interval_in_seconds = 100
           path                = "/"
@@ -42,8 +42,8 @@ cdn_frontdoor_profiles = {
     # Origin pointing to the Storage Account static website
     origins = {
       storage_origin = {
-        name                           = "storage-static-website"
-        origin_group_key               = "storage_origin_group"
+        name             = "storage-static-website"
+        origin_group_key = "storage_origin_group"
         storage_account = {
           key = "static_website"
         }
@@ -70,7 +70,7 @@ cdn_frontdoor_profiles = {
         name         = "static-content-cache"
         rule_set_key = "cache_optimization"
         order        = 1
-        
+
         conditions = [{
           request_uri_condition = [{
             operator         = "Contains"
@@ -79,13 +79,13 @@ cdn_frontdoor_profiles = {
             transforms       = ["Lowercase"]
           }]
         }]
-        
+
         actions = [{
           route_configuration_override_action = {
             origin_group_key              = "storage_origin_group"
             forwarding_protocol           = "HttpsOnly"
             cache_behavior                = "OverrideAlways"
-            cache_duration                = "7.00:00:00"  # Cache for 7 days
+            cache_duration                = "7.00:00:00" # Cache for 7 days
             query_string_caching_behavior = "IgnoreQueryString"
           }
         }]
@@ -96,7 +96,7 @@ cdn_frontdoor_profiles = {
         name         = "html-content-cache"
         rule_set_key = "cache_optimization"
         order        = 2
-        
+
         conditions = [{
           request_uri_condition = [{
             operator         = "EndsWith"
@@ -105,13 +105,13 @@ cdn_frontdoor_profiles = {
             transforms       = ["Lowercase"]
           }]
         }]
-        
+
         actions = [{
           route_configuration_override_action = {
             origin_group_key              = "storage_origin_group"
             forwarding_protocol           = "HttpsOnly"
             cache_behavior                = "OverrideAlways"
-            cache_duration                = "01:00:00"  # Cache for 1 hour
+            cache_duration                = "01:00:00" # Cache for 1 hour
             query_string_caching_behavior = "IgnoreQueryString"
           }
         }]
@@ -122,7 +122,7 @@ cdn_frontdoor_profiles = {
         name         = "security-headers"
         rule_set_key = "cache_optimization"
         order        = 3
-        
+
         conditions = [{
           request_method_condition = [{
             operator         = "Equal"
@@ -130,7 +130,7 @@ cdn_frontdoor_profiles = {
             match_values     = ["GET", "HEAD"]
           }]
         }]
-        
+
         actions = [{
           response_header_action = [
             {
@@ -172,13 +172,13 @@ cdn_frontdoor_profiles = {
         supported_protocols = ["Http", "Https"]
         patterns_to_match   = ["/*"]
         forwarding_protocol = "HttpsOnly"
-        
+
         # Specify origins explicitly
         origin_ids = ["storage_origin"]
-        
+
         # Associate optimization rules
         rule_set_keys = ["cache_optimization"]
-        
+
         # Default cache configuration
         cache = {
           query_string_caching_behavior = "IgnoreQueryString"

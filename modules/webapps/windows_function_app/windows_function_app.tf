@@ -9,18 +9,18 @@ resource "azurerm_windows_function_app" "windows_function_app" {
     try(var.remote_objects.service_plans[try(var.settings.service_plan.lz_key, var.client_config.landingzone_key)][try(var.settings.service_plan.key, var.settings.service_plan_key)].id, null)
   )
 
-  app_settings                                       = try(local.app_settings, null)
-  builtin_logging_enabled                            = try(var.settings.builtin_logging_enabled, true)
-  client_certificate_enabled                        = try(var.settings.client_certificate_enabled, null)
-  client_certificate_mode                           = try(var.settings.client_certificate_mode, "Optional")
-  client_certificate_exclusion_paths                = try(var.settings.client_certificate_exclusion_paths, null)
-  content_share_force_disabled                      = try(var.settings.content_share_force_disabled, false)
-  daily_memory_time_quota                           = try(var.settings.daily_memory_time_quota, 0)
-  enabled                                            = try(var.settings.enabled, true)
-  ftp_publish_basic_authentication_enabled          = try(var.settings.ftp_publish_basic_authentication_enabled, true)
-  functions_extension_version                       = try(var.settings.functions_extension_version, "~4")
-  https_only                                         = try(var.settings.https_only, false)
-  public_network_access_enabled                     = try(var.settings.public_network_access_enabled, true)
+  app_settings                             = try(local.app_settings, null)
+  builtin_logging_enabled                  = try(var.settings.builtin_logging_enabled, true)
+  client_certificate_enabled               = try(var.settings.client_certificate_enabled, null)
+  client_certificate_mode                  = try(var.settings.client_certificate_mode, "Optional")
+  client_certificate_exclusion_paths       = try(var.settings.client_certificate_exclusion_paths, null)
+  content_share_force_disabled             = try(var.settings.content_share_force_disabled, false)
+  daily_memory_time_quota                  = try(var.settings.daily_memory_time_quota, 0)
+  enabled                                  = try(var.settings.enabled, true)
+  ftp_publish_basic_authentication_enabled = try(var.settings.ftp_publish_basic_authentication_enabled, true)
+  functions_extension_version              = try(var.settings.functions_extension_version, "~4")
+  https_only                               = try(var.settings.https_only, false)
+  public_network_access_enabled            = try(var.settings.public_network_access_enabled, true)
   key_vault_reference_identity_id = try(
     var.settings.key_vault_reference_identity_id,
     var.remote_objects.managed_identities[try(var.settings.identity.lz_key, var.client_config.landingzone_key)][try(var.settings.key_vault_reference_identity.key, var.settings.key_vault_reference_identity_key)].id,
@@ -35,10 +35,10 @@ resource "azurerm_windows_function_app" "windows_function_app" {
       var.remote_objects.api_management_apis[try(var.settings.site_config.api_management_api.lz_key, var.client_config.landingzone_key)][try(var.settings.site_config.api_management_api.key, var.settings.site_config.api_management_api_key)].id,
       null
     )
-    app_command_line                        = try(var.settings.site_config.app_command_line, null)
-    app_scale_limit                         = try(var.settings.site_config.app_scale_limit, null)
-    application_insights_connection_string  = try(var.settings.site_config.application_insights_connection_string, null)
-    application_insights_key                = try(var.settings.site_config.application_insights_key, null)
+    app_command_line                       = try(var.settings.site_config.app_command_line, null)
+    app_scale_limit                        = try(var.settings.site_config.app_scale_limit, null)
+    application_insights_connection_string = try(var.settings.site_config.application_insights_connection_string, null)
+    application_insights_key               = try(var.settings.site_config.application_insights_key, null)
 
     dynamic "application_stack" {
       for_each = try(var.settings.site_config.application_stack, {}) != {} ? [1] : []
@@ -98,13 +98,13 @@ resource "azurerm_windows_function_app" "windows_function_app" {
       }
     }
 
-    ip_restriction_default_action = try(var.settings.site_config.ip_restriction_default_action, "Allow")
-    load_balancing_mode           = try(var.settings.site_config.load_balancing_mode, "LeastRequests")
-    managed_pipeline_mode         = try(var.settings.site_config.managed_pipeline_mode, "Integrated")
-    minimum_tls_version           = try(var.settings.site_config.minimum_tls_version, "1.2")
-    pre_warmed_instance_count     = try(var.settings.site_config.pre_warmed_instance_count, null)
-    remote_debugging_enabled      = try(var.settings.site_config.remote_debugging_enabled, false)
-    remote_debugging_version      = try(var.settings.site_config.remote_debugging_version, null)
+    ip_restriction_default_action    = try(var.settings.site_config.ip_restriction_default_action, "Allow")
+    load_balancing_mode              = try(var.settings.site_config.load_balancing_mode, "LeastRequests")
+    managed_pipeline_mode            = try(var.settings.site_config.managed_pipeline_mode, "Integrated")
+    minimum_tls_version              = try(var.settings.site_config.minimum_tls_version, "1.2")
+    pre_warmed_instance_count        = try(var.settings.site_config.pre_warmed_instance_count, null)
+    remote_debugging_enabled         = try(var.settings.site_config.remote_debugging_enabled, false)
+    remote_debugging_version         = try(var.settings.site_config.remote_debugging_version, null)
     runtime_scale_monitoring_enabled = try(var.settings.site_config.runtime_scale_monitoring_enabled, null)
 
     dynamic "scm_ip_restriction" {
@@ -178,7 +178,7 @@ resource "azurerm_windows_function_app" "windows_function_app" {
     var.remote_objects.storage_accounts[try(var.settings.storage_account.lz_key, var.client_config.landingzone_key)][try(var.settings.storage_account.key, var.settings.storage_account_key)].primary_access_key,
     null
   )
-  
+
   storage_account_name = try(
     var.settings.storage_account_name,
     var.remote_objects.storage_accounts[try(var.settings.storage_account.lz_key, var.client_config.landingzone_key)][try(var.settings.storage_account.key, var.settings.storage_account_key)].name,

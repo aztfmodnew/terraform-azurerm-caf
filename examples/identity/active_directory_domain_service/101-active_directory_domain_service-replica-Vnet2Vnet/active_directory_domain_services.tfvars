@@ -48,7 +48,7 @@ active_directory_domain_service_replica_set = {
       key      = "aadds"
     }
     timeouts = {
-      create = "120m"  # 2 horas
+      create = "120m" # 2 horas
       read   = "5m"
       delete = "60m"
     }

@@ -24,14 +24,14 @@ linux_web_apps = {
     slots = {
       staging = {
         name = "staging"
-        
+
         app_settings = {
           "WEBSITE_NODE_DEFAULT_VERSION" = "~22"
           "WEBSITE_RUN_FROM_PACKAGE"     = "1"
           "ENVIRONMENT"                  = "staging"
           "NODE_ENV"                     = "staging"
         }
-        
+
         site_config = {
           always_on                         = true
           health_check_path                 = "/health"
@@ -39,16 +39,16 @@ linux_web_apps = {
           minimum_tls_version               = "1.2"
           ftps_state                        = "FtpsOnly"
           http2_enabled                     = true
-          
+
           application_stack = {
             node_version = "22-lts"
           }
         }
       }
-      
+
       testing = {
         name = "testing"
-        
+
         app_settings = {
           "WEBSITE_NODE_DEFAULT_VERSION" = "~22"
           "WEBSITE_RUN_FROM_PACKAGE"     = "1"
@@ -56,7 +56,7 @@ linux_web_apps = {
           "NODE_ENV"                     = "testing"
           "FEATURE_FLAGS"                = "experimental"
         }
-        
+
         site_config = {
           always_on                         = true
           health_check_path                 = "/health"
@@ -64,7 +64,7 @@ linux_web_apps = {
           minimum_tls_version               = "1.2"
           ftps_state                        = "FtpsOnly"
           http2_enabled                     = true
-          
+
           application_stack = {
             node_version = "22-lts"
           }

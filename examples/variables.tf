@@ -1505,8 +1505,8 @@ variable "linux_web_apps" {
 - client_cert_enabled: (Optional) Should the linux web app require client certificates. Changing this forces a new resource to be created.
 - client_cert_mode: (Optional) The client certificate mode for the linux web app. Possible values are Require and Allow.
 DESCRIPTION
-  type    = any
-  default = {}
+  type        = any
+  default     = {}
 }
 variable "windows_function_apps" {
   description = <<DESCRIPTION
@@ -1526,8 +1526,8 @@ variable "windows_function_apps" {
 - functions_extension_version: (Optional) The runtime version associated with the Function App.
 - slots: (Optional) Configuration for deployment slots.
 DESCRIPTION
-  type    = any
-  default = {}
+  type        = any
+  default     = {}
 }
 variable "windows_web_apps" {
   description = <<DESCRIPTION
