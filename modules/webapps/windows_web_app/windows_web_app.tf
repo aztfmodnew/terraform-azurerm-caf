@@ -117,7 +117,7 @@ resource "azurerm_windows_web_app" "windows_web_app" {
 
 
   dynamic "auth_settings" {
-    for_each = try(var.settings.auth_settings, {}) != {} ? [1] : []
+    for_each = try(local.auth_settings, null) == null ? [] : [local.auth_settings]
     content {
       enabled = try(var.settings.auth_settings.enabled, null)
       dynamic "active_directory" {

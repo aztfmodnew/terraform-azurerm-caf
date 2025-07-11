@@ -183,7 +183,7 @@ resource "azurerm_linux_web_app" "linux_web_app" {
   }
 
   dynamic "auth_settings" {
-    for_each = try(var.settings.auth_settings, null) == null ? [] : [var.settings.auth_settings]
+    for_each = try(local.auth_settings, null) == null ? [] : [local.auth_settings]
     content {
       enabled                        = auth_settings.value.enabled
       additional_login_parameters    = try(auth_settings.value.additional_login_parameters, null)

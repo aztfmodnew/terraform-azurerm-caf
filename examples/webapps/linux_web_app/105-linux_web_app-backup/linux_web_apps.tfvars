@@ -22,6 +22,20 @@ linux_web_apps = {
       storage_account_key = "sa1"
       container_key       = "backup"
 
+      sas_policy = {
+        expire_in_days = 30
+        rotation = {
+          #
+          # Set how often the sas token must be rotated. When passed the renewal time, running the terraform plan / apply will change to a new sas token
+          # Only set one of the value
+          #
+
+          # mins = 1 # only recommended for CI and demo
+          days = 7
+          # months = 1
+        }
+      }
+
       schedule = {
         frequency_interval       = 7
         frequency_unit           = "Day"
@@ -32,24 +46,54 @@ linux_web_apps = {
     }
 
     logs = {
-      detailed_error_messages = true
-      failed_request_tracing  = true
+      detailed_error_messages_enabled = true
+      failed_request_tracing_enabled  = true
 
       application_logs = {
         file_system_level = "Information"
         azure_blob_storage = {
-          level               = "Information"
-          retention_in_days   = 7
-          storage_account_key = "logs"
-          container_key       = "logs"
+          level             = "Information"
+          retention_in_days = 7
+        }
+      }
+
+      # lz_key = ""  # if in remote landingzone
+      storage_account_key = "logs"
+      container_key       = "logs"
+
+      sas_policy = {
+        expire_in_days = 30
+        rotation = {
+          #
+          # Set how often the sas token must be rotated. When passed the renewal time, running the terraform plan / apply will change to a new sas token
+          # Only set one of the value
+          #
+
+          # mins = 1 # only recommended for CI and demo
+          days = 7
+          # months = 1
         }
       }
 
       http_logs = {
         azure_blob_storage = {
-          retention_in_days   = 7
-          storage_account_key = "logs"
-          container_key       = "http_logs"
+          retention_in_days = 7
+        }
+
+        storage_account_key = "logs"
+        container_key       = "http_logs"
+        sas_policy = {
+          expire_in_days = 30
+          rotation = {
+            #
+            # Set how often the sas token must be rotated. When passed the renewal time, running the terraform plan / apply will change to a new sas token
+            # Only set one of the value
+            #
+
+            # mins = 1 # only recommended for CI and demo
+            days = 7
+            # months = 1
+          }
         }
       }
     }
