@@ -8,6 +8,11 @@ output "id" {
   description = "The ID of the Windows Function App"
 }
 
+output "rbac_id" {
+  value       = azurerm_windows_function_app.windows_function_app.id
+  description = "The ID of the Windows Function App"
+}
+
 output "custom_domain_verification_id" {
   value       = azurerm_windows_function_app.windows_function_app.custom_domain_verification_id
   description = "The identifier used by App Service to perform domain ownership verification via DNS TXT record"

@@ -51,3 +51,7 @@ output "identity" {
 output "slots" {
   value = module.slots
 }
+
+output "rbac_id" {
+  value = azurerm_linux_web_app.linux_web_app.id
+}
