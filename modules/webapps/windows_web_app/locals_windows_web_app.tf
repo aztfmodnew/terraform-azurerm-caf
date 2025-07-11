@@ -35,11 +35,11 @@ locals {
         {
           client_id = coalesce(
             try(var.settings.auth_settings.active_directory.client_id, null),
-            try(var.remote_objects.azuread_applications[try(var.settings.auth_settings.active_directory.lz_key, var.client_config.landingzone_key)][var.settings.auth_settings.active_directory.client_id_key].application_id, null)
+            try(var.remote_objects.azuread_applications[try(var.settings.auth_settings.active_directory.lz_key, var.client_config.landingzone_key)][var.settings.auth_settings.active_directory.client_id_key].client_id, null)
           )
           client_secret = coalesce(
             try(var.settings.auth_settings.active_directory.client_secret, null),
-            try(var.remote_objects.azuread_service_principal_passwords[try(var.settings.auth_settings.active_directory.lz_key, var.client_config.landingzone_key)][var.settings.auth_settings.active_directory.client_secret_key].password, null)
+            try(var.remote_objects.azuread_service_principal_passwords[try(var.settings.auth_settings.active_directory.lz_key, var.client_config.landingzone_key)][var.settings.auth_settings.active_directory.client_secret_key].service_principal_password, null)
           )
         }
       ) : null
