@@ -47,7 +47,7 @@ service_plans = {
     resource_group_key          = "asp_project1_region1"
 
     name = "ase1-asp01"
-    kind = "Windows"
+    os_type = "Windows"
 
     sku_name = "I1v2"
     per_site_scaling_enabled = true
@@ -59,7 +59,7 @@ service_plans = {
     resource_group_key          = "asp_project2_region1"
 
     name = "ase1-asp02"
-    kind = "Linux"
+    os_type = "Linux"
 
     //When creating a Linux App Service Plan, the reserved field must be set to true
     reserved = true
