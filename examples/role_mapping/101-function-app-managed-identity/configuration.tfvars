@@ -20,30 +20,26 @@ storage_accounts = {
   }
 }
 
-app_service_plans = {
+service_plans = {
   asp = {
     name               = "asp-example"
     resource_group_key = "rg"
     region             = "region1"
-    kind               = "functionapp"
-
-    sku = {
-      tier = "Standard"
-      size = "S1"
-    }
+    os_type            = "Windows"
+    sku_name           = "S1"
   }
 }
 
-function_apps = {
+windows_function_apps = {
   app = {
     name               = "app-example"
     resource_group_key = "rg"
 
-    region               = "region1"
-    app_service_plan_key = "asp"
-    storage_account_key  = "stg"
-    settings = {
-      version = "~4"
+    service_plan_key    = "asp"
+    storage_account_key = "stg"
+
+    application_stack = {
+      dotnet_version = "v6.0"
     }
 
     identity = {
@@ -77,7 +73,7 @@ role_mapping = {
     keyvaults = {
       kv = {
         "Key Vault Certificates Officer" = {
-          function_apps = {
+          windows_function_apps = {
             keys = ["app"]
           }
         }

@@ -11,18 +11,15 @@ resource_groups = {
   }
 }
 
-app_service_plans = {
+service_plans = {
   sp1 = {
     resource_group_key = "rg1"
     name               = "asp-simple"
+    os_type            = "Windows"
+    sku_name           = "S1"
 
     maximum_elastic_worker_count = 5
-
-    sku = {
-      tier = "Standard"
-      size = "S1"
-      # per_site_scaling   = true
-    }
+    # per_site_scaling_enabled = true
   }
 }
 

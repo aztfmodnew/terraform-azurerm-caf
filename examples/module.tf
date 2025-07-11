@@ -211,7 +211,7 @@ module "example" {
     dns_zones                                               = var.dns_zones
     domain_name_registrations                               = var.domain_name_registrations
     express_route_circuit_authorizations                    = var.express_route_circuit_authorizations
-    express_route_circuits                                  = var.express_route_circuits    
+    express_route_circuits                                  = var.express_route_circuits
     ip_groups                                               = var.ip_groups
     lb                                                      = var.lb
     lb_backend_address_pool                                 = var.lb_backend_address_pool
@@ -340,13 +340,13 @@ module "example" {
     azurerm_application_insights_standard_web_test = var.azurerm_application_insights_standard_web_test
     app_service_environments                       = var.app_service_environments
     app_service_environments_v3                    = var.app_service_environments_v3
-    app_service_plans                              = var.app_service_plans
-    app_services                                   = var.app_services
     linux_function_apps                            = var.linux_function_apps
-    function_apps                                  = var.function_apps
-    service_plans                                  = var.service_plans
-    static_sites                                   = var.static_sites
-    windows_web_apps                               = var.windows_web_apps
+    linux_web_apps                                 = var.linux_web_apps
+
+    service_plans         = var.service_plans
+    static_sites          = var.static_sites
+    windows_function_apps = var.windows_function_apps
+    windows_web_apps      = var.windows_web_apps
   }
   data_factory = {
     data_factory                                 = var.data_factory

@@ -26,4 +26,23 @@ locals {
 
   http_logs_storage_account = can(var.settings.logs.http_logs) ? var.remote_objects.storage_accounts[try(var.settings.logs.http_logs.lz_key, var.client_config.landingzone_key)][var.settings.logs.http_logs.storage_account_key] : null
   http_logs_sas_url         = can(var.settings.logs.http_logs) ? "${local.http_logs_storage_account.primary_blob_endpoint}${local.http_logs_storage_account.containers[var.settings.logs.http_logs.container_key].name}${data.azurerm_storage_account_blob_container_sas.http_logs[0].sas}" : null
+  # Authentication settings resolution
+  auth_settings = can(var.settings.auth_settings) ? merge(
+    var.settings.auth_settings,
+    {
+      active_directory = can(var.settings.auth_settings.active_directory) ? merge(
+        var.settings.auth_settings.active_directory,
+        {
+          client_id = coalesce(
+            try(var.settings.auth_settings.active_directory.client_id, null),
+            try(var.remote_objects.azuread_applications[try(var.settings.auth_settings.active_directory.lz_key, var.client_config.landingzone_key)][var.settings.auth_settings.active_directory.client_id_key].client_id, null)
+          )
+          client_secret = coalesce(
+            try(var.settings.auth_settings.active_directory.client_secret, null),
+            try(var.remote_objects.azuread_service_principal_passwords[try(var.settings.auth_settings.active_directory.lz_key, var.client_config.landingzone_key)][var.settings.auth_settings.active_directory.client_secret_key].service_principal_password, null)
+          )
+        }
+      ) : null
+    }
+  ) : null
 }

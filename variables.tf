@@ -383,9 +383,8 @@ variable "compute" {
 variable "webapp" {
   description = "Configuration object - Web Applications"
   default = {
-    # app_services                 = {}
     # app_service_environments     = {}
-    # app_service_plans            = {}
+    # service_plans                = {}
     # azurerm_application_insights = {}
   }
 }

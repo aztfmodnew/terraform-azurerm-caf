@@ -6,7 +6,8 @@ module "application_gateway_applications" {
   global_settings                  = local.global_settings
   settings                         = each.value
   application_gateway              = local.combined_objects_application_gateway_platforms[try(each.value.lz_key, local.client_config.landingzone_key)][each.value.application_gateway_key]
-  app_services                     = local.combined_objects_app_services
+  linux_web_apps                   = local.combined_objects_linux_web_apps
+  windows_web_apps                 = local.combined_objects_windows_web_apps
   keyvault_certificate_requests    = local.combined_objects_keyvault_certificate_requests
   keyvault_certificates            = local.combined_objects_keyvault_certificates
   keyvaults                        = local.combined_objects_keyvaults

@@ -21,13 +21,13 @@ resource "azurerm_virtual_network_gateway_connection" "vngw_connection" {
       try(var.settings.peer_virtual_network_gateway_id, null) != null ||
       try(var.remote_objects.virtual_network_gateways[try(var.settings.peer_virtual_network_gateway.lz_key, var.client_config.landingzone_key)][try(var.settings.peer_virtual_network_gateway.key, var.settings.peer_virtual_network_gateway_key)].id, null) != null
     )
-  ) ? coalesce(
-        try(var.settings.peer_virtual_network_gateway_id, null),
-        try(
-          var.remote_objects.virtual_network_gateways[try(var.settings.peer_virtual_network_gateway.lz_key, var.client_config.landingzone_key)][try(var.settings.peer_virtual_network_gateway.key, var.settings.peer_virtual_network_gateway_key)].id,
-          null
-        )
-      ) : null
+    ) ? coalesce(
+    try(var.settings.peer_virtual_network_gateway_id, null),
+    try(
+      var.remote_objects.virtual_network_gateways[try(var.settings.peer_virtual_network_gateway.lz_key, var.client_config.landingzone_key)][try(var.settings.peer_virtual_network_gateway.key, var.settings.peer_virtual_network_gateway_key)].id,
+      null
+    )
+  ) : null
 
   # The following arguments are applicable only if the type is ExpressRoute
   express_route_circuit_id = try(var.express_route_circuit_id, null)

@@ -1,26 +1,20 @@
-app_service_plans = {
+service_plans = {
   asp1 = {
     name               = "azure-functions-test-service-plan"
     resource_group_key = "my_rg"
     region             = "australiaeast"
-    kind               = "linux"
-    reserved           = true # Required for Linux
-
-    sku = {
-      # For vnet integration
-      tier = "Standard"
-      size = "S1"
-    }
+    os_type            = "Linux"
+    sku_name           = "S1" # For vnet integration
   }
 }
 
 function_apps = {
   faaps1 = {
-    name                 = "test-azure-functions"
-    resource_group_key   = "my_rg"
-    region               = "australiaeast"
-    app_service_plan_key = "asp1"
-    storage_account_key  = "sa1"
+    name                = "test-azure-functions"
+    resource_group_key  = "my_rg"
+    region              = "australiaeast"
+    service_plan_key    = "asp1"
+    storage_account_key = "sa1"
     settings = {
       os_type    = "linux"
       version    = "~3"

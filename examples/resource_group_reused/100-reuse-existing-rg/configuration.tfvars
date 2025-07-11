@@ -16,28 +16,23 @@ storage_accounts = {
   }
 }
 
-app_service_plans = {
+service_plans = {
   asp1 = {
     name               = "azure-functions-test-service-plan"
     resource_group_key = "dmz-rt-dev-network"
     region             = "region1"
-    kind               = "functionapp"
-    reserved           = true
-
-    sku = {
-      tier = "Dynamic"
-      size = "Y1"
-    }
+    os_type            = "Linux"
+    sku_name           = "Y1"
   }
 }
 
 function_apps = {
   faaps1 = {
-    name                 = "test-azure-functions"
-    resource_group_key   = "dmz-rt-dev-network"
-    region               = "region1"
-    app_service_plan_key = "asp1"
-    storage_account_key  = "sa1"
+    name                = "test-azure-functions"
+    resource_group_key  = "dmz-rt-dev-network"
+    region              = "region1"
+    service_plan_key    = "asp1"
+    storage_account_key = "sa1"
     settings = {
       os_type = "linux"
       version = "~3"

@@ -217,14 +217,7 @@ variable "app_service_environments_v3" {
   type    = any
   default = {}
 }
-variable "app_service_plans" {
-  type    = any
-  default = {}
-}
-variable "app_services" {
-  type    = any
-  default = {}
-}
+
 variable "consumption_budgets" {
   type    = any
   default = {}
@@ -1184,10 +1177,7 @@ variable "frontdoor_custom_https_configuration" {
   default = {}
 }
 
-variable "function_apps" {
-  type    = any
-  default = {}
-}
+
 variable "active_directory_domain_service" {
   type    = any
   default = {}
@@ -1497,6 +1487,47 @@ variable "static_sites" {
 variable "aro_clusters" {
   type    = any
   default = {}
+}
+variable "linux_web_apps" {
+  description = <<DESCRIPTION
+  The linux_web_apps object is a map of linux web app objects. Each linux web app object has the following keys:
+- resource_group_key: The key of the resource group object to deploy the Azure resource.
+- name: (Required) The name of the linux web app.
+- service_plan_key: (Required) The key of the service plan object to deploy the Azure resource.
+- location: The location of the linux web app. If not provided, the location of the resource group will be used.
+- settings: (Optional) The settings for the linux web app.
+- app_settings: (Optional) The app settings for the linux web app.
+- connection_string: (Optional) The connection string for the linux web app.
+- identity: (Optional) The identity for the linux web app.
+- identity_type: (Optional) The identity type for the linux web app. Possible values are SystemAssigned, UserAssigned and None.
+- identity_ids: (Optional) The identity IDs for the linux web app.
+- https_only: (Optional) Should the linux web app enforce HTTPS only. Changing this forces a new resource to be created.
+- client_cert_enabled: (Optional) Should the linux web app require client certificates. Changing this forces a new resource to be created.
+- client_cert_mode: (Optional) The client certificate mode for the linux web app. Possible values are Require and Allow.
+DESCRIPTION
+  type        = any
+  default     = {}
+}
+variable "windows_function_apps" {
+  description = <<DESCRIPTION
+  The windows_function_apps object is a map of Windows Function App objects. Each Windows Function App object has the following keys:
+- resource_group_key: The key of the resource group object to deploy the Azure resource.
+- name: (Required) The name of the Windows Function App.
+- service_plan_key: (Required) The key of the service plan object to deploy the Azure resource.
+- location: The location of the Windows Function App. If not provided, the location of the resource group will be used.
+- settings: (Optional) The settings for the Windows Function App.
+- app_settings: (Optional) The app settings for the Windows Function App.
+- connection_string: (Optional) The connection string for the Windows Function App.
+- identity: (Optional) The identity for the Windows Function App.
+- identity_type: (Optional) The identity type for the Windows Function App. Possible values are SystemAssigned, UserAssigned and None.
+- identity_ids: (Optional) The identity IDs for the Windows Function App.
+- https_only: (Optional) Should the Windows Function App enforce HTTPS only.
+- storage_account_key: (Optional) The key of the storage account to use for the Function App.
+- functions_extension_version: (Optional) The runtime version associated with the Function App.
+- slots: (Optional) Configuration for deployment slots.
+DESCRIPTION
+  type        = any
+  default     = {}
 }
 variable "windows_web_apps" {
   description = <<DESCRIPTION

@@ -38,9 +38,9 @@ resource "azurerm_application_gateway" "agw" {
   force_firewall_policy_association = can(var.settings.firewall_policy_id) == false && can(var.settings.waf_policy.key) == false ? false : true
 
   sku {
-    name     = var.sku_name
-    tier     = var.sku_tier
-    capacity = try(var.settings.capacity.autoscale, null) == null ? var.settings.capacity.scale_unit : null
+    name     = try(var.settings.sku_name, var.sku_name)
+    tier     = try(var.settings.sku_tier, var.sku_tier)
+    capacity = try(var.settings.capacity.autoscale, null) == null ? try(var.settings.capacity.scale_unit, null) : null
   }
 
   gateway_ip_configuration {
@@ -220,13 +220,12 @@ resource "azurerm_application_gateway" "agw" {
   }
 
   dynamic "identity" {
-    for_each = try(var.settings.identity, null) == null ? [] : [1]
+    for_each = try(var.settings.identity, null) == null ? [] : [var.settings.identity]
 
     content {
-      type         = "UserAssigned"
-      identity_ids = local.managed_identities
+      type         = try(identity.value.type, "UserAssigned")
+      identity_ids = contains(["UserAssigned", "SystemAssigned, UserAssigned"], try(identity.value.type, "UserAssigned")) ? local.managed_identities : null
     }
-
   }
 
   # authentication_certificate {
@@ -377,6 +376,17 @@ resource "azurerm_application_gateway" "agw" {
           }
         }
       }
+    }
+  }
+
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
     }
   }
 }

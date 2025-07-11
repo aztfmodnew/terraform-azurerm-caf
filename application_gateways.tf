@@ -3,7 +3,8 @@ module "application_gateways" {
   source     = "./modules/networking/application_gateway"
   for_each   = local.networking.application_gateways
 
-  app_services                     = local.combined_objects_app_services
+  linux_web_apps                   = local.combined_objects_linux_web_apps
+  windows_web_apps                 = local.combined_objects_windows_web_apps
   application_gateway_waf_policies = local.combined_objects_application_gateway_waf_policies
   client_config                    = local.client_config
   diagnostics                      = local.combined_diagnostics

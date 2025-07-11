@@ -25,7 +25,7 @@
     "sentinel/108-dataconnectors",
     "shared_image_gallery/101-packer_service_principal",
     "storage_accounts/108-file-share-nfs - https://github.com/hashicorp/terraform-provider-azurerm/issues/2977",
-    "webapps/appservice/108-appservice-autoscale - quota",
-    "webapps/appservice/108-appservice-storage - quota"
+    "webapps/linux_web_app/108-linux_web_app-autoscale - quota",
+    "webapps/linux_web_app/108-linux_web_app-storage - quota"
   ]
 }
