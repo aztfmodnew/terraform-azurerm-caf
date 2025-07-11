@@ -34,7 +34,7 @@ service_plans = {
   }
 }
 
-function_apps = {
+linux_function_apps = {
   f1 = {
     name               = "funapp-private"
     resource_group_key = "funapp"

@@ -86,7 +86,7 @@ locals {
   combined_objects_express_route_circuit_authorizations           = merge(tomap({ (local.client_config.landingzone_key) = module.express_route_circuit_authorizations }), lookup(var.remote_objects, "express_route_circuit_authorizations", {}))
   combined_objects_express_route_circuit_peerings                 = merge(tomap({ (local.client_config.landingzone_key) = module.express_route_circuit_peerings }), lookup(var.remote_objects, "express_route_circuit_peerings", {}))
   combined_objects_express_route_circuits                         = merge(tomap({ (local.client_config.landingzone_key) = module.express_route_circuits }), lookup(var.remote_objects, "express_route_circuits", {}), lookup(var.data_sources, "express_route_circuits", {}))  
-  combined_objects_function_apps                                  = merge(tomap({ (local.client_config.landingzone_key) = module.function_apps }), lookup(var.remote_objects, "function_apps", {}))
+
   combined_objects_image_definitions                              = merge(tomap({ (local.client_config.landingzone_key) = module.image_definitions }), lookup(var.remote_objects, "image_definitions", {}))
   combined_objects_iot_central_application                        = merge(tomap({ (local.client_config.landingzone_key) = module.iot_central_application }), lookup(var.remote_objects, "iot_central_application", {}))
   combined_objects_iot_dps_certificate                            = merge(tomap({ (local.client_config.landingzone_key) = module.iot_dps_certificate }), lookup(var.remote_objects, "iot_dps_certificate", {}))
@@ -197,6 +197,7 @@ locals {
   combined_objects_vpn_sites                                      = merge(tomap({ (local.client_config.landingzone_key) = module.vpn_sites }), lookup(var.remote_objects, "vpn_sites", {}))
   combined_objects_web_pubsub_hubs                                = merge(tomap({ (local.client_config.landingzone_key) = module.web_pubsub_hubs }), lookup(var.remote_objects, "web_pubsub_hubs", {}))
   combined_objects_web_pubsubs                                    = merge(tomap({ (local.client_config.landingzone_key) = module.web_pubsubs }), lookup(var.remote_objects, "web_pubsubs", {}))
+  combined_objects_windows_function_apps                          = merge(tomap({ (local.client_config.landingzone_key) = merge(module.windows_function_apps, lookup(var.data_sources, "windows_function_apps", {})) }), lookup(var.remote_objects, "windows_function_apps", {}))
   combined_objects_windows_web_apps                               = merge(tomap({ (local.client_config.landingzone_key) = module.windows_web_apps }), lookup(var.remote_objects, "windows_web_apps", {}), lookup(var.data_sources, "windows_web_apps", {}))
   combined_objects_wvd_application_groups                         = merge(tomap({ (local.client_config.landingzone_key) = module.wvd_application_groups }), lookup(var.remote_objects, "wvd_application_groups", {}))
   combined_objects_wvd_applications                               = merge(tomap({ (local.client_config.landingzone_key) = module.wvd_applications }), lookup(var.remote_objects, "wvd_applications", {}))

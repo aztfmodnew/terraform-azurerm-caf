@@ -342,9 +342,10 @@ module "example" {
     app_service_environments_v3                    = var.app_service_environments_v3
     linux_function_apps                            = var.linux_function_apps
     linux_web_apps                                 = var.linux_web_apps
-    function_apps                                  = var.function_apps
+
     service_plans                                  = var.service_plans
     static_sites                                   = var.static_sites
+    windows_function_apps                          = var.windows_function_apps
     windows_web_apps                               = var.windows_web_apps
   }
   data_factory = {

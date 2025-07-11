@@ -130,7 +130,7 @@ locals {
     diagnostic_storage_accounts                = local.current_objects_diagnostic_storage_accounts
     dns_zones                                  = local.combined_objects_dns_zones
     event_hub_namespaces                       = local.combined_objects_event_hub_namespaces
-    function_apps                              = local.combined_objects_function_apps
+
     iot_hub                                    = local.combined_objects_iot_hub
     iot_hub_dps                                = local.combined_objects_iot_hub_dps
     keyvaults                                  = local.combined_objects_keyvaults

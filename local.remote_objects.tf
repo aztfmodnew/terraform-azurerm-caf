@@ -162,6 +162,7 @@ locals {
     vpn_gateway_connections                        = try(local.combined_objects_vpn_gateway_connections, null)
     vpn_gateway_nat_rules                          = try(local.combined_objects_vpn_gateway_nat_rules, null)
     vpn_sites                                      = try(local.combined_objects_vpn_sites, null)
+    windows_function_apps                          = try(local.combined_objects_windows_function_apps, null)
     windows_web_apps                               = try(local.combined_objects_windows_web_apps, null)
     web_pubsubs                                    = try(local.combined_objects_web_pubsubs, null)
     web_pubsub_hubs                                = try(local.combined_objects_web_pubsub_hubs, null)
