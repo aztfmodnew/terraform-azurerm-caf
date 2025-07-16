@@ -268,6 +268,13 @@ locals {
     tags               = try(var.global_settings.tags, null)
     use_slug           = try(var.global_settings.use_slug, true),
     clean_input        = try(var.global_settings.clean_input, true)
+    
+    # Configuration for hybrid naming system
+    naming = merge({
+      use_azurecaf      = try(var.global_settings.naming.use_azurecaf, true)
+      use_local_module  = try(var.global_settings.naming.use_local_module, false)
+      component_order   = try(var.global_settings.naming.component_order, ["prefix", "abbreviation", "name", "environment", "region", "instance", "suffix"])
+    }, try(var.global_settings.naming, {}))
   }, var.global_settings)
 
   logic_app = {

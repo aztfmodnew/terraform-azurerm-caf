@@ -1,3 +1,28 @@
+output "name" {
+  value       = local.final_name
+  description = "The name of the AI Services Account"
+}
+
+output "naming_method" {
+  value       = local.naming_method
+  description = "The naming method used for this resource (passthrough, azurecaf, local_module, or fallback)"
+}
+
+output "preview_name" {
+  value       = local.preview_name
+  description = "The predicted name that will be generated (available during plan)"
+}
+
+output "naming_debug" {
+  value = {
+    naming_method = local.naming_method
+    preview_name  = local.preview_name
+    base_name     = local.base_name
+    message       = "Predicted name: ${local.preview_name}"
+  }
+  description = "Naming information visible during plan"
+}
+
 output "id" {
   description = "The ID of the AI Services Account"
   value       = azurerm_ai_services.ai_services.id

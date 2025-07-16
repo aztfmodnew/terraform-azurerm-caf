@@ -3,6 +3,7 @@
 ## Language Requirements
 
 **All generated content for this repository must be in English.** This includes:
+
 - Code comments
 - Documentation
 - Variable descriptions
@@ -105,18 +106,19 @@ For example, if the module is `azurerm_ai_services` under the category `cognitiv
 
 ## Azure CAF Naming Convention Implementation
 
-Implement Azure Cloud Adoption Framework (CAF) naming conventions using the `aztfmod/azurecaf` provider for ALL modules to ensure consistent, compliant, and standardized resource names across the entire CAF framework.
+Implement Azure Cloud Adoption Framework (CAF) naming conventions using a **hybrid naming system** that supports multiple naming methods for flexibility and migration scenarios. This approach provides three naming options: azurecaf provider, local naming module, and passthrough (manual names).
 
 ### Core Requirements
 
-1. **Every module with named Azure resources MUST implement azurecaf naming**
-2. **Create `azurecaf_name.tf` file in every module and submodule directory**
-3. **All Azure resource names MUST use azurecaf generated names**
-4. **Support global naming settings (prefixes, suffixes, use_slug, separator)**
+1. **Every module with named Azure resources MUST implement hybrid naming**
+2. **Create `naming.tf` file in every module and submodule directory**
+3. **Support three naming methods: azurecaf, local module, and passthrough**
+4. **Integrate with global naming settings and maintain backward compatibility**
+5. **Support configurable component order for advanced naming scenarios**
 
 ### Provider Configuration
 
-Include azurecaf provider in ALL `providers.tf` files for modules with named resources:
+Include both azurecaf and local naming module providers in ALL `providers.tf` files for modules with named resources:
 
 ```hcl
 terraform {
@@ -138,64 +140,180 @@ terraform {
 }
 ```
 
-### Universal azurecaf_name.tf Pattern
+### Global Settings Configuration
 
-Create `azurecaf_name.tf` file in EVERY module and submodule that creates named Azure resources:
-
-#### For Main Modules
+Extend `global_settings` in `locals.tf` to support hybrid naming:
 
 ```hcl
+global_settings = merge({
+  default_region     = try(var.global_settings.default_region, "region1")
+  environment        = try(var.global_settings.environment, var.environment)
+  inherit_tags       = try(var.global_settings.inherit_tags, false)
+  prefix             = try(var.global_settings.prefix, null)
+  suffix             = try(var.global_settings.suffix, null)
+  # ... existing settings ...
+  separator          = try(var.global_settings.separator, "-")
+  passthrough        = try(var.global_settings.passthrough, false)
+  use_slug           = try(var.global_settings.use_slug, true)
+  clean_input        = try(var.global_settings.clean_input, true)
+
+  # Hybrid naming configuration
+  naming = merge({
+    use_azurecaf      = try(var.global_settings.naming.use_azurecaf, true)
+    use_local_module  = try(var.global_settings.naming.use_local_module, false)
+    component_order   = try(var.global_settings.naming.component_order, ["prefix", "abbreviation", "name", "environment", "region", "instance", "suffix"])
+  }, try(var.global_settings.naming, {}))
+}, var.global_settings)
+```
+
+### Universal naming.tf Pattern
+
+Create `naming.tf` file in EVERY module and submodule that creates named Azure resources:
+
+```hcl
+# Hybrid naming system for [resource_type]
+# Supports three naming methods: passthrough, azurecaf, and local module
+
+locals {
+  # Determine naming method based on global settings priority:
+  # 1. Passthrough (exact names)
+  # 2. Local module (configurable CAF naming)
+  # 3. Azurecaf (provider-based CAF naming)
+  # 4. Fallback (original name)
+  use_passthrough   = var.global_settings.passthrough
+  use_local_module  = !local.use_passthrough && try(var.global_settings.naming.use_local_module, false)
+  use_azurecaf      = !local.use_passthrough && !local.use_local_module && try(var.global_settings.naming.use_azurecaf, true)
+
+  # Base name from settings
+  base_name = var.settings.name
+}
+
+# Local naming module (conditional)
+module "local_naming" {
+  source = "../../naming"
+  count  = local.use_local_module ? 1 : 0
+
+  resource_type   = "azurerm_[resource_type]"
+  name            = local.base_name
+  environment     = try(var.settings.environment, var.global_settings.environment, "")
+  region          = try(var.settings.region, try(var.global_settings.regions[var.global_settings.default_region], ""), "")
+  instance        = try(var.settings.instance, "")
+  prefix          = try(var.settings.prefix, try(var.global_settings.prefix, ""))
+  suffix          = try(var.settings.suffix, try(var.global_settings.suffix, ""))
+  separator       = var.global_settings.separator
+  component_order = try(var.global_settings.naming.component_order, ["prefix", "abbreviation", "name", "environment", "region", "instance", "suffix"])
+  clean_input     = var.global_settings.clean_input
+  validate        = true
+}
+
+# azurecaf naming (conditional - for backward compatibility)
 resource "azurecaf_name" "main_resource" {
-  name          = var.settings.name
-  resource_type = "azurerm_[resource_type]"  # e.g., azurerm_storage_account
+  count = local.use_azurecaf ? 1 : 0
+
+  name          = local.base_name
+  resource_type = "azurerm_[resource_type]"  # Use closest supported type if exact type not available
   prefixes      = var.global_settings.prefixes
   suffixes      = var.global_settings.suffixes
   use_slug      = var.global_settings.use_slug
-  clean_input   = true
-  separator     = "-"
+  clean_input   = var.global_settings.clean_input
+  separator     = var.global_settings.separator
+  random_length = var.global_settings.random_length
+  random_seed   = var.global_settings.random_seed
+  passthrough   = var.global_settings.passthrough
+}
+
+# Final name resolution with priority
+locals {
+  final_name = local.use_passthrough ? local.base_name : (
+    local.use_local_module ? module.local_naming[0].result : (
+      local.use_azurecaf ? azurecaf_name.main_resource[0].result : local.base_name
+    )
+  )
+
+  # Naming method for debugging/monitoring
+  naming_method = local.use_passthrough ? "passthrough" : (
+    local.use_local_module ? "local_module" : (
+      local.use_azurecaf ? "azurecaf" : "fallback"
+    )
+  )
 }
 ```
 
-#### For Submodules
+### Resource Implementation
+
+Update ALL resource definitions to use the hybrid naming system:
 
 ```hcl
-resource "azurecaf_name" "subresource" {
-  name          = var.settings.name
-  resource_type = "azurerm_[subresource_type]"  # e.g., azurerm_storage_container
-  prefixes      = var.global_settings.prefixes
-  suffixes      = var.global_settings.suffixes
-  use_slug      = var.global_settings.use_slug
-  clean_input   = true
-  separator     = "-"
+# ❌ INCORRECT - Direct name usage
+resource "azurerm_[resource_type]" "resource_name" {
+  name = var.settings.name
+  # ... other attributes
 }
+
+# ❌ INCORRECT - Direct azurecaf usage
+resource "azurerm_[resource_type]" "resource_name" {
+  name = azurecaf_name.main_resource.result
+  # ... other attributes
+}
+
+# ✅ CORRECT - Hybrid naming system
+resource "azurerm_[resource_type]" "resource_name" {
+  name = local.final_name
+  # ... other attributes
+}
+```
+
+### Universal Outputs Pattern
+
+Add naming outputs to ALL modules with named resources:
+
+```hcl
+# ALWAYS include the final name output
+output "name" {
+  value       = local.final_name
+  description = "The name of the [resource_type]"
+}
+
+# ALWAYS include the naming method output
+output "naming_method" {
+  value       = local.naming_method
+  description = "The naming method used for this resource (passthrough, local_module, azurecaf, or fallback)"
+}
+
+# Standard resource outputs
+output "id" {
+  value = azurerm_[resource_type].resource_name.id
+}
+
+# ... other specific outputs for the resource type
 ```
 
 ### Resource Type Mapping
 
 Map each Azure resource to its corresponding azurecaf resource type. Common mappings:
 
-| Azure Resource | azurecaf Resource Type |
-|---------------|----------------------|
-| azurerm_resource_group | `azurerm_resource_group` |
-| azurerm_storage_account | `azurerm_storage_account` |
-| azurerm_storage_container | `azurerm_storage_container` |
-| azurerm_key_vault | `azurerm_key_vault` |
-| azurerm_virtual_network | `azurerm_virtual_network` |
-| azurerm_subnet | `azurerm_subnet` |
+| Azure Resource                 | azurecaf Resource Type           |
+| ------------------------------ | -------------------------------- |
+| azurerm_resource_group         | `azurerm_resource_group`         |
+| azurerm_storage_account        | `azurerm_storage_account`        |
+| azurerm_storage_container      | `azurerm_storage_container`      |
+| azurerm_key_vault              | `azurerm_key_vault`              |
+| azurerm_virtual_network        | `azurerm_virtual_network`        |
+| azurerm_subnet                 | `azurerm_subnet`                 |
 | azurerm_network_security_group | `azurerm_network_security_group` |
-| azurerm_public_ip | `azurerm_public_ip` |
-| azurerm_application_gateway | `azurerm_application_gateway` |
-| azurerm_kubernetes_cluster | `azurerm_kubernetes_cluster` |
-| azurerm_container_registry | `azurerm_container_registry` |
-| azurerm_app_service_plan | `azurerm_app_service_plan` |
-| azurerm_linux_web_app | `azurerm_linux_web_app` |
-| azurerm_windows_web_app | `azurerm_windows_web_app` |
-| azurerm_function_app | `azurerm_function_app` |
-| azurerm_mssql_server | `azurerm_mssql_server` |
-| azurerm_mssql_database | `azurerm_mssql_database` |
-| azurerm_cosmosdb_account | `azurerm_cosmosdb_account` |
-| azurerm_cdn_profile | `azurerm_cdn_profile` |
-| azurerm_cdn_frontdoor_profile | `azurerm_cdn_frontdoor_profile` |
+| azurerm_public_ip              | `azurerm_public_ip`              |
+| azurerm_application_gateway    | `azurerm_application_gateway`    |
+| azurerm_kubernetes_cluster     | `azurerm_kubernetes_cluster`     |
+| azurerm_container_registry     | `azurerm_container_registry`     |
+| azurerm_app_service_plan       | `azurerm_app_service_plan`       |
+| azurerm_linux_web_app          | `azurerm_linux_web_app`          |
+| azurerm_windows_web_app        | `azurerm_windows_web_app`        |
+| azurerm_function_app           | `azurerm_function_app`           |
+| azurerm_mssql_server           | `azurerm_mssql_server`           |
+| azurerm_mssql_database         | `azurerm_mssql_database`         |
+| azurerm_cosmosdb_account       | `azurerm_cosmosdb_account`       |
+| azurerm_cdn_profile            | `azurerm_cdn_profile`            |
+| azurerm_cdn_frontdoor_profile  | `azurerm_cdn_frontdoor_profile`  |
 | azurerm_cdn_frontdoor_endpoint | `azurerm_cdn_frontdoor_endpoint` |
 
 ### Universal Resource Implementation
@@ -246,6 +364,7 @@ output "id" {
 ### Common Implementation Patterns
 
 #### Single Resource Module
+
 ```hcl
 # azurecaf_name.tf
 resource "azurecaf_name" "storage_account" {
@@ -268,6 +387,7 @@ resource "azurerm_storage_account" "storage_account" {
 ```
 
 #### Multi-Resource Module with Submodules
+
 ```hcl
 # Main module azurecaf_name.tf
 resource "azurecaf_name" "main_resource" {
@@ -302,7 +422,7 @@ variable "global_settings" {
   description = <<DESCRIPTION
   The global_settings object is a map of settings that can be used to configure the naming convention for Azure resources. It allows you to specify a default region, environment, and other settings that will be used when generating names for resources.
   Any non-compliant characters will be removed from the name, suffix, or prefix. The generated name will be compliant with the set of allowed characters for each Azure resource type.
-  
+
   These are the key naming settings:
   - prefixes - (Optional) A list of prefixes to append as the first characters of the generated name.
   - suffixes - (Optional) A list of suffixes to append after the basename of the resource.
@@ -316,10 +436,10 @@ variable "global_settings" {
 
 ### Examples Integration
 
-Update ALL examples to include azurecaf provider:
+Update ALL examples to include both azurecaf and local naming module providers:
 
 ```hcl
-# examples/main.tf - ALWAYS include azurecaf provider
+# examples/main.tf - ALWAYS include both providers
 terraform {
   required_providers {
     azuread = {
@@ -338,6 +458,44 @@ terraform {
 }
 ```
 
+### Examples Directory Structure
+
+Follow the established pattern for organizing examples by complexity:
+
+```
+examples/
+├── naming/                    # Naming-specific examples
+│   ├── 101-azurecaf-naming/          # Basic azurecaf usage
+│   ├── 102-passthrough-naming/       # Basic passthrough usage
+│   ├── 201-local-module-naming/      # Intermediate local module usage
+│   ├── 202-local-module-validation/  # Intermediate with validation
+│   └── 301-custom-component-order/   # Advanced component order
+├── cognitive_services/
+│   └── 100-ai-services/              # Basic AI services example
+├── networking/
+│   ├── 100-virtual-network/          # Basic networking
+│   └── 200-complex-network/          # Complex networking
+└── README.md
+```
+
+### Example Numbering Convention
+
+- **100-199**: Basic examples (simple configurations)
+- **200-299**: Intermediate examples (moderate complexity)
+- **300-399**: Advanced examples (complex scenarios)
+- **400-499**: Comparison/migration examples
+
+### Example Configuration Structure
+
+Each example should include:
+
+```
+101-example-name/
+├── configuration.tfvars       # Main configuration
+├── terraform.tfvars          # Optional additional variables
+└── README.md                 # Example documentation
+```
+
 ### Benefits for ALL Modules
 
 1. **Consistency**: Standardized naming across ALL Azure resources in CAF
@@ -347,19 +505,20 @@ terraform {
 5. **Cleanliness**: Automatic removal of invalid characters
 6. **Identification**: Clear resource type identification through naming slugs
 7. **Scalability**: Works across all Azure resource types and landing zones
+8. **Migration Path**: Smooth transition from azurecaf to local module or vice versa
 
 ### Implementation Priority
 
-1. **New Modules**: MUST implement azurecaf naming from creation
+1. **New Modules**: MUST implement hybrid naming from creation
 2. **Existing Critical Modules**: Update high-usage modules first
 3. **Legacy Modules**: Gradual migration with backward compatibility
-4. **Examples**: Update to support azurecaf in all example configurations
+4. **Examples**: Update to support all naming methods in example configurations
 
 ### Reference Implementations
 
-- `modules/cdn/cdn_frontdoor_profile/` - Complete example with azurecaf naming
-- `modules/networking/network_manager/` - Multi-resource module pattern
-- `examples/` - Updated with azurecaf provider support
+- `modules/cognitive_services/ai_services/` - Complete example with hybrid naming
+- `modules/cdn/cdn_frontdoor_profile/` - Multi-resource module pattern
+- `examples/naming/` - Comprehensive naming examples
 
 ## Submodule Dependency Pattern
 
@@ -997,6 +1156,7 @@ resource "azurerm_resource_type" "resource_name" {
 ```
 
 **When to use:**
+
 - Resources that are referenced by other resources
 - Resources that cannot have downtime during replacement
 - Resources with complex dependencies (e.g., Front Door origins, origin groups)
@@ -1015,6 +1175,7 @@ module "dependent_resource" {
 ```
 
 **When to use:**
+
 - When Terraform cannot automatically detect dependencies
 - When destruction order is critical
 - When submodules have circular or complex dependencies
@@ -1034,6 +1195,7 @@ resource "azurerm_resource_type" "critical_resource" {
 ```
 
 **When to use:**
+
 - Production databases
 - Key Vaults with critical secrets
 - Networking resources that would cause widespread outages
@@ -1045,6 +1207,7 @@ When adding new modules to the CAF framework, follow these integration patterns:
 #### CAF Module Integration Checklist
 
 1. **Add module variable to `examples/variables.tf`**:
+
    ```hcl
    variable "new_module_name" {
      description = "Configuration for new module"
@@ -1054,6 +1217,7 @@ When adding new modules to the CAF framework, follow these integration patterns:
    ```
 
 2. **Add module call to `examples/module.tf`**:
+
    ```hcl
    module "new_module_name" {
      source   = "../modules/category/new_module"
@@ -1071,6 +1235,7 @@ When adding new modules to the CAF framework, follow these integration patterns:
    ```
 
 3. **Add to `locals.tf`**:
+
    ```hcl
    locals {
      category = {
@@ -1080,6 +1245,7 @@ When adding new modules to the CAF framework, follow these integration patterns:
    ```
 
 4. **Add combined objects to `locals.combined_objects.tf`**:
+
    ```hcl
    combined_objects_new_module_name = merge(
      tomap({ (local.client_config.landingzone_key) = module.new_module_name }),
@@ -1089,11 +1255,13 @@ When adding new modules to the CAF framework, follow these integration patterns:
    ```
 
 5. **Add to `local.remote_objects.tf`**:
+
    ```hcl
    new_module_name = try(local.combined_objects_new_module_name, null)
    ```
 
 6. **Create root module file `category_new_module_name.tf`**:
+
    ```hcl
    module "new_module_name" {
      source   = "./modules/category/new_module"
@@ -1203,6 +1371,7 @@ When debugging test failures, follow these systematic troubleshooting steps:
 #### Debugging Process
 
 1. **Compare with working examples**:
+
    ```bash
    # Find similar examples
    find /examples -name "*.tfvars" -path "*similar_service*" | head -5
@@ -1515,6 +1684,7 @@ When debugging test failures, follow these systematic troubleshooting steps:
 #### Debugging Process
 
 1. **Compare with working examples**:
+
    ```bash
    # Find similar examples
    find /examples -name "*.tfvars" -path "*similar_service*" | head -5
@@ -1827,6 +1997,7 @@ When debugging test failures, follow these systematic troubleshooting steps:
 #### Debugging Process
 
 1. **Compare with working examples**:
+
    ```bash
    # Find similar examples
    find /examples -name "*.tfvars" -path "*similar_service*" | head -5
@@ -2139,6 +2310,7 @@ When debugging test failures, follow these systematic troubleshooting steps:
 #### Debugging Process
 
 1. **Compare with working examples**:
+
    ```bash
    # Find similar examples
    find /examples -name "*.tfvars" -path "*similar_service*" | head -5
@@ -2421,3 +2593,97 @@ Before considering a module update complete:
 4. **Dependency resolution** must follow established patterns
 5. **Integration with CAF framework** must be properly wired
 6. **Documentation** must be updated and accurate
+
+## Hybrid Naming System Testing
+
+### Testing Different Naming Methods
+
+The hybrid naming system supports three methods that can be tested systematically:
+
+#### 1. Azurecaf Naming (Default/Legacy)
+
+```bash
+# Test basic azurecaf naming
+terraform_with_var_files --dir ./naming/101-azurecaf-naming/ --action plan --auto auto --workspace test
+
+# Test azurecaf with random suffix
+terraform_with_var_files --dir ./naming/103-azurecaf-with-random/ --action plan --auto auto --workspace test
+```
+
+#### 2. Passthrough Naming (Manual)
+
+```bash
+# Test exact name passthrough
+terraform_with_var_files --dir ./naming/102-passthrough-naming/ --action plan --auto auto --workspace test
+```
+
+#### 3. Local Module Naming (Advanced)
+
+```bash
+# Test local module basic
+terraform_with_var_files --dir ./naming/201-local-module-naming/ --action plan --auto auto --workspace test
+
+# Test local module with validation
+terraform_with_var_files --dir ./naming/202-local-module-validation/ --action plan --auto auto --workspace test
+
+# Test custom component order
+terraform_with_var_files --dir ./naming/301-custom-component-order/ --action plan --auto auto --workspace test
+
+# Test environment-specific naming
+terraform_with_var_files --dir ./naming/302-environment-specific-naming/ --action plan --auto auto --workspace test
+```
+
+### Common Naming Issues and Solutions
+
+#### Issue: azurecaf resource type not supported
+
+**Problem**: `azurerm_ai_services` is not supported by azurecaf provider
+**Solution**: Use closest supported type (e.g., `azurerm_cognitive_account`)
+
+```hcl
+# In naming.tf
+resource "azurecaf_name" "main_resource" {
+  count = local.use_azurecaf ? 1 : 0
+
+  name          = local.base_name
+  resource_type = "azurerm_cognitive_account"  # Fallback for unsupported types
+  # ... other settings
+}
+```
+
+#### Issue: Variable not declared
+
+**Problem**: Using `cognitive_services` instead of `ai_services`
+**Solution**: Use correct variable name as defined in module
+
+```hcl
+# ❌ INCORRECT
+cognitive_services = {
+  ai_services = { ... }
+}
+
+# ✅ CORRECT
+ai_services = {
+  example = { ... }
+}
+```
+
+#### Issue: Dependency lock file conflicts
+
+**Problem**: Provider version conflicts
+**Solution**: Run `terraform init -upgrade` to update lock file
+
+```bash
+cd /home/fdr001/source/github/aztfmodnew/terraform-azurerm-caf/examples
+terraform init -upgrade
+```
+
+### Best Practices for Naming Implementation
+
+1. **Always implement hybrid naming** for new modules
+2. **Use resource type mapping** for azurecaf compatibility
+3. **Test all three naming methods** before finalizing
+4. **Document naming behavior** in module README
+5. **Provide example configurations** for each naming method
+6. **Use appropriate resource constraints** in local naming module
+7. **Handle unsupported resource types** gracefully with fallbacks
