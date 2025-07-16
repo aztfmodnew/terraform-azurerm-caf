@@ -30,4 +30,3 @@ cognitive_services_account = {
 
   }
 }
-

@@ -3,6 +3,17 @@ output "id" {
   value       = azurerm_cognitive_account.service.id
 }
 
+# Hybrid naming outputs
+output "name" {
+  value       = local.final_name
+  description = "The name of the cognitive service account"
+}
+
+output "naming_method" {
+  value       = local.naming_method
+  description = "The naming method used for this resource (passthrough, local_module, azurecaf, or fallback)"
+}
+
 output "endpoint" {
   description = "The endpoint used to connect to the Cognitive Service Account."
   value       = azurerm_cognitive_account.service.endpoint
