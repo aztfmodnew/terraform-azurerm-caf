@@ -1,9 +1,20 @@
 global_settings = {
   default_region = "region1"
+  environment    = "dev"
+  prefix         = "caf"
+  suffix         = "001"
+  
   regions = {
     region1 = "australiaeast"
   }
+  
   inherit_tags = true
+  
+  # Hybrid naming configuration - using azurecaf (default)
+  naming = {
+    use_azurecaf      = true
+    use_local_module  = false
+  }
 }
 
 provider_azurerm_features_keyvault = {
@@ -18,6 +29,8 @@ resource_groups = {
 }
 
 # https://docs.microsoft.com/en-us/azure/storage/
+# Example: Basic storage account with hybrid naming (azurecaf method)
+# Expected name: caf-st-sa1dev-dev-001
 storage_accounts = {
   sa1 = {
     name = "sa1dev"

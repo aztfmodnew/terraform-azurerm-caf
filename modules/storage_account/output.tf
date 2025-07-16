@@ -4,8 +4,18 @@ output "id" {
 }
 
 output "name" {
-  description = "The name of the Storage Account"
-  value       = azurerm_storage_account.stg.name
+  description = "The CAF-compliant name of the Storage Account"
+  value       = local.final_name
+}
+
+output "naming_method" {
+  description = "The naming method used for this resource (passthrough, local_module, azurecaf, or fallback)"
+  value       = local.naming_method
+}
+
+output "legacy_name" {
+  description = "The legacy azurecaf name (for backward compatibility)"
+  value       = azurecaf_name.stg.result
 }
 
 output "location" {

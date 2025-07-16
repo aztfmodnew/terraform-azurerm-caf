@@ -1,7 +1,18 @@
 global_settings = {
   default_region = "region1"
+  environment    = "dev"
+  prefix         = "caf"
+  suffix         = "adv"
+  
   regions = {
     region1 = "australiaeast"
+  }
+  
+  # Hybrid naming configuration - using local module with custom order
+  naming = {
+    use_azurecaf      = false
+    use_local_module  = true
+    component_order   = ["prefix", "abbreviation", "name", "environment", "region", "suffix"]
   }
 }
 
@@ -12,6 +23,8 @@ resource_groups = {
 }
 
 # https://docs.microsoft.com/en-us/azure/storage/
+# Example: Advanced storage account with local module naming
+# Expected name: caf-st-sa1dev-dev-aue-adv
 storage_accounts = {
   sa1 = {
     name                     = "sa1dev"
@@ -32,6 +45,11 @@ storage_accounts = {
 
     enable_system_msi = {
       type = "SystemAssigned"
+    }
+    
+    tags = {
+      naming_method = "local_module"
+      purpose       = "advanced-options-demo"
     }
 
     blob_properties = {
@@ -98,5 +116,3 @@ storage_accounts = {
     }
   }
 }
-
-
