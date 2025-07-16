@@ -249,11 +249,11 @@ resource "random_string" "suffix" {
   numeric = true
 }
 
-# Validation checks
-resource "null_resource" "validation" {
+# Validation checks using terraform_data (more modern than null_resource)
+resource "terraform_data" "validation" {
   count = var.validate ? 1 : 0
   
-  triggers = {
+  input = {
     name_too_short = length(local.final_name) < local.constraints.min_length
     name_too_long  = length(local.final_name) > local.constraints.max_length
     invalid_chars  = can(regex("[^${local.constraints.allowed_chars}]", local.final_name))

@@ -121,6 +121,34 @@ module "naming" {
 }
 ```
 
+## Unsupported Resources in azurecaf
+
+Some Azure resources are not supported by the azurecaf provider. For these resources, the hybrid naming system automatically uses the local naming module as the preferred method:
+
+### Strategy for Unsupported Resources
+
+1. **Prefer Local Module**: Default to `use_local_module = true` for unsupported resources
+2. **Fallback to azurecaf**: Use closest supported resource type as fallback
+3. **Seamless Experience**: Users don't need to know which resources are supported
+
+### Examples of Unsupported Resources
+
+- `azurerm_ai_services` → Falls back to `azurerm_cognitive_account`
+- `azurerm_container_app` → Falls back to `azurerm_container_group`
+- `azurerm_static_site` → Falls back to `azurerm_app_service`
+
+For a complete list, see [UNSUPPORTED_RESOURCES.md](./UNSUPPORTED_RESOURCES.md).
+
+### Implementation for Unsupported Resources
+
+```hcl
+locals {
+  # For unsupported resources, prefer local module over azurecaf
+  use_local_module  = !local.use_passthrough && try(var.global_settings.naming.use_local_module, true)  # Default to true
+  use_azurecaf      = !local.use_passthrough && !local.use_local_module && try(var.global_settings.naming.use_azurecaf, false)  # Default to false
+}
+```
+
 ## Hybrid Naming System
 
 The CAF framework uses a hybrid naming system that supports three methods:
@@ -186,21 +214,21 @@ The module follows Microsoft's recommended naming convention:
 
 ## Variables
 
-| Name            | Description                            | Type     | Default                                | Required |
-| --------------- | -------------------------------------- | -------- | -------------------------------------- | -------- |
-| resource_type   | The type of Azure resource             | string   | -                                      | yes      |
-| name            | Base name for the resource             | string   | -                                      | yes      |
-| environment     | Environment name (dev, prod, etc.)     | string   | ""                                     | no       |
-| region          | Azure region abbreviation              | string   | ""                                     | no       |
-| instance        | Instance number or identifier          | string   | ""                                     | no       |
-| prefix          | Prefix to add to the resource name     | string   | ""                                     | no       |
-| suffix          | Suffix to add to the resource name     | string   | ""                                     | no       |
-| separator       | Character used to separate components  | string   | "-"                                    | no       |
-| component_order | Order of naming components             | list     | `["prefix", "abbreviation", "name", "environment", "region", "instance", "suffix"]` | no       |
-| clean_input     | Clean invalid characters from name     | bool     | true                                   | no       |
-| add_random      | Add random suffix for unique resources | bool     | false                                  | no       |
-| random_length   | Length of random suffix                | number   | 4                                      | no       |
-| validate        | Validate the generated name            | bool     | true                                   | no       |
+| Name            | Description                            | Type   | Default                                                                             | Required |
+| --------------- | -------------------------------------- | ------ | ----------------------------------------------------------------------------------- | -------- |
+| resource_type   | The type of Azure resource             | string | -                                                                                   | yes      |
+| name            | Base name for the resource             | string | -                                                                                   | yes      |
+| environment     | Environment name (dev, prod, etc.)     | string | ""                                                                                  | no       |
+| region          | Azure region abbreviation              | string | ""                                                                                  | no       |
+| instance        | Instance number or identifier          | string | ""                                                                                  | no       |
+| prefix          | Prefix to add to the resource name     | string | ""                                                                                  | no       |
+| suffix          | Suffix to add to the resource name     | string | ""                                                                                  | no       |
+| separator       | Character used to separate components  | string | "-"                                                                                 | no       |
+| component_order | Order of naming components             | list   | `["prefix", "abbreviation", "name", "environment", "region", "instance", "suffix"]` | no       |
+| clean_input     | Clean invalid characters from name     | bool   | true                                                                                | no       |
+| add_random      | Add random suffix for unique resources | bool   | false                                                                               | no       |
+| random_length   | Length of random suffix                | number | 4                                                                                   | no       |
+| validate        | Validate the generated name            | bool   | true                                                                                | no       |
 
 ## Outputs
 

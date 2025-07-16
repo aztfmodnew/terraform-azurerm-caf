@@ -3,9 +3,10 @@
 
 locals {
   # Determine naming method based on global settings
+  # For resources not supported by azurecaf, prefer local module over azurecaf
   use_passthrough   = var.global_settings.passthrough
-  use_azurecaf      = !local.use_passthrough && try(var.global_settings.naming.use_azurecaf, true)
-  use_local_module  = !local.use_passthrough && !local.use_azurecaf && try(var.global_settings.naming.use_local_module, false)
+  use_local_module  = !local.use_passthrough && try(var.global_settings.naming.use_local_module, true)  # Default to true for unsupported resources
+  use_azurecaf      = !local.use_passthrough && !local.use_local_module && try(var.global_settings.naming.use_azurecaf, false)  # Default to false for unsupported resources
   
   # Base name from settings
   base_name = var.settings.name
