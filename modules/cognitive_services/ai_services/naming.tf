@@ -24,7 +24,7 @@ module "local_naming" {
   prefix          = try(var.settings.prefix, try(var.global_settings.prefix, ""))
   suffix          = try(var.settings.suffix, try(var.global_settings.suffix, ""))
   separator       = var.global_settings.separator
-  component_order = try(var.global_settings.naming.component_order, var.settings.component_order, ["prefix", "abbreviation", "name", "environment", "region", "instance", "suffix"])
+  component_order = try(var.settings.component_order, var.global_settings.naming.component_order, ["prefix", "abbreviation", "name", "environment", "region", "instance", "suffix"])
   clean_input     = var.global_settings.clean_input
   validate        = true
 }

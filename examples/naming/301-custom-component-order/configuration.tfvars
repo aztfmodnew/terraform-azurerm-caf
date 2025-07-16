@@ -47,7 +47,7 @@ ai_services = {
       instance           = "02"
       
       # Override component order for this resource
-      component_order = ["prefix", "name", "environment", "region", "instance", "suffix"]
+      component_order = ["abbreviation", "prefix", "name", "environment", "region", "instance", "suffix"]
     }
     
     # Service with minimal components
