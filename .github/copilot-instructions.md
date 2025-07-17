@@ -115,6 +115,24 @@ Implement Azure Cloud Adoption Framework (CAF) naming conventions using a **hybr
 3. **Support three naming methods: azurecaf, local module, and passthrough**
 4. **Integrate with global naming settings and maintain backward compatibility**
 5. **Support configurable component order for advanced naming scenarios**
+6. **When implementing hybrid naming in existing modules with azurecaf_name, preserve exact original parameter values in the azurecaf_name resource within naming.tf**
+7. **Use var.global_settings values directly without try() or default values since defaults are already defined in locals.tf**
+
+### Hybrid Naming Implementation Rules
+
+**For modules that already have azurecaf implemented:**
+
+- ✅ Create `naming.tf` file with hybrid naming system
+- ✅ Update main resource files to use `local.final_name`
+- ✅ Preserve exact original `azurecaf_name` parameter values in `naming.tf`
+- ✅ Use `var.global_settings.property` directly (no try() or defaults)
+- ❌ DO NOT modify example .tfvars files (leave them unchanged)
+
+**For modules that do not have azurecaf implemented:**
+
+- ✅ Create `naming.tf` file with hybrid naming system
+- ✅ Update main resource files to use `local.final_name`
+- ✅ Add to example .tfvars files: `naming = { use_azurecaf = false, use_local_module = true }`
 
 ### Provider Configuration
 
@@ -195,15 +213,15 @@ module "local_naming" {
 
   resource_type   = "azurerm_[resource_type]"
   name            = local.base_name
-  environment     = try(var.settings.environment, var.global_settings.environment, "")
-  region          = try(var.settings.region, try(var.global_settings.regions[var.global_settings.default_region], ""), "")
+  environment     = var.global_settings.environment
+  region          = try(var.global_settings.regions[var.global_settings.default_region], "")
   instance        = try(var.settings.instance, "")
-  prefix          = try(var.settings.prefix, try(var.global_settings.prefix, ""))
-  suffix          = try(var.settings.suffix, try(var.global_settings.suffix, ""))
+  prefix          = var.global_settings.prefix
+  suffix          = var.global_settings.suffix
   separator       = var.global_settings.separator
-  component_order = try(var.global_settings.naming.component_order, ["prefix", "abbreviation", "name", "environment", "region", "instance", "suffix"])
+  component_order = var.global_settings.naming.component_order
   clean_input     = var.global_settings.clean_input
-  validate        = true
+  validate        = var.global_settings.naming.validate
 }
 
 # azurecaf naming (conditional - for backward compatibility)
@@ -477,6 +495,7 @@ examples/
 │   └── 200-complex-network/          # Complex networking
 └── README.md
 ```
+One directory per example, with a clear naming convention that indicates the complexity and focus of the example.
 
 ### Example Numbering Convention
 
@@ -491,8 +510,8 @@ Each example should include:
 
 ```
 101-example-name/
-├── configuration.tfvars       # Main configuration
-├── terraform.tfvars          # Optional additional variables
+├── global_settings.tfvars    # Global Settings configuration
+├── resource.tfvars           # Resources variables
 └── README.md                 # Example documentation
 ```
 
@@ -1310,7 +1329,7 @@ When updating modules, always test from the `/examples` directory:
 
 ```bash
 # Navigate to examples directory
-cd /home/fdr001/source/github/aztfmodnew/terraform-azurerm-caf/examples
+cd /home/$USER/source/github/aztfmodnew/terraform-azurerm-caf/examples
 
 # Test with specific module configuration
 terraform_with_var_files --dir /category/module/example/  --action plan  --auto auto  --workspace example
@@ -1623,7 +1642,7 @@ When updating modules, always test from the `/examples` directory:
 
 ```bash
 # Navigate to examples directory
-cd /home/fdr001/source/github/aztfmodnew/terraform-azurerm-caf/examples
+cd /home/$USER/source/github/aztfmodnew/terraform-azurerm-caf/examples
 
 # Test with specific module configuration
 terraform_with_var_files --dir /category/module/example/  --action plan  --auto auto  --workspace example
@@ -1936,7 +1955,7 @@ When updating modules, always test from the `/examples` directory:
 
 ```bash
 # Navigate to examples directory
-cd /home/fdr001/source/github/aztfmodnew/terraform-azurerm-caf/examples
+cd /home/$USER/source/github/aztfmodnew/terraform-azurerm-caf/examples
 
 # Test with specific module configuration
 terraform_with_var_files --dir /category/module/example/  --action plan  --auto auto  --workspace example
@@ -2249,7 +2268,7 @@ When updating modules, always test from the `/examples` directory:
 
 ```bash
 # Navigate to examples directory
-cd /home/fdr001/source/github/aztfmodnew/terraform-azurerm-caf/examples
+cd /home/$USER/source/github/aztfmodnew/terraform-azurerm-caf/examples
 
 # Test with specific module configuration
 terraform_with_var_files --dir /category/module/example/  --action plan  --auto auto  --workspace example
@@ -2561,7 +2580,7 @@ When updating modules, always test from the `/examples` directory:
 
 ```bash
 # Navigate to examples directory
-cd /home/fdr001/source/github/aztfmodnew/terraform-azurerm-caf/examples
+cd /home/$USER/source/github/aztfmodnew/terraform-azurerm-caf/examples
 
 # Test with specific module configuration
 terraform_with_var_files --dir /category/module/example/  --action plan  --auto auto  --workspace example
@@ -2674,7 +2693,7 @@ ai_services = {
 **Solution**: Run `terraform init -upgrade` to update lock file
 
 ```bash
-cd /home/fdr001/source/github/aztfmodnew/terraform-azurerm-caf/examples
+cd /home/$USER/source/github/aztfmodnew/terraform-azurerm-caf/examples
 terraform init -upgrade
 ```
 
