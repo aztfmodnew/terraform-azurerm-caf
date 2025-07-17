@@ -271,9 +271,14 @@ locals {
     
     # Configuration for hybrid naming system
     naming = merge({
-      use_azurecaf      = try(var.global_settings.naming.use_azurecaf, true)
-      use_local_module  = try(var.global_settings.naming.use_local_module, false)
-      component_order   = try(var.global_settings.naming.component_order, ["prefix", "abbreviation", "name", "environment", "region", "instance", "suffix"])
+      use_azurecaf             = try(var.global_settings.naming.use_azurecaf, true)
+      use_local_module         = try(var.global_settings.naming.use_local_module, false)
+      component_order          = try(var.global_settings.naming.component_order, ["prefix", "abbreviation", "name", "environment", "region", "instance", "suffix"])
+      validate                 = try(var.global_settings.naming.validate, true)
+      allow_resource_override  = try(var.global_settings.naming.allow_resource_override, true)
+      
+      # Patrones específicos por tipo de recurso
+      resource_patterns = try(var.global_settings.naming.resource_patterns, {})
     }, try(var.global_settings.naming, {}))
   }, var.global_settings)
 

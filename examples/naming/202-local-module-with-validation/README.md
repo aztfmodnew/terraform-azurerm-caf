@@ -20,7 +20,7 @@ This example demonstrates the local naming module with built-in validation featu
 
 ```bash
 # Navigate to examples directory
-cd /home/fdr001/source/github/aztfmodnew/terraform-azurerm-caf/examples
+cd /home/$USER/source/github/aztfmodnew/terraform-azurerm-caf/examples
 
 # Test the configuration
 terraform_with_var_files \

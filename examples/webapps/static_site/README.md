@@ -50,7 +50,7 @@ Demonstrates a Static Web App with custom domain configuration featuring:
 Navigate to the examples directory and run:
 
 ```bash
-cd /home/fdr001/source/github/aztfmodnew/terraform-azurerm-caf/examples
+cd /home/$USER/source/github/aztfmodnew/terraform-azurerm-caf/examples
 
 terraform plan \
   -var-file=./webapps/static_site/101-simple-static-web-app/configuration.tfvars
@@ -62,7 +62,7 @@ terraform apply \
 ### Custom Domain Example
 
 ```bash
-cd /home/fdr001/source/github/aztfmodnew/terraform-azurerm-caf/examples
+cd /home/$USER/source/github/aztfmodnew/terraform-azurerm-caf/examples
 
 terraform plan \
   -var-file=./webapps/static_site/102-static-web-app-custom-domain/configuration.tfvars

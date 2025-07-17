@@ -20,17 +20,30 @@ This directory contains examples demonstrating the hybrid naming system in the C
 - **[301-custom-component-order](301-custom-component-order/)**: Custom component ordering patterns
 - **[302-environment-specific-naming](302-environment-specific-naming/)**: Different naming strategies per environment
 
-### 400-xxx: Complex Examples
+### 400-xxx: Hybrid Governance Examples
 
-- **[401-hybrid-naming-comparison](401-hybrid-naming-comparison/)**: Comparison of all naming methods
+- **[401-flexible-governance](401-flexible-governance/)**: Organizational control with team flexibility
+- **[402-strict-governance](402-strict-governance/)**: Enforced organizational standards without overrides
+- **[403-resource-patterns](403-resource-patterns/)**: Different naming patterns optimized per Azure resource type
+- **[404-naming-comparison](404-naming-comparison/)**: Side-by-side comparison of all naming methods
 
 ## Naming Methods Overview
 
-| Method           | Description              | Configuration                    | Best For                         |
-| ---------------- | ------------------------ | -------------------------------- | -------------------------------- |
-| **azurecaf**     | Uses azurecaf provider   | `naming.use_azurecaf = true`     | Production, existing deployments |
-| **local_module** | Uses local naming module | `naming.use_local_module = true` | Validation, custom orders        |
-| **passthrough**  | Exact names              | `passthrough = true`             | Legacy systems, manual control   |
+| Method           | Description              | Configuration                    | Best For                         | Governance Level |
+| ---------------- | ------------------------ | -------------------------------- | -------------------------------- | ---------------- |
+| **azurecaf**     | Uses azurecaf provider   | `naming.use_azurecaf = true`     | Production, existing deployments | Medium           |
+| **local_module** | Uses local naming module | `naming.use_local_module = true` | Validation, custom orders        | High             |
+| **passthrough**  | Exact names              | `passthrough = true`             | Legacy systems, manual control   | None             |
+| **hybrid**       | Combines all methods     | `allow_resource_override = true` | Organizational flexibility       | Variable         |
+
+## Governance Models
+
+| Model | Override Allowed | Resource Patterns | Individual Naming | Use Case |
+|-------|------------------|-------------------|-------------------|----------|
+| **Flexible** | ✅ Yes | ✅ Suggested | ✅ Full override | Multi-team organizations |
+| **Strict** | ❌ No | ✅ Enforced | ❌ Ignored | Compliance-heavy environments |
+| **Resource-Optimized** | ✅ Limited | ✅ Per-type | ✅ Within patterns | Service-specific optimization |
+| **Comparison** | ✅ Method-level | ✅ Configurable | ✅ Method-specific | Testing and migration |
 
 ## Priority Order
 
@@ -41,10 +54,20 @@ This directory contains examples demonstrating the hybrid naming system in the C
 
 ## Getting Started
 
-1. **Start with 100-azurecaf-naming** to understand the baseline
-2. **Try 200-local-module-naming** to see the new features
-3. **Explore 300-custom-component-order** for advanced patterns
-4. **Use 400-hybrid-naming-comparison** to compare all methods
+### Quick Start Path
+1. **[101-azurecaf-naming](101-azurecaf-naming/)** - Understand the baseline azurecaf approach
+2. **[201-local-module-naming](201-local-module-naming/)** - Explore local module capabilities
+3. **[404-naming-comparison](404-naming-comparison/)** - Compare all methods side by side
+
+### Governance Implementation Path
+1. **[401-flexible-governance](401-flexible-governance/)** - Allow team customization with organizational control
+2. **[402-strict-governance](402-strict-governance/)** - Enforce complete organizational consistency
+3. **[403-resource-patterns](403-resource-patterns/)** - Optimize patterns for different Azure resource types
+
+### Development Path
+1. **[302-environment-specific-naming](302-environment-specific-naming/)** - Different strategies per environment
+2. **[301-custom-component-order](301-custom-component-order/)** - Advanced pattern customization
+3. **[202-local-module-with-validation](202-local-module-with-validation/)** - Validation and compliance features
 
 ## Common Configuration
 
@@ -62,9 +85,17 @@ global_settings = {
   }
 
   naming = {
-    use_azurecaf      = true  # or false
-    use_local_module  = false # or true
-    component_order   = ["prefix", "abbreviation", "name", "environment", "region", "suffix"]
+    use_azurecaf            = true  # or false
+    use_local_module        = false # or true
+    allow_resource_override = true  # Enable individual resource customization
+    component_order         = ["prefix", "abbreviation", "name", "environment", "region", "suffix"]
+
+    # Resource-specific patterns (400-hybrid-governance-system example)
+    resource_patterns = {
+      azurerm_storage_account = {
+        separator = ""  # No separator for storage accounts
+      }
+    }
   }
 }
 ```
@@ -74,7 +105,7 @@ global_settings = {
 All examples can be tested using:
 
 ```bash
-cd /home/fdr001/source/github/aztfmodnew/terraform-azurerm-caf/examples
+cd /home/$USER/source/github/aztfmodnew/terraform-azurerm-caf/examples
 
 terraform_with_var_files \
   --dir /naming/[example-directory]/ \

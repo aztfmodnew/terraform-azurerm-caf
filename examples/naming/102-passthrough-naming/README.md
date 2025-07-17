@@ -17,7 +17,7 @@ This example demonstrates passthrough naming, which uses exact names without any
 ## How to Run
 
 ```bash
-cd /home/fdr001/source/github/aztfmodnew/terraform-azurerm-caf/examples
+cd /home/$USER/source/github/aztfmodnew/terraform-azurerm-caf/examples
 
 terraform_with_var_files \
   --dir /naming/100-passthrough-naming/ \

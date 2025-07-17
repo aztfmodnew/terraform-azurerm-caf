@@ -31,7 +31,7 @@ Demonstrates a secure Windows Function App deployment with:
 Navigate to the example directory and run:
 
 ```bash
-cd /home/fdr001/source/github/aztfmodnew/terraform-azurerm-caf/examples
+cd /home/$USER/source/github/aztfmodnew/terraform-azurerm-caf/examples
 
 terraform plan \
   -var-file=./webapps/windows_function_app/101-windows_function_app-simple/resource_groups.tfvars \
@@ -46,7 +46,7 @@ terraform plan \
 For the secure private endpoint deployment:
 
 ```bash
-cd /home/fdr001/source/github/aztfmodnew/terraform-azurerm-caf/examples
+cd /home/$USER/source/github/aztfmodnew/terraform-azurerm-caf/examples
 
 terraform plan \
   -var-file=./webapps/windows_function_app/102-windows_function_app-private/global_settings.tfvars \

@@ -19,7 +19,7 @@ This example demonstrates the local naming module with validation and flexible c
 ## How to Run
 
 ```bash
-cd /home/fdr001/source/github/aztfmodnew/terraform-azurerm-caf/examples
+cd /home/$USER/source/github/aztfmodnew/terraform-azurerm-caf/examples
 
 terraform_with_var_files \
   --dir /naming/200-local-module-naming/ \

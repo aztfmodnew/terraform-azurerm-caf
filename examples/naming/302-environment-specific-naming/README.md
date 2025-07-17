@@ -34,7 +34,7 @@ This example demonstrates different naming strategies for different environments
 
 ```bash
 # Navigate to examples directory
-cd /home/fdr001/source/github/aztfmodnew/terraform-azurerm-caf/examples
+cd /home/$USER/source/github/aztfmodnew/terraform-azurerm-caf/examples
 
 # Test development environment
 terraform_with_var_files \

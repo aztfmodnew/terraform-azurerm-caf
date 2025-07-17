@@ -66,7 +66,7 @@ This example has been updated from the deprecated `azurerm_static_site` to the m
 
 ```bash
 # Navigate to the examples directory
-cd /home/fdr001/source/github/aztfmodnew/terraform-azurerm-caf/examples
+cd /home/$USER/source/github/aztfmodnew/terraform-azurerm-caf/examples
 
 # Initialize Terraform (if not already done)
 terraform init
