@@ -106,7 +106,7 @@ Once Terraform creates the resources, you'll need to configure DNS records with 
 
 ```bash
 # Navigate to the examples directory
-cd /home/fdr001/source/github/aztfmodnew/terraform-azurerm-caf/examples
+cd /home/$USER/source/github/aztfmodnew/terraform-azurerm-caf/examples
 
 # Plan the deployment
 terraform plan \

@@ -48,7 +48,7 @@ This deployment creates:
 From the examples directory, run:
 
 ```bash
-cd /home/fdr001/source/github/aztfmodnew/terraform-azurerm-caf/examples
+cd /home/$USER/source/github/aztfmodnew/terraform-azurerm-caf/examples
 
 # Plan the deployment
 terraform plan \

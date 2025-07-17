@@ -1,7 +1,19 @@
 global_settings = {
   default_region = "region1"
+  environment    = "dev"
+  prefix         = "caf"
+  suffix         = "cmk"
+  
   regions = {
     region1 = "australiaeast"
+  }
+  
+  inherit_tags = true
+  
+  # Hybrid naming configuration - using azurecaf (default)
+  naming = {
+    use_azurecaf      = true
+    use_local_module  = false
   }
 }
 

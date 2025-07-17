@@ -3,7 +3,7 @@ locals {
   caf_tags = can(var.storage_account.tags.caf_environment) || can(var.storage_account.tags.environment) ? merge(lookup(var.storage_account, "tags", {}), { "caf_environment" : var.global_settings.environment }) : {}
 }
 
-# naming convention
+# Legacy azurecaf naming (kept for backward compatibility)
 resource "azurecaf_name" "stg" {
   name          = var.storage_account.name
   resource_type = "azurerm_storage_account"
@@ -17,7 +17,7 @@ resource "azurecaf_name" "stg" {
 # Ref : https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account
 
 resource "azurerm_storage_account" "stg" {
-  name                              = azurecaf_name.stg.result
+  name                              = local.final_name
   account_tier                      = try(var.storage_account.account_tier, "Standard")
   account_replication_type          = try(var.storage_account.account_replication_type, "LRS")
   account_kind                      = try(var.storage_account.account_kind, "StorageV2")

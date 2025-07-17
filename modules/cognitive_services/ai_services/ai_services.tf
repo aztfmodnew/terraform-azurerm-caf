@@ -1,5 +1,5 @@
 resource "azurerm_ai_services" "ai_services" {
-  name                               = var.settings.name
+  name                               = local.final_name
   location                           = local.location
   resource_group_name                = local.resource_group_name
   sku_name                           = var.settings.sku_name
@@ -31,9 +31,9 @@ resource "azurerm_ai_services" "ai_services" {
         for_each = try(network_acls.value.virtual_network_rules, null) == null ? [] : network_acls.value.virtual_network_rules
         content {
           subnet_id = can(virtual_network_rules.value.subnet_id) || can(virtual_network_rules.value.subnet_key) ? try(virtual_network_rules.value.subnet_id, var.remote_objects.virtual_subnets[try(virtual_network_rules.value.lz_key, var.client_config.landingzone_key)][virtual_network_rules.value.subnet_key].id) : var.remote_objects.vnets[try(virtual_network_rules.value.lz_key, var.client_config.landingzone_key)][virtual_network_rules.value.vnet_key].subnets[virtual_network_rules.value.subnet_key].id
-          # Depurar en algún moment, error: The given key does not identify an element in this collection value.
+          # TODO: Debug this error at some point: The given key does not identify an element in this collection value.
           # subnet_id = var.remote_objects.subnet_id
-          #  Try virtual_network_rules.value.subnet_id and if it is null, try to get the subnet_id from the remote_objects and if it is null, use null
+          # Try virtual_network_rules.value.subnet_id and if it is null, try to get the subnet_id from the remote_objects and if it is null, use null
           # subnet_id = try(virtual_network_rules.value.subnet_id, try(var.remote_objects.subnet_id, null))
           ignore_missing_vnet_service_endpoint = try(virtual_network_rules.value.ignore_missing_vnet_service_endpoint, false)
         }

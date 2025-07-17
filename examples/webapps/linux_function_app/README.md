@@ -26,7 +26,7 @@ Demonstrates a simple Linux Function App deployment with:
 Navigate to any example directory and run:
 
 ```bash
-cd /home/fdr001/source/github/aztfmodnew/terraform-azurerm-caf/examples
+cd /home/$USER/source/github/aztfmodnew/terraform-azurerm-caf/examples
 
 # For the private example
 terraform plan \
