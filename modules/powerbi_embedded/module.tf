@@ -17,4 +17,11 @@ resource "azurerm_powerbi_embedded" "powerbi" {
   administrators      = var.administrators
   mode                = try(var.mode, null)
   tags                = local.tags
+
+  # PowerBI Embedded resources can take 30+ minutes to provision, so we need extended timeouts
+  timeouts {
+    create = try(var.settings.timeouts.create, "60m")
+    update = try(var.settings.timeouts.update, "60m")
+    delete = try(var.settings.timeouts.delete, "60m")
+  }
 }
