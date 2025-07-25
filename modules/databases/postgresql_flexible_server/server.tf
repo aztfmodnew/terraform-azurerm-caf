@@ -73,16 +73,11 @@ resource "azurerm_postgresql_flexible_server" "postgresql" {
 resource "azurerm_key_vault_secret" "postgresql_administrator_username" {
   count = lookup(var.settings, "keyvault", null) == null ? 0 : 1
 
-  name         = format("%s-username", azurecaf_name.postgresql_flexible_server.result)
-  value        = try(var.settings.administrator_username, "pgadmin")
-  key_vault_id = var.remote_objects.keyvault_id
-
-  lifecycle {
-    ignore_changes = [
-      value
-    ]
-  }
-}
+  name            = format("%s-username", azurecaf_name.postgresql_flexible_server.result)
+  value           = try(var.settings.administrator_username, "pgadmin")
+  key_vault_id    = var.remote_objects.keyvault_id
+  content_type    = "text/plain"
+  expiration_date = timeadd(timestamp(), "8760h")
 
 # Generate random postgresql_flexible_administrator_password if attribute administrator_password not provided.
 resource "random_password" "postgresql_administrator_password" {
