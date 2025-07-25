@@ -1,8 +1,8 @@
 global_settings = {
   default_region = "region1"
   regions = {
-    region1 = "northeurope"
-    region2 = "westeurope"
+    region1 = "australiaeast"
+    region2 = "australiasoutheast"
   }
 }
 
