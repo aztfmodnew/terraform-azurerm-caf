@@ -13,46 +13,44 @@ resource "azapi_resource" "manageddb" {
   name      = format("manageddb-%s", azurecaf_name.manageddb.result)
   parent_id = var.resource_group_id
   tags      = local.tags
-  body = jsonencode(
-    {
-      properties = {
-        mode     = "Incremental"
-        template = jsondecode(file(local.arm_filename))
-        parameters = {
-          serverName = {
-            value = var.server_name
-          }
-          dbName = {
-            value = azurecaf_name.manageddb.result
-          }
-          location = {
-            value = var.location
-          }
-          collation = {
-            value = try(var.settings.collation, "SQL_Latin1_General_CP1_CI_AS")
-          }
-          createMode = {
-            value = try(var.settings.createMode, "Default")
-          }
-          sourceDatabaseId = {
-            value = var.sourceDatabaseId
-          }
-          restorePointInTime = {
-            value = try(var.settings.createMode, null) == "PointInTimeRestore" ? var.settings.restorePointInTime : ""
-          }
-          longTermRetentionBackupResourceId = {
-            value = try(var.settings.longTermRetentionBackupResourceId, "")
-          }
-          retentionDays = {
-            value = try(var.settings.retentionDays, 7)
-          }
-          tags = {
-            value = local.tags
-          }
+  body = {
+    properties = {
+      mode     = "Incremental"
+      template = jsondecode(file(local.arm_filename))
+      parameters = {
+        serverName = {
+          value = var.server_name
+        }
+        dbName = {
+          value = azurecaf_name.manageddb.result
+        }
+        location = {
+          value = var.location
+        }
+        collation = {
+          value = try(var.settings.collation, "SQL_Latin1_General_CP1_CI_AS")
+        }
+        createMode = {
+          value = try(var.settings.createMode, "Default")
+        }
+        sourceDatabaseId = {
+          value = var.sourceDatabaseId
+        }
+        restorePointInTime = {
+          value = try(var.settings.createMode, null) == "PointInTimeRestore" ? var.settings.restorePointInTime : ""
+        }
+        longTermRetentionBackupResourceId = {
+          value = try(var.settings.longTermRetentionBackupResourceId, "")
+        }
+        retentionDays = {
+          value = try(var.settings.retentionDays, 7)
+        }
+        tags = {
+          value = local.tags
         }
       }
     }
-  )
+  }
 
   schema_validation_enabled = false
   response_export_values    = ["properties.outputs"]

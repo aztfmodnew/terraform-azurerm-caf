@@ -24,14 +24,12 @@ resource "azapi_resource" "vnet_links" {
     try(var.settings.tags, {})
   ) : try(var.settings.tags, {})
 
-  body = jsonencode(
-    {
-      properties = {
-        registrationEnabled = try(each.value.registration_enabled, false)
-        virtualNetwork = {
-          id = var.virtual_network_id
-        }
+  body = {
+    properties = {
+      registrationEnabled = try(each.value.registration_enabled, false)
+      virtualNetwork = {
+        id = var.virtual_network_id
       }
     }
-  )
+  }
 }

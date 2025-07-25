@@ -24,7 +24,7 @@ resource "azapi_resource" "sqlmanageddatabase" {
   location  = var.server_location
   parent_id = var.server_id
   tags      = merge(local.tags, try(var.settings.tags, null))
-  body = jsonencode({
+  body = {
     properties = {
       autoCompleteRestore               = try(var.settings.properties.auto_complete_restore, null)
       catalogCollation                  = try(var.settings.properties.catalog_collation, null)
@@ -39,7 +39,7 @@ resource "azapi_resource" "sqlmanageddatabase" {
       storageContainerSasToken          = try(var.settings.properties.storage_container_sas_token, null)
       storageContainerUri               = try(var.settings.properties.storage_container_uri, null)
     }
-  })
+  }
 }
 
 #create short term retention from the configuration
@@ -50,11 +50,11 @@ resource "azapi_update_resource" "short_term_retention" {
   type      = "Microsoft.Sql/managedInstances/databases/backupShortTermRetentionPolicies@2021-11-01"
   name      = "default"
   parent_id = resource.azapi_resource.sqlmanageddatabase.id
-  body = jsonencode({
+  body = {
     properties = {
       retentionDays = local.short_term_retention_days
     }
-  })
+  }
 }
 
 #set longterm retention settings
@@ -66,7 +66,7 @@ resource "azapi_update_resource" "longtermretention" {
   type      = "Microsoft.Sql/managedInstances/databases/backupLongTermRetentionPolicies@2021-11-01"
   name      = "default"
   parent_id = resource.azapi_resource.sqlmanageddatabase.id
-  body = jsonencode({
+  body = {
     properties = {
       weeklyRetention  = local.long_term_retention_policy.weekly_retention
       monthlyRetention = local.long_term_retention_policy.monthly_retention
@@ -74,7 +74,7 @@ resource "azapi_update_resource" "longtermretention" {
       weekOfYear       = local.long_term_retention_policy.week_of_year
 
     }
-  })
+  }
 }
 
 #validation module for settings
@@ -104,5 +104,3 @@ locals {
 
 
 }
-
-
