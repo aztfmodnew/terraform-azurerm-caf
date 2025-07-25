@@ -57,10 +57,6 @@
     "postgresql_flexible_server/101-delegated-subnet-with-fw-rule",
     "postgresql_flexible_server/102-advanced-postgresql-flexible",
     "postgresql_flexible_server/104-private-endpoint",
-    "postgresql_server/100-simple-postgresql",
-    "postgresql_server/101-vnet-rule-postgresql",
-    "postgresql_server/102-private-endpoint-postgresql",
-    "postgresql_server/103-private-endpoint-with-fw-rule",
     "powerbi_embedded/100-simple-powerbi",
     "purview/100-purview_account",
     "purview/101-purview_account_private_link"
