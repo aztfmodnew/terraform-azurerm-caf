@@ -1,5 +1,5 @@
 resource "azurecaf_name" "vgw" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_virtual_network_gateway"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -9,7 +9,7 @@ resource "azurecaf_name" "vgw" {
 }
 
 resource "azurerm_virtual_network_gateway" "vngw" {
-  name                       = azurecaf_name.vgw.result
+  name                       = local.final_name
   edge_zone                  = try(var.settings.edge_zone, null)
   generation                 = try(var.settings.generation, null)
   location                   = var.location

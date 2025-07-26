@@ -1,7 +1,7 @@
 
 # naming convention
 data "azurecaf_name" "map" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_maps_account"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length

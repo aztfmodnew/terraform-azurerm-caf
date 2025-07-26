@@ -1,5 +1,5 @@
 resource "azurecaf_name" "vpn_gateway_connection" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_vpn_gateway_connection"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -9,7 +9,7 @@ resource "azurecaf_name" "vpn_gateway_connection" {
 }
 
 resource "azurerm_vpn_gateway_connection" "vpn_gateway_connection" {
-  name                      = azurecaf_name.vpn_gateway_connection.result
+  name                      = local.final_name
   vpn_gateway_id            = var.vpn_gateway_id
   internet_security_enabled = var.settings.internet_security_enabled
 

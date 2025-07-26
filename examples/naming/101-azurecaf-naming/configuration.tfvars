@@ -6,21 +6,21 @@ global_settings = {
   environment    = "test"
   prefix         = "caf"
   suffix         = "001"
-  
+
   regions = {
     region1 = "eastus"
   }
-  
+
   # Default naming configuration (azurecaf)
   naming = {
-    use_azurecaf      = true
-    use_local_module  = false
+    use_azurecaf     = true
+    use_local_module = false
   }
 }
 
 resource_groups = {
   test = {
-    name = "test-rg"
+    name     = "test-rg"
     location = "eastus"
   }
 }
@@ -28,7 +28,7 @@ resource_groups = {
 ai_services = {
   simple_service = {
     name               = "chatbot"
-    sku_name          = "S0"
+    sku_name           = "S0"
     resource_group_key = "test"
   }
 }

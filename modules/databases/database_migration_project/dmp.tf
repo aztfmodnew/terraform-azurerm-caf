@@ -1,5 +1,5 @@
 resource "azurecaf_name" "dmp" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_database_migration_project"
   prefixes      = var.global_settings.prefix
   random_length = var.global_settings.random_length
@@ -10,7 +10,7 @@ resource "azurecaf_name" "dmp" {
 
 
 resource "azurerm_database_migration_project" "dmp" {
-  name                = azurecaf_name.dmp.result
+  name                = local.final_name
   location            = var.location
   resource_group_name = var.resource_group_name
   tags                = local.tags

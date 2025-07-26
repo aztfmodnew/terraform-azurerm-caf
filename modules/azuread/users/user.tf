@@ -28,7 +28,7 @@ resource "azurecaf_name" "account" {
 #
 resource "azuread_user" "account" {
   user_principal_name = format("%s@%s", azurecaf_name.account.result, local.tenant_name)
-  display_name        = azurecaf_name.account.result
+  display_name        = local.final_name
   password            = random_password.pwd.result
 
   lifecycle {

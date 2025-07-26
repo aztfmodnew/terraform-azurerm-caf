@@ -1,7 +1,7 @@
 resource "azurerm_virtual_hub_route_table_route" "vhrtr" {
   destinations      = var.settings.destinations
   destinations_type = var.settings.destinations_type
-  name              = var.settings.name
+  name              = local.final_name
   next_hop_type     = try(var.settings.next_hop_type, null)
   route_table_id    = var.route_table_id
 

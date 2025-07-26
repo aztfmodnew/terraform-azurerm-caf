@@ -14,12 +14,12 @@ module "linux_web_apps" {
     managed_identities                  = local.combined_objects_managed_identities
     service_plans                       = local.combined_objects_service_plans
     storage_accounts                    = local.combined_objects_storage_accounts
-    vnets                              = local.combined_objects_vnets
-    mssql_servers                      = local.combined_objects_mssql_servers
-    mssql_databases                    = local.combined_objects_mssql_databases
-    application_insights               = local.combined_objects_application_insights
-    private_dns                        = local.combined_objects_private_dns
-    azuread_applications               = local.combined_objects_azuread_applications
+    vnets                               = local.combined_objects_vnets
+    mssql_servers                       = local.combined_objects_mssql_servers
+    mssql_databases                     = local.combined_objects_mssql_databases
+    application_insights                = local.combined_objects_application_insights
+    private_dns                         = local.combined_objects_private_dns
+    azuread_applications                = local.combined_objects_azuread_applications
     azuread_service_principal_passwords = local.combined_objects_azuread_service_principal_passwords
   }
 

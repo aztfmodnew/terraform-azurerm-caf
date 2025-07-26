@@ -1,5 +1,5 @@
 resource "azurecaf_name" "this_name" {
-  name          = var.settings.name
+  name          = local.final_name
   prefixes      = var.global_settings.prefixes
   resource_type = "azurerm_consumption_budget_subscription"
   random_length = var.global_settings.random_length
@@ -9,7 +9,7 @@ resource "azurecaf_name" "this_name" {
 }
 
 resource "azurerm_consumption_budget_subscription" "this" {
-  name = azurecaf_name.this_name.result
+  name = local.final_name
   subscription_id = coalesce(
     try(var.settings.subscription.id, null),
     try(var.local_combined_resources["subscriptions"][try(var.settings.subscription.lz_key, var.client_config.landingzone_key)][var.settings.subscription.key].subscription_id, null),

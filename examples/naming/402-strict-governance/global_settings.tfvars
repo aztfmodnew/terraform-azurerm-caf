@@ -17,11 +17,11 @@ global_settings = {
 
   # Strict governance configuration
   naming = {
-    use_azurecaf              = false
-    use_local_module          = true
-    allow_resource_override   = false   # 🔒 No individual overrides allowed
-    validate                  = true
-    component_order           = ["prefix", "abbreviation", "name", "environment", "region", "instance", "suffix"]
+    use_azurecaf            = false
+    use_local_module        = true
+    allow_resource_override = false # 🔒 No individual overrides allowed
+    validate                = true
+    component_order         = ["prefix", "abbreviation", "name", "environment", "region", "instance", "suffix"]
 
     # Mandatory resource patterns - enforced for all resources
     resource_patterns = {

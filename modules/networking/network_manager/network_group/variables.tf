@@ -27,7 +27,6 @@ Settings object for the network group.
       key = string
     })
   })
-}
 ```
 
 Example:

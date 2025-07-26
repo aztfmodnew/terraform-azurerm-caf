@@ -1,7 +1,7 @@
 
 
 resource "azurecaf_name" "lb" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_data_factory" #"azurerm_lb_outbound_rule"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -15,7 +15,7 @@ resource "azurerm_lb_outbound_rule" "lb" {
   enable_tcp_reset         = try(var.settings.enable_tcp_reset, null)
   idle_timeout_in_minutes  = try(var.settings.idle_timeout_in_minutes, null)
   loadbalancer_id          = can(var.settings.loadbalancer.id) || can(var.settings.loadbalancer.key) ? try(var.settings.loadbalancer.id, var.remote_objects.lb[try(var.settings.loadbalancer.lz_key, var.client_config.landingzone_key)][var.settings.loadbalancer.key].id) : null
-  name                     = azurecaf_name.lb.result
+  name                     = local.final_name
   protocol                 = var.settings.protocol
 
   dynamic "frontend_ip_configuration" {

@@ -1,6 +1,6 @@
 
 resource "azurecaf_name" "mma" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_data_factory" #"azurerm_monitor_metric_alert"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -9,7 +9,7 @@ resource "azurecaf_name" "mma" {
   use_slug      = var.global_settings.use_slug
 }
 resource "azurerm_monitor_metric_alert" "mma" {
-  name                = azurecaf_name.mma.result
+  name                = local.final_name
   resource_group_name = var.resource_group_name
   scopes = try(flatten([
     for key, value in var.settings.scopes : coalesce(

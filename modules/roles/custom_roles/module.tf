@@ -15,7 +15,7 @@ resource "azurecaf_name" "custom_role" {
 }
 
 resource "azurerm_role_definition" "custom_role" {
-  name = azurecaf_name.custom_role.result
+  name = local.final_name
 
   # TODO: refactor scope to include other scopes like RG, resources.
   scope       = lookup(var.custom_role, "scope", var.subscription_primary)

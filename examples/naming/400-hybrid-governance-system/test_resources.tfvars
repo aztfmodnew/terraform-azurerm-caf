@@ -5,7 +5,7 @@ container_app_environments = {
   test_flexible = {
     name               = "webapp"
     resource_group_key = "test_rg"
-    
+
     # This override will be applied in flexible mode, ignored in strict mode
     naming = {
       prefix      = "custom"
@@ -13,7 +13,7 @@ container_app_environments = {
       separator   = "."
     }
   }
-  
+
   test_standard = {
     name               = "api"
     resource_group_key = "test_rg"
@@ -25,10 +25,10 @@ storage_accounts = {
   test_storage = {
     name               = "documents"
     resource_group_key = "test_rg"
-    
+
     # Storage account specific testing
     naming = {
-      prefix = "override"  # Will be ignored in strict mode
+      prefix = "override" # Will be ignored in strict mode
     }
   }
 }

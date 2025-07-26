@@ -1,5 +1,5 @@
 resource "azurerm_palo_alto_local_rulestack" "local_rulestack" {
-  name                = var.settings.name
+  name                = local.final_name
   resource_group_name = local.resource_group_name
   location            = local.location
 

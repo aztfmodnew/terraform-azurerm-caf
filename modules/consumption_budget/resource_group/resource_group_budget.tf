@@ -1,5 +1,5 @@
 resource "azurecaf_name" "this_name" {
-  name          = var.settings.name
+  name          = local.final_name
   prefixes      = var.global_settings.prefixes
   resource_type = "azurerm_consumption_budget_resource_group"
   random_length = var.global_settings.random_length
@@ -9,7 +9,7 @@ resource "azurecaf_name" "this_name" {
 }
 
 resource "azurerm_consumption_budget_resource_group" "this" {
-  name = azurecaf_name.this_name.result
+  name = local.final_name
   resource_group_id = coalesce(
     try(var.settings.resource_group.id, null),
     try(var.local_combined_resources["resource_groups"][try(var.settings.resource_group.lz_key, var.client_config.landingzone_key)][var.settings.resource_group.key].id, null)

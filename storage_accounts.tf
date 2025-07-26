@@ -15,6 +15,7 @@ module "storage_accounts" {
   private_dns               = local.combined_objects_private_dns
   private_endpoints         = try(each.value.private_endpoints, {})
   recovery_vaults           = local.combined_objects_recovery_vaults
+  settings                  = each.value
   storage_account           = each.value
   var_folder_path           = var.var_folder_path
   vnets                     = local.combined_objects_networking

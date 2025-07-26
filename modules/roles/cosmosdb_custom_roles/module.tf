@@ -9,7 +9,7 @@ resource "azurecaf_name" "custom_role" {
 }
 
 resource "azurerm_cosmosdb_sql_role_definition" "custom_role" {
-  name                = azurecaf_name.custom_role.result
+  name                = local.final_name
   resource_group_name = var.resource_group_name
   account_name        = var.account_name
   assignable_scopes   = var.assignable_scopes

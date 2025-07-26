@@ -2,7 +2,7 @@
 
 resource "azurerm_windows_function_app" "windows_function_app" {
   location            = local.location
-  name                = azurecaf_name.windows_function_app.result
+  name                = local.final_name
   resource_group_name = local.resource_group_name
   service_plan_id = coalesce(
     try(var.settings.service_plan_id, null),

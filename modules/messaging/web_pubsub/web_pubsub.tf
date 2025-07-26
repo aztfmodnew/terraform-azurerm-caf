@@ -1,6 +1,6 @@
 # naming convention
 data "azurecaf_name" "wps" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_web_pubsub"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length

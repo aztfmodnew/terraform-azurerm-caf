@@ -7,13 +7,13 @@ global_settings = {
   regions = {
     region1 = "australiaeast"
   }
-  
+
   inherit_tags = true
-  
+
   # Hybrid naming configuration - using azurecaf (default)
   naming = {
-    use_azurecaf      = true
-    use_local_module  = false
+    use_azurecaf     = true
+    use_local_module = false
   }
 }
 

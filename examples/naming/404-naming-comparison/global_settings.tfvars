@@ -16,11 +16,11 @@ global_settings = {
 
   # Configuration supports all naming methods
   naming = {
-    use_azurecaf              = false   # Primary method: local_module
-    use_local_module          = true
-    allow_resource_override   = true
-    validate                  = true
-    component_order           = ["prefix", "abbreviation", "name", "environment", "region", "instance", "suffix"]
+    use_azurecaf            = false # Primary method: local_module
+    use_local_module        = true
+    allow_resource_override = true
+    validate                = true
+    component_order         = ["prefix", "abbreviation", "name", "environment", "region", "instance", "suffix"]
 
     resource_patterns = {
       azurerm_storage_account = {

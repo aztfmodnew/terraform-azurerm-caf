@@ -68,5 +68,5 @@ DESCRIPTION
     })
     description = string
   })
-} */
+ */
 }

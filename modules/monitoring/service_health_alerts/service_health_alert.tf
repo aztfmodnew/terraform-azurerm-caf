@@ -9,7 +9,7 @@ resource "azurecaf_name" "ag1_name" {
 }
 
 resource "azurecaf_name" "service_health_alert_name" {
-  name          = var.settings.name
+  name          = local.final_name
   prefixes      = var.global_settings.prefixes
   resource_type = "azurerm_application_insights"
   random_length = var.global_settings.random_length
@@ -24,7 +24,7 @@ resource "random_string" "random1" {
 
 }
 resource "azurerm_monitor_action_group" "ag1" {
-  name                = azurecaf_name.ag1_name.result
+  name                = local.final_name
   resource_group_name = var.resource_group_name
   short_name          = var.settings.shortname
   enabled             = var.settings.enable_service_health_alerts

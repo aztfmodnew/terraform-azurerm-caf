@@ -1,6 +1,6 @@
 
 resource "azurecaf_name" "auto_account" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_automation_account"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -11,7 +11,7 @@ resource "azurecaf_name" "auto_account" {
 
 
 resource "azurerm_automation_account" "auto_account" {
-  name                          = azurecaf_name.auto_account.result
+  name                          = local.final_name
   location                      = local.location
   resource_group_name           = local.resource_group_name
   tags                          = try(local.tags, {})

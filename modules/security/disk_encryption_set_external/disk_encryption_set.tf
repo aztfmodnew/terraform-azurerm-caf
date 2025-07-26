@@ -2,7 +2,7 @@
 # Ref : https://registry.terraform.io/providers/hashicorp/azurerm/2.88.1/docs/resources/disk_encryption_set
 
 resource "azurerm_disk_encryption_set" "encryption_set" {
-  name                      = var.settings.name
+  name                      = local.final_name
   resource_group_name       = var.resource_group_name
   location                  = var.location
   key_vault_key_id          = var.key_vault_key_id

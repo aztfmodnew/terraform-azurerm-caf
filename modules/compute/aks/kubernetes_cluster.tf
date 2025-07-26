@@ -2,7 +2,7 @@
 ### Naming convention
 
 resource "azurecaf_name" "aks" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_kubernetes_cluster"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -33,7 +33,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
       default_node_pool[0].node_count
     ]
   }
-  name                = azurecaf_name.aks.result
+  name                = local.final_name
   location            = local.location
   resource_group_name = local.resource_group_name
   default_node_pool {

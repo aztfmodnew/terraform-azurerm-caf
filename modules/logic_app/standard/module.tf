@@ -1,5 +1,5 @@
 resource "azurecaf_name" "logic_app_standard_name" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_logic_app_workflow"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -9,7 +9,7 @@ resource "azurecaf_name" "logic_app_standard_name" {
 }
 
 resource "azurerm_logic_app_standard" "logic_app_standard" {
-  name                       = azurecaf_name.logic_app_standard_name.result
+  name                       = local.final_name
   location                   = lookup(var.settings, "region", null) == null ? local.resource_group.location : var.global_settings.regions[var.settings.region]
   resource_group_name        = local.resource_group.name
   app_service_plan_id        = local.service_plan.id

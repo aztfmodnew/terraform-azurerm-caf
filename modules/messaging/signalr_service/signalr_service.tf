@@ -1,6 +1,6 @@
 # azure_caf
 resource "azurecaf_name" "signalr_service" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_signalr_service"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -10,7 +10,7 @@ resource "azurecaf_name" "signalr_service" {
 }
 
 resource "azurerm_signalr_service" "signalr_service" {
-  name                = azurecaf_name.signalr_service.result
+  name                = local.final_name
   location            = local.location
   resource_group_name = local.resource_group_name
   tags                = merge(local.base_tags, try(var.settings.tags, {}))

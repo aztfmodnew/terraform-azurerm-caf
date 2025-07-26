@@ -3,16 +3,16 @@ global_settings = {
   environment    = "dev"
   prefix         = "caf"
   suffix         = "adv"
-  
+
   regions = {
     region1 = "australiaeast"
   }
-  
+
   # Hybrid naming configuration - using local module with custom order
   naming = {
-    use_azurecaf      = false
-    use_local_module  = true
-    component_order   = ["prefix", "abbreviation", "name", "environment", "region", "suffix"]
+    use_azurecaf     = false
+    use_local_module = true
+    component_order  = ["prefix", "abbreviation", "name", "environment", "region", "suffix"]
   }
 }
 
@@ -46,7 +46,7 @@ storage_accounts = {
     enable_system_msi = {
       type = "SystemAssigned"
     }
-    
+
     tags = {
       naming_method = "local_module"
       purpose       = "advanced-options-demo"

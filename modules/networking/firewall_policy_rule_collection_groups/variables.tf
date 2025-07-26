@@ -7,6 +7,11 @@ variable "global_settings" {
   type        = any
 }
 
+variable "settings" {
+  description = "Configuration settings for the firewall policy rule collection group"
+  type        = any
+}
+
 variable "firewall_policy_id" {
   description = "(Required) The ID of the Firewall Policy where the Firewall Policy Rule Collection Group should exist. Changing this forces a new Firewall Policy Rule Collection Group to be created."
 }

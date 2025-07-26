@@ -24,3 +24,15 @@ output "secondary_authorization_key" {
   value       = azurerm_data_factory_integration_runtime_self_hosted.dfirsh.secondary_authorization_key
   description = "The secondary integration runtime authentication key."
 }
+
+# Hybrid naming outputs
+
+output "naming_method" {
+  value       = local.naming_method
+  description = "The naming method used for this resource (passthrough, local_module, azurecaf, or fallback)"
+}
+
+output "naming_config" {
+  value       = local.naming_config
+  description = "Complete naming configuration metadata for debugging and governance"
+}

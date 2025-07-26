@@ -1,7 +1,7 @@
 # This module creates a Palo Alto Next Generation Firewall in Azure using the local rulestack deployment mode.
 resource "azurerm_palo_alto_next_generation_firewall_virtual_network_local_rulestack" "palo_alto_ngfw_vnet_local_rulestack" {
   count                = var.settings.attachment_type == "vnet" && var.settings.management_mode == "rulestack" ? 1 : 0
-  name                 = var.settings.name
+  name                 = local.final_name
   resource_group_name  = local.resource_group_name
   rulestack_id         = module.local_rulestack.id
   marketplace_offer_id = try(var.settings.marketplace_offer_id, "pan_swfw_cloud_ngfw")
@@ -83,7 +83,7 @@ module "local_rulestack" {
 
 resource "azurerm_palo_alto_next_generation_firewall_virtual_network_panorama" "palo_alto_ngfw_vnet_panorama" {
   count               = var.settings.attachment_type == "vnet" && var.settings.management_mode == "panorama" ? 1 : 0
-  name                = var.settings.name
+  name                = local.final_name
   resource_group_name = local.resource_group_name
   location            = local.location
 
@@ -154,7 +154,7 @@ resource "azurerm_palo_alto_next_generation_firewall_virtual_network_panorama" "
 
 resource "azurerm_palo_alto_virtual_network_appliance" "palo_alto_virtual_network_appliance" {
   count          = var.settings.attachment_type == "vwan" ? 1 : 0
-  name           = var.settings.name
+  name           = local.final_name
   virtual_hub_id = var.settings.virtual_hub_id
   dynamic "timeouts" {
     for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]

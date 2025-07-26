@@ -1,16 +1,6 @@
-resource "azurecaf_name" "ase" {
-  name          = var.name
-  resource_type = "azurerm_app_service_environment"
-  prefixes      = var.global_settings.prefixes
-  random_length = var.global_settings.random_length
-  clean_input   = true
-  passthrough   = var.global_settings.passthrough
-  use_slug      = var.global_settings.use_slug
-}
-
 resource "azurerm_resource_group_template_deployment" "ase" {
 
-  name                = azurecaf_name.ase.result
+  name                = local.final_name
   resource_group_name = var.resource_group_name
 
   template_content = file(local.arm_filename)
@@ -49,7 +39,6 @@ resource "null_resource" "destroy_ase" {
 data "azurerm_app_service_environment_v3" "ase" {
   depends_on = [azurerm_resource_group_template_deployment.ase]
 
-  name                = azurecaf_name.ase.result
+  name                = local.final_name
   resource_group_name = var.resource_group_name
 }
-

@@ -1,5 +1,5 @@
 resource "azurecaf_name" "ca" {
-  name          = var.settings.name
+  name          = local.final_name
   prefixes      = var.global_settings.prefixes
   resource_type = "azurerm_container_app"
   random_length = var.global_settings.random_length
@@ -9,7 +9,7 @@ resource "azurecaf_name" "ca" {
 }
 
 resource "azurerm_container_app" "ca" {
-  name                         = azurecaf_name.ca.result
+  name                         = local.final_name
   resource_group_name          = local.resource_group_name
   container_app_environment_id = var.container_app_environment_id
   revision_mode                = var.settings.revision_mode

@@ -1,5 +1,5 @@
 resource "azurecaf_name" "nsg" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_network_security_group"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -9,7 +9,7 @@ resource "azurecaf_name" "nsg" {
 }
 
 resource "azurerm_network_security_group" "nsg" {
-  name                = azurecaf_name.nsg.result
+  name                = local.final_name
   resource_group_name = local.resource_group_name
   location            = local.location
   tags                = merge(local.tags, try(var.settings.tags, {}))

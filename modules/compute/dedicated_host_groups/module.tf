@@ -1,5 +1,5 @@
 resource "azurecaf_name" "dhg" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_dedicated_host_group"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -13,7 +13,7 @@ resource "azurecaf_name" "dhg" {
 
 
 resource "azurerm_dedicated_host_group" "dhg" {
-  name                        = azurecaf_name.dhg.result
+  name                        = local.final_name
   resource_group_name         = var.resource_group_name
   location                    = var.location
   platform_fault_domain_count = var.settings.platform_fault_domain_count

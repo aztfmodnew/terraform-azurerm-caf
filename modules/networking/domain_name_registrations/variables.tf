@@ -4,6 +4,10 @@ variable "settings" {
   type        = any
 }
 variable "base_tags" {}
+variable "global_settings" {
+  description = "Global settings for naming conventions and tags."
+  type        = any
+}
 variable "dns_zone_id" {
   description = "Resource ID of the Azure DNS global zone."
   default     = ""

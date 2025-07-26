@@ -1,5 +1,5 @@
 resource "azurecaf_name" "apim" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_api_management_certificate"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -8,7 +8,7 @@ resource "azurecaf_name" "apim" {
   use_slug      = var.global_settings.use_slug
 }
 resource "azurerm_api_management_certificate" "apim" {
-  name                = azurecaf_name.apim.result
+  name                = local.final_name
   api_management_name = var.api_management_name
   resource_group_name = var.resource_group_name
   data                = try(var.settings.data, null)

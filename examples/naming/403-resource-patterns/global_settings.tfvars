@@ -17,11 +17,11 @@ global_settings = {
 
   # Resource-specific naming patterns
   naming = {
-    use_azurecaf              = false
-    use_local_module          = true
-    allow_resource_override   = true
-    validate                  = true
-    component_order           = ["prefix", "abbreviation", "name", "environment", "region", "instance", "suffix"]
+    use_azurecaf            = false
+    use_local_module        = true
+    allow_resource_override = true
+    validate                = true
+    component_order         = ["prefix", "abbreviation", "name", "environment", "region", "instance", "suffix"]
 
     # Specialized patterns for different Azure resource types
     resource_patterns = {

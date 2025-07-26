@@ -1,5 +1,5 @@
 resource "azurecaf_name" "latc" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_logic_app_trigger_custom"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -10,7 +10,7 @@ resource "azurecaf_name" "latc" {
 # Last review :  AzureRM version 2.74.0
 # Ref : https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/logic_app_trigger_custom
 resource "azurerm_logic_app_trigger_custom" "latc" {
-  name         = azurecaf_name.latc.result
+  name         = local.final_name
   logic_app_id = var.logic_app_id
   body         = var.settings.body
 }

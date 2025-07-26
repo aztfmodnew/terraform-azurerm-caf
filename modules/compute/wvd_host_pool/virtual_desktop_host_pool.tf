@@ -1,5 +1,5 @@
 resource "azurecaf_name" "wvdpool" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_virtual_desktop_host_pool"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -15,7 +15,7 @@ resource "azurecaf_name" "wvdpool" {
 resource "azurerm_virtual_desktop_host_pool" "wvdpool" {
   location                         = local.location
   resource_group_name              = local.resource_group_name
-  name                             = azurecaf_name.wvdpool.result
+  name                             = local.final_name
   friendly_name                    = try(var.settings.friendly_name, null)
   description                      = try(var.settings.description, null)
   validate_environment             = try(var.settings.validate_environment, null)

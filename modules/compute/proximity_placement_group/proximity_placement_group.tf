@@ -13,7 +13,7 @@ resource "azurecaf_name" "ppg" {
 # proximity placement group
 resource "azurerm_proximity_placement_group" "ppg" {
 
-  name                = azurecaf_name.ppg.result
+  name                = local.final_name
   location            = local.location
   resource_group_name = local.resource_group_name
   tags                = merge(local.tags, try(var.tags, null))

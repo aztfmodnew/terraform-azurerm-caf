@@ -8,19 +8,14 @@ output "naming_method" {
   description = "The naming method used for this resource (passthrough, azurecaf, local_module, or fallback)"
 }
 
-output "preview_name" {
-  value       = local.preview_name
-  description = "The predicted name that will be generated (available during plan)"
-}
-
 output "naming_debug" {
   value = {
     naming_method = local.naming_method
-    preview_name  = local.preview_name
+    final_name    = local.final_name
     base_name     = local.base_name
-    message       = "Predicted name: ${local.preview_name}"
+    message       = "Generated name: ${local.final_name}"
   }
-  description = "Naming information visible during plan"
+  description = "Naming information and debug details"
 }
 
 output "id" {

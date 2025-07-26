@@ -33,3 +33,8 @@ variable "base_tags" {
 variable "tags" {
   default = {}
 }
+
+variable "settings" {
+  description = "Configuration settings for the resource."
+  type        = any
+}

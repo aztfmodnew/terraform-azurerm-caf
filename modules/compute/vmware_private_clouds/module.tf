@@ -1,5 +1,5 @@
 resource "azurecaf_name" "vwpc" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_vmware_private_cloud"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -37,7 +37,7 @@ data "azurerm_key_vault_secret" "vcenter_password" {
 }
 
 resource "azurerm_vmware_private_cloud" "vwpc" {
-  name                = azurecaf_name.vwpc.result
+  name                = local.final_name
   resource_group_name = local.resource_group_name
   location            = local.location
   sku_name            = var.settings.sku_name

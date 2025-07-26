@@ -1,3 +1,8 @@
+variable "global_settings" {
+  description = "Global settings object for naming conventions and other shared configurations."
+  type        = any
+}
+
 variable "virtual_machine_id" {}
 variable "extension" {}
 variable "extension_name" {}

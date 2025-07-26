@@ -10,6 +10,7 @@ module "vm_extension_monitoring_agent" {
     if try(value.virtual_machine_extensions.microsoft_enterprise_cloud_monitoring, null) != null
   }
 
+  global_settings    = local.global_settings
   client_config      = local.client_config
   virtual_machine_id = module.virtual_machines[each.key].id
   extension          = each.value.virtual_machine_extensions.microsoft_enterprise_cloud_monitoring
@@ -27,6 +28,7 @@ module "vm_extension_diagnostics" {
     if try(value.virtual_machine_extensions.microsoft_azure_diagnostics, null) != null
   }
 
+  global_settings    = local.global_settings
   client_config      = local.client_config
   virtual_machine_id = module.virtual_machines[each.key].id
   extension          = each.value.virtual_machine_extensions.microsoft_azure_diagnostics
@@ -47,6 +49,7 @@ module "vm_extension_microsoft_azure_domainjoin" {
     if try(value.virtual_machine_extensions.microsoft_azure_domainjoin, null) != null
   }
 
+  global_settings    = local.global_settings
   client_config      = local.client_config                  #refer landingzone.tf for the correct module name.
   virtual_machine_id = module.virtual_machines[each.key].id #refer landingzone.tf for the correct module name.
   extension          = each.value.virtual_machine_extensions.microsoft_azure_domainjoin
@@ -63,6 +66,7 @@ module "vm_extension_session_host_dscextension" {
     if try(value.virtual_machine_extensions.session_host_dscextension, null) != null
   }
 
+  global_settings    = local.global_settings
   client_config      = local.client_config                  #refer landingzone.tf for the correct module name.
   virtual_machine_id = module.virtual_machines[each.key].id #refer landingzone.tf for the correct module name.
   extension          = each.value.virtual_machine_extensions.session_host_dscextension
@@ -81,6 +85,7 @@ module "vm_extension_custom_scriptextension" {
     if try(value.virtual_machine_extensions.custom_script, null) != null
   }
 
+  global_settings         = local.global_settings
   client_config           = local.client_config
   virtual_machine_id      = module.virtual_machines[each.key].id
   virtual_machine_os_type = module.virtual_machines[each.key].os_type
@@ -97,6 +102,7 @@ module "vm_extension_generic" {
     if try(value.virtual_machine_extensions.generic_extensions, null) != null
   }
 
+  global_settings         = local.global_settings
   client_config           = local.client_config
   virtual_machine_id      = module.virtual_machines[each.key].id
   virtual_machine_os_type = module.virtual_machines[each.key].os_type
@@ -113,6 +119,7 @@ module "keyvault_for_windows" {
     if try(value.virtual_machine_extensions.keyvault_for_windows, null) != null
   }
 
+  global_settings         = local.global_settings
   client_config           = local.client_config
   virtual_machine_id      = module.virtual_machines[each.key].id
   virtual_machine_os_type = module.virtual_machines[each.key].os_type
@@ -130,6 +137,7 @@ module "vm_extension_linux_diagnostic" {
     if try(value.virtual_machine_extensions.linux_diagnostic, null) != null
   }
 
+  global_settings    = local.global_settings
   client_config      = local.client_config
   virtual_machine_id = module.virtual_machines[each.key].id
   extension          = each.value.virtual_machine_extensions.linux_diagnostic
@@ -150,6 +158,7 @@ module "vm_extensions_devops_selfhosted_agent" {
     if can(value.virtual_machine_extensions.devops_selfhosted_agent)
   }
 
+  global_settings    = local.global_settings
   client_config      = local.client_config
   virtual_machine_id = module.virtual_machines[each.key].id
   extension          = each.value.virtual_machine_extensions.devops_selfhosted_agent
@@ -178,6 +187,7 @@ module "vm_extensions_tfcloud_selfhosted_agent" {
     if can(value.virtual_machine_extensions.tfcloud_selfhosted_agent)
   }
 
+  global_settings    = local.global_settings
   client_config      = local.client_config
   virtual_machine_id = module.virtual_machines[each.key].id
   extension          = each.value.virtual_machine_extensions.tfcloud_selfhosted_agent

@@ -1,5 +1,5 @@
 resource "azurecaf_name" "apim" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_api_management_gateway"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -9,7 +9,7 @@ resource "azurecaf_name" "apim" {
 }
 
 resource "azurerm_api_management_gateway" "apim" {
-  name = azurecaf_name.apim.result
+  name = local.final_name
 
   api_management_id = coalesce(
     try(var.remote_objects.api_management[var.settings.api_management.lz_key][var.settings.api_management.key].id, null),

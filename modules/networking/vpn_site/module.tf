@@ -1,5 +1,5 @@
 resource "azurecaf_name" "vpn_site" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_vpn_site"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -9,7 +9,7 @@ resource "azurecaf_name" "vpn_site" {
 }
 
 resource "azurerm_vpn_site" "vpn_site" {
-  name                = azurecaf_name.vpn_site.result
+  name                = local.final_name
   location            = var.location
   resource_group_name = var.resource_group_name
   virtual_wan_id      = var.virtual_wan_id

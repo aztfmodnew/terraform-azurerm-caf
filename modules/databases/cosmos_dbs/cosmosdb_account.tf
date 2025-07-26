@@ -1,6 +1,6 @@
 ## Naming Convention
 resource "azurecaf_name" "cdb" {
-  name          = var.settings.name
+  name          = local.final_name
   prefixes      = var.global_settings.prefixes
   resource_type = "azurerm_cosmosdb_account"
   random_length = var.global_settings.random_length
@@ -10,7 +10,7 @@ resource "azurecaf_name" "cdb" {
 
 ## Cosmos DB account
 resource "azurerm_cosmosdb_account" "cosmos_account" {
-  name                = azurecaf_name.cdb.result
+  name                = local.final_name
   location            = local.location
   resource_group_name = local.resource_group_name
   offer_type          = var.settings.offer_type

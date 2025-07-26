@@ -5,12 +5,6 @@ output "id" {
   value       = azurerm_recovery_services_vault.asr.id
 }
 
-output "name" {
-  depends_on  = [azurerm_recovery_services_vault.asr]
-  description = "Output the object name"
-  value       = azurecaf_name.asr_rg_vault.result
-}
-
 output "backup_policies" {
   description = "Output the set of backup policies in this vault"
   value = {
@@ -38,4 +32,20 @@ output "soft_delete_enabled" {
 output "rbac_id" {
   description = "Principal Id of the Vault"
   value       = try(azurerm_recovery_services_vault.asr.identity.0.principal_id, null)
+}
+
+# Hybrid naming outputs
+output "name" {
+  value       = local.final_name
+  description = "The name of the resource"
+}
+
+output "naming_method" {
+  value       = local.naming_method
+  description = "The naming method used for this resource (passthrough, local_module, azurecaf, or fallback)"
+}
+
+output "naming_config" {
+  value       = local.naming_config
+  description = "Complete naming configuration metadata for debugging and governance"
 }

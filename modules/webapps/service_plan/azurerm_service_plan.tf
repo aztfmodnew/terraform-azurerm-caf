@@ -1,5 +1,5 @@
 resource "azurerm_service_plan" "sp" {
-  name                = azurecaf_name.plan.result
+  name                = local.final_name
   location            = local.location
   os_type             = try(var.settings.os_type, null)
   resource_group_name = local.resource_group_name

@@ -4,6 +4,7 @@ module "log_analytics" {
   for_each = var.log_analytics
 
   global_settings = local.global_settings
+  settings        = each.value
   log_analytics   = each.value
   resource_group  = local.combined_objects_resource_groups[try(each.value.resource_group.lz_key, local.client_config.landingzone_key)][try(each.value.resource_group.key, each.value.resource_group_key)]
   base_tags       = local.global_settings.inherit_tags

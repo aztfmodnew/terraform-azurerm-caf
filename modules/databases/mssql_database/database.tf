@@ -1,6 +1,6 @@
 resource "azurecaf_name" "mssqldb" {
 
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_mssql_database"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -20,7 +20,7 @@ resource "azurerm_mssql_database" "mssqldb" {
   license_type                        = try(var.settings.license_type, null)
   max_size_gb                         = try(var.settings.max_size_gb, null)
   min_capacity                        = try(var.settings.min_capacity, null)
-  name                                = azurecaf_name.mssqldb.result
+  name                                = local.final_name
   read_replica_count                  = try(var.settings.read_replica_count, null)
   read_scale                          = try(var.settings.read_scale, null)
   recover_database_id                 = try(var.settings.recover_database_id, null)

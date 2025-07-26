@@ -2,7 +2,7 @@
 # Ref : https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/databricks_workspace
 
 resource "azurecaf_name" "wp" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_databricks_workspace"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -12,7 +12,7 @@ resource "azurecaf_name" "wp" {
 }
 
 resource "azurerm_databricks_workspace" "ws" {
-  name                        = azurecaf_name.wp.result
+  name                        = local.final_name
   resource_group_name         = local.resource_group_name
   location                    = local.location
   sku                         = try(var.settings.sku, "standard")

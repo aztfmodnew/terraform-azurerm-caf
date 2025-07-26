@@ -1,6 +1,6 @@
 resource "azurecaf_name" "manageddb" {
 
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_mssql_database"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -9,7 +9,7 @@ resource "azurecaf_name" "manageddb" {
 }
 
 resource "azurerm_mssql_managed_database" "sqlmanageddatabase" {
-  name                = azurecaf_name.manageddb.result
+  name                = local.final_name
   managed_instance_id = var.server_id
 
 

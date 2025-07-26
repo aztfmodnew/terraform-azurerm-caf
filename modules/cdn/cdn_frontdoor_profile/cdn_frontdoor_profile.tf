@@ -1,5 +1,5 @@
 resource "azurerm_cdn_frontdoor_profile" "cdn_frontdoor_profile" {
-  name                     = azurecaf_name.cdn_frontdoor_profile.result
+  name                     = local.final_name
   resource_group_name      = local.resource_group_name
   sku_name                 = var.settings.sku_name
   response_timeout_seconds = try(var.settings.response_timeout_seconds, null)

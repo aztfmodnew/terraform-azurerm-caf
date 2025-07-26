@@ -52,3 +52,18 @@ output "resource_manager_versionless_id" {
   description = "The Versionless ID of the Key Vault Certificate. This property allows other Azure Services (that support it) to auto-rotate their value when the Key Vault Certificate is updated."
   value       = azurerm_key_vault_certificate.cert.resource_manager_versionless_id
 }
+# Hybrid naming outputs
+output "name" {
+  value       = local.final_name
+  description = "The name of the resource"
+}
+
+output "naming_method" {
+  value       = local.naming_method
+  description = "The naming method used for this resource (passthrough, local_module, azurecaf, or fallback)"
+}
+
+output "naming_config" {
+  value       = local.naming_config
+  description = "Complete naming configuration metadata for debugging and governance"
+}

@@ -1,5 +1,5 @@
 resource "azurerm_network_manager" "network_manager" {
-  name                = var.settings.name
+  name                = local.final_name
   location            = local.location
   resource_group_name = local.resource_group_name
   tags                = merge(local.tags, try(var.settings.tags, null))

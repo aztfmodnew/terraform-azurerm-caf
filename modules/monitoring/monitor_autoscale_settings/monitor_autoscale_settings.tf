@@ -1,5 +1,5 @@
 resource "azurecaf_name" "this_name" {
-  name          = var.settings.name
+  name          = local.final_name
   prefixes      = var.global_settings.prefixes
   resource_type = "azurerm_monitor_autoscale_setting"
   random_length = var.global_settings.random_length
@@ -9,7 +9,7 @@ resource "azurecaf_name" "this_name" {
 }
 
 resource "azurerm_monitor_autoscale_setting" "this" {
-  name                = azurecaf_name.this_name.result
+  name                = local.final_name
   resource_group_name = var.resource_group_name
   location            = var.location
   target_resource_id  = local.target_resource_id

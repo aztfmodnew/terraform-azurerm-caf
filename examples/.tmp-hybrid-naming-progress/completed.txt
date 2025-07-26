@@ -1,0 +1,2 @@
+storage_accounts
+cognitive_services

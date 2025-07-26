@@ -11,7 +11,7 @@ resource "azurecaf_name" "bckp" {
 }
 
 resource "azurerm_data_protection_backup_vault" "backup_vault" {
-  name                = azurecaf_name.bckp.result
+  name                = local.final_name
   location            = var.location
   resource_group_name = var.resource_group_name
   datastore_type      = var.settings.datastore_type

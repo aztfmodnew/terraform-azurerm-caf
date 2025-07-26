@@ -1,5 +1,5 @@
 resource "azurerm_virtual_desktop_application" "da" {
-  name                         = var.settings.name
+  name                         = local.final_name
   application_group_id         = var.application_group_id
   friendly_name                = try(var.settings.friendly_name, null)
   description                  = try(var.settings.description, null)

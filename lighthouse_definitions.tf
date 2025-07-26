@@ -3,8 +3,9 @@ module "lighthouse_definitions" {
 
   for_each = local.security.lighthouse_definitions
 
-  client_config = local.client_config
-  settings      = each.value
+  client_config   = local.client_config
+  global_settings = local.global_settings
+  settings        = each.value
   resources = {
     azuread_apps       = local.combined_objects_azuread_applications
     azuread_groups     = local.combined_objects_azuread_groups

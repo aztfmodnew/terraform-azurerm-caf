@@ -1,7 +1,7 @@
 # Terraform azurerm resource: https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/iotcentral_application
 
 resource "azurecaf_name" "iotcentral_application" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_iotcentral_application"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -11,7 +11,7 @@ resource "azurecaf_name" "iotcentral_application" {
 }
 
 resource "azurerm_iotcentral_application" "iotcentralapplication" {
-  name                = azurecaf_name.iotcentral_application.result
+  name                = local.final_name
   resource_group_name = local.resource_group_name
   location            = local.location
   sub_domain          = var.settings.sub_domain

@@ -17,6 +17,11 @@ variable "global_settings" {
   type        = any
 }
 
+variable "settings" {
+  description = "Configuration settings for the resource."
+  type        = any
+}
+
 variable "ip_groups" {
   default = {}
 }

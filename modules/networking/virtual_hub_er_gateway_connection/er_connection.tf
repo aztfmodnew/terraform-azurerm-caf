@@ -45,7 +45,7 @@ locals {
 
 
   express_route_gateway_name       = var.express_route_gateway_name
-  express_route_connection_name    = var.settings.name
+  express_route_connection_name    = local.final_name
   express_route_circuit_peering_id = format("%s/peerings/AzurePrivatePeering", var.express_route_circuit_id)
   authorization_key                = var.authorization_key
   routing_weight                   = try(var.settings.routing_weight, 0)

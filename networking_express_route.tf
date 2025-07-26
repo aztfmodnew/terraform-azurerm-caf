@@ -27,6 +27,7 @@ module "express_route_circuit_authorizations" {
   for_each = local.networking.express_route_circuit_authorizations
 
   settings                   = each.value
+  global_settings            = local.global_settings
   resource_group_name        = try(local.resource_groups[each.value.resource_group_key].name, null) == null ? module.express_route_circuits[each.value.express_route_key].resource_group_name : local.resource_groups[each.value.resource_group_key].name
   express_route_circuit_name = can(each.value.express_route_circuit_name) ? each.value.express_route_circuit_name : local.combined_objects_express_route_circuits[try(each.value.lz_key, local.client_config.landingzone_key)][each.value.express_route_key].name
 }
@@ -41,7 +42,8 @@ module "express_route_circuit_peerings" {
   source   = "./modules/networking/express_route_circuit_peering"
   for_each = local.networking.express_route_circuit_peerings
 
-  settings = each.value
+  settings        = each.value
+  global_settings = local.global_settings
 
   resource_group_name        = can(each.value.resource_group_name) ? each.value.resource_group_name : local.combined_objects_express_route_circuits[try(each.value.express_route.lz_key, local.client_config.landingzone_key)][try(each.value.express_route.key, each.value.express_route_key)].resource_group_name
   express_route_circuit_name = can(each.value.express_route_circuit_name) ? each.value.express_route_circuit_name : local.combined_objects_express_route_circuits[try(each.value.express_route.lz_key, local.client_config.landingzone_key)][try(each.value.express_route.key, each.value.express_route_key)].name

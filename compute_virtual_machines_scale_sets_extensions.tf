@@ -85,7 +85,7 @@ module "vmss_extension_keyvault_extension" {
     if try(value.virtual_machine_scale_set_extensions.microsoft_azure_keyvault, null) != null
   }
 
-  client_config                = local.client_config
+  client_config            = local.client_config
   virtual_machine_scale_set_id = module.virtual_machine_scale_sets[each.key].id
   extension                    = each.value.virtual_machine_scale_set_extensions.microsoft_azure_keyvault
   extension_name               = "microsoft_azure_keyvault"

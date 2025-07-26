@@ -1,6 +1,6 @@
 
 resource "azurecaf_name" "aadds" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_data_factory"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -10,7 +10,7 @@ resource "azurecaf_name" "aadds" {
 }
 # Need provider to be updated to support the resource type. Then uncomment
 # data "azurecaf_name" "aadds" {
-#   name          = var.settings.name
+#   name = local.final_name
 #   resource_type = "azurerm_active_directory_domain_service"
 #   prefixes      = var.global_settings.prefixes
 #   random_length = var.global_settings.random_length
@@ -19,7 +19,7 @@ resource "azurecaf_name" "aadds" {
 #   use_slug      = var.global_settings.use_slug
 # }
 resource "azurerm_active_directory_domain_service" "aadds" {
-  name                      = azurecaf_name.aadds.result
+  name                      = local.final_name
   resource_group_name       = local.resource_group_name
   location                  = local.location
   domain_name               = var.settings.domain_name

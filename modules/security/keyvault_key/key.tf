@@ -1,5 +1,5 @@
 resource "azurerm_key_vault_key" "key" {
-  name         = var.settings.name
+  name         = local.final_name
   key_vault_id = var.keyvaults[try(var.settings.lz_key, var.client_config.landingzone_key)][var.settings.keyvault_key].id
   key_type     = var.settings.key_type
   key_opts     = var.settings.key_opts

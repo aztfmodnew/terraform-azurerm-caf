@@ -38,7 +38,6 @@ Settings object for the admin rule.
       address_prefix_type = string
     }))
   })
-}
 ```
 Example:
 ```hcl

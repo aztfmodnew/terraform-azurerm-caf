@@ -27,8 +27,9 @@ module "azurerm_virtual_hub_route_table_route" {
   source     = "./modules/networking/virtual_hub_route_table_routes"
   for_each   = local.networking.virtual_hub_route_table_routes
 
-  client_config = local.client_config
-  settings      = each.value
+  global_settings = local.global_settings
+  client_config   = local.client_config
+  settings        = each.value
 
   remote_objects = {
     azurerm_firewall = local.combined_objects_azurerm_firewalls

@@ -1,3 +1,11 @@
+variable "global_settings" {
+  description = "Global settings object (see module README.md)"
+  type        = any
+}
+variable "settings" {
+  description = "Configuration object for the route table"
+  type        = any
+}
 variable "name" {}
 variable "resource_group_name" {
   description = "(Required) The name of the resource group where to create the resource."

@@ -1,5 +1,5 @@
 resource "azurerm_container_app_environment_dapr_component" "cadc" {
-  name                         = var.settings.name
+  name                         = local.final_name
   container_app_environment_id = var.container_app_environment_id
   component_type               = var.settings.component_type
   version                      = var.settings.version

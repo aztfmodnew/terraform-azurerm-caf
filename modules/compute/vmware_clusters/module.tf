@@ -1,5 +1,5 @@
 resource "azurecaf_name" "vwc" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_vmware_cluster"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -12,7 +12,7 @@ resource "azurecaf_name" "vwc" {
 # Ref : https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/vmware_cluster
 
 resource "azurerm_vmware_cluster" "vwc" {
-  name               = azurecaf_name.vwc.result
+  name               = local.final_name
   vmware_cloud_id    = var.vmware_cloud_id
   cluster_node_count = var.settings.cluster_node_count
   sku_name           = var.settings.sku_name

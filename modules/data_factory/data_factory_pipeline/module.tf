@@ -1,5 +1,5 @@
 resource "azurecaf_name" "pipeline" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_data_factory_pipeline"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -8,7 +8,7 @@ resource "azurecaf_name" "pipeline" {
   use_slug      = var.global_settings.use_slug
 }
 resource "azurerm_data_factory_pipeline" "pipeline" {
-  name                           = azurecaf_name.pipeline.result
+  name                           = local.final_name
   data_factory_id                = var.data_factory_id
   description                    = try(var.settings.description, null)
   annotations                    = try(var.settings.annotations, null)

@@ -3,10 +3,6 @@ output "id" {
   value       = azurerm_data_protection_backup_vault.backup_vault.id
 }
 
-output "name" {
-  description = "The name of the Backup Vault"
-  value       = azurerm_data_protection_backup_vault.backup_vault.name
-}
 output "location" {
   description = "The location of the Backup Vault"
   value       = var.location
@@ -38,3 +34,19 @@ output "rbac_id" {
 # output "backup_vault_policies"{
 #   value = azurerm_data_protection_backup_policy_blob_storage.backup_vault_policy
 # }
+
+# Hybrid naming outputs
+output "name" {
+  value       = local.final_name
+  description = "The name of the resource"
+}
+
+output "naming_method" {
+  value       = local.naming_method
+  description = "The naming method used for this resource (passthrough, local_module, azurecaf, or fallback)"
+}
+
+output "naming_config" {
+  value       = local.naming_config
+  description = "Complete naming configuration metadata for debugging and governance"
+}

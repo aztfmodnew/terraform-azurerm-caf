@@ -8,15 +8,15 @@ global_settings = {
   prefix         = "contoso"
   random_length  = 4
   random_seed    = "chatbot"
-  
+
   regions = {
     region1 = "eastus"
     region2 = "westus"
   }
-  
+
   naming = {
-    use_azurecaf      = true
-    use_local_module  = false
+    use_azurecaf     = true
+    use_local_module = false
   }
 }
 
@@ -30,19 +30,19 @@ resource_groups = {
 ai_services = {
   chatbot = {
     name               = "chatbot"
-    sku_name          = "S0"
+    sku_name           = "S0"
     resource_group_key = "main"
-    
+
     # Optional configuration
-    public_network_access = "Enabled"
+    public_network_access        = "Enabled"
     local_authentication_enabled = true
   }
-  
+
   translator = {
     name               = "translator"
-    sku_name          = "S1"
+    sku_name           = "S1"
     resource_group_key = "main"
-    
+
     # Different random seed for different name
     custom_subdomain_name = "translator-api"
   }

@@ -12,7 +12,7 @@ resource "azurecaf_name" "redis" {
 
 # NOTE: the Name used for Redis needs to be globally unique
 resource "azurerm_redis_cache" "redis" {
-  name                = azurecaf_name.redis.result
+  name                = local.final_name
   location            = local.location
   resource_group_name = local.resource_group_name
   capacity            = var.redis.capacity

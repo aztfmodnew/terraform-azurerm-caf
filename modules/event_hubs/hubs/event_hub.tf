@@ -1,5 +1,5 @@
 resource "azurecaf_name" "evhub" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_eventhub"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -12,7 +12,7 @@ resource "azurecaf_name" "evhub" {
 # Ref : https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/eventhub_authorization_rule
 
 resource "azurerm_eventhub" "evhub" {
-  name                = azurecaf_name.evhub.result
+  name                = local.final_name
   namespace_name      = var.namespace_name
   resource_group_name = var.resource_group_name
   partition_count     = var.settings.partition_count

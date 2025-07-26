@@ -7,18 +7,18 @@ global_settings = {
   environment    = "prod"
   prefix         = "acme"
   suffix         = "v1"
-  
+
   regions = {
     region1 = "eastus"
   }
-  
+
   inherit_tags = true
-  
+
   # Default naming configuration (azurecaf)
   naming = {
-    use_azurecaf      = true
-    use_local_module  = false
-    component_order   = ["prefix", "abbreviation", "name", "environment", "region", "suffix"]
+    use_azurecaf     = true
+    use_local_module = false
+    component_order  = ["prefix", "abbreviation", "name", "environment", "region", "suffix"]
   }
 }
 
@@ -41,19 +41,19 @@ storage_accounts = {
     account_kind             = "StorageV2"
     account_tier             = "Standard"
     account_replication_type = "LRS"
-    
+
     tags = {
       naming_method = "azurecaf"
       purpose       = "web-application-storage"
     }
-    
+
     containers = {
       static = {
         name = "static-content"
       }
     }
   }
-  
+
   # Example 2: Using local module naming with custom order
   # Expected name: acme-st-analytics-prod-eus-001-v1
   analytics_storage = {
@@ -62,20 +62,20 @@ storage_accounts = {
     account_kind             = "StorageV2"
     account_tier             = "Premium"
     account_replication_type = "LRS"
-    
+
     # Override naming method for this specific resource
     naming = {
       use_local_module = true
       component_order  = ["prefix", "abbreviation", "name", "environment", "region", "instance", "suffix"]
     }
-    
+
     instance = "001"
-    
+
     tags = {
       naming_method = "local_module"
       purpose       = "analytics-data-storage"
     }
-    
+
     containers = {
       raw = {
         name = "raw-data"
@@ -85,7 +85,7 @@ storage_accounts = {
       }
     }
   }
-  
+
   # Example 3: Using passthrough naming (exact name)
   # Expected name: legacystorage2024prod
   legacy_storage = {
@@ -94,18 +94,18 @@ storage_accounts = {
     account_kind             = "StorageV2"
     account_tier             = "Standard"
     account_replication_type = "GRS"
-    
+
     # Override naming method for this specific resource
     naming = {
       passthrough = true
     }
-    
+
     tags = {
       naming_method = "passthrough"
       purpose       = "legacy-system-storage"
       note          = "Using exact name for legacy compatibility"
     }
-    
+
     containers = {
       legacy = {
         name = "legacy-files"

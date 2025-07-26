@@ -1,5 +1,5 @@
 resource "azurecaf_name" "wvdws" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_virtual_desktop_workspace"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -9,7 +9,7 @@ resource "azurecaf_name" "wvdws" {
 }
 
 resource "azurerm_virtual_desktop_workspace" "wvdws" {
-  name                = azurecaf_name.wvdws.result
+  name                = local.final_name
   location            = local.location
   resource_group_name = local.resource_group_name
   friendly_name       = try(var.settings.friendly_name, null)

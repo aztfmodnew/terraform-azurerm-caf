@@ -1,6 +1,6 @@
 
 resource "azurecaf_name" "lasi" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_log_analytics_storage_insights"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -9,7 +9,7 @@ resource "azurecaf_name" "lasi" {
   use_slug      = var.global_settings.use_slug
 }
 resource "azurerm_log_analytics_storage_insights" "lasi" {
-  name                 = azurecaf_name.lasi.result
+  name                 = local.final_name
   resource_group_name  = var.resource_group_name
   workspace_id         = var.workspace_id
   storage_account_id   = var.storage_account_id

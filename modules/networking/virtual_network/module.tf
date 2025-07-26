@@ -11,7 +11,7 @@ resource "azurecaf_name" "caf_name_vnet" {
 }
 
 resource "azurerm_virtual_network" "vnet" {
-  name                = azurecaf_name.caf_name_vnet.result
+  name                = local.final_name
   location            = local.location
   resource_group_name = local.resource_group_name
   address_space       = var.settings.vnet.address_space

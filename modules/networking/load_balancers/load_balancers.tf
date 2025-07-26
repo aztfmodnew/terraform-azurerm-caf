@@ -1,5 +1,5 @@
 resource "azurecaf_name" "lb_name" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_lb"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -9,7 +9,7 @@ resource "azurecaf_name" "lb_name" {
 }
 
 resource "azurerm_lb" "lb" {
-  name                = azurecaf_name.lb_name.result
+  name                = local.final_name
   location            = var.location
   resource_group_name = var.resource_group_name
   sku                 = title(var.settings.sku) #Accepted values are Basic and Standard. Defaults to Basic

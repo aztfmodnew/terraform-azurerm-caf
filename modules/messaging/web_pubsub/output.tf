@@ -52,3 +52,19 @@ output "identity" {
   description = " An identity block, which contains the Identity information for this Web PubSub service. Exports principal_id (The Principal ID for the Service Principal associated with the Identity of this Web PubSub service), tenand_id (The Tenant ID for the Service Principal associated with the Identity of this Web PubSub service)"
   value       = try(azurerm_web_pubsub.wps.identity, null)
 }
+
+# Hybrid naming outputs
+output "name" {
+  value       = local.final_name
+  description = "The name of the resource"
+}
+
+output "naming_method" {
+  value       = local.naming_method
+  description = "The naming method used for this resource (passthrough, local_module, azurecaf, or fallback)"
+}
+
+output "naming_config" {
+  value       = local.naming_config
+  description = "Complete naming configuration metadata for debugging and governance"
+}

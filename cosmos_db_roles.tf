@@ -14,6 +14,7 @@ module "cosmosdb_custom_roles" {
   for_each = local.database.cosmosdb_role_definitions
 
   global_settings = local.global_settings
+  settings        = each.value
   resource_group_name = (
     can(each.value.resource_group.name) || can(each.value.resource_group_name) ?
     try(each.value.resource_group.name, each.value.resource_group_name) :

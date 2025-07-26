@@ -1,5 +1,5 @@
 resource "azurecaf_name" "mlci" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_machine_learning_compute_instance"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -9,7 +9,7 @@ resource "azurecaf_name" "mlci" {
 }
 
 resource "azurerm_machine_learning_compute_instance" "mlci" {
-  name = azurecaf_name.mlci.result
+  name = local.final_name
 
   machine_learning_workspace_id = var.remote_objects.machine_learning_workspace_id
   virtual_machine_size          = var.settings.virtual_machine_size

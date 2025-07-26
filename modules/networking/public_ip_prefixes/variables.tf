@@ -1,3 +1,11 @@
+variable "global_settings" {
+  description = "Global settings object (see module README.md)"
+  type        = any
+}
+variable "settings" {
+  description = "Configuration object for the public IP prefix"
+  type        = any
+}
 variable "name" {
   description = "(Required) Specifies the name of the Public IP Prefix resource . Changing this forces a new resource to be created."
   type        = string

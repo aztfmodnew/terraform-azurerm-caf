@@ -1,5 +1,5 @@
 resource "azurecaf_name" "dfirsh" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_data_factory" #"azurerm_data_factory_integration_runtime_self_hosted"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -10,5 +10,5 @@ resource "azurecaf_name" "dfirsh" {
 
 resource "azurerm_data_factory_integration_runtime_self_hosted" "dfirsh" {
   data_factory_id = var.data_factory_id
-  name            = azurecaf_name.dfirsh.result
+  name            = local.final_name
 }

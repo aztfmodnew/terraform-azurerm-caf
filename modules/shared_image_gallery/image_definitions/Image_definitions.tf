@@ -1,6 +1,6 @@
 
 resource "azurecaf_name" "image_name" {
-  name          = var.settings.name
+  name          = local.final_name
   prefixes      = var.global_settings.prefixes
   resource_type = "azurerm_shared_image"
   random_length = var.global_settings.random_length
@@ -10,7 +10,7 @@ resource "azurecaf_name" "image_name" {
 }
 
 resource "azurerm_shared_image" "image" {
-  name                = azurecaf_name.image_name.result
+  name                = local.final_name
   gallery_name        = var.gallery_name
   resource_group_name = local.resource_group_name
   location            = local.location

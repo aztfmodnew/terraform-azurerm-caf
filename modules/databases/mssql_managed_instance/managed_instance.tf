@@ -1,6 +1,6 @@
 resource "azurecaf_name" "mssqlmi" {
 
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_mssql_server" //TODO: add support for sql mi
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -10,7 +10,7 @@ resource "azurecaf_name" "mssqlmi" {
 
 resource "azurerm_resource_group_template_deployment" "mssqlmi" {
 
-  name                = azurecaf_name.mssqlmi.result
+  name                = local.final_name
   resource_group_name = var.resource_group_name
 
   template_content = file(local.arm_filename)
@@ -90,7 +90,7 @@ data "external" "sqlmi_admin_password" {
 data "azapi_resource" "mssqlmi" {
   depends_on = [azurerm_resource_group_template_deployment.mssqlmi]
 
-  name      = azurecaf_name.mssqlmi.result
+  name      = local.final_name
   parent_id = local.parent_id
   type      = "Microsoft.Sql/managedInstances@2021-11-01"
 }

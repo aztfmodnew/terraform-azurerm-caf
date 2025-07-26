@@ -9,7 +9,7 @@ resource "azurecaf_name" "msi" {
 }
 
 resource "azurerm_user_assigned_identity" "msi" {
-  name                = azurecaf_name.msi.result
+  name                = local.final_name
   resource_group_name = var.resource_group_name
   location            = var.location
   tags                = local.tags

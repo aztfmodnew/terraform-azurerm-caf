@@ -4,8 +4,9 @@
 # This is only used here for examples to run
 # the normal recommendation for dynamic keyvault secrets is to call it from a landingzone
 module "dynamic_keyvault_secrets" {
-  source     = "./modules/security/dynamic_keyvault_secrets"
-  depends_on = [module.keyvaults]
+  source          = "./modules/security/dynamic_keyvault_secrets"
+  depends_on      = [module.keyvaults]
+  global_settings = local.global_settings
   for_each = {
     for keyvault_key, secrets in try(var.security.dynamic_keyvault_secrets, {}) : keyvault_key => {
       for key, value in secrets : key => value

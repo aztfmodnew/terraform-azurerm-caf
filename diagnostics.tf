@@ -28,6 +28,7 @@ module "diagnostic_storage_accounts" {
 
   global_settings = local.global_settings
   client_config   = local.client_config
+  settings        = each.value
   storage_account = each.value
 
   resource_group      = local.combined_objects_resource_groups[try(each.value.resource_group.lz_key, local.client_config.landingzone_key)][try(each.value.resource_group.key, each.value.resource_group_key)]
@@ -79,6 +80,7 @@ module "diagnostic_log_analytics" {
   for_each = local.diagnostics.diagnostic_log_analytics
 
   global_settings = local.global_settings
+  settings        = each.value
   log_analytics   = each.value
 
   resource_group      = local.combined_objects_resource_groups[try(each.value.resource_group.lz_key, local.client_config.landingzone_key)][try(each.value.resource_group.key, each.value.resource_group_key)]

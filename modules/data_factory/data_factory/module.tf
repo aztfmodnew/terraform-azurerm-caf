@@ -1,5 +1,5 @@
 resource "azurecaf_name" "df" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_data_factory"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -9,7 +9,7 @@ resource "azurecaf_name" "df" {
 }
 
 resource "azurerm_data_factory" "df" {
-  name                = azurecaf_name.df.result
+  name                = local.final_name
   resource_group_name = local.resource_group_name
   location            = local.location
 

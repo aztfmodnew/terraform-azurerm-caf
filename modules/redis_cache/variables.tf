@@ -3,6 +3,11 @@ variable "tags" {
   type        = map(any)
 }
 
+variable "settings" {
+  description = "Configuration object for the redis cache"
+  type        = any
+}
+
 variable "redis" {}
 
 variable "subnet_id" {

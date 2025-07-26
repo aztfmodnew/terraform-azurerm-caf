@@ -6,6 +6,7 @@ module "private_dns" {
 
   global_settings = local.global_settings
   client_config   = local.client_config
+  settings        = each.value
   name            = each.value.name
   records         = try(each.value.records, {})
   vnet_links      = try(each.value.vnet_links, {})

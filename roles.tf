@@ -3,6 +3,7 @@ module "custom_roles" {
   for_each = var.custom_role_definitions
 
   global_settings      = local.global_settings
+  settings             = each.value
   subscription_primary = data.azurerm_subscription.primary.id
   custom_role          = each.value
   assignable_scopes    = local.assignable_scopes[each.key]

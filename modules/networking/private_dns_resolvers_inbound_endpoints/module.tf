@@ -1,5 +1,5 @@
 data "azurecaf_name" "pvtdnsrie" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_private_dns_resolver_inbound_endpoint"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length

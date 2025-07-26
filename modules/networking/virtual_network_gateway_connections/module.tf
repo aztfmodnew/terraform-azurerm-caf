@@ -1,5 +1,5 @@
 resource "azurecaf_name" "vngw_connection" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_virtual_network_gateway"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -9,7 +9,7 @@ resource "azurecaf_name" "vngw_connection" {
 }
 
 resource "azurerm_virtual_network_gateway_connection" "vngw_connection" {
-  name                = azurecaf_name.vngw_connection.result
+  name                = local.final_name
   location            = var.location
   resource_group_name = var.resource_group_name
   #only ExpressRoute and IPSec are supported. Vnet2Vnet is excluded.

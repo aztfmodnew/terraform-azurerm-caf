@@ -36,3 +36,19 @@ output "identity" {
   value       = local.os_type == "linux" ? try(azurerm_linux_virtual_machine_scale_set.vmss["linux"].identity, azurerm_linux_virtual_machine_scale_set.vmss_autoscaled["linux"].identity, null) : try(azurerm_windows_virtual_machine_scale_set.vmss["windows"].identity, null)
   description = "The identity block of the virtual machine scale set"
 }
+
+# Hybrid naming outputs
+output "name" {
+  value       = local.final_name
+  description = "The name of the resource"
+}
+
+output "naming_method" {
+  value       = local.naming_method
+  description = "The naming method used for this resource (passthrough, local_module, azurecaf, or fallback)"
+}
+
+output "naming_config" {
+  value       = local.naming_config
+  description = "Complete naming configuration metadata for debugging and governance"
+}

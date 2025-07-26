@@ -8,6 +8,11 @@ variable "client_config" {
 }
 variable "storage_account" {
   description = "Storage account configuration object"
+  type        = any
+}
+variable "settings" {
+  description = "Settings object for the storage account"
+  type        = any
 }
 variable "location" {
   description = "location of the resource if different from the resource group."

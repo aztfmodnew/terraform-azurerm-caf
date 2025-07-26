@@ -1,5 +1,5 @@
 resource "azurecaf_name" "agw" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_application_gateway"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -27,7 +27,7 @@ data "azurerm_key_vault_certificate" "manual_certs" {
 }
 
 resource "azurerm_application_gateway" "agw" {
-  name                = azurecaf_name.agw.result
+  name                = local.final_name
   resource_group_name = local.resource_group_name
   location            = local.location
 
@@ -44,7 +44,7 @@ resource "azurerm_application_gateway" "agw" {
   }
 
   gateway_ip_configuration {
-    name      = azurecaf_name.agw.result
+    name      = local.final_name
     subnet_id = local.ip_configuration["gateway"].subnet_id
   }
 

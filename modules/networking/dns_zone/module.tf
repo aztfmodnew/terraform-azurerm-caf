@@ -10,7 +10,7 @@ resource "random_string" "dns_zone_name" {
 }
 
 locals {
-  dns_zone_name = var.settings.name == "" ? format("%s.com", random_string.dns_zone_name[0].result) : var.settings.name
+  dns_zone_name = local.final_name == "" ? format("%s.com", random_string.dns_zone_name[0].result) : var.settings.name
 }
 
 

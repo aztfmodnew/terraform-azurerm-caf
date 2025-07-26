@@ -1,6 +1,6 @@
 # naming convention
 resource "azurecaf_name" "ws" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_synapse_workspace"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -12,7 +12,7 @@ resource "azurecaf_name" "ws" {
 # Ref : https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/synapse_workspace
 # Tested with : AzureRM 2.57.0
 resource "azurerm_synapse_workspace" "ws" {
-  name                                 = azurecaf_name.ws.result
+  name                                 = local.final_name
   resource_group_name                  = local.resource_group_name
   location                             = local.location
   storage_data_lake_gen2_filesystem_id = var.storage_data_lake_gen2_filesystem_id

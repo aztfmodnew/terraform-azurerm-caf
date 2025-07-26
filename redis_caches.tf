@@ -8,6 +8,7 @@ module "redis_caches" {
   diagnostic_profiles = try(each.value.diagnostic_profiles, {})
   diagnostics         = local.combined_diagnostics
   global_settings     = local.global_settings
+  settings            = each.value
   redis               = each.value.redis
   subnet_id           = can(each.value.subnet_id) || can(each.value.subnet_key) == false ? try(each.value.subnet_id, null) : local.combined_objects_networking[try(each.value.lz_key, local.client_config.landingzone_key)][each.value.vnet_key].subnets[each.value.subnet_key].id
   tags                = try(each.value.tags, null)

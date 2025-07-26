@@ -16,6 +16,11 @@ variable "global_settings" {
   type        = any
 }
 
+variable "settings" {
+  description = "Configuration settings for the firewall application rule collection"
+  type        = any
+}
+
 variable "ip_groups" {
   default = {}
 }

@@ -1,5 +1,5 @@
 resource "azurecaf_name" "fdre" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_frontdoor" #"azurerm_frontdoor_rules_engine"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -9,7 +9,7 @@ resource "azurecaf_name" "fdre" {
 }
 
 resource "azurerm_frontdoor_rules_engine" "fdre" {
-  name = azurecaf_name.fdre.result
+  name = local.final_name
 
   frontdoor_name      = var.frontdoor_name
   resource_group_name = var.resource_group_name

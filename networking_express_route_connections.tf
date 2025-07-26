@@ -3,6 +3,7 @@ module "express_route_connections" {
   for_each = try(local.networking.express_route_connections, {})
 
   client_config            = local.client_config
+  global_settings          = local.global_settings
   settings                 = each.value
   virtual_hub_route_tables = local.combined_objects_virtual_hub_route_tables
 

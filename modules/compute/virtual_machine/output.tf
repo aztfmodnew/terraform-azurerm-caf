@@ -88,3 +88,19 @@ output "rbac_id" {
   value       = local.os_type == "linux" ? try(azurerm_linux_virtual_machine.vm["linux"].identity[0].principal_id, null) : try(azurerm_windows_virtual_machine.vm["windows"].identity[0].principal_id, null)
   description = "The object_id for the role_mapping"
 }
+
+# Hybrid naming outputs
+output "name" {
+  value       = local.final_name
+  description = "The name of the resource"
+}
+
+output "naming_method" {
+  value       = local.naming_method
+  description = "The naming method used for this resource (passthrough, local_module, azurecaf, or fallback)"
+}
+
+output "naming_config" {
+  value       = local.naming_config
+  description = "Complete naming configuration metadata for debugging and governance"
+}

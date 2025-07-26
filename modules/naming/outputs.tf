@@ -11,14 +11,14 @@ output "abbreviation" {
 output "components" {
   description = "The name components that were used to build the name"
   value = {
-    prefix       = var.prefix
-    abbreviation = local.abbreviation
-    name         = var.name
-    environment  = var.environment
-    region       = var.region
-    instance     = var.instance
-    suffix       = var.suffix
-    separator    = var.separator
+    prefix          = var.prefix
+    abbreviation    = local.abbreviation
+    name            = var.name
+    environment     = var.environment
+    region          = var.region
+    instance        = var.instance
+    suffix          = var.suffix
+    separator       = var.separator
     component_order = var.component_order
   }
 }
@@ -27,12 +27,12 @@ output "conversions" {
   description = "Shows original values and their converted abbreviations"
   value = {
     environment = {
-      original   = var.environment
-      converted  = local.environment_abbr
+      original  = var.environment
+      converted = local.environment_abbr
     }
     region = {
-      original   = var.region
-      converted  = local.region_abbr
+      original  = var.region
+      converted = local.region_abbr
     }
   }
 }

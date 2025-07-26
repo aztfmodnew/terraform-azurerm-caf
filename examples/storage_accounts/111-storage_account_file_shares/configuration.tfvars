@@ -3,17 +3,17 @@ global_settings = {
   environment    = "dev"
   prefix         = "caf"
   suffix         = "shares"
-  
+
   regions = {
     region1 = "uksouth"
   }
-  
+
   inherit_tags = true
-  
+
   # Hybrid naming configuration - using azurecaf (default)
   naming = {
-    use_azurecaf      = true
-    use_local_module  = false
+    use_azurecaf     = true
+    use_local_module = false
   }
 }
 

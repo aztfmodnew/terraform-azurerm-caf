@@ -1,5 +1,5 @@
 resource "azurecaf_name" "fwpol" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_firewall_network_rule_collection"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -12,7 +12,7 @@ resource "azurecaf_name" "fwpol" {
 # Add var.settings in the trigger
 
 resource "azurerm_firewall_policy" "fwpol" {
-  name                = azurecaf_name.fwpol.result
+  name                = local.final_name
   resource_group_name = local.resource_group_name
   location            = local.location
 

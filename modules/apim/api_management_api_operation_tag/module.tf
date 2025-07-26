@@ -1,7 +1,7 @@
 
 
 resource "azurecaf_name" "apim" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_api_management_api_operation_tag"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -11,6 +11,6 @@ resource "azurecaf_name" "apim" {
 }
 resource "azurerm_api_management_api_operation_tag" "apim" {
   api_operation_id = var.api_operation_id
-  name             = azurecaf_name.apim.result
+  name             = local.final_name
   display_name     = try(var.settings.display_name, null)
 }

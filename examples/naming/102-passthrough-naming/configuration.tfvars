@@ -4,8 +4,8 @@
 global_settings = {
   default_region = "region1"
   environment    = "test"
-  passthrough    = true  # Use exact names
-  
+  passthrough    = true # Use exact names
+
   regions = {
     region1 = "eastus"
   }
@@ -13,7 +13,7 @@ global_settings = {
 
 resource_groups = {
   test = {
-    name = "test-rg"
+    name     = "test-rg"
     location = "eastus"
   }
 }
@@ -21,7 +21,7 @@ resource_groups = {
 ai_services = {
   exact_name_service = {
     name               = "my-exact-ai-service-name"
-    sku_name          = "S0"
+    sku_name           = "S0"
     resource_group_key = "test"
   }
 }

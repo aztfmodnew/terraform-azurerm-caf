@@ -1,5 +1,5 @@
 resource "azurerm_key_vault_certificate" "csr" {
-  name         = var.settings.name
+  name         = local.final_name
   key_vault_id = var.keyvault_id
   tags         = merge(local.tags, try(var.settings.tags, {}))
 

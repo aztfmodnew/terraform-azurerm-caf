@@ -1,3 +1,10 @@
+variable "global_settings" {
+  description = <<DESCRIPTION
+  Global settings object for naming conventions and other shared configurations.
+  DESCRIPTION
+  type        = any
+}
+
 variable "settings" {
   description = <<DESCRIPTION
     The settings object is used to define the configuration of the Azure Cognitive Services Account.

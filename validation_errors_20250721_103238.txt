@@ -1,0 +1,8 @@
+[31m╷[0m[0m
+[31m│[0m [0m[1m[31mError: [0m[0m[1mMissing required argument[0m
+[31m│[0m [0m
+[31m│[0m [0m[0m  on compute_virtual_machines_extensions.tf line 173, in module "vm_extensions_tfcloud_selfhosted_agent":
+[31m│[0m [0m 173: module "vm_extensions_tfcloud_selfhosted_agent" [4m{[0m[0m
+[31m│[0m [0m
+[31m│[0m [0mThe argument "global_settings" is required, but no definition was found.
+[31m╵[0m[0m

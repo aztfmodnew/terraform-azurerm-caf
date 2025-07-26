@@ -1,5 +1,5 @@
 resource "azurecaf_name" "account" {
-  name          = var.settings.name
+  name          = local.final_name
   prefixes      = var.global_settings.prefixes
   resource_type = "azurerm_netapp_account"
   random_length = var.global_settings.random_length
@@ -10,7 +10,7 @@ resource "azurecaf_name" "account" {
 
 resource "azurerm_netapp_account" "account" {
   # Must be unique for the subscription.
-  name                = azurecaf_name.account.result
+  name                = local.final_name
   resource_group_name = var.resource_group_name
   location            = var.location
   tags                = local.tags

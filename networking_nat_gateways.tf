@@ -14,6 +14,7 @@ module "nat_gateways" {
   for_each = try(local.networking.nat_gateways, {})
 
   settings                = each.value
+  global_settings         = local.global_settings
   name                    = try(each.value.name, null)
   subnet_id               = try(local.combined_objects_networking[try(each.value.vnet.lz_key, local.client_config.landingzone_key)][try(each.value.vnet.vnet_key, each.value.vnet_key)].subnets[try(each.value.vnet.subnet_key, each.value.subnet_key)].id, null)
   public_ip_address_id    = try(local.combined_objects_public_ip_addresses[try(each.value.public_ip.lz_key, local.client_config.landingzone_key)][try(each.value.public_ip.public_ip_key, each.value.public_ip_key)].id, null)

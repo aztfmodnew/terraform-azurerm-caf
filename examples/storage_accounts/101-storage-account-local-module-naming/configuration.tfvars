@@ -7,18 +7,18 @@ global_settings = {
   environment    = "dev"
   prefix         = "caf"
   suffix         = "001"
-  
+
   regions = {
     region1 = "australiaeast"
   }
-  
+
   inherit_tags = true
-  
+
   # Hybrid naming configuration - using local module
   naming = {
-    use_azurecaf      = false
-    use_local_module  = true
-    component_order   = ["prefix", "abbreviation", "name", "environment", "region", "suffix"]
+    use_azurecaf     = false
+    use_local_module = true
+    component_order  = ["prefix", "abbreviation", "name", "environment", "region", "suffix"]
   }
 }
 
@@ -44,18 +44,18 @@ storage_accounts = {
     allow_blob_public_access = false
     is_hns_enabled           = false
     sftp_enabled             = false
-    
+
     # Override global settings for this resource
     environment = "dev"
     region      = "australiaeast"
     instance    = "001"
-    
+
     tags = {
       environment = "dev"
       team        = "IT"
       purpose     = "local-module-naming-demo"
     }
-    
+
     containers = {
       dev = {
         name = "development"
@@ -64,9 +64,9 @@ storage_accounts = {
         name = "staging"
       }
     }
-    
+
     enable_system_msi = true
-    
+
     blob_properties = {
       cors_rule = {
         allowed_headers    = ["x-ms-meta-data*", "x-ms-meta-target*"]
@@ -76,7 +76,7 @@ storage_accounts = {
         max_age_in_seconds = "200"
       }
     }
-    
+
     delete_retention_policy = {
       days = "7"
     }

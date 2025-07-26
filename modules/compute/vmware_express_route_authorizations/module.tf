@@ -1,5 +1,5 @@
 resource "azurecaf_name" "vwera" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_vmware_express_route_authorization"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -12,6 +12,6 @@ resource "azurecaf_name" "vwera" {
 # Ref : https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/vmware_express_route_authorization
 
 resource "azurerm_vmware_express_route_authorization" "vwera" {
-  name             = azurecaf_name.vwera.result
+  name             = local.final_name
   private_cloud_id = var.vmware_cloud_id
 }

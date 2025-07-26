@@ -1,5 +1,5 @@
 // resource "azurecaf_name" "service" {
-//   name          = var.settings.name
+//   name = local.final_name
 //   prefixes      = var.global_settings.prefixes
 //   resource_type = "azurerm_cognitive_deployment"
 //   random_length = var.global_settings.random_length
@@ -9,7 +9,7 @@
 // }
 
 resource "azurerm_cognitive_deployment" "service" {
-  name                 = var.settings.name
+  name                 = local.final_name
   cognitive_account_id = var.cognitive_account_id
   model {
     format  = var.settings.model.format

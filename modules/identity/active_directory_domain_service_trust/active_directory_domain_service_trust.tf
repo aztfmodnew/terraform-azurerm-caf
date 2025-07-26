@@ -7,7 +7,7 @@ resource "azurerm_active_directory_domain_service_trust" "adds_trust" {
     try(var.remote_objects.active_directory_domain_service[var.settings.active_directory_domain_service.id].id, null)
   )
 
-  name                   = var.settings.name
+  name                   = local.final_name
   password               = var.settings.password
   trusted_domain_dns_ips = var.settings.trusted_domain_dns_ips
   trusted_domain_fqdn    = var.settings.trusted_domain_fqdn

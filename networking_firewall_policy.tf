@@ -54,6 +54,7 @@ module "azurerm_firewall_policy_rule_collection_groups" {
   ]
 
   global_settings     = local.global_settings
+  settings            = each.value
   ip_groups           = module.ip_groups
   policy_settings     = each.value
   public_ip_addresses = module.public_ip_addresses

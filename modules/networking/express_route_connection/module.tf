@@ -1,5 +1,5 @@
 resource "azurerm_express_route_connection" "erc" {
-  name                             = var.settings.name
+  name                             = local.final_name
   express_route_gateway_id         = var.express_route_gateway_id
   express_route_circuit_peering_id = var.express_route_circuit_peering_id
 

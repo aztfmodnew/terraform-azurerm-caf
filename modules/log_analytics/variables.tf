@@ -4,6 +4,11 @@ variable "global_settings" {
 }
 variable "log_analytics" {
   description = "Log analytics configuration object"
+  type        = any
+}
+variable "settings" {
+  description = "Settings object for the log analytics workspace"
+  type        = any
 }
 variable "location" {
   description = "location of the resource if different from the resource group."

@@ -1,5 +1,5 @@
 resource "azurecaf_name" "dms" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_database_migration_service"
   prefixes      = var.global_settings.prefix
   random_length = var.global_settings.random_length
@@ -10,7 +10,7 @@ resource "azurecaf_name" "dms" {
 
 
 resource "azurerm_database_migration_service" "dms" {
-  name                = azurecaf_name.dms.result
+  name                = local.final_name
   location            = var.location
   resource_group_name = var.resource_group_name
   sku_name            = var.settings.sku_name

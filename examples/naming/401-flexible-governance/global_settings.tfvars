@@ -17,16 +17,16 @@ global_settings = {
 
   # Flexible governance configuration
   naming = {
-    use_azurecaf              = false
-    use_local_module          = true
-    allow_resource_override   = true    # 🔧 Allows individual overrides
-    validate                  = true
-    component_order           = ["prefix", "abbreviation", "name", "environment", "region", "instance", "suffix"]
+    use_azurecaf            = false
+    use_local_module        = true
+    allow_resource_override = true # 🔧 Allows individual overrides
+    validate                = true
+    component_order         = ["prefix", "abbreviation", "name", "environment", "region", "instance", "suffix"]
 
     # Resource-specific patterns (optional defaults)
     resource_patterns = {
       azurerm_storage_account = {
-        separator       = ""    # Storage accounts don't allow separators
+        separator       = "" # Storage accounts don't allow separators
         component_order = ["prefix", "name", "environment", "instance"]
       }
       azurerm_key_vault = {

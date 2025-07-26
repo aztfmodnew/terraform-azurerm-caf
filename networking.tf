@@ -125,6 +125,7 @@ module "public_ip_addresses" {
   source   = "./modules/networking/public_ip_addresses"
   for_each = local.networking.public_ip_addresses
 
+  settings                   = each.value
   name                       = azurecaf_name.public_ip_addresses[each.key].result
   global_settings            = local.global_settings
   allocation_method          = try(each.value.allocation_method, "Dynamic")
@@ -172,6 +173,8 @@ module "public_ip_prefixes" {
   source   = "./modules/networking/public_ip_prefixes"
   for_each = local.networking.public_ip_prefixes
 
+  global_settings     = local.global_settings
+  settings            = each.value
   name                = azurecaf_name.public_ip_prefixes[each.key].result
   resource_group_name = can(each.value.resource_group.name) || can(each.value.resource_group_name) ? try(each.value.resource_group.name, each.value.resource_group_name) : local.combined_objects_resource_groups[try(each.value.resource_group.lz_key, local.client_config.landingzone_key)][try(each.value.resource_group_key, each.value.resource_group.key)].name
   location            = can(local.global_settings.regions[each.value.region]) ? local.global_settings.regions[each.value.region] : local.combined_objects_resource_groups[try(each.value.resource_group.lz_key, local.client_config.landingzone_key)][try(each.value.resource_group.key, each.value.resource_group_key)].location
@@ -268,6 +271,8 @@ module "route_tables" {
   source   = "./modules/networking/route_tables"
   for_each = local.networking.route_tables
 
+  global_settings               = local.global_settings
+  settings                      = each.value
   name                          = azurecaf_name.route_tables[each.key].result
   location                      = can(local.global_settings.regions[each.value.region]) ? local.global_settings.regions[each.value.region] : local.combined_objects_resource_groups[try(each.value.resource_group.lz_key, local.client_config.landingzone_key)][try(each.value.resource_group.key, each.value.resource_group_key)].location
   resource_group_name           = can(each.value.resource_group.name) || can(each.value.resource_group_name) ? try(each.value.resource_group.name, each.value.resource_group_name) : local.combined_objects_resource_groups[try(each.value.resource_group.lz_key, local.client_config.landingzone_key)][try(each.value.resource_group_key, each.value.resource_group.key)].name
@@ -293,6 +298,8 @@ module "routes" {
   source   = "./modules/networking/routes"
   for_each = local.networking.azurerm_routes
 
+  global_settings        = local.global_settings
+  settings               = each.value
   name                   = azurecaf_name.routes[each.key].result
   resource_group_name    = can(each.value.resource_group.name) || can(each.value.resource_group_name) ? try(each.value.resource_group.name, each.value.resource_group_name) : local.combined_objects_resource_groups[try(each.value.resource_group.lz_key, local.client_config.landingzone_key)][try(each.value.resource_group_key, each.value.resource_group.key)].name
   route_table_name       = module.route_tables[each.value.route_table_key].name

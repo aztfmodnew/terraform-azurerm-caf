@@ -9,7 +9,7 @@ resource "azurecaf_name" "this_name" {
 }
 
 resource "azurerm_monitor_action_group" "this" {
-  name                = azurecaf_name.this_name.result
+  name                = local.final_name
   resource_group_name = var.resource_group_name
   short_name          = var.settings.shortname
   tags                = try(var.settings.tags, {})

@@ -1,5 +1,5 @@
 resource "azurerm_windows_web_app" "windows_web_app" {
-  name                = azurecaf_name.windows_web_app.result
+  name                = local.final_name
   location            = local.location
   resource_group_name = local.resource_group_name
   service_plan_id = coalesce(

@@ -15,7 +15,7 @@ resource "azurerm_firewall" "fw" {
   dns_servers         = try(var.settings.dns_servers, null)
   firewall_policy_id  = var.firewall_policy_id
   location            = var.location
-  name                = azurecaf_name.fw.result
+  name                = local.final_name
   private_ip_ranges   = try(var.settings.private_ip_ranges, null)
   resource_group_name = var.resource_group_name
   sku_name            = try(var.settings.sku_name, "AZFW_VNet")

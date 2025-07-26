@@ -1,6 +1,6 @@
 
 resource "azurecaf_name" "service" {
-  name          = var.settings.name
+  name          = local.final_name
   prefixes      = var.global_settings.prefixes
   resource_type = "azurerm_search_service"
   random_length = var.global_settings.random_length
@@ -10,7 +10,7 @@ resource "azurecaf_name" "service" {
 }
 
 resource "azurerm_search_service" "search_service" {
-  name                                     = azurecaf_name.service.result
+  name                                     = local.final_name
   location                                 = local.location
   resource_group_name                      = local.resource_group_name
   sku                                      = lower(var.settings.sku)

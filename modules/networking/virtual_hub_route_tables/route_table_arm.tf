@@ -1,5 +1,5 @@
 resource "azurerm_resource_group_template_deployment" "route_table_entries" {
-  name                = var.settings.name
+  name                = local.final_name
   resource_group_name = var.virtual_hub.resource_group_name
 
   template_content   = file(local.arm_filename)

@@ -1,5 +1,5 @@
 resource "azurecaf_name" "schedule" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_data_factory_pipeline"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length

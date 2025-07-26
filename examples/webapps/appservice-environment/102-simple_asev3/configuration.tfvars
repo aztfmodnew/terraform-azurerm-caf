@@ -46,27 +46,27 @@ service_plans = {
     app_service_environment_key = "ase1"
     resource_group_key          = "asp_project1_region1"
 
-    name = "ase1-asp01"
+    name    = "ase1-asp01"
     os_type = "Windows"
 
-    sku_name = "I1v2"
+    sku_name                 = "I1v2"
     per_site_scaling_enabled = true
-    worker_count = 1
+    worker_count             = 1
 
   },
   asp2 = {
     app_service_environment_key = "ase1"
     resource_group_key          = "asp_project2_region1"
 
-    name = "ase1-asp02"
+    name    = "ase1-asp02"
     os_type = "Linux"
 
     //When creating a Linux App Service Plan, the reserved field must be set to true
     reserved = true
 
-    sku_name = "I1v2"
+    sku_name                 = "I1v2"
     per_site_scaling_enabled = true
-    worker_count = 1
+    worker_count             = 1
 
     tags = {
       project = "mobile app"

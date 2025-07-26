@@ -1,5 +1,5 @@
 resource "azurecaf_name" "evh" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_eventhub_namespace"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -9,7 +9,7 @@ resource "azurecaf_name" "evh" {
 }
 
 resource "azurerm_eventhub_namespace" "evh" {
-  name                     = azurecaf_name.evh.result
+  name                     = local.final_name
   location                 = local.location
   resource_group_name      = local.resource_group_name
   sku                      = var.settings.sku

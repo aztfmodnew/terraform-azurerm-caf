@@ -5,7 +5,7 @@ locals {
 
 # naming convention
 resource "azurecaf_name" "keyvault" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_key_vault"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -16,7 +16,7 @@ resource "azurecaf_name" "keyvault" {
 
 resource "azurerm_key_vault" "keyvault" {
 
-  name                            = azurecaf_name.keyvault.result
+  name                            = local.final_name
   location                        = local.location
   resource_group_name             = local.resource_group_name
   tenant_id                       = var.client_config.tenant_id

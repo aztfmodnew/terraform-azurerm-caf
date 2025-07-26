@@ -1,6 +1,6 @@
 
 resource "azurecaf_name" "netwatcher" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_network_watcher"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -10,7 +10,7 @@ resource "azurecaf_name" "netwatcher" {
 }
 
 resource "azurerm_network_watcher" "netwatcher" {
-  name                = azurecaf_name.netwatcher.result
+  name                = local.final_name
   location            = var.location
   resource_group_name = var.resource_group_name
   tags                = local.tags

@@ -1,5 +1,5 @@
 resource "azurecaf_name" "lngw" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_local_network_gateway"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -9,7 +9,7 @@ resource "azurecaf_name" "lngw" {
 }
 
 resource "azurerm_local_network_gateway" "lngw" {
-  name                = azurecaf_name.lngw.result
+  name                = local.final_name
   resource_group_name = var.resource_group_name
   location            = var.location
   address_space       = var.settings.address_space

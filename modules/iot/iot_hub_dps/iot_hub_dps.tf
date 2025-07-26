@@ -1,7 +1,7 @@
 # Terraform azurerm resource: https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/iothub_dps
 
 resource "azurecaf_name" "iothdps" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_iothub_dps"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -11,7 +11,7 @@ resource "azurecaf_name" "iothdps" {
 }
 
 resource "azurerm_iothub_dps" "iothubdps" {
-  name                = azurecaf_name.iothdps.result
+  name                = local.final_name
   resource_group_name = local.resource_group_name
   location            = local.location
   allocation_policy   = try(var.settings.allocation_policy, null)

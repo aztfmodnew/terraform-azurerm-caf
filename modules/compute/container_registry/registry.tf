@@ -9,7 +9,7 @@ resource "azurecaf_name" "acr" {
 }
 
 resource "azurerm_container_registry" "acr" {
-  name                = azurecaf_name.acr.result
+  name                = local.final_name
   resource_group_name = local.resource_group_name
   location            = local.location
   sku                 = var.sku

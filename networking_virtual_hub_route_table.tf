@@ -52,9 +52,10 @@ module "azurerm_virtual_hub_route_table" {
   source     = "./modules/networking/virtual_hub_route_tables"
   for_each   = local.networking.virtual_hub_route_tables
 
-  client_config = local.client_config
-  name          = each.value.name
-  settings      = each.value
+  client_config   = local.client_config
+  global_settings = local.global_settings
+  name            = each.value.name
+  settings        = each.value
 
   remote_objects = {
     virtual_hub_connection  = local.combined_objects_virtual_hub_connections

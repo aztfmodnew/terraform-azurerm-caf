@@ -2,6 +2,12 @@ variable "settings" {
   description = "The settings for the Azure resource."
   type        = any
 }
+
+variable "global_settings" {
+  description = "Global settings object (see module README.md)"
+  type        = any
+}
+
 variable "name" {}
 variable "location" {}
 variable "resource_group_name" {}

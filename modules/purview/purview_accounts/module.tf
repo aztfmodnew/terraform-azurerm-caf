@@ -1,5 +1,5 @@
 resource "azurecaf_name" "pva" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_purview_account"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -10,7 +10,7 @@ resource "azurecaf_name" "pva" {
 
 resource "azurerm_purview_account" "pva" {
   location                    = local.location
-  name                        = azurecaf_name.pva.result
+  name                        = local.final_name
   resource_group_name         = local.resource_group_name
   public_network_enabled      = try(var.settings.public_network_enabled, null)
   managed_resource_group_name = try(var.settings.managed_resource_group_name, null)

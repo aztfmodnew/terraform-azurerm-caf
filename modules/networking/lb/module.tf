@@ -1,7 +1,7 @@
 
 
 resource "azurecaf_name" "lb" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_lb"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -10,7 +10,7 @@ resource "azurecaf_name" "lb" {
   use_slug      = var.global_settings.use_slug
 }
 resource "azurerm_lb" "lb" {
-  name                = azurecaf_name.lb.result
+  name                = local.final_name
   resource_group_name = var.resource_group_name
   location            = var.location
 

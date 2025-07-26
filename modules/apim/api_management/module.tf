@@ -1,5 +1,5 @@
 resource "azurecaf_name" "apim" {
-  name          = var.settings.name
+  name          = local.final_name
   resource_type = "azurerm_api_management"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
@@ -9,7 +9,7 @@ resource "azurecaf_name" "apim" {
 }
 
 resource "azurerm_api_management" "apim" {
-  name = azurecaf_name.apim.result
+  name = local.final_name
 
   location            = local.location
   resource_group_name = local.resource_group_name

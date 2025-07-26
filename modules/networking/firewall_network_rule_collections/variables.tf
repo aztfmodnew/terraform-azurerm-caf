@@ -11,10 +11,17 @@ variable "rule_collections" {
 }
 
 variable "azurerm_firewall_network_rule_collection_definition" {}
+
 variable "global_settings" {
   description = "Global settings object (see module README.md)"
   type        = any
 }
+
+variable "settings" {
+  description = "Configuration settings for the resource."
+  type        = any
+}
+
 variable "ip_groups" {
   default = {}
 }
