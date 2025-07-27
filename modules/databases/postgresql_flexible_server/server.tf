@@ -78,6 +78,13 @@ resource "azurerm_key_vault_secret" "postgresql_administrator_username" {
   key_vault_id    = var.remote_objects.keyvault_id
   content_type    = "text/plain"
   expiration_date = timeadd(timestamp(), "8760h")
+  # 8760h = 1 year
+  lifecycle {
+    ignore_changes = [
+      value
+    ]
+  }
+}
 
 # Generate random postgresql_flexible_administrator_password if attribute administrator_password not provided.
 resource "random_password" "postgresql_administrator_password" {
