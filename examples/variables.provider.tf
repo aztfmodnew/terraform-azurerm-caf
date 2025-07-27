@@ -36,6 +36,20 @@ variable "provider_azurerm_features_log_analytics_workspace" {
   }
 }
 
+variable "provider_azurerm_features_recovery_service" {
+  default = {
+    vm_backup_stop_protection_and_retain_data_on_destroy    = false
+    vm_backup_suspend_protection_and_retain_data_on_destroy = false
+    purge_protected_items_from_vault_on_destroy             = true
+  }
+}
+
+variable "provider_azurerm_features_recovery_services_vault" {
+  default = {
+    recover_soft_deleted_backup_protected_vm = false
+  }
+}
+
 variable "provider_azurerm_features_resource_group" {
   default = {
     prevent_deletion_if_contains_resources = false
