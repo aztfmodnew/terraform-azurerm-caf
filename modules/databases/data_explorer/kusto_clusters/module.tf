@@ -10,6 +10,8 @@ resource "azurecaf_name" "kusto" {
 
 # Last review :  AzureRM version 2.77.0
 # Ref : https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/kusto_cluster
+# Note: Virtual Network injection was retired on February 1, 2025. Use private endpoints for secure networking.
+# Reference: https://aka.ms/adx.security.vnet.migration
 
 resource "azurerm_kusto_cluster" "kusto" {
   name                = azurecaf_name.kusto.result
@@ -35,14 +37,10 @@ resource "azurerm_kusto_cluster" "kusto" {
   disk_encryption_enabled     = try(var.settings.enable_disk_encryption, var.settings.disk_encryption_enabled, null)
   streaming_ingestion_enabled = try(var.settings.enable_streaming_ingest, var.settings.streaming_ingestion_enabled, null)
   purge_enabled               = try(var.settings.enable_purge, var.settings.purge_enabled, null)
-  dynamic "virtual_network_configuration" {
-    for_each = try(var.settings.virtual_network_configuration, null) != null ? [var.settings.virtual_network_configuration] : []
-    content {
-      subnet_id                    = can(virtual_network_configuration.value.subnet_id) || can(virtual_network_configuration.value.subnet_key) == false ? try(virtual_network_configuration.value.subnet_id, null) : try(virtual_network_configuration.value.vnet_key, null) == null ? null : var.combined_resources.vnets[try(virtual_network_configuration.value.lz_key, var.client_config.landingzone_key)][virtual_network_configuration.value.vnet_key].subnets[virtual_network_configuration.value.subnet_key].id
-      engine_public_ip_id          = try(virtual_network_configuration.value.engine_public_ip.key, null) == null ? null : try(var.combined_resources.pips[try(virtual_network_configuration.value.engine_public_ip.lz_key, var.client_config.landingzone_key)][virtual_network_configuration.value.engine_public_ip.key].id, null)
-      data_management_public_ip_id = try(virtual_network_configuration.value.data_management_public_ip.key, null) == null ? null : try(var.combined_resources.pips[try(virtual_network_configuration.value.data_management_public_ip.lz_key, var.client_config.landingzone_key)][virtual_network_configuration.value.data_management_public_ip.key].id, null)
-    }
-  }
+  
+  # virtual_network_configuration block removed - Virtual Network injection was retired on February 1, 2025
+  # Use private endpoints instead for secure networking
+  # Reference: https://aka.ms/adx.security.vnet.migration
   #language_extensions = try(var.settings.language_extensions, null)
   #In v4.0.0 and later version of the AzureRM Provider, language_extensions will be changed to a list of language_extension block. In each block, name and image are required. name is the name of the language extension, possible values are PYTHON, R. image is the image of the language extension, possible values are Python3_6_5, Python3_10_8 and R.
   dynamic "language_extensions" {

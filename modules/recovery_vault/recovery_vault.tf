@@ -26,4 +26,15 @@ resource "azurerm_recovery_services_vault" "asr" {
     type = "SystemAssigned"
   }
 
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+
+    content {
+      create = try(timeouts.value.create, null)
+      update = try(timeouts.value.update, null)
+      read   = try(timeouts.value.read, null)
+      delete = try(timeouts.value.delete, null)
+    }
+  }
+
 }

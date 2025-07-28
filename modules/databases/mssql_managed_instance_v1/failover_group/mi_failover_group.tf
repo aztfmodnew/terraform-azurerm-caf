@@ -2,7 +2,7 @@ resource "azapi_resource" "sqlmi_failover_group" {
   type      = "Microsoft.Sql/locations/instanceFailoverGroups@2022-05-01-preview"
   name      = var.settings.name
   parent_id = format("%s/providers/Microsoft.Sql/locations/%s", var.managed_instance.resource_group_id, var.managed_instance.location)
-  body = jsonencode({
+  body = {
     properties = {
       managedInstancePairs = [
         {
@@ -21,5 +21,5 @@ resource "azapi_resource" "sqlmi_failover_group" {
       }
       secondaryType = try(var.settings.secondary_type, "Standby")
     }
-  })
+  }
 }

@@ -62,14 +62,14 @@ resource "azapi_resource" "sqlmi_admin_password" {
   name      = format("%s-password-v1", azurecaf_name.mssqlmi.result)
   parent_id = var.keyvault.id
 
-  body = jsonencode({
+  body = {
     properties = {
       attributes = {
         enabled = true
       }
       value = random_password.sqlmi_admin.0.result
     }
-  })
+  }
 
   ignore_missing_property = true
 }

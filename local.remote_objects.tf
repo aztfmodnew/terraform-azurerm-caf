@@ -124,7 +124,6 @@ locals {
     network_watchers                               = try(local.combined_objects_network_watchers, null)
     networking                                     = try(local.combined_objects_networking, null)
     palo_alto_cloudngfws                           = try(local.combined_objects_palo_alto_cloudngfws, null)
-    postgresql_servers                             = try(local.combined_objects_postgresql_servers, null)
     postgresql_flexible_servers                    = try(local.combined_objects_postgresql_flexible_servers, null)
     private_dns                                    = try(local.combined_objects_private_dns, null)
     private_endpoints                              = try(local.combined_objects_private_endpoints, null)

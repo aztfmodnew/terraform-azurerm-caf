@@ -45,6 +45,14 @@ provider "azurerm" {
     resource_group {
       prevent_deletion_if_contains_resources = var.provider_azurerm_features_resource_group.prevent_deletion_if_contains_resources
     }
+    recovery_service {
+      vm_backup_stop_protection_and_retain_data_on_destroy    = var.provider_azurerm_features_recovery_service.vm_backup_stop_protection_and_retain_data_on_destroy
+      vm_backup_suspend_protection_and_retain_data_on_destroy = var.provider_azurerm_features_recovery_service.vm_backup_suspend_protection_and_retain_data_on_destroy
+      purge_protected_items_from_vault_on_destroy             = var.provider_azurerm_features_recovery_service.purge_protected_items_from_vault_on_destroy
+    }
+    recovery_services_vault {
+      recover_soft_deleted_backup_protected_vm = var.provider_azurerm_features_recovery_services_vault.recover_soft_deleted_backup_protected_vm
+    }
     template_deployment {
       delete_nested_items_during_deletion = var.provider_azurerm_features_template_deployment.delete_nested_items_during_deletion
     }
@@ -64,6 +72,7 @@ provider "azurerm" {
   alias = "vhub"
   # resource_provider_registrations = "none" # "none" to avoid azurerm provider registration errors
   # resource_provider_registrations = ["Microsoft.Network", "Microsoft.Storage"] # Example
+  resource_provider_registrations = "all" # Register all resource providers
   subscription_id = data.azurerm_client_config.default.subscription_id
   tenant_id       = data.azurerm_client_config.default.tenant_id
   features {}

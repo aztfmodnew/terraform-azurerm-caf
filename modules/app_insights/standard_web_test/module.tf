@@ -14,7 +14,7 @@ resource "azapi_resource" "appiwt" {
   tags      = local.tags
   parent_id = var.resource_group_id
   location  = var.location
-  body = jsonencode({
+  body = {
     properties = {
       Kind               = "standard"
       Name               = var.name
@@ -41,5 +41,5 @@ resource "azapi_resource" "appiwt" {
         SSLCertRemainingLifetimeCheck = try(var.settings.ssl_cert_remaining_lifetime_check, null)
       }
     }
-  })
+  }
 }

@@ -17,15 +17,17 @@ resource "azurerm_postgresql_flexible_server" "postgresql" {
   zone                = try(var.settings.zone, null)
   storage_mb          = try(var.settings.storage_mb, null)
 
-  delegated_subnet_id = var.remote_objects.subnet_id
-  private_dns_zone_id = var.remote_objects.private_dns_zone_id
+  delegated_subnet_id = try(var.remote_objects.subnet_id, null)
+  private_dns_zone_id = try(var.remote_objects.private_dns_zone_id, null)
+
+  public_network_access_enabled = try(var.settings.public_network_access_enabled, var.remote_objects.subnet_id == null ? true : false)
 
   create_mode                       = try(var.settings.create_mode, "Default")
   point_in_time_restore_time_in_utc = try(var.settings.create_mode, "PointInTimeRestore") == "PointInTimeRestore" ? try(var.settings.point_in_time_restore_time_in_utc, null) : null
   source_server_id                  = try(var.settings.create_mode, "PointInTimeRestore") == "PointInTimeRestore" ? try(var.settings.source_server_id, null) : null
 
   administrator_login    = try(var.settings.create_mode, "Default") == "Default" && try(var.settings.authentication.password_auth_enabled, true) ? try(var.settings.administrator_username, "pgadmin") : null
-  administrator_password = try(var.settings.create_mode, "Default") == "Default" && try(var.settings.authentication.password_auth_enabled, true) ? try(var.settings.administrator_password, azurerm_key_vault_secret.postgresql_administrator_password.0.value) : null
+  administrator_password = try(var.settings.create_mode, "Default") == "Default" && try(var.settings.authentication.password_auth_enabled, true) ? try(var.settings.administrator_password, azurerm_key_vault_secret.postgresql_administrator_password[0].value) : null
 
   dynamic "authentication" {
     for_each = try(var.settings.authentication, null) == null ? [] : [var.settings.authentication]
@@ -71,10 +73,12 @@ resource "azurerm_postgresql_flexible_server" "postgresql" {
 resource "azurerm_key_vault_secret" "postgresql_administrator_username" {
   count = lookup(var.settings, "keyvault", null) == null ? 0 : 1
 
-  name         = format("%s-username", azurecaf_name.postgresql_flexible_server.result)
-  value        = try(var.settings.administrator_username, "pgadmin")
-  key_vault_id = var.remote_objects.keyvault_id
-
+  name            = format("%s-username", azurecaf_name.postgresql_flexible_server.result)
+  value           = try(var.settings.administrator_username, "pgadmin")
+  key_vault_id    = var.remote_objects.keyvault_id
+  content_type    = "text/plain"
+  expiration_date = timeadd(timestamp(), "8760h")
+  # 8760h = 1 year
   lifecycle {
     ignore_changes = [
       value
@@ -98,7 +102,7 @@ resource "azurerm_key_vault_secret" "postgresql_administrator_password" {
   count = lookup(var.settings, "keyvault", null) == null ? 0 : 1
 
   name         = format("%s-password", azurecaf_name.postgresql_flexible_server.result)
-  value        = try(var.settings.administrator_password, random_password.postgresql_administrator_password.0.result)
+  value        = try(var.settings.administrator_password, random_password.postgresql_administrator_password[0].result)
   key_vault_id = var.remote_objects.keyvault_id
 
   lifecycle {

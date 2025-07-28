@@ -153,7 +153,7 @@ locals {
     mysql_flexible_servers            = local.combined_objects_mysql_flexible_servers
     network_watchers                  = local.combined_objects_network_watchers
     networking                        = local.combined_objects_networking
-    postgresql_servers                = local.combined_objects_postgresql_servers
+    # postgresql_flexible_servers       = local.combined_objects_postgresql_flexible_servers
     private_dns                       = local.combined_objects_private_dns
     proximity_placement_groups        = local.combined_objects_proximity_placement_groups
     public_ip_addresses               = local.combined_objects_public_ip_addresses

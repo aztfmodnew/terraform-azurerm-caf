@@ -38,7 +38,7 @@ resource "azapi_resource" "aro" {
   type      = "Microsoft.RedHatOpenShift/openShiftClusters@2022-04-01"
   tags      = local.tags
 
-  body = jsonencode({
+  body = {
     properties = {
       masterProfile           = local.master_profile
       workerProfiles          = local.worker_profiles
@@ -48,10 +48,9 @@ resource "azapi_resource" "aro" {
       apiserverProfile        = local.api_server_profile
       networkProfile          = local.network_profile
     }
-  })
+  }
 
   timeouts {
     create = "60m"
   }
 }
-

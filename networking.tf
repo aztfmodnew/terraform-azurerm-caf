@@ -232,7 +232,7 @@ resource "azapi_resource" "virtualNetworkPeerings" {
   name      = each.value.name
   parent_id = can(each.value.from.id) ? each.value.from.id : local.combined_objects_networking[try(each.value.from.lz_key, local.client_config.landingzone_key)][each.value.from.vnet_key].id
 
-  body = jsonencode({
+  body = {
     properties = {
       allowForwardedTraffic     = try(each.value.allow_forwarded_traffic, false)
       allowGatewayTransit       = try(each.value.allow_gateway_transit, false)
@@ -243,7 +243,7 @@ resource "azapi_resource" "virtualNetworkPeerings" {
         id = can(each.value.to.remote_virtual_network_id) || can(each.value.to.id) ? try(each.value.to.remote_virtual_network_id, each.value.to.id) : local.combined_objects_networking[try(each.value.to.lz_key, local.client_config.landingzone_key)][each.value.to.vnet_key].id
       }
     }
-  })
+  }
 
 }
 

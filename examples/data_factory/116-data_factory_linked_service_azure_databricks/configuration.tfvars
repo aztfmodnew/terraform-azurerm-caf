@@ -57,11 +57,11 @@ data_factory_linked_service_azure_databricks = {
     }
 
     new_cluster_config = {
-      node_type             = "Standard_NC12"
-      cluster_version       = "5.5.x-gpu-scala2.11"
+      node_type             = "Standard_D8_v3"
+      cluster_version       = "13.3.x-scala2.12"
       min_number_of_workers = 1
       max_number_of_workers = 5
-      driver_node_type      = "Standard_NC12"
+      driver_node_type      = "Standard_D3_v2"
       log_destination       = "dbfs:/logs"
 
       custom_tags = {
