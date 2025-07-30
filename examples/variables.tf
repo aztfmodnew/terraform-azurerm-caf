@@ -403,6 +403,11 @@ variable "azuread_service_principals" {
   type    = any
   default = {}
 }
+variable "azuread_service_principal_names" {
+  description = "Configuration object for Azure AD service principals resolved by display name"
+  type        = any
+  default     = {}
+}
 variable "azuread_service_principal_passwords" {
   type    = any
   default = {}
