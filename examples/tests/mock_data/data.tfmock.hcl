@@ -31,6 +31,12 @@ mock_data "azuread_service_principal" {
     application_id = "00000000-0000-0000-0000-000000000000"
     display_name   = "mock_service_principal"
     object_id      = "00000000-0000-0000-0000-000000000000"
+    application_tenant_id        = "00000000-0000-0000-0000-000000000000"
+    account_enabled              = true
+    app_role_assignment_required = false
+    service_principal_names      = ["https://identity.azure.net/P2P_lKTqRFRnoEaUQBcF9VQig1w"]
+    tags                         = []
+    type                         = "Application"
   }
 }
 
