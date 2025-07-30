@@ -47,7 +47,7 @@ provider "azurerm" {
     }
     recovery_service {
       vm_backup_stop_protection_and_retain_data_on_destroy    = try(var.provider_azurerm_features_recovery_service.vm_backup_stop_protection_and_retain_data_on_destroy, null)
-      vm_backup_suspend_protection_and_retain_data_on_destroy = try(var.provider_azurerm_features_recovery_service.vm_backup_suspend_protection_and_retain_data_on_destroy, null)
+      #vm_backup_suspend_protection_and_retain_data_on_destroy = try(var.provider_azurerm_features_recovery_service.vm_backup_suspend_protection_and_retain_data_on_destroy, null)
       purge_protected_items_from_vault_on_destroy             = var.provider_azurerm_features_recovery_service.purge_protected_items_from_vault_on_destroy
     }
     recovery_services_vaults {
