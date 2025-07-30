@@ -50,7 +50,7 @@ provider "azurerm" {
       vm_backup_suspend_protection_and_retain_data_on_destroy = var.provider_azurerm_features_recovery_service.vm_backup_suspend_protection_and_retain_data_on_destroy
       purge_protected_items_from_vault_on_destroy             = var.provider_azurerm_features_recovery_service.purge_protected_items_from_vault_on_destroy
     }
-    recovery_services_vault {
+    recovery_services_vaults {
       recover_soft_deleted_backup_protected_vm = var.provider_azurerm_features_recovery_services_vault.recover_soft_deleted_backup_protected_vm
     }
     template_deployment {
