@@ -1,7 +1,7 @@
 keyvaults = {
   test_client = {
     name                = "testkv"
-    resource_group_key  = "test_region_primary"
+    resource_group_key  = "aro1"
     sku_name            = "standard"
     soft_delete_enabled = true
     creation_policies = {
@@ -109,4 +109,3 @@ role_mapping = {
     }
   }
 }
-
