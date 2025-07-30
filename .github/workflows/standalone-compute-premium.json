@@ -1,0 +1,6 @@
+{
+  "config_files": [
+    "compute/vmware_cluster/101-vmware_cluster",
+    "compute/vmware_cluster/102-vmware_express_route_authorization"
+  ]
+}
