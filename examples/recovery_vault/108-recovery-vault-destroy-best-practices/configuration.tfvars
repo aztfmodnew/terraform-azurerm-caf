@@ -21,7 +21,7 @@ provider_azurerm_features_recovery_services_vault = {
 
 resource_groups = {
   primary = {
-    name = "rg-recovery-vault-destroy-test"
+    name   = "rg-recovery-vault-destroy-test"
     region = "region1"
   }
 }
@@ -31,14 +31,14 @@ recovery_vaults = {
     name               = "vault-destroy-test"
     resource_group_key = "primary"
     region             = "region1"
-    
+
     # Disable soft delete for immediate destruction in test environments
     soft_delete_enabled = false
-    
+
     # Configure custom timeouts for destroy operations
     timeouts = {
       create = "60m"
-      update = "30m" 
+      update = "30m"
       delete = "60m"
     }
 

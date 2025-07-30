@@ -37,7 +37,7 @@ resource "azurerm_kusto_cluster" "kusto" {
   disk_encryption_enabled     = try(var.settings.enable_disk_encryption, var.settings.disk_encryption_enabled, null)
   streaming_ingestion_enabled = try(var.settings.enable_streaming_ingest, var.settings.streaming_ingestion_enabled, null)
   purge_enabled               = try(var.settings.enable_purge, var.settings.purge_enabled, null)
-  
+
   # virtual_network_configuration block removed - Virtual Network injection was retired on February 1, 2025
   # Use private endpoints instead for secure networking
   # Reference: https://aka.ms/adx.security.vnet.migration

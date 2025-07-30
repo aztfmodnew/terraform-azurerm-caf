@@ -161,7 +161,6 @@ module "example" {
     mssql_servers                      = var.mssql_servers
     mysql_flexible_server              = var.mysql_flexible_server
     postgresql_flexible_servers        = var.postgresql_flexible_servers
-    postgresql_servers                 = var.postgresql_servers
     synapse_workspaces                 = var.synapse_workspaces
     data_explorer = {
       kusto_clusters                         = var.kusto_clusters

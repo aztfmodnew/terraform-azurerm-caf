@@ -1,0 +1,70 @@
+#
+# Copyright (c) Rafael Fernández
+# Licensed under the MIT License.
+#
+
+name: Manual Scenario Dispatch
+
+on:
+  workflow_dispatch:
+    inputs:
+      scenario:
+        description: Select scenario to run
+        required: true
+        default: standalone-azuread.json
+        type: choice
+        options:
+          - standalone-azuread.json
+          - standalone-scenarios.json
+          - standalone-compute.json
+          - standalone-networking.json
+          - standalone-dataplat.json
+          - all
+      delay_between_runs:
+        description: Delay between runs (seconds) when running all
+        required: false
+        default: "60"
+
+env:
+  TF_VERSION: 1.12.2
+  TF_LINT_VERSION: latest
+
+jobs:
+  dispatch-single:
+    if: github.event.inputs.scenario != 'all'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Repository Dispatch - ${{ github.event.inputs.scenario }}
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          event-type: int-${{ github.event.inputs.scenario }}
+          client-payload: '{"scenario": "${{ github.event.inputs.scenario }}", "sha": "${{ github.sha }}"}'
+
+  dispatch-all:
+    if: github.event.inputs.scenario == 'all'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    strategy:
+      max-parallel: 1
+      matrix:
+        scenario:
+          - standalone-azuread.json
+          - standalone-scenarios.json
+          - standalone-compute.json
+          - standalone-networking.json
+          - standalone-dataplat.json
+    steps:
+      - name: Repository Dispatch - ${{ matrix.scenario }}
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          event-type: int-${{ matrix.scenario }}
+          client-payload: '{"scenario": "${{ matrix.scenario }}", "sha": "${{ github.sha }}"}'
+
+      - name: Wait between dispatches
+        if: matrix.scenario != 'standalone-dataplat.json'
+        run: sleep ${{ github.event.inputs.delay_between_runs }}
