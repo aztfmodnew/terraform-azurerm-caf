@@ -4,7 +4,7 @@
 #
 
 data "azuread_service_principal" "service_principal_names" {
-  for_each = local.azuread.azuread_service_principal_names
+  for_each = try(local.azuread.azuread_service_principal_names, {})
 
   display_name = each.value.display_name
 }
@@ -13,17 +13,17 @@ data "azuread_service_principal" "service_principal_names" {
 locals {
   azuread_service_principal_names_resolved = {
     for k, v in data.azuread_service_principal.service_principal_names : k => {
-      id                    = v.object_id
-      object_id             = v.object_id
-      client_id             = v.client_id
-      display_name          = v.display_name
-      rbac_id               = v.object_id
-      application_tenant_id = v.application_tenant_id
-      account_enabled       = v.account_enabled
+      id                           = v.object_id
+      object_id                    = v.object_id
+      client_id                    = v.client_id
+      display_name                 = v.display_name
+      rbac_id                      = v.object_id
+      application_tenant_id        = v.application_tenant_id
+      account_enabled              = v.account_enabled
       app_role_assignment_required = v.app_role_assignment_required
-      service_principal_names = v.service_principal_names
-      tags                  = v.tags
-      type                  = v.type
+      service_principal_names      = v.service_principal_names
+      tags                         = v.tags
+      type                         = v.type
     }
   }
 }
