@@ -39,8 +39,7 @@ variable "provider_azurerm_features_log_analytics_workspace" {
 variable "provider_azurerm_features_recovery_service" {
   default = {
     vm_backup_stop_protection_and_retain_data_on_destroy    = false
-    vm_backup_suspend_protection_and_retain_data_on_destroy = false
-    purge_protected_items_from_vault_on_destroy             = true
+    purge_protected_items_from_vault_on_destroy             = true # for CI ....
   }
 }
 
