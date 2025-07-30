@@ -595,10 +595,6 @@ variable "postgresql_flexible_servers" {
   type    = any
   default = {}
 }
-variable "postgresql_servers" {
-  type    = any
-  default = {}
-}
 variable "log_analytics" {
   type    = any
   default = {}
