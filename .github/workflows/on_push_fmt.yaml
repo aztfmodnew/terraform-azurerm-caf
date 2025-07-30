@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   terraform:
-    name: 'Terraform Format'
+    name: Terraform Format
     runs-on: ubuntu-latest
 
     steps:
