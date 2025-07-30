@@ -46,9 +46,9 @@ provider "azurerm" {
       prevent_deletion_if_contains_resources = var.provider_azurerm_features_resource_group.prevent_deletion_if_contains_resources
     }
     recovery_service {
-      vm_backup_stop_protection_and_retain_data_on_destroy    = try(var.provider_azurerm_features_recovery_service.vm_backup_stop_protection_and_retain_data_on_destroy, null)
+      vm_backup_stop_protection_and_retain_data_on_destroy = try(var.provider_azurerm_features_recovery_service.vm_backup_stop_protection_and_retain_data_on_destroy, null)
       #vm_backup_suspend_protection_and_retain_data_on_destroy = try(var.provider_azurerm_features_recovery_service.vm_backup_suspend_protection_and_retain_data_on_destroy, null)
-      purge_protected_items_from_vault_on_destroy             = var.provider_azurerm_features_recovery_service.purge_protected_items_from_vault_on_destroy
+      purge_protected_items_from_vault_on_destroy = var.provider_azurerm_features_recovery_service.purge_protected_items_from_vault_on_destroy
     }
     recovery_services_vaults {
       recover_soft_deleted_backup_protected_vm = var.provider_azurerm_features_recovery_services_vault.recover_soft_deleted_backup_protected_vm
@@ -73,8 +73,8 @@ provider "azurerm" {
   # resource_provider_registrations = "none" # "none" to avoid azurerm provider registration errors
   # resource_provider_registrations = ["Microsoft.Network", "Microsoft.Storage"] # Example
   resource_provider_registrations = "all" # Register all resource providers
-  subscription_id = data.azurerm_client_config.default.subscription_id
-  tenant_id       = data.azurerm_client_config.default.tenant_id
+  subscription_id                 = data.azurerm_client_config.default.subscription_id
+  tenant_id                       = data.azurerm_client_config.default.tenant_id
   features {}
 }
 

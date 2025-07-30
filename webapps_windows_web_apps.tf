@@ -12,18 +12,18 @@ module "windows_web_apps" {
   settings          = each.value
 
   remote_objects = {
-    service_plans        = local.combined_objects_service_plans
-    combined_objects     = local.dynamic_app_settings_combined_objects
-    diagnostics          = local.combined_diagnostics
-    keyvaults            = local.combined_objects_keyvaults
-    storage_accounts     = local.combined_objects_storage_accounts
-    vnets                = local.combined_objects_networking
-    managed_identities   = local.combined_objects_managed_identities
-    private_dns          = local.combined_objects_private_dns
-    application_insights = local.combined_objects_application_insights
-    mssql_servers        = local.combined_objects_mssql_servers
-    mssql_databases      = local.combined_objects_mssql_databases
-    azuread_applications               = local.combined_objects_azuread_applications
+    service_plans                       = local.combined_objects_service_plans
+    combined_objects                    = local.dynamic_app_settings_combined_objects
+    diagnostics                         = local.combined_diagnostics
+    keyvaults                           = local.combined_objects_keyvaults
+    storage_accounts                    = local.combined_objects_storage_accounts
+    vnets                               = local.combined_objects_networking
+    managed_identities                  = local.combined_objects_managed_identities
+    private_dns                         = local.combined_objects_private_dns
+    application_insights                = local.combined_objects_application_insights
+    mssql_servers                       = local.combined_objects_mssql_servers
+    mssql_databases                     = local.combined_objects_mssql_databases
+    azuread_applications                = local.combined_objects_azuread_applications
     azuread_service_principal_passwords = local.combined_objects_azuread_service_principal_passwords
   }
 }
