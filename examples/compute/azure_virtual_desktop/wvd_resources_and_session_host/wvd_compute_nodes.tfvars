@@ -43,7 +43,7 @@ virtual_machines = {
     virtual_machine_settings = {
       windows = {
         name                 = "example_vm12"
-        size                 = "Standard_F2s"
+        size                 = "Standard_F2s_v2s"
         availability_set_key = "avset1"
 
         admin_username_key = "vmadmin-username"

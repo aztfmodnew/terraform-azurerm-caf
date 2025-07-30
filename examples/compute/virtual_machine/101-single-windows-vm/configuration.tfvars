@@ -44,7 +44,7 @@ virtual_machines = {
     virtual_machine_settings = {
       windows = {
         name           = "example_vm2"
-        size           = "Standard_F2"
+        size           = "Standard_F2s_v2"
         admin_username = "adminuser"
 
 

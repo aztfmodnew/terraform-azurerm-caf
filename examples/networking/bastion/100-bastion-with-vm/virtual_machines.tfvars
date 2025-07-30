@@ -30,7 +30,7 @@ virtual_machines = {
     virtual_machine_settings = {
       linux = {
         name                            = "private_vm"
-        size                            = "Standard_F2s"
+        size                            = "Standard_F2s_v2s"
         admin_username                  = "adminuser"
         disable_password_authentication = true
 
