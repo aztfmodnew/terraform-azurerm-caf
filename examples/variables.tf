@@ -1169,15 +1169,6 @@ variable "data_factory_integration_runtime_azure_ssis" {
   type    = any
   default = {}
 }
-variable "frontdoor_rules_engine" {
-  type    = any
-  default = {}
-}
-variable "frontdoor_custom_https_configuration" {
-  type    = any
-  default = {}
-}
-
 
 variable "active_directory_domain_service" {
   type    = any
