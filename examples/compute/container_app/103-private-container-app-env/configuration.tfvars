@@ -224,12 +224,6 @@ container_apps = {
           percentage      = 30
         }
       }
-      custom_domain = {
-        example = {
-          certificate_key = "caec1"
-          name            = "example.com"
-        }
-      }
     }
     secret = [
       {
