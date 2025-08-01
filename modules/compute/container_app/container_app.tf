@@ -13,9 +13,46 @@ resource "azurerm_container_app" "ca" {
   resource_group_name          = local.resource_group_name
   container_app_environment_id = var.container_app_environment_id
   revision_mode                = var.settings.revision_mode
+  workload_profile_name        = try(var.settings.workload_profile_name, null)
+  max_inactive_revisions       = try(var.settings.max_inactive_revisions, null)
   tags                         = merge(local.tags, try(var.settings.tags, null))
 
   template {
+    termination_grace_period_seconds = try(var.settings.template.termination_grace_period_seconds, null)
+
+    dynamic "init_container" {
+      for_each = try(var.settings.template.init_containers, {})
+
+      content {
+        name    = init_container.value.name
+        image   = init_container.value.image
+        args    = try(init_container.value.args, null)
+        command = try(init_container.value.command, null)
+
+        dynamic "env" {
+          for_each = try(init_container.value.env, {})
+
+          content {
+            name        = env.value.name
+            secret_name = try(env.value.secret_name, null)
+            value       = try(env.value.value, null)
+          }
+        }
+
+        dynamic "volume_mounts" {
+          for_each = try(init_container.value.volume_mounts, {})
+
+          content {
+            name = volume_mounts.value.name
+            path = volume_mounts.value.path
+          }
+        }
+
+        cpu    = try(init_container.value.cpu, null)
+        memory = try(init_container.value.memory, null)
+      }
+    }
+
     dynamic "container" {
       for_each = var.settings.template.container
 
@@ -120,7 +157,6 @@ resource "azurerm_container_app" "ca" {
         }
       }
     }
-
     dynamic "azure_queue_scale_rule" {
       for_each = try(var.settings.template.azure_queue_scale_rule, {})
       content {
@@ -195,6 +231,15 @@ resource "azurerm_container_app" "ca" {
     max_replicas    = try(var.settings.template.max_replicas, null)
     revision_suffix = try(var.settings.template.revision_suffix, null)
 
+    dynamic "service_bind" {
+      for_each = try(var.settings.template.service_binds, [])
+
+      content {
+        name       = try(service_bind.value.name, null)
+        service_id = service_bind.value.service_id
+      }
+    }
+
     dynamic "volume" {
       for_each = try(var.settings.template.volume, {})
 
@@ -212,19 +257,45 @@ resource "azurerm_container_app" "ca" {
     content {
       allow_insecure_connections = try(ingress.value.allow_insecure_connections, null)
       external_enabled           = try(ingress.value.external_enabled, null)
-      fqdn                       = try(ingress.value.fqdn, null)
-      target_port                = ingress.value.target_port
-      transport                  = ingress.value.transport
+      exposed_port              = try(ingress.value.exposed_port, null)
+      fqdn                      = try(ingress.value.fqdn, null)
+      target_port               = ingress.value.target_port
+      transport                 = ingress.value.transport
+      client_certificate_mode   = try(ingress.value.client_certificate_mode, null)
 
-      dynamic "custom_domain" {
-        for_each = try(ingress.value.custom_domain, {})
+      dynamic "cors_policy" {
+        for_each = try(ingress.value.cors_policy, null) == null ? [] : [ingress.value.cors_policy]
 
         content {
-          certificate_binding_type = try(custom_domain.value.certificate_binding_type, null)
-          certificate_id           = can(custom_domain.value.certificate_id) ? custom_domain.value.certificate_id : var.combined_resources.container_app_environment_certificates[try(custom_domain.value.lz_key, var.client_config.landingzone_key)][custom_domain.value.certificate_key].id
-          name                     = custom_domain.value.name
+          allow_credentials = try(cors_policy.value.allow_credentials, null)
+          allowed_headers   = try(cors_policy.value.allowed_headers, null)
+          allowed_methods   = try(cors_policy.value.allowed_methods, null)
+          allowed_origins   = cors_policy.value.allowed_origins
+          expose_headers    = try(cors_policy.value.expose_headers, null)
+          max_age_in_seconds = try(cors_policy.value.max_age_in_seconds, null)
         }
       }
+
+      dynamic "ip_security_restriction" {
+        for_each = try(ingress.value.ip_security_restrictions, [])
+
+        content {
+          action           = ip_security_restriction.value.action
+          description      = try(ip_security_restriction.value.description, null)
+          ip_address_range = ip_security_restriction.value.ip_address_range
+          name             = ip_security_restriction.value.name
+        }
+      }
+
+      dynamic "sticky_sessions" {
+        for_each = try(ingress.value.sticky_sessions, null) == null ? [] : [ingress.value.sticky_sessions]
+
+        content {
+          affinity = sticky_sessions.value.affinity
+        }
+      }
+
+      # custom_domain block removed: not supported as a configurable argument in azurerm_container_app.ingress
 
       dynamic "traffic_weight" {
         for_each = try(ingress.value.traffic_weight, {})
@@ -275,6 +346,17 @@ resource "azurerm_container_app" "ca" {
       identity             = can(registry.value.identity.key) ? var.combined_resources.managed_identities[try(registry.value.identity.lz_key, var.client_config.landingzone_key)][registry.value.identity.key].id : try(registry.value.identity.id, null)
       username             = try(registry.value.username, null)
       password_secret_name = try(registry.value.password_secret_name, null)
+    }
+  }
+
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+
+    content {
+      create = try(timeouts.value.create, null)
+      update = try(timeouts.value.update, null)
+      read   = try(timeouts.value.read, null)
+      delete = try(timeouts.value.delete, null)
     }
   }
 }
