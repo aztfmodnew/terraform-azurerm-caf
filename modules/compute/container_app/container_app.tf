@@ -43,13 +43,15 @@ resource "azurerm_container_app" "ca" {
           for_each = try(init_container.value.volume_mounts, {})
 
           content {
-            name = volume_mounts.value.name
-            path = volume_mounts.value.path
+            name     = volume_mounts.value.name
+            path     = volume_mounts.value.path
+            sub_path = try(volume_mounts.value.sub_path, null)
           }
         }
 
-        cpu    = try(init_container.value.cpu, null)
-        memory = try(init_container.value.memory, null)
+        cpu                = try(init_container.value.cpu, null)
+        memory             = try(init_container.value.memory, null)
+        ephemeral_storage  = try(init_container.value.ephemeral_storage, null)
       }
     }
 
@@ -63,6 +65,7 @@ resource "azurerm_container_app" "ca" {
         command = try(container.value.command, null)
         cpu     = container.value.cpu
         memory  = container.value.memory
+        ephemeral_storage = try(container.value.ephemeral_storage, null)
 
         dynamic "env" {
           for_each = try(container.value.env, {})
@@ -151,8 +154,9 @@ resource "azurerm_container_app" "ca" {
           for_each = try(container.value.volume_mounts, {})
 
           content {
-            name = volume_mounts.value.name
-            path = volume_mounts.value.path
+            name       = volume_mounts.value.name
+            path       = volume_mounts.value.path
+            sub_path   = try(volume_mounts.value.sub_path, null)
           }
         }
       }
@@ -165,7 +169,7 @@ resource "azurerm_container_app" "ca" {
         queue_length = azure_queue_scale_rule.value.queue_length
 
         dynamic "authentication" {
-          for_each = azure_queue_scale_rule.value.authentication
+          for_each = try(azure_queue_scale_rule.value.authentication, [])
 
           content {
             secret_name       = authentication.value.secret_name
@@ -231,22 +235,14 @@ resource "azurerm_container_app" "ca" {
     max_replicas    = try(var.settings.template.max_replicas, null)
     revision_suffix = try(var.settings.template.revision_suffix, null)
 
-    dynamic "service_bind" {
-      for_each = try(var.settings.template.service_binds, [])
-
-      content {
-        name       = try(service_bind.value.name, null)
-        service_id = service_bind.value.service_id
-      }
-    }
-
     dynamic "volume" {
       for_each = try(var.settings.template.volume, {})
 
       content {
-        name         = volume.value.name
-        storage_name = try(volume.value.storage_name, null)
-        storage_type = try(volume.value.storage_type, null)
+        name          = volume.value.name
+        storage_name  = try(volume.value.storage_name, null)
+        storage_type  = try(volume.value.storage_type, "EmptyDir")
+        mount_options = try(volume.value.mount_options, null)
       }
     }
   }
@@ -258,21 +254,20 @@ resource "azurerm_container_app" "ca" {
       allow_insecure_connections = try(ingress.value.allow_insecure_connections, null)
       external_enabled           = try(ingress.value.external_enabled, null)
       exposed_port              = try(ingress.value.exposed_port, null)
-      fqdn                      = try(ingress.value.fqdn, null)
       target_port               = ingress.value.target_port
-      transport                 = ingress.value.transport
+      transport                 = try(ingress.value.transport, "auto")
       client_certificate_mode   = try(ingress.value.client_certificate_mode, null)
 
-      dynamic "cors_policy" {
-        for_each = try(ingress.value.cors_policy, null) == null ? [] : [ingress.value.cors_policy]
+      dynamic "cors" {
+        for_each = try(ingress.value.cors, null) == null ? [] : [ingress.value.cors]
 
         content {
-          allow_credentials = try(cors_policy.value.allow_credentials, null)
-          allowed_headers   = try(cors_policy.value.allowed_headers, null)
-          allowed_methods   = try(cors_policy.value.allowed_methods, null)
-          allowed_origins   = cors_policy.value.allowed_origins
-          expose_headers    = try(cors_policy.value.expose_headers, null)
-          max_age_in_seconds = try(cors_policy.value.max_age_in_seconds, null)
+          allow_credentials_enabled = try(cors.value.allow_credentials_enabled, false)
+          allowed_headers          = try(cors.value.allowed_headers, null)
+          allowed_methods          = try(cors.value.allowed_methods, null)
+          allowed_origins          = cors.value.allowed_origins
+          exposed_headers          = try(cors.value.exposed_headers, null)
+          max_age_in_seconds       = try(cors.value.max_age_in_seconds, null)
         }
       }
 
@@ -286,16 +281,6 @@ resource "azurerm_container_app" "ca" {
           name             = ip_security_restriction.value.name
         }
       }
-
-      dynamic "sticky_sessions" {
-        for_each = try(ingress.value.sticky_sessions, null) == null ? [] : [ingress.value.sticky_sessions]
-
-        content {
-          affinity = sticky_sessions.value.affinity
-        }
-      }
-
-      # custom_domain block removed: not supported as a configurable argument in azurerm_container_app.ingress
 
       dynamic "traffic_weight" {
         for_each = try(ingress.value.traffic_weight, {})
@@ -316,7 +301,7 @@ resource "azurerm_container_app" "ca" {
     content {
       app_id       = dapr.value.app_id
       app_port     = try(dapr.value.app_port, null)
-      app_protocol = try(dapr.value.app_protocol, null)
+      app_protocol = try(dapr.value.app_protocol, "http")
     }
   }
 
@@ -324,8 +309,10 @@ resource "azurerm_container_app" "ca" {
     for_each = try(var.settings.secret, {})
 
     content {
-      name  = secret.value.name
-      value = secret.value.value
+      name                = secret.value.name
+      value               = try(secret.value.value, null)
+      identity            = try(secret.value.identity, null)
+      key_vault_secret_id = try(secret.value.key_vault_secret_id, null)
     }
   }
 
