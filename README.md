@@ -1,5 +1,6 @@
 # Cloud Adoption Framework for Azure - Terraform module
 
+[![PR all-tests](https://github.com/aztfmodnew/terraform-azurerm-caf/actions/workflows/pr_tests-scenarios.yaml/badge.svg)](https://github.com/aztfmodnew/terraform-azurerm-caf/actions/workflows/pr_tests-scenarios.yaml)
 [![Integration tests](https://github.com/aztfmodnew/terraform-azurerm-caf/actions/workflows/weekly_workflow.yaml/badge.svg)](https://github.com/aztfmodnew/terraform-azurerm-caf/actions/workflows/weekly_workflow.yaml)
 
 > :warning: This solution, offered by the Open-Source community, it's based on [https://github.com/aztfmod](https://github.com/aztfmod) and is not supported by Microsoft. It's a community effort to keep the project alive and up to date. If you want to support the project, please consider contributing with code, documentation or any other way you can.
