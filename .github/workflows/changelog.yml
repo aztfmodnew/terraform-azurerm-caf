@@ -9,6 +9,8 @@ on:
 
 jobs:
   changelog:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     name: Generate and Commit Changelog
     # Only run if it's a push to main OR a merged PR to main
