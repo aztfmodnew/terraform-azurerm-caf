@@ -361,6 +361,55 @@ terraform {
 - `modules/networking/network_manager/` - Multi-resource module pattern
 - `examples/` - Updated with azurecaf provider support
 
+## Important Terraform Constraints
+
+### Lifecycle Block Limitations
+
+**The `ignore_changes` in lifecycle blocks cannot be dynamically evaluated and must be a static list:**
+
+```hcl
+# ❌ INCORRECT - Dynamic ignore_changes
+resource "azurerm_resource_type" "resource" {
+  lifecycle {
+    ignore_changes = var.use_managed_certificate ? [attribute1, attribute2] : []
+  }
+}
+
+# ✅ CORRECT - Static ignore_changes
+resource "azurerm_resource_type" "resource" {
+  lifecycle {
+    ignore_changes = [attribute1, attribute2]
+  }
+}
+```
+
+**Guidelines:**
+- Use static lists for `ignore_changes`, `replace_triggered_by`, etc.
+- If conditional lifecycle behavior is needed, use separate resource blocks or modules
+- Document why specific attributes are ignored in comments
+
+### Location Parameter Guidelines
+
+**Only add location parameter if the Azure resource requires it:**
+
+- Some resources like `azurerm_container_app_custom_domain` inherit location from their parent resource
+- Do not include location parameter in submodules or module calls for resources that don't support it
+- Check the Azure provider documentation to verify if location is required
+
+```hcl
+# ❌ INCORRECT - Adding location when not supported
+module "custom_domain" {
+  source   = "./custom_domain"
+  location = var.location  # This resource inherits location
+}
+
+# ✅ CORRECT - Only include if resource supports it
+module "custom_domain" {
+  source = "./custom_domain"
+  # No location parameter needed
+}
+```
+
 ## Submodule Dependency Pattern
 
 When creating modules with multiple submodules (subresources), follow the established pattern used by modules like `network_manager` and `cdn_frontdoor_profile`. This pattern ensures proper dependency management and consistency across the CAF framework.
@@ -1038,6 +1087,31 @@ resource "azurerm_resource_type" "critical_resource" {
 - Key Vaults with critical secrets
 - Networking resources that would cause widespread outages
 
+#### Lifecycle Block Constraints
+
+**Important:** The `ignore_changes` in lifecycle blocks cannot be dynamically evaluated and must be a static list:
+
+```hcl
+# ❌ INCORRECT - Dynamic ignore_changes
+resource "azurerm_resource_type" "resource" {
+  lifecycle {
+    ignore_changes = var.use_managed_certificate ? [attribute1, attribute2] : []
+  }
+}
+
+# ✅ CORRECT - Static ignore_changes
+resource "azurerm_resource_type" "resource" {
+  lifecycle {
+    ignore_changes = [attribute1, attribute2]
+  }
+}
+```
+
+**Guidelines:**
+- Use static lists for `ignore_changes`, `replace_triggered_by`, etc.
+- If conditional lifecycle behavior is needed, use separate resource blocks or modules
+- Document why specific attributes are ignored in comments
+
 ### Module Integration and Wiring Patterns
 
 When adding new modules to the CAF framework, follow these integration patterns:
@@ -1454,9 +1528,12 @@ When updating modules, always test from the `/examples` directory:
 
 ```bash
 # Navigate to examples directory
-cd /home/fdr001/source/github/aztfmodnew/terraform-azurerm-caf/examples
+cd repository/examples
 
 # Test with specific module configuration
+terraform_with_var_files --dir /category/module/example/  --action test  --auto auto  --workspace example
+
+# Plan with specific module configuration
 terraform_with_var_files --dir /category/module/example/  --action plan  --auto auto  --workspace example
 
 # Full deployment test
@@ -2031,396 +2108,6 @@ service_plan_id = coalesce(
 
 - Search in workspace for the existing argument definitions and use them as a reference, if available.
 
-## Updating Existing Modules
-
-When updating existing modules, follow these steps:
-
-### Module Modernization Process
-
-1. **Review the existing module structure**: Understand how the current module is organized, including its variables, outputs, and resources.
-
-2. **Identify the changes needed in resources and variables for the existing module**: Determine what needs to be added, modified, or removed in the module. For that review https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/nameofresource, for example, if resource is `azurerm_container_app`, review https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/container_app.
-
-3. **Update the module files**: Make the necessary changes in the related files, such as `main.tf`, `variables.tf`, `outputs.tf`, and any other relevant files.
-
-### Deprecated Resource Migration
-
-When migrating from deprecated resources:
-
-#### Pre-Migration Checklist
-
-1. **Identify deprecated resources** in the current module
-2. **Find the modern equivalent** using Azure provider documentation
-3. **Assess breaking changes** between old and new resources
-4. **Plan migration strategy** (in-place vs. new module)
-5. **Update examples** to use modern resources
-
-#### Migration Steps
-
-1. **Update resource definitions** to use modern Azure resources
-2. **Update variable schemas** to match new resource requirements
-3. **Update outputs** to expose new resource attributes
-4. **Add lifecycle management** if needed for complex dependencies
-5. **Update documentation** and examples
-6. **Test thoroughly** with example configurations
-
-#### Post-Migration Validation
-
-1. **Verify all arguments** are correctly mapped
-2. **Test resource creation/update/deletion** cycles
-3. **Validate outputs** are accessible and correct
-4. **Check dependency resolution** works properly
-5. **Ensure backward compatibility** where possible
-
-### Testing and Validation
-
-When updating modules, always test from the `/examples` directory:
-
-```bash
-# Navigate to examples directory
-cd /home/fdr001/source/github/aztfmodnew/terraform-azurerm-caf/examples
-
-# Test with specific module configuration
-terraform_with_var_files --dir /category/module/example/  --action plan  --auto auto  --workspace example
-
-# Full deployment test
-terraform_with_var_files --dir /category/module/example/  --action apply  --auto auto  --workspace example
-
-# Cleanup test
-terraform_with_var_files --dir /category/module/example/  --action destroy  --auto auto  --workspace example
-```
-
-### Documentation Updates
-
-When updating modules, ensure:
-
-1. **Update module README.md** with new configuration examples
-2. **Update example documentation** in `/examples/category/module/README.md`
-3. **Document breaking changes** in appropriate changelog or migration guide
-4. **Update variable descriptions** to reflect new functionality
-5. **Add examples** for new features or patterns
-
-### Quality Assurance
-
-Before considering a module update complete:
-
-1. **All examples must work** when tested from `/examples` directory
-2. **No deprecated resources** should be used in new code
-3. **Proper lifecycle management** must be implemented where needed
-4. **Dependency resolution** must follow established patterns
-5. **Integration with CAF framework** must be properly wired
-6. **Documentation** must be updated and accurate
-
-### Debugging Test Failures
-
-When debugging test failures, follow these systematic troubleshooting steps:
-
-#### Primary Debugging Strategy
-
-1. **First step: Review equivalent examples within `/examples`**
-   - Search for similar modules or configurations in the examples directory
-   - Compare the tfvars structure and content with working examples
-   - Look for patterns in how other modules are configured
-   - Pay attention to naming conventions and object structures
-
-2. **Verify tfvars alignment with module expectations**
-   - The tfvars files must be adjusted to match the module's expected structure
-   - **Rule: tfvars should adapt to the module, not the other way around**
-   - Review module variables and expected input structure
-   - Check for mismatched attribute names or incorrect object nesting
-
-#### Common tfvars Issues
-
-1. **Incorrect object structure**: Module expects flat attributes but tfvars provides nested objects (or vice versa)
-2. **Wrong attribute names**: Using deprecated or incorrect property names
-3. **Missing required blocks**: Not providing mandatory configuration blocks
-4. **Mixing configuration patterns**: Combining basic infrastructure config with application-specific config
-
-#### Debugging Process
-
-1. **Compare with working examples**:
-   ```bash
-   # Find similar examples
-   find /examples -name "*.tfvars" -path "*similar_service*" | head -5
-   ```
-
-2. **Validate module expectations**:
-   - Read module's `variables.tf` to understand expected structure
-   - Review module's resource definitions to see how variables are used
-   - Check for any transformation logic in `locals.tf`
-
-3. **Test incrementally**:
-   - Start with minimal configuration from working examples
-   - Add complexity gradually
-   - Test each addition to isolate issues
-
-#### Configuration Philosophy
-
-- **Modules are the source of truth**: Module design and structure should not be changed to accommodate incorrect tfvars
-- **Examples provide patterns**: Use existing examples as templates for similar use cases
-- **Consistency is key**: Follow established patterns across the CAF framework
-- **Separation of concerns**: Distinguish between infrastructure configuration and application configuration
-
-### Dynamic Blocks
-
-These are the recommended patterns for creating configuration blocks dynamically and optionally in Terraform.
-
-#### Optional Single Block
-
-Used when a configuration block can exist zero or one time. The controlling variable (`var.settings.block` in this case) should be an object that can be `null`.
-
-```hcl
-dynamic "block" {
-  # This pattern creates a list with 0 or 1 element.
-  # It's the clearest way to handle a single optional block.
-  for_each = var.settings.block == null ? [] : [var.settings.block]
-
-  content {
-    # Since there's only one element, its content is accessed with "block.value".
-    name  = block.value.name
-    value = block.value.value
-  }
-}
-```
-
-#### Optional Multiple Blocks (from a List)
-
-Used to create multiple blocks from a list of objects (`list(object)`). This is ideal when the order of the blocks is important and they are identified by their position.
-
-```hcl
-dynamic "block" {
-  # Iterates over the list. If the variable is null, "try" converts it
-  # into an empty list [] so that no block is generated.
-  for_each = try(var.settings.block, [])
-
-  content {
-    # "block.value" represents each object within the list.
-    name  = block.value.name
-    value = block.value.value  }
-}
-```
-
-#### Optional Multiple Blocks (from a Map)
-
-Used to create multiple blocks from a map of objects (`map(object)`). It's the best option when each block needs a unique and stable identifier (the map key) and the order is not important.
-
-```hcl
-dynamic "block" {
-  # Iterates over the map. If the variable is null, "try" converts it
-  # into an empty map {} so that no block is generated.
-  for_each = try(var.settings.block, {})
-
-  content {
-    # "block.key" is the unique identifier for each element (the map key).
-    # "block.value" is the object associated with that key.
-    name  = block.key
-    value = block.value.value
-  }
-}
-```
-
-#### dynamic block identity
-
-Use the following structure for dynamic block identity:
-
-```hcl
-  dynamic "identity" {
-    for_each = try(var.settings.identity, null) == null ? [] : [var.settings.identity]
-
-    content {
-      type         = var.settings.identity.type
-      identity_ids = contains(["userassigned", "systemassigned", "systemassigned, userassigned"], lower(var.settings.identity.type)) ? local.managed_identities : null
-    }
-  }
-```
-
-### dynamic block timeouts
-
-Based on the values defined in timeouts,add allways the following structure for dynamic block timeouts:
-
-```hcl
-  dynamic "timeouts" {
-    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
-
-    content {
-      create = try(timeouts.create, null)
-      update = try(timeouts.update, null)
-      read   = try(timeouts.read, null)
-      delete = try(timeouts.delete, null)
-    }
-  }
-```
-
-or
-
-```hcl
-  dynamic "timeouts" {
-    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
-
-    content {
-      create = try(timeouts.create, null)
-      update = try(timeouts.update, null)
-      delete = try(timeouts.delete, null)
-    }
-  }
-```
-
-Change null for default values if default values are provided.
-
-### Arguments
-
-#### Identify the changes needed in resources and variables for the existing module
-
-Determine what needs to be added, modified, or removed in the module.
-
-For that review [https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/nameofresource , for example, if resource is `azurerm_container_app`, review https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/container_app](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/nameofresource).
-
-If a version of the provider is not specified, use the latest version available in the provider documentation.
-
-If a version of the provider is specified, use `https://registry.terraform.io/providers/hashicorp/azurerm/version/docs/resources/nameofresource` , for example, if resource is `azurerm_container_app` and version is 4.32.0, review [https://registry.terraform.io/providers/hashicorp/azurerm/4.32.0/docs/resources/container_app](https://registry.terraform.io/providers/hashicorp/azurerm/version/docs/resources/nameofresource).
-
-#### Default values
-
-For arguments that do not have a default value, use the following structure:
-
-```hcl
-argument_name = try(var.argument_name, null)
-```
-
-For arguments that have default values, use the following structure, adjust default_value:
-
-```hcl
-argument_name = try(var.argument_name, default_value)
-```
-
-##### Conditional Arguments
-
-For arguments that are conditional, use the following structure:
-
-```hcl
-argument_name = var.condition ? var.argument_name : null
-```
-
-##### Tags
-
-For tags, use the following structure:
-
-```hcl
-tags                = merge(local.tags, try(var.settings.tags, null))
-```
-
-##### Resource Group
-
-For resource groups, use the following structure:
-
-```hcl
-resource_group_name = local.resource_group.name
-```
-
-##### Location
-
-For location, use the following structure:
-
-```hcl
-location            = local.location
-```
-
-##### argument service_plan_id
-
-Use the following structure for argument service_plan_id:
-
-```hcl
-
-service_plan_id = coalesce(
-    try(var.settings.service_plan_id, null),
-    try(var.remote_objects.service_plans[try(var.settings.service_plan.lz_key, var.client_config.landingzone_key)][try(var.settings.service_plan.key, var.settings.service_plan_key)].id, null),
-    try(var.remote_objects.app_service_plans[try(var.settings.app_service_plan.lz_key, var.client_config.landingzone_key)][try(var.settings.app_service_plan.key, var.settings.app_service_plan_key)].id, null)
-  )
-```
-
-##### Other Instructions
-
-- Search in workspace for the existing argument definitions and use them as a reference, if available.
-
-## Updating Existing Modules
-
-When updating existing modules, follow these steps:
-
-### Module Modernization Process
-
-1. **Review the existing module structure**: Understand how the current module is organized, including its variables, outputs, and resources.
-
-2. **Identify the changes needed in resources and variables for the existing module**: Determine what needs to be added, modified, or removed in the module. For that review https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/nameofresource, for example, if resource is `azurerm_container_app`, review https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/container_app.
-
-3. **Update the module files**: Make the necessary changes in the related files, such as `main.tf`, `variables.tf`, `outputs.tf`, and any other relevant files.
-
-### Deprecated Resource Migration
-
-When migrating from deprecated resources:
-
-#### Pre-Migration Checklist
-
-1. **Identify deprecated resources** in the current module
-2. **Find the modern equivalent** using Azure provider documentation
-3. **Assess breaking changes** between old and new resources
-4. **Plan migration strategy** (in-place vs. new module)
-5. **Update examples** to use modern resources
-
-#### Migration Steps
-
-1. **Update resource definitions** to use modern Azure resources
-2. **Update variable schemas** to match new resource requirements
-3. **Update outputs** to expose new resource attributes
-4. **Add lifecycle management** if needed for complex dependencies
-5. **Update documentation** and examples
-6. **Test thoroughly** with example configurations
-
-#### Post-Migration Validation
-
-1. **Verify all arguments** are correctly mapped
-2. **Test resource creation/update/deletion** cycles
-3. **Validate outputs** are accessible and correct
-4. **Check dependency resolution** works properly
-5. **Ensure backward compatibility** where possible
-
-### Testing and Validation
-
-When updating modules, always test from the `/examples` directory:
-
-```bash
-# Navigate to examples directory
-cd /home/fdr001/source/github/aztfmodnew/terraform-azurerm-caf/examples
-
-# Test with specific module configuration
-terraform_with_var_files --dir /category/module/example/  --action plan  --auto auto  --workspace example
-
-# Full deployment test
-terraform_with_var_files --dir /category/module/example/  --action apply  --auto auto  --workspace example
-
-# Cleanup test
-terraform_with_var_files --dir /category/module/example/  --action destroy  --auto auto  --workspace example
-```
-
-### Documentation Updates
-
-When updating modules, ensure:
-
-1. **Update module README.md** with new configuration examples
-2. **Update example documentation** in `/examples/category/module/README.md`
-3. **Document breaking changes** in appropriate changelog or migration guide
-4. **Update variable descriptions** to reflect new functionality
-5. **Add examples** for new features or patterns
-
-### Quality Assurance
-
-Before considering a module update complete:
-
-1. **All examples must work** when tested from `/examples` directory
-2. **No deprecated resources** should be used in new code
-3. **Proper lifecycle management** must be implemented where needed
-4. **Dependency resolution** must follow established patterns
-5. **Integration with CAF framework** must be properly wired
-6. **Documentation** must be updated and accurate
 
 ## other instructions
 

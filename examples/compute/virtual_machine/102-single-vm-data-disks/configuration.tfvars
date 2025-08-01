@@ -55,7 +55,7 @@ virtual_machines = {
       linux = {
         name                            = "bastion"
         resource_group_key              = "vm_sg"
-        size                            = "Standard_F2"
+        size                            = "Standard_F2s_v2"
         admin_username                  = "adminuser"
         disable_password_authentication = true
 

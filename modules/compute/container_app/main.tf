@@ -1,3 +1,4 @@
+# This file is maintained by legacy purposes. Please do not modify this file.
 terraform {
   required_version = ">= 1.6.0"
   required_providers {

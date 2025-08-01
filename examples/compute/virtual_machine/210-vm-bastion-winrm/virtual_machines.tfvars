@@ -37,7 +37,7 @@ virtual_machines = {
     virtual_machine_settings = {
       linux = {
         name                            = "bastion_host"
-        size                            = "Standard_F2s"
+        size                            = "Standard_F2s_v2s"
         admin_username                  = "adminuser"
         disable_password_authentication = true
 
@@ -104,7 +104,7 @@ virtual_machines = {
     virtual_machine_settings = {
       windows = {
         name           = "server1"
-        size           = "Standard_F2s_v2"
+        size           = "Standard_F2s_v2s_v2"
         admin_username = "adminuser"
 
         # Value of the nic keys to attach the VM. The first one in the list is the default nic

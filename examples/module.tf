@@ -44,6 +44,7 @@ module "example" {
     azuread_roles                       = var.azuread_roles
     azuread_service_principal_passwords = var.azuread_service_principal_passwords
     azuread_service_principals          = var.azuread_service_principals
+    azuread_service_principal_names     = var.azuread_service_principal_names
     azuread_users                       = var.azuread_users
   }
   # # Defaulted, you can declare an override if you dont target Azure public

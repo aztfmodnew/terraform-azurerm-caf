@@ -127,7 +127,7 @@ virtual_machines = {
     virtual_machine_settings = {
       windows = {
         name = "win_cse"
-        size = "Standard_F2"
+        size = "Standard_F2s_v2"
 
         admin_username = "adminuser"
         # Spot VM to save money
@@ -197,7 +197,7 @@ virtual_machines = {
     virtual_machine_settings = {
       linux = {
         name                            = "linux_cse"
-        size                            = "Standard_F2"
+        size                            = "Standard_F2s_v2"
         admin_username                  = "adminuser"
         disable_password_authentication = true
 

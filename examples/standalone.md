@@ -116,7 +116,7 @@ virtual_machines = {
     virtual_machine_settings = {
       linux = {
         name                            = "example_vm1"
-        size                            = "Standard_F2"
+        size                            = "Standard_F2s_v2"
         admin_username                  = "adminuser"
         disable_password_authentication = true
 

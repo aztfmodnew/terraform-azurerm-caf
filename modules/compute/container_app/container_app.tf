@@ -13,9 +13,48 @@ resource "azurerm_container_app" "ca" {
   resource_group_name          = local.resource_group_name
   container_app_environment_id = var.container_app_environment_id
   revision_mode                = var.settings.revision_mode
+  workload_profile_name        = try(var.settings.workload_profile_name, null)
+  max_inactive_revisions       = try(var.settings.max_inactive_revisions, null)
   tags                         = merge(local.tags, try(var.settings.tags, null))
 
   template {
+    termination_grace_period_seconds = try(var.settings.template.termination_grace_period_seconds, null)
+
+    dynamic "init_container" {
+      for_each = try(var.settings.template.init_containers, {})
+
+      content {
+        name    = init_container.value.name
+        image   = init_container.value.image
+        args    = try(init_container.value.args, null)
+        command = try(init_container.value.command, null)
+
+        dynamic "env" {
+          for_each = try(init_container.value.env, {})
+
+          content {
+            name        = env.value.name
+            secret_name = try(env.value.secret_name, null)
+            value       = try(env.value.value, null)
+          }
+        }
+
+        dynamic "volume_mounts" {
+          for_each = try(init_container.value.volume_mounts, {})
+
+          content {
+            name     = volume_mounts.value.name
+            path     = volume_mounts.value.path
+            sub_path = try(volume_mounts.value.sub_path, null)
+          }
+        }
+
+        cpu                = try(init_container.value.cpu, null)
+        memory             = try(init_container.value.memory, null)
+        ephemeral_storage  = try(init_container.value.ephemeral_storage, null)
+      }
+    }
+
     dynamic "container" {
       for_each = var.settings.template.container
 
@@ -26,6 +65,7 @@ resource "azurerm_container_app" "ca" {
         command = try(container.value.command, null)
         cpu     = container.value.cpu
         memory  = container.value.memory
+        ephemeral_storage = try(container.value.ephemeral_storage, null)
 
         dynamic "env" {
           for_each = try(container.value.env, {})
@@ -114,13 +154,13 @@ resource "azurerm_container_app" "ca" {
           for_each = try(container.value.volume_mounts, {})
 
           content {
-            name = volume_mounts.value.name
-            path = volume_mounts.value.path
+            name       = volume_mounts.value.name
+            path       = volume_mounts.value.path
+            sub_path   = try(volume_mounts.value.sub_path, null)
           }
         }
       }
     }
-
     dynamic "azure_queue_scale_rule" {
       for_each = try(var.settings.template.azure_queue_scale_rule, {})
       content {
@@ -129,7 +169,7 @@ resource "azurerm_container_app" "ca" {
         queue_length = azure_queue_scale_rule.value.queue_length
 
         dynamic "authentication" {
-          for_each = azure_queue_scale_rule.value.authentication
+          for_each = try(azure_queue_scale_rule.value.authentication, [])
 
           content {
             secret_name       = authentication.value.secret_name
@@ -199,9 +239,10 @@ resource "azurerm_container_app" "ca" {
       for_each = try(var.settings.template.volume, {})
 
       content {
-        name         = volume.value.name
-        storage_name = try(volume.value.storage_name, null)
-        storage_type = try(volume.value.storage_type, null)
+        name          = volume.value.name
+        storage_name  = try(volume.value.storage_name, null)
+        storage_type  = try(volume.value.storage_type, "EmptyDir")
+        mount_options = try(volume.value.mount_options, null)
       }
     }
   }
@@ -212,17 +253,32 @@ resource "azurerm_container_app" "ca" {
     content {
       allow_insecure_connections = try(ingress.value.allow_insecure_connections, null)
       external_enabled           = try(ingress.value.external_enabled, null)
-      fqdn                       = try(ingress.value.fqdn, null)
-      target_port                = ingress.value.target_port
-      transport                  = ingress.value.transport
+      exposed_port              = try(ingress.value.exposed_port, null)
+      target_port               = ingress.value.target_port
+      transport                 = try(ingress.value.transport, "auto")
+      client_certificate_mode   = try(ingress.value.client_certificate_mode, null)
 
-      dynamic "custom_domain" {
-        for_each = try(ingress.value.custom_domain, {})
+      dynamic "cors" {
+        for_each = try(ingress.value.cors, null) == null ? [] : [ingress.value.cors]
 
         content {
-          certificate_binding_type = try(custom_domain.value.certificate_binding_type, null)
-          certificate_id           = can(custom_domain.value.certificate_id) ? custom_domain.value.certificate_id : var.combined_resources.container_app_environment_certificates[try(custom_domain.value.lz_key, var.client_config.landingzone_key)][custom_domain.value.certificate_key].id
-          name                     = custom_domain.value.name
+          allow_credentials_enabled = try(cors.value.allow_credentials_enabled, false)
+          allowed_headers          = try(cors.value.allowed_headers, null)
+          allowed_methods          = try(cors.value.allowed_methods, null)
+          allowed_origins          = cors.value.allowed_origins
+          exposed_headers          = try(cors.value.exposed_headers, null)
+          max_age_in_seconds       = try(cors.value.max_age_in_seconds, null)
+        }
+      }
+
+      dynamic "ip_security_restriction" {
+        for_each = try(ingress.value.ip_security_restrictions, [])
+
+        content {
+          action           = ip_security_restriction.value.action
+          description      = try(ip_security_restriction.value.description, null)
+          ip_address_range = ip_security_restriction.value.ip_address_range
+          name             = ip_security_restriction.value.name
         }
       }
 
@@ -245,7 +301,7 @@ resource "azurerm_container_app" "ca" {
     content {
       app_id       = dapr.value.app_id
       app_port     = try(dapr.value.app_port, null)
-      app_protocol = try(dapr.value.app_protocol, null)
+      app_protocol = try(dapr.value.app_protocol, "http")
     }
   }
 
@@ -253,8 +309,10 @@ resource "azurerm_container_app" "ca" {
     for_each = try(var.settings.secret, {})
 
     content {
-      name  = secret.value.name
-      value = secret.value.value
+      name                = secret.value.name
+      value               = try(secret.value.value, null)
+      identity            = try(secret.value.identity, null)
+      key_vault_secret_id = try(secret.value.key_vault_secret_id, null)
     }
   }
 
@@ -275,6 +333,17 @@ resource "azurerm_container_app" "ca" {
       identity             = can(registry.value.identity.key) ? var.combined_resources.managed_identities[try(registry.value.identity.lz_key, var.client_config.landingzone_key)][registry.value.identity.key].id : try(registry.value.identity.id, null)
       username             = try(registry.value.username, null)
       password_secret_name = try(registry.value.password_secret_name, null)
+    }
+  }
+
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+
+    content {
+      create = try(timeouts.value.create, null)
+      update = try(timeouts.value.update, null)
+      read   = try(timeouts.value.read, null)
+      delete = try(timeouts.value.delete, null)
     }
   }
 }

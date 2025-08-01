@@ -13,3 +13,7 @@ output "latest_revision_name" {
 output "outbound_ip_addresses" {
   value = azurerm_container_app.ca.outbound_ip_addresses
 }
+
+output "custom_domains" {
+  value = module.custom_domains
+}

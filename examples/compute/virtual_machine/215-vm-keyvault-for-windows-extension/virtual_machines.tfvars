@@ -53,7 +53,7 @@ virtual_machines = {
     virtual_machine_settings = {
       windows = {
         name = "vm1"
-        size = "Standard_F2"
+        size = "Standard_F2s_v2"
         # use admin credentials from keyvault
         admin_username_key = "admin-username"
         admin_password_key = "admin-password"

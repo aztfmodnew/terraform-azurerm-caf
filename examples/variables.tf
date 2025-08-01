@@ -403,6 +403,11 @@ variable "azuread_service_principals" {
   type    = any
   default = {}
 }
+variable "azuread_service_principal_names" {
+  description = "Configuration object for Azure AD service principals resolved by display name"
+  type        = any
+  default     = {}
+}
 variable "azuread_service_principal_passwords" {
   type    = any
   default = {}
@@ -1164,15 +1169,6 @@ variable "data_factory_integration_runtime_azure_ssis" {
   type    = any
   default = {}
 }
-variable "frontdoor_rules_engine" {
-  type    = any
-  default = {}
-}
-variable "frontdoor_custom_https_configuration" {
-  type    = any
-  default = {}
-}
-
 
 variable "active_directory_domain_service" {
   type    = any

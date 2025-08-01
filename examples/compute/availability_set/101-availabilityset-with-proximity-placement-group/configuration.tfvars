@@ -68,7 +68,7 @@ virtual_machines = {
         availability_set_key            = "avset1"
         proximity_placement_group_key   = "ppg1"
         name                            = "example_vm1"
-        size                            = "Standard_F2"
+        size                            = "Standard_F2s_v2"
         admin_username                  = "adminuser"
         disable_password_authentication = true
         custom_data                     = "compute/availability_set/101-availabilityset-with-proximity-placement-group/scripts/cloud-init/install-rover-tools.config"
@@ -123,7 +123,7 @@ virtual_machines = {
         availability_set_key            = "avset1"
         proximity_placement_group_key   = "ppg1"
         name                            = "example_vm2"
-        size                            = "Standard_F2"
+        size                            = "Standard_F2s_v2"
         admin_username                  = "adminuser"
         disable_password_authentication = true
         custom_data                     = "compute/availability_set/101-availabilityset-with-proximity-placement-group/scripts/cloud-init/install-rover-tools.config"
@@ -202,5 +202,3 @@ diagnostic_storage_accounts = {
     access_tier              = "Cool"
   }
 }
-
-

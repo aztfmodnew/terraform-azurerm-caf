@@ -1,8 +1,21 @@
+
 name: Release Drafter
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: release-drafter
+  cancel-in-progress: true
+
 
 on:
   push:
-    # branches to consider in the event; optional, defaults to all
+    branches:
+      - main
+  pull_request:
+    types: [closed]
     branches:
       - main
 

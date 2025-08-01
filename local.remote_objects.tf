@@ -28,6 +28,7 @@ locals {
     azuread_apps                                   = try(local.combined_objects_azuread_apps, null)
     azuread_groups                                 = try(local.combined_objects_azuread_groups, null)
     azuread_service_principals                     = try(local.combined_objects_azuread_service_principals, null)
+    azuread_service_principal_names                = try(local.combined_objects_azuread_service_principal_names, null)
     azuread_service_principal_passwords            = try(local.combined_objects_azuread_service_principal_passwords, null)
     azuread_users                                  = try(local.combined_objects_azuread_users, null)
     backup_vault_instances                         = try(local.combined_objects_backup_vault_instances, null)

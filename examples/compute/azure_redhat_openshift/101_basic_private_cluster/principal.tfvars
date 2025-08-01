@@ -30,6 +30,14 @@ azuread_applications = {
   }
 }
 
+
+  azuread_service_principal_names = {
+    aro_rp = {
+      display_name = "Azure Red Hat OpenShift RP"
+    }
+  }
+
+
 azuread_service_principals = {
   sp1 = {
     azuread_application = {
@@ -81,26 +89,23 @@ azuread_credentials = {
 role_mapping = {
   built_in_role_mapping = {
     networking = {
-      # subcription level access
+      # subscription level access
       vnet1 = {
         "Contributor" = {
           azuread_service_principals = {
             keys = ["sp1"]
           }
-          object_ids = {
-            keys = ["004c3094-aa2e-47f3-87aa-f82a155ada54"]
-            // To get the value for your tenant use the following coommand:
-            // az ad sp list --display-name "Azure Red Hat OpenShift RP" --query "[0].id" -o tsv
-            // Todo: get object ID from ARO RP ID
-            // add capability to specify SP by name: azuread_service_principal_names = {
-            // # keys = []
-            // cond data source to crack the names to GUID
-            //}
+          azuread_service_principal_names = {
+            keys = ["aro_rp"]
           }
+          # Legacy approach with hardcoded object IDs (now replaced by azuread_service_principal_names)
+          # object_ids = {
+          #   keys = ["004c3094-aa2e-47f3-87aa-f82a155ada54"]
+          #   // To get the value for your tenant use the following command:
+          #   // az ad sp list --display-name "Azure Red Hat OpenShift RP" --query "[0].id" -o tsv
+          # }
         }
       }
     }
-
   }
 }
-

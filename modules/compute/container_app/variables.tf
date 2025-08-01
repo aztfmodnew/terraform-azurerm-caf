@@ -25,3 +25,10 @@ variable "settings" {
   type        = any
 }
 variable "container_app_environment_id" {}
+
+
+variable "remote_objects" {
+  description = "Remote objects for dependencies."
+  type        = any
+  default     = {}
+}

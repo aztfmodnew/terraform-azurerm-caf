@@ -32,6 +32,7 @@ locals {
     azuread_roles                       = try(var.azuread.azuread_roles, {})
     azuread_service_principal_passwords = try(var.azuread.azuread_service_principal_passwords, {})
     azuread_service_principals          = try(var.azuread.azuread_service_principals, {})
+    azuread_service_principal_names     = try(var.azuread.azuread_service_principal_names, {})
     azuread_users                       = try(var.azuread.azuread_users, {})
   }
 
