@@ -1,30 +1,83 @@
-name-template: '$RESOLVED_VERSION'
-tag-template: '$RESOLVED_VERSION'
+name-template: "$RESOLVED_VERSION"
+tag-template: "$RESOLVED_VERSION"
 categories:
-  - title: 'Features'
+  - title: "🚀 Features"
     labels:
-      - 'feature'
-      - 'new submodule'
-  - title: 'Enhancements'
+      - "feature"
+      - "new submodule"
+      - "feat"
+  - title: "✨ Enhancements"
     labels:
-      - 'enhancement'
-  - title: 'Bug Fixes'
+      - "enhancement"
+      - "improvement"
+  - title: "🐛 Bug Fixes"
     labels:
-      - 'fix'
-      - 'bugfix'
-      - 'bug'
-change-template: '- $TITLE (#$NUMBER)'
+      - "fix"
+      - "bugfix"
+      - "bug"
+  - title: "📖 Documentation"
+    labels:
+      - "documentation"
+      - "docs"
+  - title: "🧹 Maintenance"
+    labels:
+      - "chore"
+      - "maintenance"
+      - "dependencies"
+  - title: "♻️ Refactoring"
+    labels:
+      - "refactor"
+  - title: "🧪 Testing"
+    labels:
+      - "test"
+      - "tests"
+change-template: "- $TITLE @$AUTHOR (#$NUMBER)"
 change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.
 version-resolver:
   major:
     labels:
-      - 'major'
+      - "major"
+      - "breaking-change"
   minor:
     labels:
-      - 'minor'
+      - "minor"
+      - "feature"
+      - "new submodule"
+      - "feat"
+      - "enhancement"
   patch:
     labels:
-      - 'patch'
+      - "patch"
+      - "fix"
+      - "bugfix"
+      - "bug"
+      - "docs"
+      - "chore"
   default: patch
 template: |
+  ## What's Changed
+
   $CHANGES
+
+  **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...$RESOLVED_VERSION
+
+# Auto-labeler para PRs con commits convencionales
+autolabeler:
+  - label: "feat"
+    title:
+      - '/^feat(\(.+\))?: .+/'
+  - label: "fix"
+    title:
+      - '/^fix(\(.+\))?: .+/'
+  - label: "docs"
+    title:
+      - '/^docs(\(.+\))?: .+/'
+  - label: "chore"
+    title:
+      - '/^chore(\(.+\))?: .+/'
+  - label: "refactor"
+    title:
+      - '/^refactor(\(.+\))?: .+/'
+  - label: "test"
+    title:
+      - '/^test(\(.+\))?: .+/'
