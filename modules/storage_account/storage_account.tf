@@ -312,7 +312,6 @@ module "data_lake_filesystem" {
 module "file_share" {
   source     = "./file_share"
   for_each   = try(var.storage_account.file_shares, {})
-  depends_on = [azurerm_backup_container_storage_account.container]
 
   storage_account_name = azurerm_storage_account.stg.name
   storage_account_id   = azurerm_storage_account.stg.id

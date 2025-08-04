@@ -3,6 +3,6 @@ module "file_share_file" {
   depends_on = [module.file_share_directory]
   for_each   = try(var.settings.files, {})
 
-  share_id = azurerm_storage_share.fs.id
+  share_id = azurerm_storage_share.fs.url
   settings = each.value
 }

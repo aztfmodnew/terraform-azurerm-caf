@@ -1,3 +1,16 @@
+# Provider features configuration for optimal destroy behavior
+provider_azurerm_features_recovery_service = {
+  # Purge all protected items when destroying the vault
+  purge_protected_items_from_vault_on_destroy = true
+  # Stop protection without retaining data for VMs
+  vm_backup_stop_protection_and_retain_data_on_destroy = false
+}
+
+provider_azurerm_features_recovery_services_vault = {
+  # Don't recover soft deleted backup protected VMs
+  recover_soft_deleted_backup_protected_vm = false
+}
+
 global_settings = {
   default_region = "region1"
   regions = {
@@ -63,7 +76,7 @@ virtual_machines = {
         disable_password_authentication = true
 
         custom_data = {
-          templatefile = "examples/compute/virtual_machine/113-single-linux-custom-data-template/custom_data.tpl"
+          templatefile = "compute/virtual_machine/113-single-linux-custom-data-template/custom_data.tpl"
           my_value     = "my_value"
         }
         dynamic_custom_data = {
@@ -146,6 +159,10 @@ storage_accounts = {
             name = "testdirectory"
           }
         }
+
+        backups = {
+          policy_key = "fs"
+        }
       }
     }
 
@@ -171,6 +188,7 @@ storage_accounts = {
 
     backup = {
       vault_key = "asr1"
+      enable_azurerm_backup_container_storage_account = true
     }
 
     tags = {
@@ -279,5 +297,29 @@ recovery_vaults = {
 
     region = "region1"
 
+    # Disable soft delete for easier destruction in test environments
+    soft_delete_enabled = false
+
+    # Configure custom timeouts for destroy operations
+    timeouts = {
+      create = "60m"
+      update = "30m"
+      delete = "60m"
+    }
+
+    backup_policies = {
+      file_shares = {
+        fs = {
+          name = "FSBackupPolicy"
+          backup = {
+            frequency = "Daily"
+            time      = "23:00"
+          }
+          retention_daily = {
+            count = 10
+          }
+        }
+      }
+    }
   }
 }
