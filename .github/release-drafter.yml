@@ -61,7 +61,7 @@ template: |
 
   **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...$RESOLVED_VERSION
 
-# Auto-labeler para PRs con commits convencionales
+# Auto-labeler for PRs with conventional commits
 autolabeler:
   - label: "feat"
     title:
