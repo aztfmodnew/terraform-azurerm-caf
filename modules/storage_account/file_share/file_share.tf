@@ -26,11 +26,17 @@ resource "azurerm_storage_share" "fs" {
 }
 
 resource "azurerm_backup_container_storage_account" "container" {
-  count = try(var.settings.storage_account.enable_azurerm_backup_container_storage_account, false) ? 1 : 0
+  for_each = try(var.settings.storage_account.enable_azurerm_backup_container_storage_account, false) ? toset(["enabled"]) : toset([])
 
   resource_group_name = try(var.recovery_vault.resource_group_name, var.resource_group_name)
   recovery_vault_name = var.recovery_vault.name
   storage_account_id  = var.storage_account_id
+
+  lifecycle {
+    # This will be destroyed automatically when storage account is destroyed
+    # thanks to purge_protected_items_from_vault_on_destroy = true
+    create_before_destroy = false
+  }
 }
 
 # trunk-ignore(tflint/terraform_required_providers)
@@ -43,4 +49,10 @@ resource "azurerm_backup_protected_file_share" "fs_backup" {
   source_storage_account_id = var.storage_account_id
   source_file_share_name    = azurerm_storage_share.fs.name
   backup_policy_id          = var.recovery_vault.backup_policies.file_shares[var.settings.backups.policy_key].id
+
+  lifecycle {
+    # The locks will be automatically removed when this resource is destroyed
+    # thanks to purge_protected_items_from_vault_on_destroy = true
+    create_before_destroy = false
+  }
 }

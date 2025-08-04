@@ -1,32 +1,98 @@
-
-name: Release Drafter
+name: Release Automation
 
 permissions:
   contents: write
   pull-requests: write
 
 concurrency:
-  group: release-drafter
+  group: release-automation
   cancel-in-progress: true
 
-
 on:
-  push:
-    branches:
-      - main
   pull_request:
     types: [closed]
-    branches:
-      - main
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: "Type of release"
+        required: true
+        default: "patch"
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
 
 jobs:
   update_release_draft:
     runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
+
     steps:
-      # Drafts your next Release notes as Pull Requests are merged into "master"
-      - uses: release-drafter/release-drafter@v6
-        #with:
-          # (Optional) specify config name to use, relative to .github/. Default: release-drafter.yml
-          # config-name: my-config.yml
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set Git User Info
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+
+      # Generate changelog when PR is merged
+      - name: Generate Changelog (PR Merged)
+        if: github.event.pull_request.merged == true
+        id: changelog
+        uses: TriPSs/conventional-changelog-action@v5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          skip-git-pull: true
+          skip-commit: true
+          skip-version-file: false
+          output-file: CHANGELOG.md
+          tag-prefix: ""
+          release-count: "0"
+
+      # Update release draft
+      - name: Update Release Draft
+        uses: release-drafter/release-drafter@v6
+        id: release_drafter
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Commit changelog if it was updated
+      - name: Commit Changelog Changes
+        if: github.event.pull_request.merged == true
+        run: |
+          if [[ -n $(git status --porcelain CHANGELOG.md) ]]; then
+            git add CHANGELOG.md
+            git commit -m "docs: update changelog [skip ci]"
+            git push
+            echo "✅ Changelog updated and committed"
+          else
+            echo "📝 No changelog changes to commit"
+          fi
+
+      # Show release information
+      - name: Show Release Information
+        run: |
+          echo "🏷️ Tag Name: ${{ steps.release_drafter.outputs.tag_name }}"
+          echo "📝 Release Name: ${{ steps.release_drafter.outputs.name }}"
+          echo "🔢 Version: ${{ steps.changelog.outputs.version || 'N/A' }}"
+          echo "🆔 Release ID: ${{ steps.release_drafter.outputs.id || 'N/A' }}"
+
+      # Manual release creation (workflow_dispatch)
+      - name: Create Release (Manual)
+        if: github.event_name == 'workflow_dispatch'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.release_drafter.outputs.tag_name }}
+          name: ${{ steps.release_drafter.outputs.name }}
+          body: ${{ steps.release_drafter.outputs.body }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

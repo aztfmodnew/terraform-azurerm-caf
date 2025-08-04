@@ -65,6 +65,9 @@ provider "azurerm" {
       roll_instances_when_required  = var.provider_azurerm_features_virtual_machine_scale_set.roll_instances_when_required
       scale_to_zero_before_deletion = var.provider_azurerm_features_virtual_machine_scale_set.scale_to_zero_before_deletion
     }
+    databricks_workspace {
+      force_delete = var.provider_azurerm_features_databricks_workspace.force_delete
+    }
   }
 }
 
