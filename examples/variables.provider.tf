@@ -76,3 +76,9 @@ variable "provider_azurerm_features_virtual_machine_scale_set" {
     scale_to_zero_before_deletion = true
   }
 }
+
+variable "provider_azurerm_features_databricks_workspace" {
+  default = {
+    force_delete = true
+  }
+}
