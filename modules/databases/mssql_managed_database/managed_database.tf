@@ -1,13 +1,3 @@
-resource "azurecaf_name" "manageddb" {
-
-  name          = var.settings.name
-  resource_type = "azurerm_mssql_database"
-  prefixes      = var.global_settings.prefixes
-  random_length = var.global_settings.random_length
-  clean_input   = true
-  passthrough   = var.global_settings.passthrough
-}
-
 resource "azapi_resource" "manageddb" {
   type      = "Microsoft.Resources/deployments@2021-04-01"
   name      = format("manageddb-%s", azurecaf_name.manageddb.result)
@@ -60,7 +50,7 @@ resource "azapi_resource" "manageddb" {
     on_failure = fail
     command = format(
       "az rest --method delete --url https://management.azure.com%s?api-version=2021-11-01",
-      jsondecode(self.output).properties.outputs.id.value
+      self.output.properties.outputs.id.value
     )
   }
 }

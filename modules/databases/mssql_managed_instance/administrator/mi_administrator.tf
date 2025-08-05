@@ -6,6 +6,7 @@ data "azuread_user" "upn" {
 }
 
 resource "null_resource" "set_mi_ad_admin" {
+  count = local.valid_admin ? 1 : 0
 
   triggers = {
     object_id = local.object_id
