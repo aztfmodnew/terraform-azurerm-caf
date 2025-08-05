@@ -1,8 +1,8 @@
 global_settings = {
   default_region = "region1"
   regions = {
-    region1 = "australiaeast"
-    region2 = "australiacentral"
+    region1 = "northeurope"
+    region2 = "westeurope"
   }
 }
 
@@ -59,7 +59,7 @@ aro_clusters = {
     }
 
     master_profile = {
-      vm_size            = "Standard_D8s_v3"
+      vm_size            = "Standard_D4s_v3"
       encryption_at_host = "Disabled"
       subnet = {
         key = "subnet1"
@@ -77,9 +77,9 @@ aro_clusters = {
     worker_profiles = [
       {
         name               = "worker"
-        vm_size            = "Standard_D4s_v3"
+        vm_size            = "Standard_D2s_v3"
         disk_size_gb       = "128"
-        node_count         = "4"
+        node_count         = "3"
         encryption_at_host = "Disabled"
         subnet = {
           key = "subnet2"
