@@ -1,8 +1,8 @@
 global_settings = {
   default_region = "region1"
   regions = {
-    region1 = "northeurope"
-    region2 = "westeurope"
+    region1 = "westeurope"  # Changed from northeurope to westeurope for better quota availability
+    region2 = "northeurope" # Changed from westeurope to northeurope
   }
 }
 
