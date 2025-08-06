@@ -43,7 +43,7 @@ api_management_api = {
 
     import = {
       content_format = "swagger-link-json"
-      content_value  = "http://conferenceapi.azurewebsites.net/?format=json"
+      content_value  = "https://petstore.swagger.io/v2/swagger.json"
     }
   }
 }
