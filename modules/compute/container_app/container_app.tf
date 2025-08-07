@@ -49,9 +49,9 @@ resource "azurerm_container_app" "ca" {
           }
         }
 
-        cpu                = try(init_container.value.cpu, null)
-        memory             = try(init_container.value.memory, null)
-        ephemeral_storage  = try(init_container.value.ephemeral_storage, null)
+        cpu               = try(init_container.value.cpu, null)
+        memory            = try(init_container.value.memory, null)
+        ephemeral_storage = try(init_container.value.ephemeral_storage, null)
       }
     }
 
@@ -59,12 +59,12 @@ resource "azurerm_container_app" "ca" {
       for_each = var.settings.template.container
 
       content {
-        name    = container.value.name
-        image   = container.value.image
-        args    = try(container.value.args, null)
-        command = try(container.value.command, null)
-        cpu     = container.value.cpu
-        memory  = container.value.memory
+        name              = container.value.name
+        image             = container.value.image
+        args              = try(container.value.args, null)
+        command           = try(container.value.command, null)
+        cpu               = container.value.cpu
+        memory            = container.value.memory
         ephemeral_storage = try(container.value.ephemeral_storage, null)
 
         dynamic "env" {
@@ -154,9 +154,9 @@ resource "azurerm_container_app" "ca" {
           for_each = try(container.value.volume_mounts, {})
 
           content {
-            name       = volume_mounts.value.name
-            path       = volume_mounts.value.path
-            sub_path   = try(volume_mounts.value.sub_path, null)
+            name     = volume_mounts.value.name
+            path     = volume_mounts.value.path
+            sub_path = try(volume_mounts.value.sub_path, null)
           }
         }
       }
@@ -253,21 +253,21 @@ resource "azurerm_container_app" "ca" {
     content {
       allow_insecure_connections = try(ingress.value.allow_insecure_connections, null)
       external_enabled           = try(ingress.value.external_enabled, null)
-      exposed_port              = try(ingress.value.exposed_port, null)
-      target_port               = ingress.value.target_port
-      transport                 = try(ingress.value.transport, "auto")
-      client_certificate_mode   = try(ingress.value.client_certificate_mode, null)
+      exposed_port               = try(ingress.value.exposed_port, null)
+      target_port                = ingress.value.target_port
+      transport                  = try(ingress.value.transport, "auto")
+      client_certificate_mode    = try(ingress.value.client_certificate_mode, null)
 
       dynamic "cors" {
         for_each = try(ingress.value.cors, null) == null ? [] : [ingress.value.cors]
 
         content {
           allow_credentials_enabled = try(cors.value.allow_credentials_enabled, false)
-          allowed_headers          = try(cors.value.allowed_headers, null)
-          allowed_methods          = try(cors.value.allowed_methods, null)
-          allowed_origins          = cors.value.allowed_origins
-          exposed_headers          = try(cors.value.exposed_headers, null)
-          max_age_in_seconds       = try(cors.value.max_age_in_seconds, null)
+          allowed_headers           = try(cors.value.allowed_headers, null)
+          allowed_methods           = try(cors.value.allowed_methods, null)
+          allowed_origins           = cors.value.allowed_origins
+          exposed_headers           = try(cors.value.exposed_headers, null)
+          max_age_in_seconds        = try(cors.value.max_age_in_seconds, null)
         }
       }
 

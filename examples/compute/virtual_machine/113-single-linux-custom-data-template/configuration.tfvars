@@ -187,7 +187,7 @@ storage_accounts = {
     }
 
     backup = {
-      vault_key = "asr1"
+      vault_key                                       = "asr1"
       enable_azurerm_backup_container_storage_account = true
     }
 

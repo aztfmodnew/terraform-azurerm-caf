@@ -43,7 +43,7 @@ aro_clusters = {
 
 
     cluster_profile = {
-      domain                 = "testcafaro44we"  # Changed domain to reflect west europe + 44 cores
+      domain                 = "testcafaro44we" # Changed domain to reflect west europe + 44 cores
       fips_validated_modules = "Disabled"
       # pull_secret = {
       #  secret           = "your_secret"
@@ -54,12 +54,12 @@ aro_clusters = {
       resource_group = {
         # cant be an existing RG, you can specify the name of the RG to create with id="" or just a name=""
         # id = "resource_group_id"
-        name = "test-aro-we44"  # Updated RG name
+        name = "test-aro-we44" # Updated RG name
       }
     }
 
     master_profile = {
-      vm_size            = "Standard_D8s_v3"  # 8 cores × 3 = 24 cores (requirement)
+      vm_size            = "Standard_D8s_v3" # 8 cores × 3 = 24 cores (requirement)
       encryption_at_host = "Disabled"
       subnet = {
         key = "subnet1"
@@ -77,7 +77,7 @@ aro_clusters = {
     worker_profiles = [
       {
         name               = "worker"
-        vm_size            = "Standard_D4s_v3"  # 4 cores × 3 = 12 cores (requirement)
+        vm_size            = "Standard_D4s_v3" # 4 cores × 3 = 12 cores (requirement)
         disk_size_gb       = "128"
         node_count         = "3"
         encryption_at_host = "Disabled"
