@@ -4,6 +4,8 @@
 #
 
 name: Monthly Integration tests
+permissions:
+  contents: read
 
 on:
   repository_dispatch:
