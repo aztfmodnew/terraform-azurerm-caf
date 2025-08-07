@@ -32,11 +32,11 @@ azuread_applications = {
 
 
 
-  azuread_service_principal_names = {
-    aro_rp = {
-      display_name = "Azure Red Hat OpenShift RP"
-    }
+azuread_service_principal_names = {
+  aro_rp = {
+    display_name = "Azure Red Hat OpenShift RP"
   }
+}
 
 
 

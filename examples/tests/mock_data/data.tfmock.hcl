@@ -27,10 +27,10 @@ mock_data "azurerm_subscription" {
 
 mock_data "azuread_service_principal" {
   defaults = {
-    client_id      = "00000000-0000-0000-0000-000000000000"
-    application_id = "00000000-0000-0000-0000-000000000000"
-    display_name   = "mock_service_principal"
-    object_id      = "00000000-0000-0000-0000-000000000000"
+    client_id                    = "00000000-0000-0000-0000-000000000000"
+    application_id               = "00000000-0000-0000-0000-000000000000"
+    display_name                 = "mock_service_principal"
+    object_id                    = "00000000-0000-0000-0000-000000000000"
     application_tenant_id        = "00000000-0000-0000-0000-000000000000"
     account_enabled              = true
     app_role_assignment_required = false

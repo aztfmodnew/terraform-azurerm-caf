@@ -3,7 +3,9 @@
 # Licensed under the MIT License.
 #
 
-name: Integration tests
+name: Monthly Integration tests
+permissions:
+  contents: read
 
 on:
   repository_dispatch:

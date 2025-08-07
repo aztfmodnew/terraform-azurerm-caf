@@ -1,8 +1,8 @@
 global_settings = {
   default_region = "region1"
   regions = {
-    region1 = "australiaeast"
-    region2 = "australiacentral"
+    region1 = "westeurope"
+    region2 = "northeurope"
   }
 }
 
@@ -43,23 +43,23 @@ aro_clusters = {
 
 
     cluster_profile = {
-      domain                 = "testcafaro43"
+      domain                 = "testcafaro44we" # Changed domain to reflect west europe + 44 cores
       fips_validated_modules = "Disabled"
       # pull_secret = {
       #  secret           = "your_secret"
       #  secret_id        = "resource_id_of_the_secret"
       #}
-      # az aro get-versions --location australiaeast
+      # az aro get-versions --location westeurope
       version = "4.17.27"
       resource_group = {
         # cant be an existing RG, you can specify the name of the RG to create with id="" or just a name=""
         # id = "resource_group_id"
-        name = "test-aro"
+        name = "test-aro-we44" # Updated RG name
       }
     }
 
     master_profile = {
-      vm_size            = "Standard_D8s_v3"
+      vm_size            = "Standard_D8s_v3" # 8 cores × 3 = 24 cores (requirement)
       encryption_at_host = "Disabled"
       subnet = {
         key = "subnet1"
@@ -77,9 +77,9 @@ aro_clusters = {
     worker_profiles = [
       {
         name               = "worker"
-        vm_size            = "Standard_D4s_v3"
+        vm_size            = "Standard_D4s_v3" # 4 cores × 3 = 12 cores (requirement)
         disk_size_gb       = "128"
-        node_count         = "4"
+        node_count         = "3"
         encryption_at_host = "Disabled"
         subnet = {
           key = "subnet2"

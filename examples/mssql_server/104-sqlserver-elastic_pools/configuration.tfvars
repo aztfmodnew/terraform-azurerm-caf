@@ -19,7 +19,7 @@ resource_groups = {
 
 storage_accounts = {
   auditing-rg1 = {
-    name                     = "auditingrg1"
+    name                     = "sqlauditrg1"
     resource_group_key       = "sql_region1"
     region                   = "region1"
     account_kind             = "BlobStorage"
@@ -27,7 +27,7 @@ storage_accounts = {
     account_replication_type = "RAGRS"
   }
   security-rg1 = {
-    name                     = "securityrg1"
+    name                     = "sqlsecurityrg1"
     resource_group_key       = "security_region1"
     region                   = "region1"
     account_kind             = "BlobStorage"

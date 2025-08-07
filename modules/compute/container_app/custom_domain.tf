@@ -3,7 +3,7 @@ module "custom_domains" {
   for_each = try(var.settings.custom_domains, {})
 
   global_settings = var.global_settings
-  client_config   = var.client_config  
+  client_config   = var.client_config
   resource_group  = var.resource_group
   base_tags       = var.base_tags
   settings        = each.value

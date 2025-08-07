@@ -1,5 +1,5 @@
 resource "azurerm_container_app_custom_domain" "custom_domain" {
-  name             = var.settings.name
+  name = var.settings.name
   container_app_id = coalesce(
     try(var.settings.container_app_id, null),
     try(var.remote_objects.container_app.id, null),

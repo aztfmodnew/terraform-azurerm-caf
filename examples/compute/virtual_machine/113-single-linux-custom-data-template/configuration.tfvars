@@ -76,7 +76,7 @@ virtual_machines = {
         disable_password_authentication = true
 
         custom_data = {
-          templatefile = "compute/virtual_machine/113-single-linux-custom-data-template/custom_data.tpl"
+          templatefile = "examples/compute/virtual_machine/113-single-linux-custom-data-template/custom_data.tpl"
           my_value     = "my_value"
         }
         dynamic_custom_data = {
@@ -187,7 +187,7 @@ storage_accounts = {
     }
 
     backup = {
-      vault_key = "asr1"
+      vault_key                                       = "asr1"
       enable_azurerm_backup_container_storage_account = true
     }
 
