@@ -5,5 +5,6 @@ resource "azurecaf_name" "manageddb" {
   suffixes      = var.global_settings.suffixes
   use_slug      = var.global_settings.use_slug
   clean_input   = true
-  separator     = "-"
-}
+  passthrough   = var.global_settings.passthrough
+  use_slug      = var.global_settings.use_slug
+}  
