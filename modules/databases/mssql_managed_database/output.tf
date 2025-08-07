@@ -5,6 +5,6 @@ output "name" {
 }
 
 output "id" {
-  value       = azapi_resource.manageddb.output.properties.outputs.id.value
+  value       = jsondecode(azapi_resource.manageddb.output).properties.outputs.id.value
   description = "SQL Managed DB Id"
 }

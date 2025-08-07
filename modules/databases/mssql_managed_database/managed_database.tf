@@ -50,7 +50,7 @@ resource "azapi_resource" "manageddb" {
     on_failure = fail
     command = format(
       "az rest --method delete --url https://management.azure.com%s?api-version=2021-11-01",
-      self.output.properties.outputs.id.value
+      jsondecode(self.output).properties.outputs.id.value
     )
   }
 }
