@@ -33,7 +33,7 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
 
       - name: Install Terraform Linter
-        uses: terraform-linters/setup-tflint@v4
+        uses: terraform-linters/setup-tflint@v5
         with:
           tflint_version: ${{ env.TF_LINT_VERSION }}
 
