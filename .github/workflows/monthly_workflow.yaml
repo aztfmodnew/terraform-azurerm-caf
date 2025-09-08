@@ -112,16 +112,22 @@ jobs:
   terraform_integration_tests:
     permissions:
       id-token: write
-      contents: write  # Necesario para commit-changes: 'push'
-      pull-requests: write  # Necesario si se quiere crear PRs en el futuro
+      contents: write # Required for commit-changes: push
+      pull-requests: write # Required if PRs need to be created in the future
 
     name: Integration-${{ matrix.config_files }}
     runs-on: ubuntu-latest
     if: always()
     needs: [load_scenarios, mock_plan_scenarios]
 
+    # Groups by individual test case to allow controlled parallelization
+    concurrency:
+      group: integration-${{ matrix.config_files }}-${{ github.run_id }}
+      cancel-in-progress: false
+
     strategy:
       fail-fast: false
+      max-parallel: 5 # Allows up to 5 different groups in parallel
       matrix: ${{fromJSON(needs.load_scenarios.outputs.matrix)}}
 
     environment:
@@ -198,12 +204,12 @@ jobs:
         id: get_resource_groups
         continue-on-error: true
         run: |
-          # Obtener IDs de Resource Groups del estado de Terraform
+          # Get Resource Group IDs from Terraform state
           RG_IDS=$(terraform -chdir=${GITHUB_WORKSPACE}/examples \
             show \
             -state=${{ env.STATE_FILE }} \
             -json | jq -r '.values.root_module.resources[]? | select(.type == "azurerm_resource_group") | .values.id' | tr '\n' ' ')
-          
+
           if [ -n "$RG_IDS" ]; then
             echo "RESOURCE_GROUP_IDS=$RG_IDS" >> $GITHUB_ENV
             echo "Found Resource Groups: $RG_IDS"
@@ -221,7 +227,7 @@ jobs:
           output-path: ${{ env.CURRENT_FOLDER }}/azure-infrastructure.drawio
           diagram-mode: all
           no-embed-data: true
-          commit-changes: 'push'
+          commit-changes: push
 
       - name: Terraform Destroy Plan
         id: tf_destroy_plan
