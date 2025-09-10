@@ -37,7 +37,7 @@ jobs:
     outputs:
       matrix: ${{ steps.load_scenarios.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - id: load_scenarios
         run: |
           echo "Scenario: ${{ github.event.client_payload.scenario }}"
@@ -59,7 +59,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Create environment variables
         run: |
@@ -135,7 +135,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Create environment variables
         run: |
