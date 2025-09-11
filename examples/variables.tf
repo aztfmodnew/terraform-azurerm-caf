@@ -303,6 +303,10 @@ variable "route_tables" {
   type    = any
   default = {}
 }
+variable "subnet_service_endpoint_storage_policies" {
+  type    = any
+  default = {}
+}
 variable "azurerm_routes" {
   type    = any
   default = {}
@@ -1005,6 +1009,10 @@ variable "cognitive_account_customer_managed_key" {
   default = {}
 }
 variable "cognitive_deployment" {
+  type    = any
+  default = {}
+}
+variable "azure_bots" {
   type    = any
   default = {}
 }

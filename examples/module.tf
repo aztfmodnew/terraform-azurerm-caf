@@ -93,6 +93,9 @@ module "example" {
     cognitive_account_customer_managed_key = var.cognitive_account_customer_managed_key
     cognitive_deployment                   = var.cognitive_deployment
   }
+  bot = {
+    azure_bots = var.azure_bots
+  }
   communication = {
     communication_services = var.communication_services
   }
@@ -254,6 +257,7 @@ module "example" {
     relay_hybrid_connection                                 = var.relay_hybrid_connection
     public_ip_prefixes                                      = var.public_ip_prefixes
     route_tables                                            = var.route_tables
+    subnet_service_endpoint_storage_policies                = var.subnet_service_endpoint_storage_policies
     traffic_manager_profile                                 = var.traffic_manager_profile
     traffic_manager_nested_endpoint                         = var.traffic_manager_nested_endpoint
     traffic_manager_external_endpoint                       = var.traffic_manager_external_endpoint
