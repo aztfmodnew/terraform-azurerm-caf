@@ -38,10 +38,14 @@ vnets = {
 # Subnet Configuration with Service Endpoints
 virtual_subnets = {
   storage_subnet = {
-    name = "storage-subnet"
-    cidr = ["10.100.1.0/24"]
-    nsg_key = "empty_nsg"
+    name              = "storage-subnet"
+    cidr              = ["10.100.1.0/24"]
+    nsg_key           = "empty_nsg"
     service_endpoints = ["Microsoft.Storage"]
+
+    # Associate the subnet service endpoint storage policy via remote_objects key reference
+    service_endpoint_policies = ["storage_policy"]
+
     vnet = {
       key = "vnet1"
     }
@@ -63,7 +67,7 @@ storage_accounts = {
     account_tier             = "Standard"
     account_replication_type = "LRS"
     account_kind             = "StorageV2"
-    
+
     network_rules = {
       default_action = "Deny"
       virtual_network_subnet_ids = [
@@ -76,14 +80,14 @@ storage_accounts = {
       tier    = "standard"
     }
   }
-  
+
   restricted_storage = {
     name                     = "restrictedstorage001"
     resource_group_key       = "storage_rg"
     account_tier             = "Standard"
     account_replication_type = "LRS"
     account_kind             = "StorageV2"
-    
+
     network_rules = {
       default_action = "Deny"
     }
@@ -100,7 +104,7 @@ subnet_service_endpoint_storage_policies = {
   storage_policy = {
     name               = "storage-access-policy"
     resource_group_key = "networking_rg"
-    
+
     definitions = {
       allowed_storage_def = {
         name        = "AllowedStorageDefinition"
@@ -108,7 +112,7 @@ subnet_service_endpoint_storage_policies = {
         service     = "Microsoft.Storage"
         service_resources = [
           # Specific storage account resource ID
-          "/subscriptions/db600528-5207-4293-91a2-a8144db2dbdf/resourceGroups/caf-rg-storage-rg/providers/Microsoft.Storage/storageAccounts/cafstallowedstorage001"
+          "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/caf-rg-storage-rg/providers/Microsoft.Storage/storageAccounts/cafstallowedstorage001"
         ]
       }
     }
@@ -120,6 +124,4 @@ subnet_service_endpoint_storage_policies = {
   }
 }
 
-# Example of subnet policy association (this would be done in subnet configuration)
-# Note: The actual association would be done in the subnet configuration using:
-# service_endpoint_policy_ids = [policy_id]
+# Subnet now associates the policy through service_endpoint_policies = ["storage_policy"]
