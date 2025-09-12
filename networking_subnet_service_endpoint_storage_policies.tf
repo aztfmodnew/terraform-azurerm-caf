@@ -9,9 +9,8 @@ module "subnet_service_endpoint_storage_policies" {
   location        = try(each.value.location, null)
   settings        = each.value
 
-  remote_objects = {
-    storage_accounts = local.combined_objects_storage_accounts
-  }
+  # Pass empty remote_objects to avoid circular dependency
+  remote_objects = {}
 }
 
 output "subnet_service_endpoint_storage_policies" {

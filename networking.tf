@@ -81,10 +81,10 @@ module "virtual_subnets" {
 
   resource_group_name  = can(each.value.vnet.key) ? local.combined_objects_networking[try(each.value.vnet.lz_key, local.client_config.landingzone_key)][each.value.vnet.key].resource_group_name : split("/", each.value.vnet.id)[4]
   virtual_network_name = can(each.value.vnet.key) ? local.combined_objects_networking[try(each.value.vnet.lz_key, local.client_config.landingzone_key)][each.value.vnet.key].name : split("/", each.value.vnet.id)[8]
-  /*remote_objects = {
+  remote_objects = {
     subnet_service_endpoint_storage_policies = local.combined_objects_subnet_service_endpoint_storage_policies
 
-  }*/
+  }
 
 }
 
