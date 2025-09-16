@@ -22,27 +22,50 @@ locals {
 
   ip_configuration = {
     gateway = {
+      # Support both vnets.subnets and virtual_subnets patterns
       subnet_id = coalesce(
+        # Try vnets with embedded subnets first (standard pattern)
         try(local.gateway_vnet.subnets[var.settings.subnet_key].id, null),
+        # Try virtual_subnets as separate resources (mixed pattern)
+        try(var.virtual_subnets[var.client_config.landingzone_key][var.settings.subnet_key].id, null),
+        try(var.virtual_subnets[var.settings.lz_key][var.settings.subnet_key].id, null),
+        # Fallback to direct subnet_id if provided
         try(var.settings.subnet_id, null)
       )
     }
     private = {
+      # Support both patterns for private subnet
       subnet_id = try(coalesce(
+        # Try vnets with embedded subnets first
         try(local.private_vnet.subnets[var.settings.front_end_ip_configurations.private.subnet_key].id, null),
+        # Try virtual_subnets as separate resources
+        try(var.virtual_subnets[var.client_config.landingzone_key][var.settings.front_end_ip_configurations.private.subnet_key].id, null),
+        try(var.virtual_subnets[var.settings.front_end_ip_configurations.private.lz_key][var.settings.front_end_ip_configurations.private.subnet_key].id, null),
+        # Fallback to direct subnet_id
         try(var.settings.front_end_ip_configurations.private.subnet_id, null)
       ), null)
+      # Support both patterns for CIDR
       cidr = try(coalesce(
+        # Try vnets with embedded subnets first
         try(local.private_vnet.subnets[var.settings.front_end_ip_configurations.private.subnet_key].cidr, null),
+        # Try virtual_subnets as separate resources
+        try(var.virtual_subnets[var.client_config.landingzone_key][var.settings.front_end_ip_configurations.private.subnet_key].cidr, null),
+        try(var.virtual_subnets[var.settings.front_end_ip_configurations.private.lz_key][var.settings.front_end_ip_configurations.private.subnet_key].cidr, null),
+        # Fallback to direct subnet_cidr
         try(var.settings.front_end_ip_configurations.private.subnet_cidr, null)
       ), null)
     }
     public = {
-      subnet_id = try(
-        local.public_vnet.subnets[var.settings.front_end_ip_configurations.public.subnet_key].id,
-        var.settings.front_end_ip_configurations.public.subnet_id,
-        null
-      )
+      # Support both patterns for public subnet
+      subnet_id = try(coalesce(
+        # Try vnets with embedded subnets first
+        try(local.public_vnet.subnets[var.settings.front_end_ip_configurations.public.subnet_key].id, null),
+        # Try virtual_subnets as separate resources
+        try(var.virtual_subnets[var.client_config.landingzone_key][var.settings.front_end_ip_configurations.public.subnet_key].id, null),
+        try(var.virtual_subnets[var.settings.front_end_ip_configurations.public.lz_key][var.settings.front_end_ip_configurations.public.subnet_key].id, null),
+        # Fallback to direct subnet_id
+        try(var.settings.front_end_ip_configurations.public.subnet_id, null)
+      ), null)
 
       ip_address_id = try(coalesce(
         try(var.public_ip_addresses[var.client_config.landingzone_key][var.settings.front_end_ip_configurations.public.public_ip_key].id, var.public_ip_addresses[var.settings.front_end_ip_configurations.public.lz_key][var.settings.front_end_ip_configurations.public.public_ip_key].id, null),

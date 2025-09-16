@@ -1,13 +1,13 @@
 # Azure Bot Service Configuration
 azure_bots = {
   secure_bot = {
-    name               = "secure-chatbot-waf-pe"
+    name               = "sec-chatbot-waf-pe"
     resource_group_key = "bot_rg"
     microsoft_app_id   = "12345678-1234-1234-1234-123456789012"
     sku                = "S1" # S1 required for private endpoints
 
     # Bot Configuration
-    display_name                  = "Secure ChatBot with WAF and Private Endpoint"
+    display_name                  = "Secure ChatBot with WAF Protection"
     endpoint                      = "https://secure-bot-endpoint.example.com/api/messages"
     icon_url                      = "https://docs.botframework.com/static/devportal/client/images/bot-framework-default.png"
     microsoft_app_tenant_id       = "87654321-4321-4321-4321-210987654321"

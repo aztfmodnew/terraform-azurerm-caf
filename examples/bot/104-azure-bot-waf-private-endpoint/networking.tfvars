@@ -112,19 +112,19 @@ route_tables = {
 #   }
 # }
 
-# Network Watchers for monitoring (if not already existing)
-network_watchers = {
-  bot_network_watcher = {
-    resource_group_key = "networking_rg"
-    name               = "secure-bot-network-watcher"
-    location           = "westeurope"
-
-    tags = {
-      monitoring = "network"
-      service    = "bot-infrastructure"
-    }
-  }
-}
+# Network Watchers for monitoring (commented out - using existing network watcher)
+# network_watchers = {
+#   bot_network_watcher = {
+#     resource_group_key = "networking_rg"
+#     name               = "secure-bot-network-watcher"
+#     location           = "westeurope"
+#
+#     tags = {
+#       monitoring = "network"
+#       service    = "bot-infrastructure"
+#     }
+#   }
+# }
 
 # Public IP for Application Gateway
 public_ip_addresses = {

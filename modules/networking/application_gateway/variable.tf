@@ -87,3 +87,9 @@ variable "keyvaults" {
 variable "application_gateway_waf_policies" {
   default = {}
 }
+
+variable "virtual_subnets" {
+  description = "Virtual subnets for subnet resolution when using separate virtual_subnets pattern"
+  type        = any
+  default     = {}
+}

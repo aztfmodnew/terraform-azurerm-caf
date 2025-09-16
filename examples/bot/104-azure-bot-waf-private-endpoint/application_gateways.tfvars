@@ -16,19 +16,13 @@ application_gateways = {
       }
     }
 
-    # Enable WAF
-    waf_configuration = {
-      firewall_mode    = "Prevention"
-      rule_set_type    = "OWASP"
-      rule_set_version = "3.2"
-      enabled          = true
-      waf_policy_key   = "bot_waf_policy"
-    }
+    # Enable WAF Policy
+    waf_policy_key = "bot_waf_policy"
 
     # Frontend IP Configurations
     front_end_ip_configurations = {
       public = {
-        name          = "public-frontend"
+        name          = "public"
         public_ip_key = "appgw_pip"
       }
     }
@@ -36,76 +30,29 @@ application_gateways = {
     # Frontend Ports
     front_end_ports = {
       80 = {
-        name     = "http-port"
+        name     = "http"
         port     = 80
         protocol = "Http"
-      },
+      }
       443 = {
-        name     = "https-port"
+        name     = "https"
         port     = 443
         protocol = "Https"
       }
     }
 
-    # Backend Address Pools
-    backend_address_pools = {
-      bot_backend = {
-        name  = "secure-bot-backend-pool"
-        fqdns = ["secure-bot.example.com"]
-      }
-    }
+    # Global Settings
+    enable_http2 = true
+    zones        = ["1", "2", "3"]
 
-    # Backend HTTP Settings
-    backend_http_settings = {
-      bot_settings = {
-        name                                = "secure-bot-backend-settings"
-        cookie_based_affinity               = "Disabled"
-        path                                = "/api/messages/"
-        port                                = 443
-        protocol                            = "Https"
-        request_timeout                     = 60
-        probe_name                          = "bot-health-probe"
-        pick_host_name_from_backend_address = true
-      }
-    }
-
-    # Health Probes
-    probes = {
-      bot_health_probe = {
-        name                                      = "bot-health-probe"
-        protocol                                  = "Https"
-        path                                      = "/health"
-        interval                                  = 30
-        timeout                                   = 30
-        unhealthy_threshold                       = 3
-        pick_host_name_from_backend_http_settings = true
-        minimum_servers                           = 0
-        match = {
-          status_code = ["200-399"]
-        }
-      }
-    }
-
-    # HTTP Listeners
-    http_listeners = {
-      bot_listener = {
-        name                            = "secure-bot-listener"
-        front_end_ip_configuration_name = "public-frontend"
-        front_end_port_name             = "https-port"
-        protocol                        = "Https"
-        require_sni                     = false
-      }
-    }
-
-    # Request Routing Rules
-    request_routing_rules = {
-      bot_rule = {
-        name                       = "secure-bot-routing-rule"
-        rule_type                  = "Basic"
-        http_listener_name         = "secure-bot-listener"
-        backend_address_pool_name  = "secure-bot-backend-pool"
-        backend_http_settings_name = "secure-bot-backend-settings"
-        priority                   = 1
+    # Redirect Configurations
+    redirect_configurations = {
+      http-to-https = {
+        name                 = "http-to-https"
+        redirect_type        = "Permanent"
+        target_listener_name = "secure-bot-https-listener"
+        include_path         = true
+        include_query_string = true
       }
     }
 

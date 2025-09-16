@@ -61,32 +61,10 @@ application_gateway_waf_policies = {
         }
       },
 
-      # Rate limiting rule
-      rate_limit_rule = {
-        name                           = "RateLimitRule"
-        priority                       = 20
-        rule_type                      = "RateLimitRule"
-        action                         = "Block"
-        rate_limit_duration_in_minutes = 1
-        rate_limit_threshold           = 100
-        match_conditions = {
-          any_request = {
-            operator           = "IPMatch"
-            negation_condition = false
-            match_values       = ["0.0.0.0/0"] # Match any IP
-            match_variables = {
-              remote_addr = {
-                variable_name = "RemoteAddr"
-              }
-            }
-          }
-        }
-      },
-
       # Block requests with suspicious user agents
       block_suspicious_agents = {
         name      = "BlockSuspiciousUserAgents"
-        priority  = 30
+        priority  = 20
         rule_type = "MatchRule"
         action    = "Block"
         match_conditions = {
@@ -114,7 +92,7 @@ application_gateway_waf_policies = {
       # Geo-blocking rule (block requests from specific countries)
       geo_blocking = {
         name      = "GeoBlocking"
-        priority  = 40
+        priority  = 30
         rule_type = "MatchRule"
         action    = "Block"
         match_conditions = {
@@ -138,7 +116,7 @@ application_gateway_waf_policies = {
       # Block requests with large query strings (potential DoS)
       block_large_query_strings = {
         name      = "BlockLargeQueryStrings"
-        priority  = 50
+        priority  = 40
         rule_type = "MatchRule"
         action    = "Block"
         match_conditions = {
