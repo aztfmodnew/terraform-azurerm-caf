@@ -1,0 +1,6 @@
+{
+  "config_files": [
+    "bot/101-azure-bot",
+    "bot/103-azure-bot-private-endpoint"
+  ]
+}

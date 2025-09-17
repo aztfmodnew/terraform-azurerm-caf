@@ -35,6 +35,7 @@
     "networking/private_dns/100-private-dns-vnet-links",
     "networking/private_links/endpoints/centralized",
     "networking/private_links/endpoints/static_ip",
+    "networking/service_endpoint_storage/101-subnet-service-endpoint-storage-policy",
     "networking/virtual_network_gateway/100-expressroute-gateway",
     "networking/virtual_network_gateway/101-vpn-site-to-site",
     "networking/virtual_network_gateway/101-vpn-vnet-to-vnet",
