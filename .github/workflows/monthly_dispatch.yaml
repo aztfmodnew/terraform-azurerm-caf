@@ -21,6 +21,7 @@ jobs:
     strategy:
       matrix:
         scenario:
+          - standalone-bot.json
           - standalone-azuread.json
           - standalone-scenarios.json
           - standalone-compute.json

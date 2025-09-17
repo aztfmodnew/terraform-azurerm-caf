@@ -18,6 +18,7 @@ on:
         type: choice
         default: standalone-networking.json
         options:
+          - standalone-bot.json
           - standalone-azuread.json
           - standalone-scenarios.json
           - standalone-compute.json
@@ -37,7 +38,7 @@ jobs:
     outputs:
       matrix: ${{ steps.load_scenarios.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
       - id: load_scenarios
         run: |
           echo "Scenario: ${{ github.event.client_payload.scenario }}"
@@ -59,7 +60,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Create environment variables
         run: |
@@ -135,7 +136,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Create environment variables
         run: |

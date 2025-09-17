@@ -68,16 +68,23 @@ module "virtual_subnets" {
   for_each   = local.networking.virtual_subnets
 
   global_settings = local.global_settings
+  client_config   = local.client_config
   settings        = each.value
+  
 
   name                                          = each.value.name
   address_prefixes                              = try(each.value.cidr, [])
   service_endpoints                             = try(each.value.service_endpoints, [])
+  service_endpoint_policy_ids                   = try(each.value.service_endpoint_policy_ids, null)
   private_endpoint_network_policies             = try(each.value.private_endpoint_network_policies, each.value.enforce_private_link_endpoint_network_policies, null)
   private_link_service_network_policies_enabled = try(each.value.private_link_service_network_policies_enabled, each.value.enforce_private_link_service_network_policies, null)
 
   resource_group_name  = can(each.value.vnet.key) ? local.combined_objects_networking[try(each.value.vnet.lz_key, local.client_config.landingzone_key)][each.value.vnet.key].resource_group_name : split("/", each.value.vnet.id)[4]
   virtual_network_name = can(each.value.vnet.key) ? local.combined_objects_networking[try(each.value.vnet.lz_key, local.client_config.landingzone_key)][each.value.vnet.key].name : split("/", each.value.vnet.id)[8]
+  remote_objects = {
+    subnet_service_endpoint_storage_policies = local.combined_objects_subnet_service_endpoint_storage_policies
+
+  }
 
 }
 

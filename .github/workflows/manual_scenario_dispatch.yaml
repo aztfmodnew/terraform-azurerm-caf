@@ -14,6 +14,7 @@ on:
         default: standalone-azuread.json
         type: choice
         options:
+          - standalone-bot.json
           - standalone-azuread.json
           - standalone-scenarios.json
           - standalone-compute.json
@@ -53,6 +54,7 @@ jobs:
       max-parallel: 1
       matrix:
         scenario:
+          - standalone-bot.json
           - standalone-azuread.json
           - standalone-scenarios.json
           - standalone-compute.json

@@ -20,6 +20,7 @@ module "application_gateways" {
   sku_name                         = each.value.sku_name
   sku_tier                         = each.value.sku_tier
   vnets                            = local.combined_objects_networking
+  virtual_subnets                  = local.combined_objects_virtual_subnets
 
   application_gateway_applications = {
     for key, value in local.networking.application_gateway_applications : key => value

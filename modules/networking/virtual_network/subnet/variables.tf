@@ -38,6 +38,12 @@ variable "service_endpoints" {
   # }
 }
 
+variable "service_endpoint_policy_ids" {
+  description = "(Optional) The list of IDs of Service Endpoint Policies to associate with the subnet."
+  type        = list(string)
+  default     = null
+}
+
 variable "global_settings" {
   description = "Global settings object (see module README.md)"
   type        = any
@@ -45,4 +51,16 @@ variable "global_settings" {
 variable "settings" {
   description = "The settings for the Azure resource."
   type        = any
+}
+
+variable "remote_objects" {
+  description = "Remote objects for dependencies."
+  type        = any
+  default     = {}
+}
+
+variable "client_config" {
+  description = "Client configuration for Azure authentication."
+  type        = any
+  default     = {}
 }

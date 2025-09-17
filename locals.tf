@@ -288,6 +288,9 @@ locals {
     cognitive_account_customer_managed_key = try(var.cognitive_services.cognitive_account_customer_managed_key, {})
     cognitive_deployment                   = try(var.cognitive_services.cognitive_deployment, {})
   }
+  bot = {
+    azure_bots = try(var.bot.azure_bots, {})
+  }
   search_services = {
     search_services = try(var.search_services.search_services, {})
   }
@@ -376,6 +379,7 @@ locals {
     relay_namespace                                         = try(var.networking.relay_namespace, {})
     public_ip_prefixes                                      = try(var.networking.public_ip_prefixes, {})
     route_tables                                            = try(var.networking.route_tables, {})
+    subnet_service_endpoint_storage_policies                = try(var.networking.subnet_service_endpoint_storage_policies, {})
     traffic_manager_profile                                 = try(var.networking.traffic_manager_profile, {})
     traffic_manager_nested_endpoint                         = try(var.networking.traffic_manager_nested_endpoint, {})
     traffic_manager_external_endpoint                       = try(var.networking.traffic_manager_external_endpoint, {})
