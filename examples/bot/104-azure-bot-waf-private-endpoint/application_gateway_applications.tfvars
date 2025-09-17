@@ -13,6 +13,9 @@ application_gateway_applications = {
         protocol                       = "Https"
         require_sni                    = false
         request_routing_rule_key       = "bot_https_rule"
+        keyvault_certificate = {
+          certificate_key = "secure-bot-endpoint.example.com"
+        }
       }
     }
 

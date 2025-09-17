@@ -17,7 +17,16 @@ application_gateways = {
     }
 
     # Enable WAF Policy
-    waf_policy_key = "bot_waf_policy"
+    waf_policy = {
+      key = "bot_waf_policy"
+    }
+
+    # Managed Identity for Key Vault access
+    identity = {
+      managed_identity_keys = [
+        "appgw_keyvault_access"
+      ]
+    }
 
     # Frontend IP Configurations
     front_end_ip_configurations = {
