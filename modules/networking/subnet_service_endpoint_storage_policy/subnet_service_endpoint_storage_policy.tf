@@ -7,9 +7,9 @@ resource "azurerm_subnet_service_endpoint_storage_policy" "subnet_service_endpoi
   dynamic "definition" {
     for_each = try(var.settings.definitions, {})
     content {
-      name             = definition.value.name
-      description      = try(definition.value.description, null)
-      service          = try(definition.value.service, "Microsoft.Storage")
+      name              = definition.value.name
+      description       = try(definition.value.description, null)
+      service           = try(definition.value.service, "Microsoft.Storage")
       service_resources = try(definition.value.service_resources, [])
     }
   }
