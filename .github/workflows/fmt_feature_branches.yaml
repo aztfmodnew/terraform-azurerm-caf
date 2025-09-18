@@ -1,0 +1,43 @@
+name: Terraform Format Feature Branches
+
+on:
+  push:
+    branches:
+      - feature/**
+      - dev/**
+      - hotfix/**
+      - bugfix/**
+      
+
+permissions:
+  contents: write
+
+jobs:
+  terraform:
+    name: Terraform Format
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Format
+        run: terraform fmt -recursive
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          if [ -n "$(git status --porcelain)" ]; then
+            git add -A
+            git commit -m "Apply terraform fmt [skip ci]"
+            git push
+          else
+            echo "No changes to commit"
+          fi
