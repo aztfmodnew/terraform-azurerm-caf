@@ -1,4 +1,104 @@
-# Instructions for Creating a Terraform Module
+# Azure CAF Terraform Framework - AI Coding Agent Instructions
+
+## Project Overview
+
+This is the **Azure Cloud Adoption Framework (CAF) Terraform module** - a comprehensive, production-ready framework for deploying Azure infrastructure following Microsoft's CAF best practices. The framework provides standardized, reusable Terraform modules for Azure services with built-in naming conventions, diagnostics, and cross-module dependencies.
+
+**Key Architecture**: Three-layer modular system with root-level service aggregators, categorized modules in `/modules/`, and working examples in `/examples/` that serve as both tests and documentation.
+
+## Critical Development Patterns
+
+### 1. Azure CAF Naming Convention (MANDATORY)
+Every module with named Azure resources MUST use the `aztfmodnew/azurecaf` provider:
+
+```hcl
+# azurecaf_name.tf - Required in every module directory
+resource "azurecaf_name" "main_resource" {
+  name          = var.settings.name
+  resource_type = "azurerm_storage_account"  # Match actual Azure resource
+  prefixes      = var.global_settings.prefixes
+  suffixes      = var.global_settings.suffixes
+  use_slug      = var.global_settings.use_slug
+  clean_input   = true
+  separator     = "-"
+}
+
+# Resource implementation
+resource "azurerm_storage_account" "storage" {
+  name = azurecaf_name.main_resource.result  # Always use CAF name
+  # ... other attributes
+}
+```
+
+### 2. Dependency Resolution Pattern
+Use `coalesce(try(...))` for resource dependencies - never pass direct IDs between modules:
+
+```hcl
+service_plan_id = coalesce(
+  try(var.settings.service_plan_id, null),
+  try(var.remote_objects.service_plans[try(var.settings.service_plan.lz_key, var.client_config.landingzone_key)][var.settings.service_plan.key].id, null),
+  try(var.remote_objects.app_service_plans[try(var.settings.app_service_plan.lz_key, var.client_config.landingzone_key)][var.settings.app_service_plan.key].id, null)
+)
+```
+
+### 3. Testing & Development Workflow
+```bash
+# ALWAYS test from /examples directory
+cd /path/to/terraform-azurerm-caf/examples
+
+# Test with terraform test framework (preferred)
+terraform test -test-directory=./tests/mock -var-file="./category/service/example.tfvars" -verbose
+
+# Alternative: Traditional plan/apply from examples
+terraform plan -var-file="./category/service/example.tfvars"
+```
+
+### 4. Module Integration (5-File Pattern)
+When adding new modules, update these files in `/path/to/terraform-azurerm-caf/`:
+1. `variables.tf` - Add module variable
+2. `module.tf` - Add module call with for_each
+3. `locals.tf` - Add to category locals
+4. `locals.combined_objects.tf` - Add combined objects merge
+5. `locals.remote_objects.tf` - Add to remote objects
+
+When adding new modules, update these files in `/examples/`:
+1. `variables.tf` - Add module variable
+2. `module.tf` - Add module call with for_each
+
+### 5. Standard Module Structure
+
+```plaintext
+/modules/category/service_name/
+├── main.tf              # Terraform requirements
+├── variables.tf         # Standard variables (global_settings, client_config, location, etc.)
+├── outputs.tf           # Standard outputs (id, name, etc.)
+├── providers.tf         # Required providers (azurerm, azurecaf, azapi)
+├── locals.tf            # Common locals (resource_group_name, location, tags)
+├── diagnostics.tf       # Diagnostics configuration
+├── azurecaf_name.tf     # CAF naming (REQUIRED)
+├── service_name.tf      # Main resource definition
+└── subresource/         # Submodules if needed
+```
+
+### 6. Dynamic Blocks Patterns
+```hcl
+# Single optional block
+dynamic "block" {
+  for_each = var.settings.block == null ? [] : [var.settings.block]
+  content {
+    name = block.value.name
+  }
+}
+
+# Multiple blocks from map
+dynamic "block" {
+  for_each = try(var.settings.blocks, {})
+  content {
+    name = block.key
+    value = block.value.setting
+  }
+}
+```
 
 ## Language Requirements
 
