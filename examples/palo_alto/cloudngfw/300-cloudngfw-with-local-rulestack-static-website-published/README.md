@@ -81,9 +81,24 @@ This setup provides enterprise-grade security for static web content using:
 ## Deployment Steps
 
 ### Prerequisites
+
+⚠️ **IMPORTANT**: Before running this example, you must register the PaloAlto resource provider in your Azure subscription:
+
+```bash
+# Register the PaloAlto resource provider
+az provider register --namespace PaloAltoNetworks.Cloudngfw
+
+# Check registration status (this may take several minutes)
+az provider show --namespace PaloAltoNetworks.Cloudngfw --query "registrationState"
+```
+
+**Wait for registration to complete** - the status should show "Registered" before proceeding.
+
+**Additional Prerequisites:**
 - Azure subscription with Palo Alto Cloud NGFW licensing
 - Terraform >= 1.6.0
 - Azure CLI authenticated
+- Contributor or Owner permissions on the subscription
 
 ### Deploy Infrastructure
 
@@ -200,6 +215,34 @@ curl -I http://<ngfw-public-ip>
 
 # Check NGFW status
 az palo-alto cloudngfw firewall show --name pangfw-staticweb-example --resource-group ngfw-static-website-example
+```
+
+## Troubleshooting
+
+### Common Errors
+
+#### 1. MissingSubscriptionRegistration Error
+```
+Error: performing CreateOrUpdate: unexpected status 409 (409 Conflict) with error: MissingSubscriptionRegistration: The subscription is not registered to use namespace 'PaloAltoNetworks.Cloudngfw'
+```
+
+**Solution**: Register the PaloAlto resource provider as described in Prerequisites.
+
+#### 2. SecurityRuleInvalidPortRange Error
+```
+Error: Security rule has invalid Port range. Value provided: 80,443. Value should be an integer OR integer range with '-' delimiter.
+```
+
+**Solution**: This has been fixed in the configuration. Port ranges should use:
+- Single range: `"80-443"`
+- Multiple ports: `["80", "443"]` with `destination_port_ranges`
+
+#### 3. Validation of Registration Status
+```bash
+# Verify provider registration
+az provider list --query "[?namespace=='PaloAltoNetworks.Cloudngfw'].{Provider:namespace, State:registrationState}" --output table
+
+# Expected output should show 'Registered'
 ```
 
 ## Security Considerations

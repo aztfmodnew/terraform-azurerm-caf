@@ -38,6 +38,17 @@ locals {
   # Filter out any nulls that might result from failed lookups if a key is provided but not found
   final_public_ip_address_ids = [for id in local.resolved_public_ip_address_ids : id if id != null]
 
+  # Resolve DNAT frontend public IP address ID from key or use direct ID
+  dnat_frontend_public_ip_id = try(var.settings.destination_nat.frontend_config.public_ip_address_id, null) != null ? var.settings.destination_nat.frontend_config.public_ip_address_id : try(var.settings.destination_nat.frontend_config.public_ip_address_key, null) != null ? try(var.remote_objects.public_ip_addresses[try(var.settings.destination_nat.frontend_config.lz_key, var.client_config.landingzone_key)][var.settings.destination_nat.frontend_config.public_ip_address_key].id, null) : null
+
+  # Resolve egress NAT IP address IDs from keys or use direct IDs
+  resolved_egress_nat_ip_address_ids = try(var.settings.network_profile.egress_nat_ip_address_ids, null) != null ? var.settings.network_profile.egress_nat_ip_address_ids : [
+    for key_map in try(var.settings.network_profile.egress_nat_ip_address_keys, []) :
+    try(var.remote_objects.public_ip_addresses[try(key_map.lz_key, var.client_config.landingzone_key)][key_map.key].id, null)
+  ]
+  # Filter out any nulls that might result from failed lookups if a key is provided but not found
+  final_egress_nat_ip_address_ids = [for id in local.resolved_egress_nat_ip_address_ids : id if id != null]
+
   # Settings for the local_rulestack sub-module
   # Ensure that the sub-module also receives necessary context like client_config, global_settings, base_tags, remote_objects
   local_rulestack_module_settings = merge(

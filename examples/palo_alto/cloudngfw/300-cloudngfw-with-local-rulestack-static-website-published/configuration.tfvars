@@ -189,7 +189,7 @@ vnet_peerings = {
     allow_virtual_network_access = true
     allow_forwarded_traffic      = true # Allow traffic to be forwarded to hub
     allow_gateway_transit        = false
-    use_remote_gateways          = true # Use hub as gateway for internet access
+    use_remote_gateways          = false # No gateway available in hub VNet
   }
 }
 
@@ -303,7 +303,7 @@ network_security_group_definition = {
         access                     = "Allow"
         protocol                   = "Tcp"
         source_port_range          = "*"
-        destination_port_range     = "80,443"
+        destination_port_ranges    = ["80", "443"]
         source_address_prefix      = "10.100.0.0/16" # Hub network
         destination_address_prefix = "*"
       }
@@ -320,12 +320,6 @@ storage_accounts = {
     account_tier             = "Standard"
     account_replication_type = "LRS"
     account_kind             = "StorageV2"
-
-    # Enable static website hosting
-    static_website = {
-      index_document     = "index.html"
-      error_404_document = "404.html"
-    }
 
     # Configure blob properties
     blob_properties = {
@@ -375,6 +369,8 @@ palo_alto_cloudngfws = {
     attachment_type    = "vnet"        // or "vwan" depending on your architecture
     management_mode    = "rulestack"   // or "panorama" depending on your architecture
     # location            = "westeurope" # Optional, will inherit from resource_group if not specified
+    plan_id              = "panw-cngfw-payg"
+    marketplace_offer_id = "pan_swfw_cloud_ngfw"
 
     network_profile = {
       vnet_configuration = {
@@ -411,18 +407,115 @@ palo_alto_cloudngfws = {
         # }
       ] // Keys of PIPs defined above
       enable_egress_nat = true
+
+      # Configure egress NAT IP address for outbound traffic
+      egress_nat_ip_address_keys = [
+        {
+          key = "ngfw_pip_dataplane1" # Use dataplane IP for egress NAT
+        }
+      ]
     }
 
     local_rulestack = {
       name        = "localrules-staticweb-example"
       description = "Local rulestack for static website protection with Palo Alto NGFW."
       # location    = "westeurope" # Optional, will inherit from the NGFW if not specified
+
+      # Security rules to allow static website traffic
+      rules = {
+        # Rule to allow inbound HTTPS traffic for DNAT (Azure Storage only supports HTTPS)
+        "allow-inbound-https" = {
+          priority     = 1001
+          action       = "Allow"
+          applications = ["ssl"]
+          description  = "Allow inbound HTTPS traffic for static website DNAT to Azure Storage"
+          enabled      = true
+
+          source = {
+            cidrs = ["0.0.0.0/0"] # Allow from any source
+          }
+
+          destination = {
+            cidrs = ["10.200.1.100/32"] # Internal backend service IP
+          }
+
+          protocol_ports = ["TCP:443"]
+        }
+
+        # Rule to allow outbound traffic from backend to Azure Storage (HTTPS only)
+        "allow-outbound-storage" = {
+          priority     = 2000
+          action       = "Allow"
+          applications = ["ssl"]
+          description  = "Allow outbound HTTPS traffic from backend to Azure Storage"
+          enabled      = true
+
+          source = {
+            cidrs = ["10.200.0.0/16"] # Spoke network
+          }
+
+          destination = {
+            cidrs = ["0.0.0.0/0"] # Allow to any destination (Azure Storage endpoints)
+          }
+
+          protocol_ports = ["TCP:443"]
+        }
+      }
+    }
+
+    # DNAT Configuration for Static Website (HTTPS only - Azure Storage requirement)
+    # Redirects external HTTPS traffic to internal backend service which proxies to Azure Storage
+    destination_nat = {
+      name     = "dnat-static-website-https"
+      protocol = "TCP"
+
+      # Frontend configuration - External access point (firewall's dataplane public IP)
+      frontend_config = {
+        public_ip_address_key = "ngfw_pip_dataplane1"
+        port                  = "443" # HTTPS port (required for Azure Storage)
+      }
+
+      # Backend configuration - Internal service that will proxy to Azure Storage
+      backend_config = {
+        public_ip_address = "20.60.88.104" # Internal IP in spoke backend subnet
+        port              = "443"          # Direct HTTPS port (no proxy needed)
+      }
+    }
+
+    # DNS Configuration for proper name resolution
+    dns_settings = {
+      use_azure_dns = true
+    }
+
+    # Timeouts for firewall operations
+    timeouts = {
+      create = "30m"
+      update = "30m"
+      read   = "5m"
+      delete = "30m"
     }
 
     tags = {
       environment = "example"
       cost_center = "it"
       purpose     = "static-website-protection"
+    }
+  }
+}
+
+# Static Website Configuration (Modern approach using separate module)
+storage_account_static_websites = {
+  static_website_config = {
+    resource_group_key = "spoke_storage_rg"
+    storage_account = {
+      key = "static_website_storage"
+    }
+    index_document     = "index.html"
+    error_404_document = "404.html"
+
+    tags = {
+      purpose = "Static Website Hosting"
+      tier    = "spoke"
     }
   }
 }

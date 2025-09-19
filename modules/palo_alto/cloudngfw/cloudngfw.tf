@@ -11,7 +11,7 @@ resource "azurerm_palo_alto_next_generation_firewall_virtual_network_local_rules
     for_each = [var.settings.network_profile] # network_profile is required
     content {
       public_ip_address_ids     = local.final_public_ip_address_ids # Use resolved IDs      
-      egress_nat_ip_address_ids = try(network_profile.value.egress_nat_ip_address_ids, null)
+      egress_nat_ip_address_ids = local.final_egress_nat_ip_address_ids
       trusted_address_ranges    = try(network_profile.value.trusted_address_ranges, null)
       dynamic "vnet_configuration" {
         for_each = [network_profile.value.vnet_configuration] # vnet_configuration is required
@@ -38,7 +38,7 @@ resource "azurerm_palo_alto_next_generation_firewall_virtual_network_local_rules
       dynamic "frontend_config" {
         for_each = try(destination_nat.value.frontend_config, null) == null ? [] : [destination_nat.value.frontend_config]
         content {
-          public_ip_address_id = contains(local.final_public_ip_address_ids, try(frontend_config.value.public_ip_address_id, null)) ? try(frontend_config.value.public_ip_address_id, null) : null
+          public_ip_address_id = local.dnat_frontend_public_ip_id
           port                 = try(frontend_config.value.port, null)
         }
       }
@@ -96,7 +96,7 @@ resource "azurerm_palo_alto_next_generation_firewall_virtual_network_panorama" "
     for_each = [var.settings.network_profile] # network_profile is required
     content {
       public_ip_address_ids     = local.final_public_ip_address_ids # Use resolved IDs      
-      egress_nat_ip_address_ids = try(network_profile.value.egress_nat_ip_address_ids, null)
+      egress_nat_ip_address_ids = local.final_egress_nat_ip_address_ids
       trusted_address_ranges    = try(network_profile.value.trusted_address_ranges, null)
       dynamic "vnet_configuration" {
         for_each = [network_profile.value.vnet_configuration] # vnet_configuration is required
@@ -123,7 +123,7 @@ resource "azurerm_palo_alto_next_generation_firewall_virtual_network_panorama" "
       dynamic "frontend_config" {
         for_each = try(destination_nat.value.frontend_config, null) == null ? [] : [destination_nat.value.frontend_config]
         content {
-          public_ip_address_id = contains(local.final_public_ip_address_ids, try(frontend_config.value.public_ip_address_id, null)) ? try(frontend_config.value.public_ip_address_id, null) : null
+          public_ip_address_id = local.dnat_frontend_public_ip_id
           port                 = try(frontend_config.value.port, null)
         }
       }
