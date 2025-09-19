@@ -16,7 +16,7 @@ module "storage_account_static_websites" {
 
 # Backward compatibility: automatically create static websites for storage accounts with static_website block
 module "storage_account_static_websites_compat" {
-  source   = "./modules/storage_account_static_website"
+  source = "./modules/storage_account_static_website"
   for_each = {
     for k, v in var.storage_accounts : k => v
     if can(v.static_website)
@@ -27,7 +27,7 @@ module "storage_account_static_websites_compat" {
   location        = can(local.global_settings.regions[each.value.region]) ? local.global_settings.regions[each.value.region] : local.combined_objects_resource_groups[try(each.value.resource_group.lz_key, local.client_config.landingzone_key)][try(each.value.resource_group.key, each.value.resource_group_key)].location
   resource_group  = local.combined_objects_resource_groups[try(each.value.resource_group.lz_key, local.client_config.landingzone_key)][try(each.value.resource_group.key, each.value.resource_group_key)]
   base_tags       = try(local.global_settings.inherit_tags, false)
-  
+
   # Convert old static_website structure to new format
   settings = merge(
     {
