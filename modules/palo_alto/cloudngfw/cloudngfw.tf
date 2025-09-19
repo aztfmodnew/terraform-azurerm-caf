@@ -27,7 +27,7 @@ resource "azurerm_palo_alto_next_generation_firewall_virtual_network_local_rules
     for_each = try(var.settings.destination_nat, null) == null ? [] : [var.settings.destination_nat]
     content {
       name     = try(destination_nat.value.name, null)
-      protocol = try(lower(destination_nat.value.protocol), null) == "tcp" || try(lower(destination_nat.value.protocol), null) == "udp" ? lower(destination_nat.value.protocol) : null
+      protocol = try(upper(destination_nat.value.protocol), null) == "TCP" || try(upper(destination_nat.value.protocol), null) == "UDP" ? upper(destination_nat.value.protocol) : null
       dynamic "backend_config" {
         for_each = try(destination_nat.value.backend_config, null) == null ? [] : [destination_nat.value.backend_config]
         content {
@@ -112,7 +112,7 @@ resource "azurerm_palo_alto_next_generation_firewall_virtual_network_panorama" "
     for_each = try(var.settings.destination_nat, null) == null ? [] : [var.settings.destination_nat]
     content {
       name     = try(destination_nat.value.name, null)
-      protocol = try(lower(destination_nat.value.protocol), null) == "tcp" || try(lower(destination_nat.value.protocol), null) == "udp" ? lower(destination_nat.value.protocol) : null
+      protocol = try(upper(destination_nat.value.protocol), null) == "TCP" || try(upper(destination_nat.value.protocol), null) == "UDP" ? upper(destination_nat.value.protocol) : null
       dynamic "backend_config" {
         for_each = try(destination_nat.value.backend_config, null) == null ? [] : [destination_nat.value.backend_config]
         content {
@@ -166,4 +166,3 @@ resource "azurerm_palo_alto_virtual_network_appliance" "palo_alto_virtual_networ
   }
 
 }
-

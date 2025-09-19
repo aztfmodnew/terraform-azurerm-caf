@@ -375,7 +375,15 @@ variable "mssql_mi_secondary_tdes" {
   type    = any
   default = {}
 }
+variable "storage" {
+  type    = any
+  default = {}
+}
 variable "storage_accounts" {
+  type    = any
+  default = {}
+}
+variable "storage_account_static_websites" {
   type    = any
   default = {}
 }
