@@ -57,13 +57,13 @@ locals {
     try(var.settings.destination_nat.backend_config.private_ip_address, null),
     try(var.remote_objects.private_endpoints[
       try(var.settings.destination_nat.backend_config.private_endpoint.lz_key, var.client_config.landingzone_key)
-    ][
+      ][
       var.settings.destination_nat.backend_config.private_endpoint.vnet_key
-    ].subnet[
+      ].subnet[
       var.settings.destination_nat.backend_config.private_endpoint.subnet_key
-    ].storage_account[
+      ].storage_account[
       var.settings.destination_nat.backend_config.private_endpoint.resource_key
-    ].pep[
+      ].pep[
       var.settings.destination_nat.backend_config.private_endpoint.subresource_name
     ].private_service_connection[0].private_ip_address, null),
     null
