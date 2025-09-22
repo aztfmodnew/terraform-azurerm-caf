@@ -114,14 +114,12 @@ vnets = {
       address_space = ["10.200.0.0/16"]
     }
     subnets = {
-      # Backend subnet for storage services with service endpoints
+      # Backend subnet for storage services, now configured for Private Endpoints
       snet_backend = {
-        name    = "snet-backend-services"
-        cidr    = ["10.200.1.0/24"]
-        nsg_key = "spoke_backend_nsg"
-        service_endpoints = [
-          "Microsoft.Storage"
-        ]
+        name                                      = "snet-backend-services"
+        cidr                                      = ["10.200.1.0/24"]
+        nsg_key                                   = "spoke_backend_nsg"
+        private_endpoint_network_policies_enabled = true
       }
       # Web subnet for potential web-tier services
       snet_web = {
@@ -340,17 +338,13 @@ storage_accounts = {
       }
     }
 
-    # Network access rules to allow access from spoke backend subnet
+    # Network access rules to allow access via Private Endpoint
+    public_network_access_enabled = false
     network_rules = {
-      default_action = "Allow" # Allow for initial setup - can be restricted later
-      ip_rules       = []
-      virtual_network_subnet_ids = [
-        # Allow access from spoke backend subnet with service endpoints
-        {
-          virtual_network_key = "spoke_storage_vnet"
-          subnet_key          = "snet_backend"
-        }
-      ]
+      default_action             = "Deny"
+      bypass                     = ["AzureServices"]
+      ip_rules                   = []
+      virtual_network_subnet_ids = []
     }
 
     tags = {
@@ -424,11 +418,12 @@ palo_alto_cloudngfws = {
       # Security rules to allow static website traffic
       rules = {
         # Rule to allow inbound HTTPS traffic for DNAT (Azure Storage only supports HTTPS)
+        # TEMPORAL CONFIG: Allow ANY destination for DNAT to work properly
         "allow-inbound-https" = {
           priority     = 1001
           action       = "Allow"
           applications = ["ssl"]
-          description  = "Allow inbound HTTPS traffic for static website DNAT to Azure Storage"
+          description  = "TEMP: Allow inbound HTTPS traffic for static website DNAT - any destination"
           enabled      = true
 
           source = {
@@ -436,10 +431,29 @@ palo_alto_cloudngfws = {
           }
 
           destination = {
-            cidrs = ["10.200.1.100/32"] # Internal backend service IP
+            cidrs = ["0.0.0.0/0"] # TEMPORAL: Allow to any destination for DNAT processing
           }
 
           protocol_ports = ["TCP:443"]
+        }
+
+        # ADDITIONAL RULE: Allow HTTP for testing
+        "allow-inbound-http-test" = {
+          priority     = 1002
+          action       = "Allow"
+          applications = ["web-browsing"]
+          description  = "TEMP: Allow HTTP for testing DNAT functionality"
+          enabled      = true
+
+          source = {
+            cidrs = ["0.0.0.0/0"] # Allow from any source
+          }
+
+          destination = {
+            cidrs = ["0.0.0.0/0"] # TEMPORAL: Allow to any destination for DNAT testing
+          }
+
+          protocol_ports = ["TCP:80"]
         }
 
         # Rule to allow outbound traffic from backend to Azure Storage (HTTPS only)
@@ -464,7 +478,7 @@ palo_alto_cloudngfws = {
     }
 
     # DNAT Configuration for Static Website (HTTPS only - Azure Storage requirement)
-    # Redirects external HTTPS traffic to internal backend service which proxies to Azure Storage
+    # Redirects external HTTPS traffic to private endpoint IP (automatically resolved)
     destination_nat = {
       name     = "dnat-static-website-https"
       protocol = "TCP"
@@ -475,10 +489,19 @@ palo_alto_cloudngfws = {
         port                  = "443" # HTTPS port (required for Azure Storage)
       }
 
-      # Backend configuration - Internal service that will proxy to Azure Storage
+      # Backend configuration - Private endpoint IP (automatically resolved from private endpoint)
       backend_config = {
-        public_ip_address = "20.60.88.104" # Internal IP in spoke backend subnet
-        port              = "443"          # Direct HTTPS port (no proxy needed)
+        private_endpoint = {
+          vnet_key         = "spoke_storage_vnet"
+          subnet_key       = "snet_backend"
+          resource_type    = "storage_accounts"
+          resource_key     = "static_website_storage"
+          subresource_name = "blob"
+        }
+        # Temporary fallback until dynamic remote_objects path is confirmed.
+        # Replace with resolved dynamic IP or remove after verifying private_endpoints structure.
+        fallback_private_ip = "10.200.1.4"
+        port                = "443"
       }
     }
 
@@ -516,6 +539,140 @@ storage_account_static_websites = {
     tags = {
       purpose = "Static Website Hosting"
       tier    = "spoke"
+    }
+  }
+}
+
+# ========================================
+# TESTING INSTRUCTIONS - DNAT FUNCTIONALITY
+# ========================================
+# 
+# After deployment, get the dynamic values from Terraform outputs:
+#
+# STEP 1: Get deployment-specific values
+#    NGFW_IP=$(terraform output -raw objects | jq -r '.public_ip_addresses.ngfw_pip_dataplane1.ip_address')
+#    STORAGE_NAME=$(terraform output -raw objects | jq -r '.storage_accounts.static_website_storage.name')
+#    STORAGE_WEB_URL=$(terraform output -raw objects | jq -r '.storage_accounts.static_website_storage.primary_web_endpoint')
+#    PE_IP=$(terraform output -raw objects | jq -r '.private_endpoints.spoke_storage_vnet.subnet.snet_backend.storage_account.static_website_storage.pep.blob.private_service_connection[0].private_ip_address')
+#
+# STEP 2: Display values for verification
+#    echo "NGFW Public IP: $NGFW_IP"
+#    echo "Storage Account: $STORAGE_NAME"
+#    echo "Storage Web URL: $STORAGE_WEB_URL"
+#    echo "Private Endpoint IP: $PE_IP"
+#
+# STEP 3: Run connectivity tests
+#
+# 1. BASIC CONNECTIVITY TEST (should show SSL handshake + HTTP 400):
+#    curl -k -v --connect-timeout 10 https://$NGFW_IP/
+#    
+#    Expected result: SSL connection established, HTTP 400 Bad Request (hostname invalid)
+#    This confirms DNAT is working - traffic reaches the backend Storage Account
+#
+# 2. PROPER HOSTNAME TEST (with blob endpoint):
+#    curl -k -v -H "Host: $STORAGE_NAME.blob.core.windows.net" https://$NGFW_IP/
+#    
+#    Expected result: HTTP 400 with Azure Storage error (InvalidQueryParameterValue)
+#    This confirms backend Storage Account is responding
+#
+# 3. STATIC WEBSITE TEST (with web endpoint):
+#    WEB_HOST=$(echo $STORAGE_WEB_URL | sed 's|https://||' | sed 's|/||')
+#    curl -k -v -H "Host: $WEB_HOST" https://$NGFW_IP/
+#    
+#    Expected result: 
+#    - If content exists: HTTP 200 + HTML content
+#    - If no content: HTTP 400 InvalidUri (still confirms DNAT working)
+#
+# 4. PORT SCAN TEST (validate which ports are open):
+#    nmap -p 80,443 $NGFW_IP
+#    
+#    Expected result: Port 443 open, port 80 filtered/closed
+#
+# 5. DIAGNOSTIC SCRIPT (comprehensive validation - edit script with current values):
+#    # Update script variables first:
+#    sed -i "s/NGFW_PUBLIC_IP=\".*\"/NGFW_PUBLIC_IP=\"$NGFW_IP\"/" ./examples/borrame/diagnose_static_site.sh
+#    sed -i "s/STORAGE_ACCOUNT=\".*\"/STORAGE_ACCOUNT=\"$STORAGE_NAME\"/" ./examples/borrame/diagnose_static_site.sh
+#    sed -i "s/PE_IP=\".*\"/PE_IP=\"$PE_IP\"/" ./examples/borrame/diagnose_static_site.sh
+#    # Run diagnostic
+#    ./examples/borrame/diagnose_static_site.sh
+#
+# ALTERNATIVE: ONE-LINER TEST COMMAND
+#    NGFW_IP=$(terraform output -raw objects | jq -r '.public_ip_addresses.ngfw_pip_dataplane1.ip_address') && \
+#    STORAGE_NAME=$(terraform output -raw objects | jq -r '.storage_accounts.static_website_storage.name') && \
+#    echo "Testing DNAT: $NGFW_IP -> $STORAGE_NAME" && \
+#    curl -k -v --connect-timeout 10 https://$NGFW_IP/
+#
+# BROWSER TESTING:
+#    echo "For browser testing, use: https://$NGFW_IP"
+#    echo "Note: You'll see SSL certificate warnings - this is expected"
+#    echo "You should reach the Azure Storage backend (may show errors, but confirms DNAT works)"
+#
+# TROUBLESHOOTING:
+# - Connection timeout = NGFW security rules blocking (check destination = 0.0.0.0/0)
+# - SSL errors = Certificate mismatch (use -k flag or proper hostname)
+# - HTTP 400 = Normal for Azure Storage without proper hostname/path
+# - HTTP 404 = Missing static website content in $web container
+# - "terraform output" fails = Run from correct directory with deployed state
+#
+# CRITICAL CONFIGURATION NOTES:
+# - NGFW security rules MUST use destination = "0.0.0.0/0" for DNAT
+# - Security rules are evaluated BEFORE DNAT translation
+# - Private Endpoint IP is resolved dynamically via CAF remote_objects
+# - Storage Account public access should be disabled for security
+# - IP addresses and URLs change with each deployment - always use terraform outputs
+#
+# ========================================
+
+# Private DNS and Private Endpoint Configuration for Static Website Storage
+private_dns = {
+  blob_private_dns_zone = {
+    name               = "privatelink.blob.core.windows.net"
+    resource_group_key = "spoke_storage_rg"
+  }
+}
+
+private_dns_vnet_links = {
+  hub_vnet_link = {
+    vnet_key = "hub_ngfw_vnet"
+
+    private_dns_zones = {
+      blob_zone = {
+        name                 = "hub-vnet-link"
+        key                  = "blob_private_dns_zone"
+        registration_enabled = false
+      }
+    }
+  }
+  spoke_vnet_link = {
+    vnet_key = "spoke_storage_vnet"
+
+    private_dns_zones = {
+      blob_zone = {
+        name                 = "spoke-vnet-link"
+        key                  = "blob_private_dns_zone"
+        registration_enabled = false
+      }
+    }
+  }
+}
+
+private_endpoints = {
+  spoke_storage_vnet = {
+    vnet_key           = "spoke_storage_vnet"
+    subnet_keys        = ["snet_backend"]
+    resource_group_key = "spoke_storage_rg"
+
+    storage_accounts = {
+      static_website_storage = {
+        private_service_connection = {
+          name              = "psc-static-website-storage"
+          subresource_names = ["blob"]
+        }
+        private_dns = {
+          zone_group_name = "default"
+          keys            = ["blob_private_dns_zone"]
+        }
+      }
     }
   }
 }

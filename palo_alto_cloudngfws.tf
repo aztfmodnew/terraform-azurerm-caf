@@ -18,6 +18,7 @@ module "palo_alto_cloudngfws" {
     virtual_subnets               = local.combined_objects_virtual_subnets
     keyvault_certificates         = local.combined_objects_keyvault_certificates
     keyvault_certificate_requests = local.combined_objects_keyvault_certificate_requests
+    private_endpoints             = local.combined_objects_private_endpoints
 
 
 

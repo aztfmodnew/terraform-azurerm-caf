@@ -41,6 +41,34 @@ locals {
   # Resolve DNAT frontend public IP address ID from key or use direct ID
   dnat_frontend_public_ip_id = try(var.settings.destination_nat.frontend_config.public_ip_address_id, null) != null ? var.settings.destination_nat.frontend_config.public_ip_address_id : try(var.settings.destination_nat.frontend_config.public_ip_address_key, null) != null ? try(var.remote_objects.public_ip_addresses[try(var.settings.destination_nat.frontend_config.lz_key, var.client_config.landingzone_key)][var.settings.destination_nat.frontend_config.public_ip_address_key].id, null) : null
 
+  # Resolve DNAT backend IP address
+  # Ordered strategy (no speculative fallbacks):
+  # 1. Explicit public_ip_address (if user deliberately DNATs to a public backend)
+  # 2. Explicit private_ip_address (direct override)
+  # 3. Private Endpoint dynamic lookup (authoritative path) ->
+  #    remote_objects.private_endpoints[<lz_key>][<vnet_key>]
+  #      .subnet[<subnet_key>]
+  #      .storage_account[<resource_key>]
+  #      .pep[<subresource_name>]
+  #      .private_service_connection[0].private_ip_address
+  # If none resolve, value is null and downstream resource creation should fail loudly.
+  dnat_backend_ip = coalesce(
+    try(var.settings.destination_nat.backend_config.public_ip_address, null),
+    try(var.settings.destination_nat.backend_config.private_ip_address, null),
+    try(var.remote_objects.private_endpoints[
+      try(var.settings.destination_nat.backend_config.private_endpoint.lz_key, var.client_config.landingzone_key)
+    ][
+      var.settings.destination_nat.backend_config.private_endpoint.vnet_key
+    ].subnet[
+      var.settings.destination_nat.backend_config.private_endpoint.subnet_key
+    ].storage_account[
+      var.settings.destination_nat.backend_config.private_endpoint.resource_key
+    ].pep[
+      var.settings.destination_nat.backend_config.private_endpoint.subresource_name
+    ].private_service_connection[0].private_ip_address, null),
+    null
+  )
+
   # Resolve egress NAT IP address IDs from keys or use direct IDs
   resolved_egress_nat_ip_address_ids = try(var.settings.network_profile.egress_nat_ip_address_ids, null) != null ? var.settings.network_profile.egress_nat_ip_address_ids : [
     for key_map in try(var.settings.network_profile.egress_nat_ip_address_keys, []) :

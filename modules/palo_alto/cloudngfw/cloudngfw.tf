@@ -31,7 +31,7 @@ resource "azurerm_palo_alto_next_generation_firewall_virtual_network_local_rules
       dynamic "backend_config" {
         for_each = try(destination_nat.value.backend_config, null) == null ? [] : [destination_nat.value.backend_config]
         content {
-          public_ip_address = try(backend_config.value.public_ip_address, null)
+          public_ip_address = local.dnat_backend_ip
           port              = try(backend_config.value.port, null)
         }
       }
@@ -116,7 +116,7 @@ resource "azurerm_palo_alto_next_generation_firewall_virtual_network_panorama" "
       dynamic "backend_config" {
         for_each = try(destination_nat.value.backend_config, null) == null ? [] : [destination_nat.value.backend_config]
         content {
-          public_ip_address = try(backend_config.value.public_ip_address, null)
+          public_ip_address = local.dnat_backend_ip
           port              = try(backend_config.value.port, null)
         }
       }
