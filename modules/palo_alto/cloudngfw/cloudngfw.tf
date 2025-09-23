@@ -3,7 +3,7 @@ resource "azurerm_palo_alto_next_generation_firewall_virtual_network_local_rules
   count                = var.settings.attachment_type == "vnet" && var.settings.management_mode == "rulestack" ? 1 : 0
   name                 = var.settings.name
   resource_group_name  = local.resource_group_name
-  rulestack_id         = module.local_rulestack.id
+  rulestack_id         = module.local_rulestack[0].id
   marketplace_offer_id = try(var.settings.marketplace_offer_id, "pan_swfw_cloud_ngfw")
   plan_id              = try(var.settings.plan_id, "panw-cloud-ngfw-payg")
 
@@ -70,6 +70,7 @@ resource "azurerm_palo_alto_next_generation_firewall_virtual_network_local_rules
 }
 
 module "local_rulestack" {
+  count  = var.settings.attachment_type == "vnet" && var.settings.management_mode == "rulestack" ? 1 : 0
   source = "../local_rulestack"
 
   settings        = local.local_rulestack_module_settings

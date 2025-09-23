@@ -77,10 +77,10 @@ locals {
   # Filter out any nulls that might result from failed lookups if a key is provided but not found
   final_egress_nat_ip_address_ids = [for id in local.resolved_egress_nat_ip_address_ids : id if id != null]
 
-  # Settings for the local_rulestack sub-module
+  # Settings for the local_rulestack sub-module (only when management_mode is "rulestack")
   # Ensure that the sub-module also receives necessary context like client_config, global_settings, base_tags, remote_objects
-  local_rulestack_module_settings = merge(
-    var.settings.local_rulestack,
+  local_rulestack_module_settings = var.settings.management_mode == "rulestack" ? merge(
+    try(var.settings.local_rulestack, {}),
     {
       # Pass down location and resource_group_name if the sub-module needs them explicitly,
       # or it can derive them from its own var.resource_group and var.location if structured that way.
@@ -88,5 +88,5 @@ locals {
       # If sub-module's `location` is null, it should default to this main module's location.
       location = try(var.settings.local_rulestack.location, local.location)
     }
-  )
+  ) : {}
 }
