@@ -1,10 +1,12 @@
-# Palo Alto Cloud NGFW with Local Rulestack and Static Website Example - Hub and Spoke Architecture
+# Palo Alto Cloud NGFW with Local Rulestack, Static Website, and Virtual Machine Example
 # This example demonstrates:
 # 1. Hub and Spoke network architecture with Palo Alto Cloud NGFW as the central hub
 # 2. Static website hosted on Azure Storage Account in a spoke network
-# 3. Centralized security inspection through NGFW for all traffic flows
-# 4. Secure connectivity between hub (NGFW) and spoke (static website) networks
-# 5. Traffic routing and security policies managed centrally in the hub
+# 3. Linux virtual machine with web server in the spoke network
+# 4. Centralized security inspection through NGFW for all traffic flows
+# 5. Secure connectivity between hub (NGFW) and spoke (static website + VM) networks
+# 6. Traffic routing and security policies managed centrally in the hub
+# 7. DNAT configuration for external access to both static website and VM services
 
 # Architecture Overview:
 # ┌─────────────────────────────────────────────────────────────────────┐
@@ -12,8 +14,8 @@
 # │  ┌─────────────────────────────────────────────────────────────┐   │
 # │  │                 Palo Alto Cloud NGFW                       │   │
 # │  │  Management: 10.100.1.0/24                                 │   │
-# │  │  Trust:      10.100.2.0/24                                 │   │
-# │  │  Untrust:    10.100.3.0/24                                 │   │
+# │  │  Trust:      10.100.2.0/24  ← Traffic Inspection          │   │
+# │  │  Untrust:    10.100.3.0/24  ← Internet Access             │   │
 # │  └─────────────────────────────────────────────────────────────┘   │
 # │                              │                                      │
 # │                    VNet Peering / Transit                           │
@@ -23,10 +25,17 @@
 # ┌──────────────────────────────┼──────────────────────────────────────┐
 # │                         SPOKE NETWORK                               │
 # │  ┌─────────────────────────────────────────────────────────────┐   │
-# │  │              Static Website Services                        │   │
-# │  │  Backend:    10.200.1.0/24                                 │   │
-# │  │  Storage:    Azure Storage Account (Static Website)        │   │
+# │  │              Workload Services                              │   │
+# │  │  Backend:    10.200.1.0/24  ← Azure Storage (Static Web)   │   │
+# │  │  Web Tier:   10.200.2.0/24  ← Reserved for web services    │   │
+# │  │  VM Subnet:  10.200.3.0/24  ← Linux VM with Nginx          │   │
 # │  └─────────────────────────────────────────────────────────────┘   │
+# │                                                                     │
+# │  External Access through NGFW:                                     │
+# │  • Static Website:  NGFW_IP:443 → Storage Private Endpoint         │
+# │  • VM SSH Access:   NGFW_IP:2022 → VM:22                          │
+# │  • VM HTTP:         NGFW_IP:8080 → VM:80                          │
+# │  • VM HTTPS:        NGFW_IP:8443 → VM:443                         │
 # └─────────────────────────────────────────────────────────────────────┘
 
 resource_groups = {
@@ -119,6 +128,7 @@ vnets = {
         name                                      = "snet-backend-services"
         cidr                                      = ["10.200.1.0/24"]
         nsg_key                                   = "spoke_backend_nsg"
+        route_table_key                           = "backend_subnet_rt"
         private_endpoint_network_policies_enabled = true
       }
       # Web subnet for potential web-tier services
@@ -127,9 +137,16 @@ vnets = {
         cidr    = ["10.200.2.0/24"]
         nsg_key = "spoke_web_nsg"
       }
+      # Virtual Machine subnet for compute workloads
+      snet_vm = {
+        name            = "snet-vm-workload"
+        cidr            = ["10.200.3.0/24"]
+        nsg_key         = "spoke_vm_nsg"
+        route_table_key = "vm_subnet_rt"
+      }
     }
     tags = {
-      purpose = "Spoke Network - Static Website"
+      purpose = "Spoke Network - Static Website and VM Workloads"
       tier    = "spoke"
     }
   }
@@ -301,9 +318,68 @@ network_security_group_definition = {
         access                     = "Allow"
         protocol                   = "Tcp"
         source_port_range          = "*"
-        destination_port_ranges    = ["80", "443"]
+        destination_port_range     = "80"
         source_address_prefix      = "10.100.0.0/16" # Hub network
         destination_address_prefix = "*"
+      },
+      {
+        name                       = "AllowHTTPSTraffic"
+        priority                   = 1001
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_range     = "443"
+        source_address_prefix      = "10.100.0.0/16" # Hub network
+        destination_address_prefix = "*"
+      }
+    ]
+  }
+  spoke_vm_nsg = {
+    nsg = [
+      {
+        name                       = "AllowSSHFromHub"
+        priority                   = 1000
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_range     = "22"
+        source_address_prefix      = "10.100.0.0/16" # Hub network
+        destination_address_prefix = "*"
+      },
+      {
+        name                       = "AllowHTTPFromHub"
+        priority                   = 1001
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_range     = "80"
+        source_address_prefix      = "10.100.0.0/16" # Hub network
+        destination_address_prefix = "*"
+      },
+      {
+        name                       = "AllowHTTPSFromHub"
+        priority                   = 1002
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_range     = "443"
+        source_address_prefix      = "10.100.0.0/16" # Hub network
+        destination_address_prefix = "*"
+      },
+      {
+        name                       = "AllowOutboundToInternet"
+        priority                   = 1000
+        direction                  = "Outbound"
+        access                     = "Allow"
+        protocol                   = "*"
+        source_port_range          = "*"
+        destination_port_range     = "*"
+        source_address_prefix      = "*"
+        destination_address_prefix = "Internet"
       }
     ]
   }
@@ -412,18 +488,17 @@ palo_alto_cloudngfws = {
 
     local_rulestack = {
       name        = "localrules-staticweb-example"
-      description = "Local rulestack for static website protection with Palo Alto NGFW."
+      description = "Local rulestack for static website and VM protection with Palo Alto NGFW - Rules target NGFW public IP for DNAT processing."
       # location    = "westeurope" # Optional, will inherit from the NGFW if not specified
 
-      # Security rules to allow static website traffic
+      # Security rules to allow traffic to NGFW public IP for DNAT processing
       rules = {
-        # Rule to allow inbound HTTPS traffic for DNAT (Azure Storage only supports HTTPS)
-        # TEMPORAL CONFIG: Allow ANY destination for DNAT to work properly
+        # Rule to allow inbound HTTPS traffic to NGFW public IP for static website DNAT
         "allow-inbound-https" = {
           priority     = 1001
           action       = "Allow"
           applications = ["ssl"]
-          description  = "TEMP: Allow inbound HTTPS traffic for static website DNAT - any destination"
+          description  = "Allow inbound HTTPS traffic to NGFW public IP for static website DNAT"
           enabled      = true
 
           source = {
@@ -431,29 +506,10 @@ palo_alto_cloudngfws = {
           }
 
           destination = {
-            cidrs = ["0.0.0.0/0"] # TEMPORAL: Allow to any destination for DNAT processing
+            public_ip_address_keys = ["ngfw_pip_dataplane1"] # Target NGFW public IP specifically
           }
 
           protocol_ports = ["TCP:443"]
-        }
-
-        # ADDITIONAL RULE: Allow HTTP for testing
-        "allow-inbound-http-test" = {
-          priority     = 1002
-          action       = "Allow"
-          applications = ["web-browsing"]
-          description  = "TEMP: Allow HTTP for testing DNAT functionality"
-          enabled      = true
-
-          source = {
-            cidrs = ["0.0.0.0/0"] # Allow from any source
-          }
-
-          destination = {
-            cidrs = ["0.0.0.0/0"] # TEMPORAL: Allow to any destination for DNAT testing
-          }
-
-          protocol_ports = ["TCP:80"]
         }
 
         # Rule to allow outbound traffic from backend to Azure Storage (HTTPS only)
@@ -474,34 +530,197 @@ palo_alto_cloudngfws = {
 
           protocol_ports = ["TCP:443"]
         }
+
+        # VM ACCESS RULES - SSH and web traffic to NGFW public IP for DNAT processing
+        "allow-inbound-ssh-vm" = {
+          priority     = 1100
+          action       = "Allow"
+          applications = ["ssh"]
+          description  = "Allow inbound SSH traffic to NGFW public IP for VM access via DNAT"
+          enabled      = true
+
+          source = {
+            cidrs = ["0.0.0.0/0"] # Allow from any source
+          }
+
+          destination = {
+            public_ip_address_keys = ["ngfw_pip_dataplane1"] # Target NGFW public IP specifically
+          }
+
+          protocol_ports = ["TCP:2022"] # Custom SSH port for DNAT
+        }
+
+        "allow-inbound-http-vm" = {
+          priority     = 1101
+          action       = "Allow"
+          applications = ["web-browsing"]
+          description  = "Allow inbound HTTP traffic to NGFW public IP for VM web services via DNAT"
+          enabled      = true
+
+          source = {
+            cidrs = ["0.0.0.0/0"] # Allow from any source
+          }
+
+          destination = {
+            public_ip_address_keys = ["ngfw_pip_dataplane1"] # Target NGFW public IP specifically
+          }
+
+          protocol_ports = ["TCP:8080"] # Custom HTTP port for DNAT
+        }
+
+        "allow-inbound-https-vm" = {
+          priority     = 1102
+          action       = "Allow"
+          applications = ["ssl"]
+          description  = "Allow inbound HTTPS traffic to NGFW public IP for VM web services via DNAT"
+          enabled      = true
+
+          source = {
+            cidrs = ["0.0.0.0/0"] # Allow from any source
+          }
+
+          destination = {
+            public_ip_address_keys = ["ngfw_pip_dataplane1"] # Target NGFW public IP specifically
+          }
+
+          protocol_ports = ["TCP:8443"] # Custom HTTPS port for DNAT
+        }
+
+        # VM outbound traffic rules
+        "allow-outbound-vm-internet" = {
+          priority     = 2100
+          action       = "Allow"
+          applications = ["any"]
+          description  = "Allow outbound internet traffic from VM subnet"
+          enabled      = true
+
+          source = {
+            cidrs = ["10.200.3.0/24"] # VM subnet
+          }
+
+          destination = {
+            cidrs = ["0.0.0.0/0"] # Allow to any destination
+          }
+
+          protocol_ports = ["any"]
+        }
+
+        # VM to spoke network communication
+        "allow-vm-to-spoke" = {
+          priority     = 2200
+          action       = "Allow"
+          applications = ["any"]
+          description  = "Allow communication between VM and other spoke services"
+          enabled      = true
+
+          source = {
+            cidrs = ["10.200.3.0/24"] # VM subnet
+          }
+
+          destination = {
+            cidrs = ["10.200.0.0/16"] # Entire spoke network
+          }
+
+          protocol_ports = ["any"]
+        }
       }
     }
 
     # DNAT Configuration for Static Website (HTTPS only - Azure Storage requirement)
     # Redirects external HTTPS traffic to private endpoint IP (automatically resolved)
     destination_nat = {
-      name     = "dnat-static-website-https"
-      protocol = "TCP"
+      # Static Website DNAT
+      "dnat-static-website-https" = {
+        name     = "dnat-static-website-https"
+        protocol = "TCP"
 
-      # Frontend configuration - External access point (firewall's dataplane public IP)
-      frontend_config = {
-        public_ip_address_key = "ngfw_pip_dataplane1"
-        port                  = "443" # HTTPS port (required for Azure Storage)
+        # Frontend configuration - External access point (firewall's dataplane public IP)
+        frontend_config = {
+          public_ip_address_key = "ngfw_pip_dataplane1"
+          port                  = "443" # HTTPS port (required for Azure Storage)
+        }
+
+        # Backend configuration - Private endpoint IP (automatically resolved from private endpoint)
+        backend_config = {
+          private_endpoint = {
+            vnet_key         = "spoke_storage_vnet"
+            subnet_key       = "snet_backend"
+            resource_type    = "storage_accounts"
+            resource_key     = "static_website_storage"
+            subresource_name = "blob"
+          }
+          # Temporary fallback until dynamic remote_objects path is confirmed.
+          # Replace with resolved dynamic IP or remove after verifying private_endpoints structure.
+          fallback_private_ip = "10.200.1.4"
+          port                = "443"
+        }
       }
 
-      # Backend configuration - Private endpoint IP (automatically resolved from private endpoint)
-      backend_config = {
-        private_endpoint = {
-          vnet_key         = "spoke_storage_vnet"
-          subnet_key       = "snet_backend"
-          resource_type    = "storage_accounts"
-          resource_key     = "static_website_storage"
-          subresource_name = "blob"
+      # VM DNAT RULES - SSH and web access through NGFW
+      "dnat-vm-ssh" = {
+        name     = "dnat-vm-ssh"
+        protocol = "TCP"
+
+        # Frontend configuration - SSH access via NGFW dataplane IP on port 2022
+        frontend_config = {
+          public_ip_address_key = "ngfw_pip_dataplane1"
+          port                  = "2022" # Custom SSH port to avoid conflicts
         }
-        # Temporary fallback until dynamic remote_objects path is confirmed.
-        # Replace with resolved dynamic IP or remove after verifying private_endpoints structure.
-        fallback_private_ip = "10.200.1.4"
-        port                = "443"
+
+        # Backend configuration - VM private IP (dynamically resolved)
+        backend_config = {
+          virtual_machine = {
+            vm_key = "spoke_web_vm"
+            # Will resolve to VM's primary NIC private IP
+          }
+          # Fallback static IP configuration
+          fallback_private_ip = "10.200.3.10" # Expected VM IP in VM subnet
+          port                = "22"          # Standard SSH port on VM
+        }
+      }
+
+      "dnat-vm-http" = {
+        name     = "dnat-vm-http"
+        protocol = "TCP"
+
+        # Frontend configuration - HTTP access via NGFW dataplane IP on port 8080
+        frontend_config = {
+          public_ip_address_key = "ngfw_pip_dataplane1"
+          port                  = "8080" # Custom HTTP port to avoid conflicts
+        }
+
+        # Backend configuration - VM private IP (dynamically resolved)
+        backend_config = {
+          virtual_machine = {
+            vm_key = "spoke_web_vm"
+            # Will resolve to VM's primary NIC private IP
+          }
+          # Fallback static IP configuration
+          fallback_private_ip = "10.200.3.10" # Expected VM IP in VM subnet
+          port                = "80"          # Standard HTTP port on VM
+        }
+      }
+
+      "dnat-vm-https" = {
+        name     = "dnat-vm-https"
+        protocol = "TCP"
+
+        # Frontend configuration - HTTPS access via NGFW dataplane IP on port 8443
+        frontend_config = {
+          public_ip_address_key = "ngfw_pip_dataplane1"
+          port                  = "8443" # Custom HTTPS port to avoid conflicts
+        }
+
+        # Backend configuration - VM private IP (dynamically resolved)
+        backend_config = {
+          virtual_machine = {
+            vm_key = "spoke_web_vm"
+            # Will resolve to VM's primary NIC private IP
+          }
+          # Fallback static IP configuration
+          fallback_private_ip = "10.200.3.10" # Expected VM IP in VM subnet
+          port                = "443"         # Standard HTTPS port on VM
+        }
       }
     }
 
@@ -546,7 +765,7 @@ storage_account_static_websites = {
 # ========================================
 # TESTING INSTRUCTIONS - DNAT FUNCTIONALITY
 # ========================================
-# 
+#
 # After deployment, get the dynamic values from Terraform outputs:
 #
 # STEP 1: Get deployment-specific values
@@ -565,27 +784,27 @@ storage_account_static_websites = {
 #
 # 1. BASIC CONNECTIVITY TEST (should show SSL handshake + HTTP 400):
 #    curl -k -v --connect-timeout 10 https://$NGFW_IP/
-#    
+#
 #    Expected result: SSL connection established, HTTP 400 Bad Request (hostname invalid)
 #    This confirms DNAT is working - traffic reaches the backend Storage Account
 #
 # 2. PROPER HOSTNAME TEST (with blob endpoint):
 #    curl -k -v -H "Host: $STORAGE_NAME.blob.core.windows.net" https://$NGFW_IP/
-#    
+#
 #    Expected result: HTTP 400 with Azure Storage error (InvalidQueryParameterValue)
 #    This confirms backend Storage Account is responding
 #
 # 3. STATIC WEBSITE TEST (with web endpoint):
 #    WEB_HOST=$(echo $STORAGE_WEB_URL | sed 's|https://||' | sed 's|/||')
 #    curl -k -v -H "Host: $WEB_HOST" https://$NGFW_IP/
-#    
-#    Expected result: 
+#
+#    Expected result:
 #    - If content exists: HTTP 200 + HTML content
 #    - If no content: HTTP 400 InvalidUri (still confirms DNAT working)
 #
 # 4. PORT SCAN TEST (validate which ports are open):
 #    nmap -p 80,443 $NGFW_IP
-#    
+#
 #    Expected result: Port 443 open, port 80 filtered/closed
 #
 # 5. DIAGNOSTIC SCRIPT (comprehensive validation - edit script with current values):
@@ -676,3 +895,384 @@ private_endpoints = {
     }
   }
 }
+
+# ========================================
+# VIRTUAL MACHINE CONFIGURATION
+# ========================================
+# Linux Virtual Machine in spoke network for web application workloads
+# Configured with proper networking, security, and CNGFW integration
+
+# Virtual Machine Configuration
+virtual_machines = {
+  spoke_web_vm = {
+    resource_group_key = "spoke_storage_rg"
+    provision_vm_agent = true
+
+    # Use Azure managed storage for boot diagnostics
+    boot_diagnostics_storage_account_key = "vm_bootdiag_storage"
+
+    os_type = "linux"
+
+    # SSH key management through Key Vault
+    keyvault_key = "spoke_vm_keyvault"
+
+    # Auto-shutdown schedule for cost optimization
+    shutdown_schedule = {
+      enabled               = true
+      daily_recurrence_time = "2200" # 10 PM
+      timezone              = "UTC"
+      notification_settings = {
+        enabled         = true
+        time_in_minutes = "30"
+        # webhook_url   = "https://example.com/webhook"  # Optional
+      }
+    }
+
+    networking_interfaces = {
+      nic0 = {
+        vnet_key                = "spoke_storage_vnet"
+        subnet_key              = "snet_vm"
+        primary                 = true
+        name                    = "0"
+        enable_ip_forwarding    = false
+        internal_dns_name_label = "spokevmnic0"
+        public_ip_address_key   = "spoke_vm_pip"
+      }
+    }
+
+    virtual_machine_settings = {
+      linux = {
+        name                            = "spoke-web-vm"
+        size                            = "Standard_B2s" # Cost-effective for web workloads
+        admin_username                  = "azureuser"
+        disable_password_authentication = true
+
+        # Custom data for web server setup
+        custom_data = <<CUSTOM_DATA
+#!/bin/bash
+# Update system
+apt-get update -y
+
+# Install nginx web server
+apt-get install -y nginx
+
+# Create simple web page
+cat > /var/www/html/index.html << 'EOF'
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Spoke VM Web Server</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .header { background: #2E86AB; color: white; padding: 20px; border-radius: 5px; }
+        .content { margin: 20px 0; }
+        .info { background: #F5F5F5; padding: 15px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🖥️ Spoke VM Web Server</h1>
+        <p>Virtual Machine in Spoke Network behind Palo Alto Cloud NGFW</p>
+    </div>
+    <div class="content">
+        <h2>VM Information</h2>
+        <div class="info">
+            <p><strong>Hostname:</strong> $(hostname)</p>
+            <p><strong>IP Address:</strong> $(hostname -I)</p>
+            <p><strong>Date:</strong> $(date)</p>
+            <p><strong>Uptime:</strong> $(uptime)</p>
+        </div>
+        <h2>Network Architecture</h2>
+        <p>This virtual machine is deployed in the spoke network (10.200.0.0/16) and all traffic flows through the Palo Alto Cloud NGFW in the hub network (10.100.0.0/16) for security inspection.</p>
+        <h2>Access</h2>
+        <p>External access is provided through DNAT configuration on the NGFW, routing traffic from the public IP to this VM's private IP.</p>
+    </div>
+</body>
+</html>
+EOF
+
+# Start and enable nginx
+systemctl start nginx
+systemctl enable nginx
+
+# Configure nginx for both HTTP and HTTPS
+cat > /etc/nginx/sites-available/default << 'EOF'
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    root /var/www/html;
+    index index.html index.htm index.nginx-debian.html;
+
+    server_name _;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+EOF
+
+# Restart nginx to apply configuration
+systemctl restart nginx
+
+# Install firewall and configure it
+ufw allow 22/tcp
+ufw allow 80/tcp
+ufw allow 443/tcp
+echo "y" | ufw enable
+
+echo "VM setup completed successfully" > /tmp/setup-complete.log
+CUSTOM_DATA
+
+        # Use Standard priority (non-Spot) for better availability
+        priority   = "Regular"
+        patch_mode = "ImageDefault"
+
+        # Network interface configuration
+        network_interface_keys = ["nic0"]
+
+        os_disk = {
+          name                 = "spoke-web-vm-os"
+          caching              = "ReadWrite"
+          storage_account_type = "Premium_LRS" # Better performance for web server
+        }
+
+        # System-assigned managed identity for Azure services access
+        identity = {
+          type = "SystemAssigned"
+        }
+
+        # Use latest Ubuntu LTS image
+        source_image_reference = {
+          publisher = "Canonical"
+          offer     = "0001-com-ubuntu-server-focal"
+          sku       = "20_04-lts-gen2"
+          version   = "latest"
+        }
+      }
+    }
+
+    # Optional data disk for application data
+    data_disks = {
+      data1 = {
+        name                 = "spoke-web-vm-data1"
+        storage_account_type = "Premium_LRS"
+        create_option        = "Empty"
+        disk_size_gb         = "32"
+        lun                  = 1
+      }
+    }
+  }
+}
+
+# Key Vault for VM SSH keys and secrets
+keyvaults = {
+  spoke_vm_keyvault = {
+    name                        = "spokevm-kv"
+    resource_group_key          = "spoke_storage_rg"
+    sku_name                    = "standard"
+    soft_delete_enabled         = true
+    purge_protection_enabled    = true
+    enabled_for_disk_encryption = true
+    tags = {
+      purpose = "VM SSH Keys and Secrets"
+    }
+    creation_policies = {
+      logged_in_user = {
+        secret_permissions = ["Set", "Get", "List", "Delete", "Purge", "Recover"]
+        key_permissions    = ["Get", "List", "Update", "Create", "Import", "Delete", "Recover", "Backup", "Restore", "Decrypt", "Encrypt", "UnwrapKey", "WrapKey", "Verify", "Sign", "Purge"]
+      }
+    }
+  }
+}
+
+# Boot diagnostics storage account for VM
+diagnostic_storage_accounts = {
+  vm_bootdiag_storage = {
+    name                     = "vmbootdiag"
+    resource_group_key       = "spoke_storage_rg"
+    account_kind             = "StorageV2"
+    account_tier             = "Standard"
+    account_replication_type = "LRS"
+    access_tier              = "Hot"
+    tags = {
+      purpose = "VM Boot Diagnostics"
+    }
+  }
+}
+
+# Public IP for VM external access through NGFW
+# (Added to existing public_ip_addresses block above)
+
+# ========================================
+# ROUTE TABLES CONFIGURATION
+# ========================================
+# Route tables to ensure traffic flows through NGFW for inspection
+
+route_tables = {
+  # Route table for VM subnet - routes traffic through NGFW Trust interface
+  vm_subnet_rt = {
+    name               = "rt-vm-subnet-via-ngfw"
+    resource_group_key = "spoke_storage_rg"
+
+    # Routes for VM subnet traffic
+    routes = {
+      # Default route to NGFW Trust interface for internet-bound traffic
+      default_to_ngfw = {
+        name           = "default-via-ngfw"
+        address_prefix = "0.0.0.0/0"
+        next_hop_type  = "VirtualAppliance"
+        # This should point to the NGFW Trust interface IP
+        # The NGFW Trust interface will be dynamically assigned in the Trust subnet (10.100.2.0/24)
+        next_hop_in_ip_address = "10.100.2.4" # Expected NGFW Trust interface IP
+      }
+
+      # Route to hub network through NGFW
+      hub_via_ngfw = {
+        name                   = "hub-via-ngfw"
+        address_prefix         = "10.100.0.0/16"
+        next_hop_type          = "VirtualAppliance"
+        next_hop_in_ip_address = "10.100.2.4" # NGFW Trust interface IP
+      }
+
+      # Local spoke traffic can go direct (within same VNet)
+      local_spoke_direct = {
+        name           = "local-spoke-direct"
+        address_prefix = "10.200.0.0/16"
+        next_hop_type  = "VnetLocal"
+      }
+    }
+
+    tags = {
+      purpose = "VM subnet routing via NGFW"
+    }
+  }
+
+  # Route table for backend subnet (storage services)
+  backend_subnet_rt = {
+    name               = "rt-backend-subnet-via-ngfw"
+    resource_group_key = "spoke_storage_rg"
+
+    # Routes for backend subnet traffic
+    routes = {
+      # Default route to NGFW Trust interface for internet-bound traffic
+      default_to_ngfw = {
+        name                   = "default-via-ngfw"
+        address_prefix         = "0.0.0.0/0"
+        next_hop_type          = "VirtualAppliance"
+        next_hop_in_ip_address = "10.100.2.4" # NGFW Trust interface IP
+      }
+
+      # Route to hub network through NGFW
+      hub_via_ngfw = {
+        name                   = "hub-via-ngfw"
+        address_prefix         = "10.100.0.0/16"
+        next_hop_type          = "VirtualAppliance"
+        next_hop_in_ip_address = "10.100.2.4" # NGFW Trust interface IP
+      }
+
+      # Local spoke traffic can go direct (within same VNet)
+      local_spoke_direct = {
+        name           = "local-spoke-direct"
+        address_prefix = "10.200.0.0/16"
+        next_hop_type  = "VnetLocal"
+      }
+    }
+
+    tags = {
+      purpose = "Backend subnet routing via NGFW"
+    }
+  }
+}
+
+# Route table associations to apply routing to specific subnets
+route_table_associations = {
+  # Associate VM subnet with its route table
+  vm_subnet_association = {
+    route_table_key = "vm_subnet_rt"
+    vnet_key        = "spoke_storage_vnet"
+    subnet_key      = "snet_vm"
+  }
+
+  # Associate backend subnet with its route table
+  backend_subnet_association = {
+    route_table_key = "backend_subnet_rt"
+    vnet_key        = "spoke_storage_vnet"
+    subnet_key      = "snet_backend"
+  }
+}
+
+# ========================================
+# DEPLOYMENT AND TESTING GUIDE
+# ========================================
+
+# DEPLOYMENT INSTRUCTIONS:
+# 1. Deploy the configuration from the examples directory:
+#    cd /path/to/terraform-azurerm-caf/examples
+#    terraform plan -var-file="./palo_alto/cloudngfw/300-cloudngfw-with-local-rulestack-static-website-published/configuration.tfvars"
+#    terraform apply -var-file="./palo_alto/cloudngfw/300-cloudngfw-with-local-rulestack-static-website-published/configuration.tfvars"
+#
+# 2. Wait for deployment to complete (typically 15-20 minutes)
+#
+# 3. Upload static website content:
+#    Upload website_content/* files to the $web container in the storage account
+
+# POST-DEPLOYMENT TESTING:
+
+# STATIC WEBSITE TESTING:
+# Get the NGFW dataplane public IP and test static website access:
+#    NGFW_IP=$(terraform output -raw objects | jq -r '.public_ip_addresses.ngfw_pip_dataplane1.ip_address')
+#    echo "Testing Static Website: https://$NGFW_IP/"
+#    curl -k -v --connect-timeout 10 https://$NGFW_IP/
+
+# VIRTUAL MACHINE TESTING:
+# 1. SSH Access (via DNAT port 2022):
+#    ssh -p 2022 azureuser@$NGFW_IP
+#
+# 2. HTTP Web Server Test (via DNAT port 8080):
+#    curl -v --connect-timeout 10 http://$NGFW_IP:8080/
+#
+# 3. HTTPS Web Server Test (via DNAT port 8443):
+#    curl -k -v --connect-timeout 10 https://$NGFW_IP:8443/
+
+# CONNECTIVITY VERIFICATION:
+# 1. Verify VM can reach internet through NGFW:
+#    ssh -p 2022 azureuser@$NGFW_IP "curl -s ifconfig.me"
+#
+# 2. Check VM web server status:
+#    ssh -p 2022 azureuser@$NGFW_IP "sudo systemctl status nginx"
+#
+# 3. Verify internal connectivity:
+#    ssh -p 2022 azureuser@$NGFW_IP "ping 10.200.1.4"  # Storage private endpoint
+
+# BROWSER TESTING:
+# Open a web browser and navigate to:
+# - Static Website: https://$NGFW_IP (expect SSL warnings)
+# - VM Web Server: http://$NGFW_IP:8080
+# Note: SSL certificate warnings are expected since we're using the NGFW's IP
+
+# TROUBLESHOOTING:
+# - Connection timeout = NGFW security rules blocking (check rules allow 0.0.0.0/0 destination)
+# - SSH connection refused = VM not ready or DNAT misconfigured
+# - HTTP 400/403 errors = Normal for Azure Storage without proper hostname
+# - Nginx not responding = Check VM custom data execution: ssh and run 'tail -f /var/log/cloud-init-output.log'
+
+# ARCHITECTURE VALIDATION:
+# 1. Verify traffic flows through NGFW:
+#    - Check NGFW logs in Azure portal
+#    - Verify route tables are applied to subnets
+#    - Test connectivity from VM to internet (should route via NGFW)
+#
+# 2. Verify security policies:
+#    - All external access goes through NGFW DNAT rules
+#    - Internal traffic between subnets is controlled
+#    - VM internet access is inspected by NGFW
+
+# COST OPTIMIZATION:
+# - VM auto-shutdown is configured for 10 PM UTC daily
+# - Storage account uses LRS replication
+# - VM uses B-series for cost efficiency
+# - Boot diagnostics use managed storage (no additional cost)
+
+# CLEANUP:
+# terraform destroy -var-file="./palo_alto/cloudngfw/300-cloudngfw-with-local-rulestack-static-website-published/configuration.tfvars"
