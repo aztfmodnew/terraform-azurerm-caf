@@ -358,10 +358,10 @@ storage_accounts = {
 # Palo Alto Cloud NGFW Configuration
 palo_alto_cloudngfws = {
   static_website_ngfw = {
-    name               = "pangfw-staticweb-example"
-    resource_group_key = "hub_ngfw_rg" // Key of the resource group defined above
-    attachment_type    = "vnet"        // or "vwan" depending on your architecture
-    management_mode    = "panorama"   // or "panorama" depending on your architecture
+    name                   = "pangfw-staticweb-example"
+    resource_group_key     = "hub_ngfw_rg"                                    // Key of the resource group defined above
+    attachment_type        = "vnet"                                           // or "vwan" depending on your architecture
+    management_mode        = "panorama"                                       // or "panorama" depending on your architecture
     panorama_base64_config = "PASTE_YOUR_BASE64_ENCODED_PANORAMA_CONFIG_HERE" // Replace with your actual base64 config
     # location            = "westeurope" # Optional, will inherit from resource_group if not specified
     plan_id              = "panw-cngfw-payg"
