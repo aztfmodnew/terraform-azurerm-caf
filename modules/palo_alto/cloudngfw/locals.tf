@@ -77,9 +77,12 @@ locals {
   # Filter out any nulls that might result from failed lookups if a key is provided but not found
   final_egress_nat_ip_address_ids = [for id in local.resolved_egress_nat_ip_address_ids : id if id != null]
 
+  # Normalized management_mode: lowercase and trim to avoid accidental mismatches
+  management_mode_normalized = trim(lower(coalesce(try(var.settings.management_mode, null), "")))
+
   # Settings for the local_rulestack sub-module (only when management_mode is "rulestack")
   # Ensure that the sub-module also receives necessary context like client_config, global_settings, base_tags, remote_objects
-  local_rulestack_module_settings = var.settings.management_mode == "rulestack" ? merge(
+  local_rulestack_module_settings = local.management_mode_normalized == "rulestack" ? merge(
     try(var.settings.local_rulestack, {}),
     {
       # Pass down location and resource_group_name if the sub-module needs them explicitly,

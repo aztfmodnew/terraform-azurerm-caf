@@ -1,6 +1,6 @@
 # This module creates a Palo Alto Next Generation Firewall in Azure using the local rulestack deployment mode.
 resource "azurerm_palo_alto_next_generation_firewall_virtual_network_local_rulestack" "palo_alto_ngfw_vnet_local_rulestack" {
-  count                = var.settings.attachment_type == "vnet" && var.settings.management_mode == "rulestack" ? 1 : 0
+  count                = var.settings.attachment_type == "vnet" && local.management_mode_normalized == "rulestack" ? 1 : 0
   name                 = var.settings.name
   resource_group_name  = local.resource_group_name
   rulestack_id         = module.local_rulestack[0].id
@@ -70,7 +70,7 @@ resource "azurerm_palo_alto_next_generation_firewall_virtual_network_local_rules
 }
 
 module "local_rulestack" {
-  count  = var.settings.attachment_type == "vnet" && var.settings.management_mode == "rulestack" ? 1 : 0
+  count  = var.settings.attachment_type == "vnet" && local.management_mode_normalized == "rulestack" ? 1 : 0
   source = "../local_rulestack"
 
   settings        = local.local_rulestack_module_settings
@@ -83,7 +83,7 @@ module "local_rulestack" {
 }
 
 resource "azurerm_palo_alto_next_generation_firewall_virtual_network_panorama" "palo_alto_ngfw_vnet_panorama" {
-  count               = var.settings.attachment_type == "vnet" && var.settings.management_mode == "panorama" ? 1 : 0
+  count               = var.settings.attachment_type == "vnet" && local.management_mode_normalized == "panorama" ? 1 : 0
   name                = var.settings.name
   resource_group_name = local.resource_group_name
   location            = local.location
