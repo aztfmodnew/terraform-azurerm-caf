@@ -14,6 +14,8 @@ This is the Azure Cloud Adoption Framework (CAF) Terraform module repository. Wh
 
 **Testing Approach**: All examples are validated using `terraform test` with mock providers from `/examples/tests/mock/` directory. Never assume real Azure resources exist.
 
+When creating a new example, always search the repository's existing `examples/` directory for similar example patterns or tfvars that can be reused or adapted. Reusing existing examples reduces duplication, ensures consistency with repository conventions, and helps avoid missing fields or unsupported structures.
+
 ## Critical AI Guidelines for Code Generation
 
 ### 1. Always Use Key-Based Resource References
@@ -45,6 +47,26 @@ storage_accounts = {
 
 **AI Rule**: When generating any resource configuration, scan the resource for dependencies and use `_key` suffixed properties to reference other resources by their map keys.
 
+Note: the CAF examples primarily prefer key-based references (the `_key` form) because they integrate with the framework's map-based resolution and example tests. However, the examples should also support the direct identifier form when an explicit resource ID is required. In practice this means you may provide either `resource_group_key` (preferred) or `resource_group_id` depending on the scenario — both are accepted by the framework and tests. When possible prefer `_key` in examples so tests stay self-contained and portable.
+
+Examples:
+
+```hcl
+# Key-based reference (preferred within examples/tests)
+storage_accounts = {
+  my_storage = {
+    resource_group_key = "my_rg"
+  }
+}
+
+# Direct id reference (allowed when an explicit id is required)
+storage_accounts = {
+  my_storage = {
+    resource_group_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-my-rg-001"
+  }
+}
+```
+
 ### 2. Understand Variable Validation Context
 When AI encounters Terraform validation errors, check `/examples/variables.tf` to understand available variables. Common mistakes:
 
@@ -59,6 +81,10 @@ private_dns_vnet_links = { ... }
 ```
 
 **AI Rule**: Before generating configurations with new variable names, verify the variable exists in `/examples/variables.tf`. If unsure, follow existing example patterns.
+
+Note: verifying the variable exists is only the first step. Once you see a variable (for example `storage_accounts` in `/examples/variables.tf`), follow where it is consumed — open the module or the `.tf` file that implements it (for example `storage_accounts.tf` or the module under `/modules/...`) and inspect the supported attributes, nested blocks and expected types. This tells you what keys and sub-keys are valid in examples/tests (network_rules, identity, private_endpoints, etc.).
+
+If you trace down to actual provider resources (resource blocks), use the Terraform MCP tools to fetch provider/resource documentation or to resolve provider doc IDs so you can confirm required and optional arguments and identify any missing parameters to add to the example. This ensures examples remain accurate and the `terraform test` validation will pass. Prefer `_key` references for portability, but verify all resource-level required arguments are present using provider docs when needed.
 
 ### 3. Private Endpoint Configuration Pattern
 AI must use this specific structure for private endpoints (learned from actual framework code):
@@ -89,29 +115,7 @@ private_endpoints = {
 
 **AI Rule**: Never generate flat private endpoint structures or use non-existent fields like `private_dns_zone_key`.
 
-### 4. Security Appliance Configuration Constraints
-For firewalls (e.g., Palo Alto NGFW), certain fields require literal values, not key references:
-
-```hcl
-# ✅ AI should generate destination_nat like this:
-destination_nat = {
-  backend_config = {
-    public_ip_address = "10.200.1.10"  # Must be actual IP string
-    port = "443"
-  }
-}
-
-# ❌ AI must NOT generate this:
-destination_nat = {
-  backend_config = {
-    private_endpoint_key = "my_pe"  # This field doesn't exist
-  }
-}
-```
-
-**AI Rule**: For security appliances, `backend_config.public_ip_address` requires an IP string. Use placeholder IPs from the subnet range and add comments about updating post-deployment.
-
-### 5. Network Security Considerations
+### 4. Network Security Considerations
 AI should understand the mutual exclusivity of certain network features:
 
 ```hcl
