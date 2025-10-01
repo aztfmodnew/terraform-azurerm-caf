@@ -1,6 +1,11 @@
 module "palo_alto_cloudngfws" {
   source   = "./modules/palo_alto/cloudngfw"
   for_each = local.palo_alto.cloudngfws
+  # Ensure Palo Alto resources are destroyed before the networking/public IP resources
+  # by making this module depend on those networking modules. Terraform destroys
+  # resources in the reverse order of creation, so when this module depends_on
+  # the networking modules it will be destroyed first during `terraform destroy`.
+  depends_on = [module.virtual_subnets, module.public_ip_addresses, module.networking]
 
   client_config   = local.client_config
   global_settings = local.global_settings

@@ -130,6 +130,8 @@ vnets = {
         nsg_key                                   = "spoke_backend_nsg"
         route_table_key                           = "backend_subnet_rt"
         private_endpoint_network_policies_enabled = true
+        # Disable default outbound access to make this a private subnet for private endpoints
+        default_outbound_access_enabled          = false
       }
       # Web subnet for potential web-tier services
       snet_web = {
@@ -936,7 +938,6 @@ virtual_machines = {
         name                    = "0"
         enable_ip_forwarding    = false
         internal_dns_name_label = "spokevmnic0"
-        public_ip_address_key   = "spoke_vm_pip"
       }
     }
 
@@ -1182,23 +1183,6 @@ route_tables = {
     tags = {
       purpose = "Backend subnet routing via NGFW"
     }
-  }
-}
-
-# Route table associations to apply routing to specific subnets
-route_table_associations = {
-  # Associate VM subnet with its route table
-  vm_subnet_association = {
-    route_table_key = "vm_subnet_rt"
-    vnet_key        = "spoke_storage_vnet"
-    subnet_key      = "snet_vm"
-  }
-
-  # Associate backend subnet with its route table
-  backend_subnet_association = {
-    route_table_key = "backend_subnet_rt"
-    vnet_key        = "spoke_storage_vnet"
-    subnet_key      = "snet_backend"
   }
 }
 

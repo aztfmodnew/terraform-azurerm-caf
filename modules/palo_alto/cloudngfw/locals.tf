@@ -39,35 +39,32 @@ locals {
   final_public_ip_address_ids = [for id in local.resolved_public_ip_address_ids : id if id != null]
 
   # Resolve DNAT frontend public IP address ID from key or use direct ID
-  dnat_frontend_public_ip_id = try(var.settings.destination_nat.frontend_config.public_ip_address_id, null) != null ? var.settings.destination_nat.frontend_config.public_ip_address_id : try(var.settings.destination_nat.frontend_config.public_ip_address_key, null) != null ? try(var.remote_objects.public_ip_addresses[try(var.settings.destination_nat.frontend_config.lz_key, var.client_config.landingzone_key)][var.settings.destination_nat.frontend_config.public_ip_address_key].id, null) : null
+  dnat_frontend_public_ip_id = null
 
-  # Resolve DNAT backend IP address
-  # Ordered strategy (no speculative fallbacks):
-  # 1. Explicit public_ip_address (if user deliberately DNATs to a public backend)
-  # 2. Explicit private_ip_address (direct override)
-  # 3. Private Endpoint dynamic lookup (authoritative path) ->
-  #    remote_objects.private_endpoints[<lz_key>][<vnet_key>]
-  #      .subnet[<subnet_key>]
-  #      .storage_account[<resource_key>]
-  #      .pep[<subresource_name>]
-  #      .private_service_connection[0].private_ip_address
-  # If none resolve, value is null and downstream resource creation should fail loudly.
-  dnat_backend_ip = coalesce(
-    try(var.settings.destination_nat.backend_config.public_ip_address, null),
-    try(var.settings.destination_nat.backend_config.private_ip_address, null),
-    try(var.remote_objects.private_endpoints[
-      try(var.settings.destination_nat.backend_config.private_endpoint.lz_key, var.client_config.landingzone_key)
-      ][
-      var.settings.destination_nat.backend_config.private_endpoint.vnet_key
-      ].subnet[
-      var.settings.destination_nat.backend_config.private_endpoint.subnet_key
-      ].storage_account[
-      var.settings.destination_nat.backend_config.private_endpoint.resource_key
-      ].pep[
-      var.settings.destination_nat.backend_config.private_endpoint.subresource_name
-    ].private_service_connection[0].private_ip_address, null),
-    null
-  )
+  # Build per-rule maps for DNAT entries when `destination_nat` is provided as a map in examples.
+  # For each key in var.settings.destination_nat we attempt to resolve frontend PIP id and backend IP.
+  dnat_frontend_public_ip_ids = {
+    for k, v in try(var.settings.destination_nat, {}) : k => (
+      // prefer explicit id, then key lookup into remote_objects
+      try(v.frontend_config.public_ip_address_id, null) != null ? try(v.frontend_config.public_ip_address_id, null) : (
+        try(v.frontend_config.public_ip_address_key, null) != null ? try(var.remote_objects.public_ip_addresses[try(v.frontend_config.lz_key, var.client_config.landingzone_key)][v.frontend_config.public_ip_address_key].id, null) : null
+      )
+    )
+  }
+
+  dnat_backend_ips = {
+    for k, v in try(var.settings.destination_nat, {}) : k => coalesce(
+      try(v.backend_config.public_ip_address, null),
+      try(v.backend_config.private_ip_address, null),
+      try(v.backend_config.fallback_private_ip, null),
+      (
+        try(v.backend_config.virtual_machine.vm_key, null) != null ?
+        try(var.remote_objects.virtual_machines[try(v.backend_config.virtual_machine.lz_key, var.client_config.landingzone_key)][v.backend_config.virtual_machine.vm_key].private_ip_address, null) :
+        null
+      ),
+      null
+    )
+  }
 
   # Resolve egress NAT IP address IDs from keys or use direct IDs
   resolved_egress_nat_ip_address_ids = try(var.settings.network_profile.egress_nat_ip_address_ids, null) != null ? var.settings.network_profile.egress_nat_ip_address_ids : [
@@ -80,16 +77,11 @@ locals {
   # Normalized management_mode: lowercase and trim to avoid accidental mismatches
   management_mode_normalized = trimspace(lower(coalesce(try(var.settings.management_mode, null), "")))
 
-  # Settings for the local_rulestack sub-module (only when management_mode is "rulestack")
-  # Ensure that the sub-module also receives necessary context like client_config, global_settings, base_tags, remote_objects
-  local_rulestack_module_settings = local.management_mode_normalized == "rulestack" ? merge(
+  # Settings for the local_rulestack sub-module.
+  # To avoid inconsistent conditional result types we always produce a map here.
+  # Consumers can check management mode if they only want to act when it's actually 'rulestack'.
+  local_rulestack_module_settings = merge(
     try(var.settings.local_rulestack, {}),
-    {
-      # Pass down location and resource_group_name if the sub-module needs them explicitly,
-      # or it can derive them from its own var.resource_group and var.location if structured that way.
-      # For now, assume sub-module's variables.tf will define how it gets these.
-      # If sub-module's `location` is null, it should default to this main module's location.
-      location = try(var.settings.local_rulestack.location, local.location)
-    }
-  ) : {}
+    { location = try(var.settings.local_rulestack.location, local.location) }
+  )
 }
