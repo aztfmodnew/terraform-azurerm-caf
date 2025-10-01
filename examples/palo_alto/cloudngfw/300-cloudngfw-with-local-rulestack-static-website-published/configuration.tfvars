@@ -131,7 +131,7 @@ vnets = {
         route_table_key                           = "backend_subnet_rt"
         private_endpoint_network_policies_enabled = true
         # Disable default outbound access to make this a private subnet for private endpoints
-        default_outbound_access_enabled          = false
+        default_outbound_access_enabled = false
       }
       # Web subnet for potential web-tier services
       snet_web = {
