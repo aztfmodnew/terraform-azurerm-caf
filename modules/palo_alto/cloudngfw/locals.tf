@@ -56,12 +56,15 @@ locals {
     for k, v in try(var.settings.destination_nat, {}) : k => coalesce(
       try(v.backend_config.public_ip_address, null),
       try(v.backend_config.private_ip_address, null),
-      try(v.backend_config.fallback_private_ip, null),
+      # Try resolving VM private IP from remote_objects first, before fallback
+      # The VM private_ip_address output is a map (nic_key => ip), so get the first value
       (
         try(v.backend_config.virtual_machine.vm_key, null) != null ?
-        try(var.remote_objects.virtual_machines[try(v.backend_config.virtual_machine.lz_key, var.client_config.landingzone_key)][v.backend_config.virtual_machine.vm_key].private_ip_address, null) :
+        try(values(var.remote_objects.virtual_machines[try(v.backend_config.virtual_machine.lz_key, var.client_config.landingzone_key)][v.backend_config.virtual_machine.vm_key].private_ip_address)[0], null) :
         null
       ),
+      # Only use fallback after trying to resolve VM IP
+      try(v.backend_config.fallback_private_ip, null),
       null
     )
   }

@@ -924,9 +924,9 @@ virtual_machines = {
       daily_recurrence_time = "2200" # 10 PM
       timezone              = "UTC"
       notification_settings = {
-        enabled         = true
+        enabled         = false
         time_in_minutes = "30"
-        # webhook_url   = "https://example.com/webhook"  # Optional
+        # webhook_url   = "https://example.com/webhook"  # Optional - enable and set when needed
       }
     }
 
