@@ -9,9 +9,23 @@ resource "azurerm_dev_test_global_vm_shutdown_schedule" "enabled" {
   timezone              = var.settings.shutdown_schedule.timezone
 
   notification_settings {
-    enabled         = try(var.settings.shutdown_schedule.notification_settings.enabled, null)
-    time_in_minutes = try(var.settings.shutdown_schedule.notification_settings.time_in_minutes, null)
+    enabled         = var.settings.shutdown_schedule.notification_settings.enabled
+    time_in_minutes = try(var.settings.shutdown_schedule.notification_settings.time_in_minutes, "30")
     email           = try(var.settings.shutdown_schedule.notification_settings.email, null)
-    webhook_url     = try(var.settings.shutdown_schedule.notification_settings.enabled, false) ? try(var.settings.shutdown_schedule.notification_settings.webhook_url, null) : null
+    webhook_url     = try(var.settings.shutdown_schedule.notification_settings.webhook_url, null)
   }
+
+  tags = merge(local.tags, try(var.settings.shutdown_schedule.tags, {}))
+
+  dynamic "timeouts" {
+    for_each = try(var.settings.shutdown_schedule.timeouts, null) == null ? [] : [1]
+    content {
+      create = try(timeouts.value.create, null)
+      delete = try(timeouts.value.delete, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+    }
+
+  }
+
 }
