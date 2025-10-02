@@ -38,9 +38,6 @@ locals {
   # Filter out any nulls that might result from failed lookups if a key is provided but not found
   final_public_ip_address_ids = [for id in local.resolved_public_ip_address_ids : id if id != null]
 
-  # Resolve DNAT frontend public IP address ID from key or use direct ID
-  dnat_frontend_public_ip_id = null
-
   # Build per-rule maps for DNAT entries when `destination_nat` is provided as a map in examples.
   # For each key in var.settings.destination_nat we attempt to resolve frontend PIP id and backend IP.
   dnat_frontend_public_ip_ids = {
