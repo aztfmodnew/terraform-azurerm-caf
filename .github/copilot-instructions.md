@@ -1399,6 +1399,25 @@ When debugging test failures, follow these systematic troubleshooting steps:
 - **Consistency is key**: Follow established patterns across the CAF framework
 - **Separation of concerns**: Distinguish between infrastructure configuration and application configuration
 
+### Static blocks
+
+These are the recommended patterns for creating configuration blocks that are always required in Terraform.
+
+```hcl
+block_name {
+    argument_name = var.settings.argument_name
+}
+```
+
+If some arguments are optional, use the try function:
+
+```hcl
+block_name {
+    argument_name = try(var.settings.argument_name, null)
+}
+```
+
+
 ### Dynamic Blocks
 
 These are the recommended patterns for creating configuration blocks dynamically and optionally in Terraform.
