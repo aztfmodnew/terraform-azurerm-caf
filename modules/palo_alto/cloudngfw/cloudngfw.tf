@@ -116,21 +116,26 @@ resource "azurerm_palo_alto_next_generation_firewall_virtual_network_panorama" "
     }
   }
   dynamic "destination_nat" {
-    for_each = try(var.settings.destination_nat, null) == null ? [] : [var.settings.destination_nat]
+    for_each = try(var.settings.destination_nat, {})
     content {
-      name     = try(destination_nat.value.name, null)
+      # Use explicit name if provided, otherwise fall back to the map key
+      name     = coalesce(try(destination_nat.value.name, null), destination_nat.key)
       protocol = try(upper(destination_nat.value.protocol), null) == "TCP" || try(upper(destination_nat.value.protocol), null) == "UDP" ? upper(destination_nat.value.protocol) : null
+
       dynamic "backend_config" {
         for_each = try(destination_nat.value.backend_config, null) == null ? [] : [destination_nat.value.backend_config]
         content {
-          public_ip_address = local.dnat_backend_ip
+          # Per-rule backend IP resolved from locals map
+          public_ip_address = try(local.dnat_backend_ips[destination_nat.key], null)
           port              = try(backend_config.value.port, null)
         }
       }
+
       dynamic "frontend_config" {
         for_each = try(destination_nat.value.frontend_config, null) == null ? [] : [destination_nat.value.frontend_config]
         content {
-          public_ip_address_id = local.dnat_frontend_public_ip_id
+          # Per-rule frontend public IP id resolved from locals map
+          public_ip_address_id = try(local.dnat_frontend_public_ip_ids[destination_nat.key], null)
           port                 = try(frontend_config.value.port, null)
         }
       }
@@ -151,10 +156,10 @@ resource "azurerm_palo_alto_next_generation_firewall_virtual_network_panorama" "
   dynamic "timeouts" {
     for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
     content {
-      create = timeouts.value.create
-      read   = timeouts.value.read
-      update = timeouts.value.update
-      delete = timeouts.value.delete
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
     }
   }
 }
