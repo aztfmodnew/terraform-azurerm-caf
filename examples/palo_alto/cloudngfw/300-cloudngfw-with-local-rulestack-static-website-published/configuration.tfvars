@@ -265,6 +265,39 @@ network_security_group_definition = {
         destination_port_range     = "443"
         source_address_prefix      = "*"
         destination_address_prefix = "*"
+      },
+      {
+        name                       = "AllowSSHDNAT"
+        priority                   = 1002
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_range     = "2022"
+        source_address_prefix      = "*"
+        destination_address_prefix = "*"
+      },
+      {
+        name                       = "AllowHTTPDNAT"
+        priority                   = 1003
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_range     = "8080"
+        source_address_prefix      = "*"
+        destination_address_prefix = "*"
+      },
+      {
+        name                       = "AllowHTTPSDNAT"
+        priority                   = 1004
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_range     = "8443"
+        source_address_prefix      = "*"
+        destination_address_prefix = "*"
       }
     ]
   }
