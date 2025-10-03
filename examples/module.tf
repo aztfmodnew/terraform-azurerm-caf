@@ -32,7 +32,7 @@ module "example" {
   }
 
   analytics = {
-    fabric_capacities                  = var.fabric_capacities
+    fabric_capacities = var.fabric_capacities
   }
 
   azuread = {
