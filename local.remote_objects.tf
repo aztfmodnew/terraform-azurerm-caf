@@ -51,6 +51,7 @@ locals {
     cosmosdb_sql_databases                         = try(local.combined_objects_cosmosdb_sql_databases, null)
     databricks_workspaces                          = try(local.combined_objects_databricks_workspaces, null)
     databricks_access_connectors                   = try(local.combined_objects_databricks_access_connectors, null)
+    fabric_capacities                              = try(local.combined_objects_fabric_capacities, null)
     data_factory                                   = try(local.combined_objects_data_factory, null)
     data_factory_integration_runtime_azure_ssis    = try(local.combined_objects_data_factory_integration_runtime_azure_ssis, null)
     data_factory_linked_service_azure_blob_storage = try(local.combined_objects_data_factory_linked_service_azure_blob_storage, null)

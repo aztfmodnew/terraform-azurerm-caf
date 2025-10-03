@@ -31,6 +31,10 @@ module "example" {
     aadb2c_directory = var.aadb2c_directory
   }
 
+  analytics = {
+    fabric_capacities                  = var.fabric_capacities
+  }
+
   azuread = {
     azuread_administrative_unit_members = var.azuread_administrative_unit_members
     azuread_administrative_units        = var.azuread_administrative_units
