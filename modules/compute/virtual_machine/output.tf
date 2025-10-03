@@ -88,3 +88,12 @@ output "rbac_id" {
   value       = local.os_type == "linux" ? try(azurerm_linux_virtual_machine.vm["linux"].identity[0].principal_id, null) : try(azurerm_windows_virtual_machine.vm["windows"].identity[0].principal_id, null)
   description = "The object_id for the role_mapping"
 }
+
+output "private_ip_address" {
+  value = try({
+    for nic_key in try(var.settings.virtual_machine_settings[local.os_type].network_interface_keys, []) : nic_key => (
+      try(azurerm_network_interface.nic[nic_key].ip_configuration[0].private_ip_address, null)
+    )
+  }, null)
+  description = "Map of NIC keys to private IP addresses for the VM's network interfaces"
+}

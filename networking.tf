@@ -70,7 +70,7 @@ module "virtual_subnets" {
   global_settings = local.global_settings
   client_config   = local.client_config
   settings        = each.value
-  
+
 
   name                                          = each.value.name
   address_prefixes                              = try(each.value.cidr, [])

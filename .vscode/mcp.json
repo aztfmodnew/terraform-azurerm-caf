@@ -1,13 +1,16 @@
 {
   "servers": {
-    "terraform": {
-      "command": "docker",
-      "args": [
-        "run",
-        "-i",
-        "--rm",
-        "hashicorp/terraform-mcp-server"
-      ]
-    }
+      "hashicorp/terraform-mcp-server": {
+			"type": "stdio",
+			"command": "docker",
+			"args": [
+				"run",
+				"-i",
+				"--rm",
+				"hashicorp/terraform-mcp-server"
+			],
+			"gallery": "https://api.mcp.github.com/v0/servers/34cd3839-461a-404a-a290-3d3bc9d8bee3",
+			"version": "1.0.0"
+		}
   }
 }

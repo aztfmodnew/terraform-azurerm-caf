@@ -10,7 +10,7 @@ variable "global_settings" {
   - separator - (Optional) The separator character to use between prefixes, resource type, name, suffixes, and random characters. Defaults to "-".
   - clean_input - (Optional) A boolean value that indicates whether to remove non-compliant characters from the name. Defaults to true.
   DESCRIPTION
-  type = any
+  type        = any
 }
 
 variable "client_config" {
@@ -91,7 +91,7 @@ variable "settings" {
   }
   ```
   DESCRIPTION
-  type = any
+  type        = any
 }
 
 variable "resource_group" {

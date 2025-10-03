@@ -27,8 +27,18 @@ resource "azurerm_key_vault" "keyvault" {
   enabled_for_template_deployment = try(var.settings.enabled_for_template_deployment, false)
   purge_protection_enabled        = try(var.settings.purge_protection_enabled, false)
   soft_delete_retention_days      = try(var.settings.soft_delete_retention_days, 7)
-  enable_rbac_authorization       = try(var.settings.enable_rbac_authorization, false)
-  public_network_access_enabled   = try(var.settings.public_network_access_enabled, null)
+  # Use the new provider argument `rbac_authorization_enabled` when available.
+  # Keep backward compatibility by supporting the legacy `enable_rbac_authorization`
+  # variable in `var.settings`. Preference order:
+  # 1) var.settings.rbac_authorization_enabled
+  # 2) var.settings.enable_rbac_authorization (legacy)
+  # Default: false
+  rbac_authorization_enabled = coalesce(
+    try(var.settings.rbac_authorization_enabled, null),
+    try(var.settings.enable_rbac_authorization, null),
+    false
+  )
+  public_network_access_enabled = try(var.settings.public_network_access_enabled, null)
   timeouts {
     delete = "60m"
 

@@ -96,6 +96,8 @@ palo_alto_cloudngfws = {
     attachment_type    = "vnet"      // or "vwan" depending on your architecture
     management_mode    = "rulestack" // or "panorama" depending on your architecture
     # location            = "westeurope" # Optional, will inherit from resource_group if not specified
+    plan_id              = "panw-cngfw-payg"
+    marketplace_offer_id = "pan_swfw_cloud_ngfw"
 
     network_profile = {
       vnet_configuration = {

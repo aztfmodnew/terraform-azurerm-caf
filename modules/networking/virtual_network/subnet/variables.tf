@@ -20,6 +20,13 @@ variable "private_link_service_network_policies_enabled" {
   description = "(Optional) Enable or Disable network policies for the private link service on the subnet. Setting this to true will Enable the policy and setting this to false will Disable the policy. Defaults to true."
   nullable    = true
 }
+
+variable "default_outbound_access_enabled" {
+  description = "(Optional) Controls whether the subnet should have default outbound access enabled. Setting to false creates a private subnet without default outbound access. Defaults to null (provider default)."
+  type        = bool
+  nullable    = true
+  default     = null
+}
 # Retired
 # variable "enforce_private_link_endpoint_network_policies" {
 #   description = "(Optional) Enable or Disable network policies for the private link endpoint on the subnet. Default value is false. Conflicts with enforce_private_link_service_network_policies."

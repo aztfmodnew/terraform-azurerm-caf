@@ -1,9 +1,9 @@
 # This module creates a Palo Alto Next Generation Firewall in Azure using the local rulestack deployment mode.
 resource "azurerm_palo_alto_next_generation_firewall_virtual_network_local_rulestack" "palo_alto_ngfw_vnet_local_rulestack" {
-  count                = var.settings.attachment_type == "vnet" && var.settings.management_mode == "rulestack" ? 1 : 0
+  count                = var.settings.attachment_type == "vnet" && local.management_mode_normalized == "rulestack" ? 1 : 0
   name                 = var.settings.name
   resource_group_name  = local.resource_group_name
-  rulestack_id         = module.local_rulestack.id
+  rulestack_id         = module.local_rulestack[0].id
   marketplace_offer_id = try(var.settings.marketplace_offer_id, "pan_swfw_cloud_ngfw")
   plan_id              = try(var.settings.plan_id, "panw-cloud-ngfw-payg")
 
@@ -11,7 +11,7 @@ resource "azurerm_palo_alto_next_generation_firewall_virtual_network_local_rules
     for_each = [var.settings.network_profile] # network_profile is required
     content {
       public_ip_address_ids     = local.final_public_ip_address_ids # Use resolved IDs      
-      egress_nat_ip_address_ids = try(network_profile.value.egress_nat_ip_address_ids, null)
+      egress_nat_ip_address_ids = local.final_egress_nat_ip_address_ids
       trusted_address_ranges    = try(network_profile.value.trusted_address_ranges, null)
       dynamic "vnet_configuration" {
         for_each = [network_profile.value.vnet_configuration] # vnet_configuration is required
@@ -23,22 +23,28 @@ resource "azurerm_palo_alto_next_generation_firewall_virtual_network_local_rules
       }
     }
   }
+  # destination_nat can be provided as a map of named DNAT entries in examples.
   dynamic "destination_nat" {
-    for_each = try(var.settings.destination_nat, null) == null ? [] : [var.settings.destination_nat]
+    for_each = try(var.settings.destination_nat, {})
     content {
-      name     = try(destination_nat.value.name, null)
-      protocol = try(lower(destination_nat.value.protocol), null) == "tcp" || try(lower(destination_nat.value.protocol), null) == "udp" ? lower(destination_nat.value.protocol) : null
+      # Use explicit name if provided, otherwise fall back to the map key
+      name     = coalesce(try(destination_nat.value.name, null), destination_nat.key)
+      protocol = try(upper(destination_nat.value.protocol), null) == "TCP" || try(upper(destination_nat.value.protocol), null) == "UDP" ? upper(destination_nat.value.protocol) : null
+
       dynamic "backend_config" {
         for_each = try(destination_nat.value.backend_config, null) == null ? [] : [destination_nat.value.backend_config]
         content {
-          public_ip_address = try(backend_config.value.public_ip_address, null)
+          # Per-rule backend IP resolved from locals map
+          public_ip_address = try(local.dnat_backend_ips[destination_nat.key], null)
           port              = try(backend_config.value.port, null)
         }
       }
+
       dynamic "frontend_config" {
         for_each = try(destination_nat.value.frontend_config, null) == null ? [] : [destination_nat.value.frontend_config]
         content {
-          public_ip_address_id = contains(local.final_public_ip_address_ids, try(frontend_config.value.public_ip_address_id, null)) ? try(frontend_config.value.public_ip_address_id, null) : null
+          # Per-rule frontend public IP id resolved from locals map
+          public_ip_address_id = try(local.dnat_frontend_public_ip_ids[destination_nat.key], null)
           port                 = try(frontend_config.value.port, null)
         }
       }
@@ -70,6 +76,7 @@ resource "azurerm_palo_alto_next_generation_firewall_virtual_network_local_rules
 }
 
 module "local_rulestack" {
+  count  = var.settings.attachment_type == "vnet" && local.management_mode_normalized == "rulestack" ? 1 : 0
   source = "../local_rulestack"
 
   settings        = local.local_rulestack_module_settings
@@ -82,7 +89,7 @@ module "local_rulestack" {
 }
 
 resource "azurerm_palo_alto_next_generation_firewall_virtual_network_panorama" "palo_alto_ngfw_vnet_panorama" {
-  count               = var.settings.attachment_type == "vnet" && var.settings.management_mode == "panorama" ? 1 : 0
+  count               = var.settings.attachment_type == "vnet" && local.management_mode_normalized == "panorama" ? 1 : 0
   name                = var.settings.name
   resource_group_name = local.resource_group_name
   location            = local.location
@@ -96,7 +103,7 @@ resource "azurerm_palo_alto_next_generation_firewall_virtual_network_panorama" "
     for_each = [var.settings.network_profile] # network_profile is required
     content {
       public_ip_address_ids     = local.final_public_ip_address_ids # Use resolved IDs      
-      egress_nat_ip_address_ids = try(network_profile.value.egress_nat_ip_address_ids, null)
+      egress_nat_ip_address_ids = local.final_egress_nat_ip_address_ids
       trusted_address_ranges    = try(network_profile.value.trusted_address_ranges, null)
       dynamic "vnet_configuration" {
         for_each = [network_profile.value.vnet_configuration] # vnet_configuration is required
@@ -109,21 +116,26 @@ resource "azurerm_palo_alto_next_generation_firewall_virtual_network_panorama" "
     }
   }
   dynamic "destination_nat" {
-    for_each = try(var.settings.destination_nat, null) == null ? [] : [var.settings.destination_nat]
+    for_each = try(var.settings.destination_nat, {})
     content {
-      name     = try(destination_nat.value.name, null)
-      protocol = try(lower(destination_nat.value.protocol), null) == "tcp" || try(lower(destination_nat.value.protocol), null) == "udp" ? lower(destination_nat.value.protocol) : null
+      # Use explicit name if provided, otherwise fall back to the map key
+      name     = coalesce(try(destination_nat.value.name, null), destination_nat.key)
+      protocol = try(upper(destination_nat.value.protocol), null) == "TCP" || try(upper(destination_nat.value.protocol), null) == "UDP" ? upper(destination_nat.value.protocol) : null
+
       dynamic "backend_config" {
         for_each = try(destination_nat.value.backend_config, null) == null ? [] : [destination_nat.value.backend_config]
         content {
-          public_ip_address = try(backend_config.value.public_ip_address, null)
+          # Per-rule backend IP resolved from locals map
+          public_ip_address = try(local.dnat_backend_ips[destination_nat.key], null)
           port              = try(backend_config.value.port, null)
         }
       }
+
       dynamic "frontend_config" {
         for_each = try(destination_nat.value.frontend_config, null) == null ? [] : [destination_nat.value.frontend_config]
         content {
-          public_ip_address_id = contains(local.final_public_ip_address_ids, try(frontend_config.value.public_ip_address_id, null)) ? try(frontend_config.value.public_ip_address_id, null) : null
+          # Per-rule frontend public IP id resolved from locals map
+          public_ip_address_id = try(local.dnat_frontend_public_ip_ids[destination_nat.key], null)
           port                 = try(frontend_config.value.port, null)
         }
       }
@@ -144,10 +156,10 @@ resource "azurerm_palo_alto_next_generation_firewall_virtual_network_panorama" "
   dynamic "timeouts" {
     for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
     content {
-      create = timeouts.value.create
-      read   = timeouts.value.read
-      update = timeouts.value.update
-      delete = timeouts.value.delete
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
     }
   }
 }
@@ -166,4 +178,3 @@ resource "azurerm_palo_alto_virtual_network_appliance" "palo_alto_virtual_networ
   }
 
 }
-

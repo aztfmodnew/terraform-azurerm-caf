@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   terraform:
@@ -17,7 +18,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
         with:
-          fetch-depth: 0  # Important: This is needed to push changes back to the repository
+          fetch-depth: 0
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -25,13 +26,26 @@ jobs:
       - name: Terraform Format
         run: terraform fmt -recursive
 
-      - name: Commit changes
+      - name: Check for changes
+        id: verify-changed-files
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git diff --quiet && git diff --staged --quiet || (git add -A && git commit -m "Apply terraform fmt")
-      
-      - name: Push changes
-        uses: ad-m/github-push-action@v1.0.0
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Pull Request
+        if: steps.verify-changed-files.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v6
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: Apply terraform fmt
+          title: Auto-format Terraform files
+          body: |
+            This PR was automatically created to format Terraform files using `terraform fmt`.
+
+            Changes made:
+            - Applied Terraform formatting to ensure consistent code style
+          branch: terraform-fmt-${{ github.run_number }}
+          delete-branch: true

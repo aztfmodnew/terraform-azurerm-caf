@@ -21,11 +21,10 @@ variable "client_config" {
 variable "location" {
   description = "Specifies the Azure location where the resource will be created."
   type        = string
-  default     = null
 }
 
 variable "settings" {
-  description = "Configuration settings for the subnet service endpoint storage policy."
+  description = "Configuration settings for the static website."
   type        = any
 }
 
@@ -42,5 +41,4 @@ variable "base_tags" {
 variable "remote_objects" {
   description = "Remote objects for dependencies."
   type        = any
-  default     = {}
 }

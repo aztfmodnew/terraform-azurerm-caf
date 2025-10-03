@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+# This website is protected by Palo Alto Cloud NGFW
+# Security policies are enforced at the network level
+# All traffic is inspected for threats and malicious content
+
+Sitemap: /sitemap.xml
+
+# Security headers and protection information
+# This static website demonstrates enterprise-grade security
+# using Palo Alto Cloud NGFW with Azure Storage

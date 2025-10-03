@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found - Protected by Palo Alto NGFW</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .error-container {
+            background: rgba(255,255,255,0.1);
+            padding: 50px;
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+            max-width: 600px;
+            width: 100%;
+        }
+        .error-code {
+            font-size: 8em;
+            font-weight: bold;
+            margin: 0;
+            text-shadow: 4px 4px 8px rgba(0,0,0,0.3);
+            line-height: 1;
+        }
+        .error-message {
+            font-size: 2em;
+            margin: 30px 0 20px 0;
+            font-weight: 300;
+        }
+        .error-description {
+            font-size: 1.2em;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+        .security-info {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border-left: 4px solid #ffeb3b;
+        }
+        .security-info h3 {
+            margin: 0 0 10px 0;
+            color: #ffeb3b;
+        }
+        .security-info p {
+            margin: 0;
+            font-size: 0.95em;
+            opacity: 0.9;
+        }
+        .back-button {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 30px;
+            display: inline-block;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        .back-button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .shield-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+        @media (max-width: 768px) {
+            .error-container {
+                padding: 30px 20px;
+                margin: 20px;
+            }
+            .error-code {
+                font-size: 6em;
+            }
+            .error-message {
+                font-size: 1.5em;
+            }
+            .error-description {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="shield-icon">🛡️</div>
+        <div class="error-code">404</div>
+        <div class="error-message">Page Not Found</div>
+        <div class="error-description">
+            The page you're looking for doesn't exist, but you're still protected by our enterprise-grade security infrastructure.
+        </div>
+        
+        <div class="security-info">
+            <h3>🔒 Security Status</h3>
+            <p>This request has been processed through Palo Alto Cloud NGFW with full threat inspection and logging capabilities.</p>
+        </div>
+        
+        <a href="/" class="back-button">🏠 Return to Home</a>
+        
+        <div style="margin-top: 30px; font-size: 0.9em; opacity: 0.7;">
+            <p>Protected by Palo Alto Cloud NGFW | Azure Storage Static Website</p>
+        </div>
+    </div>
+</body>
+</html>

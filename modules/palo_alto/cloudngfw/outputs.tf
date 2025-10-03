@@ -17,16 +17,16 @@ output "palo_alto_next_generation_firewall_virtual_network_panorama_id" {
 
 output "local_rulestack_id" {
   description = "The ID of the associated Local Rulestack created and managed by the sub-module."
-  value       = module.local_rulestack.id
+  value       = length(module.local_rulestack) > 0 ? module.local_rulestack[0].id : null
 }
 
 output "local_rulestack_name" {
   description = "The name of the associated Local Rulestack."
-  value       = module.local_rulestack.name
+  value       = length(module.local_rulestack) > 0 ? module.local_rulestack[0].name : null
 }
 
 # You can expose more outputs from the sub-module if needed
 output "local_rulestack_rules" {
   description = "Details of the rules created in the local rulestack."
-  value       = module.local_rulestack.rules_output # Assuming sub-module has an output like this
+  value       = length(module.local_rulestack) > 0 ? module.local_rulestack[0].rules_output : null # Assuming sub-module has an output like this
 }
