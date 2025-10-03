@@ -405,6 +405,12 @@ variable "database" {
   default     = {}
 }
 
+variable "analytics" {
+  description = "Configuration object - analytics resources"
+  type        = any
+  default     = {}
+}
+
 variable "messaging" {
   description = "Configuration object - messaging resources"
   default     = {}
