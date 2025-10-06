@@ -106,7 +106,7 @@ resource "azurerm_virtual_network" "vnet" {
 }
 ```
 
-Documentation for all supported field is provided in the [documentation here](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/azurecaf_name)
+Documentation for all supported field is provided in the [documentation here](https://registry.terraform.io/providers/aztfmodnew/azurecaf/latest/docs/resources/azurecaf_name)
 
 ### CEC2: Using global_settings configuration object
 
