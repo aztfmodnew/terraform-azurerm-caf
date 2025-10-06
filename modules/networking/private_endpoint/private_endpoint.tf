@@ -12,12 +12,12 @@ resource "azurecaf_name" "pep" {
 }
 
 resource "azurerm_private_endpoint" "pep" {
-  name                            = azurecaf_name.pep.result
-  location                        = local.location
-  resource_group_name             = local.resource_group_name
-  subnet_id                       = var.subnet_id
-  custom_network_interface_name   = try(var.settings.custom_network_interface_name, null)
-  tags                            = local.tags
+  name                          = azurecaf_name.pep.result
+  location                      = local.location
+  resource_group_name           = local.resource_group_name
+  subnet_id                     = var.subnet_id
+  custom_network_interface_name = try(var.settings.custom_network_interface_name, null)
+  tags                          = local.tags
 
   private_service_connection {
     name                              = var.settings.private_service_connection.name
@@ -73,7 +73,7 @@ resource "time_sleep" "delay" {
   count           = try(var.settings.delay_time_after_creation, null) != null ? 1 : 0
   depends_on      = [azurerm_private_endpoint.pep]
   create_duration = var.settings.delay_time_after_creation
-  
+
   lifecycle {
     replace_triggered_by = [azurerm_private_endpoint.pep]
   }
