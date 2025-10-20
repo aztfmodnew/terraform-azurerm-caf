@@ -52,7 +52,7 @@ jobs:
           echo PARAMETER_FILES=$(find ${GITHUB_WORKSPACE}/examples/${{ matrix.config_files }} | grep .tfvars | sed 's/.*/-var-file=&/' | xargs) >> $GITHUB_ENV
 
       - name: Install Node
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: 20.x
 
