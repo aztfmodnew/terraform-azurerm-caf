@@ -338,6 +338,11 @@ variable "log_analytics" {
   default     = {}
 }
 
+variable "monitoring" {
+  description = "Configuration object - Monitoring resources (Grafana, Monitor Workspaces, etc.)."
+  default     = {}
+}
+
 variable "diagnostics" {
   description = "Configuration object - Diagnostics object."
   default     = {}

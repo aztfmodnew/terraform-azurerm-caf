@@ -208,6 +208,7 @@ locals {
   combined_objects_wvd_host_pools                                = merge(tomap({ (local.client_config.landingzone_key) = module.wvd_host_pools }), lookup(var.remote_objects, "wvd_host_pools", {}))
   combined_objects_wvd_workspaces                                = merge(tomap({ (local.client_config.landingzone_key) = module.wvd_workspaces }), lookup(var.remote_objects, "wvd_workspaces", {}))
   combined_objects_palo_alto_cloudngfws                          = merge(tomap({ (local.client_config.landingzone_key) = module.palo_alto_cloudngfws }), lookup(var.remote_objects, "palo_alto_cloudngfws", {}), lookup(var.data_sources, "palo_alto_cloudngfws", {}))
+  combined_objects_grafana                                        = merge(tomap({ (local.client_config.landingzone_key) = module.grafana }), lookup(var.remote_objects, "grafana", {}), lookup(var.data_sources, "grafana", {}))
 
   combined_objects_subscriptions = merge(
     tomap(

@@ -89,6 +89,7 @@
     "monitoring/102-monitor_activity_log_alert",
     "monitoring/103-monitor_metric_alert",
     "monitoring/104-log_analytics_storage_insights",
+    "grafana/100-simple-grafana",
     "netapp/101-nfs",
     "netapp/102-nfs-export-policy",
     "recovery_vault/101-simple-asrv",
