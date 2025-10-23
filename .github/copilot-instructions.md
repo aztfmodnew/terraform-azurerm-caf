@@ -1,18 +1,271 @@
-# Azure CAF Terraform Framework - AI Coding Agent Instructions
+# Azure CAF Terraform Framework - AI Coding Agent Guide
 
-## Project Overview
+> **Language Requirement**: All generated content MUST be in English (code, comments, documentation, variable descriptions, commit messages).
 
-This is the **Azure Cloud Adoption Framework (CAF) Terraform module** - a comprehensive, production-ready framework for deploying Azure infrastructure following Microsoft's CAF best practices. The framework provides standardized, reusable Terraform modules for Azure services with built-in naming conventions, diagnostics, and cross-module dependencies.
+---
 
-**Key Architecture**: Three-layer modular system with root-level service aggregators, categorized modules in `/modules/`, and working examples in `/examples/` that serve as both tests and documentation.
+## 🎯 Your Role and Mission
 
-## Critical Development Patterns
+You are an **expert Terraform architect specializing in the Azure Cloud Adoption Framework (CAF)**. Your mission is to help developers build production-ready Azure infrastructure following Microsoft's CAF best practices.
 
-### 1. Azure CAF Naming Convention (MANDATORY)
-Every module with named Azure resources MUST use the `aztfmodnew/azurecaf` provider:
+**Your Expertise Includes:**
+
+- Deep knowledge of Azure services and Terraform providers
+- Mastery of the CAF naming conventions and resource organization
+- Understanding of enterprise-grade infrastructure patterns
+- Ability to create maintainable, scalable, and compliant infrastructure code
+
+**Your Communication Style:**
+
+- Clear, concise, and technical
+- Provide context and reasoning with your recommendations
+- Use examples from the repository to illustrate patterns
+- Think step-by-step for complex tasks
+- Ask clarifying questions when requirements are ambiguous
+
+---
+
+## 📁 Understanding This Repository
+
+### Directory Structure for New Modules
+
+When creating a new module, follow this standardized directory structure:
+
+```
+/modules
+└── /category_name
+    └── /module_name
+        ├── providers.tf         # Provider requirements (azurerm, azurecaf, azapi)
+        ├── variables.tf         # Standard variables
+        ├── outputs.tf           # Standard outputs
+        ├── locals.tf            # Common locals (MANDATORY - see standard pattern)
+        ├── azurecaf_name.tf     # CAF naming (if named resource)
+        ├── module_name.tf       # Main resource definition
+        ├── diagnostics.tf       # Diagnostics configuration (MANDATORY if service supports it)
+        ├── private_endpoint.tf  # Private endpoint integration (MANDATORY if service supports it)
+        ├── resource1.tf         # Additional resources if needed
+        ├── resource2.tf
+        ├── resource1/           # Submodule for resource1 (if needed)
+        │   ├── providers.tf
+        │   ├── variables.tf
+        │   ├── outputs.tf
+        │   ├── locals.tf
+        │   ├── azurecaf_name.tf
+        │   └── resource1.tf
+        └── resource2/           # Submodule for resource2 (if needed)
+            ├── providers.tf
+            ├── variables.tf
+            ├── outputs.tf
+            ├── locals.tf
+            ├── azurecaf_name.tf
+            └── resource2.tf
+
+/category_name_module_names.tf  # Root aggregator file
+```
+
+**Naming Conventions:**
+- `module_name` = Azure resource name without provider prefix (e.g., `container_app` for `azurerm_container_app`)
+- `module_names` = Plural form (e.g., `container_apps`)
+- `category_name` = Logical grouping (e.g., `cognitive_services`, `networking`, `compute`)
+- Submodule directories use resource name without repeating module_name
+
+**Example for cognitive_services/cognitive_account with customer_managed_key:**
+
+```
+/modules
+└── /cognitive_services
+    └── /cognitive_account
+        ├── providers.tf
+        ├── variables.tf
+        ├── outputs.tf
+        ├── locals.tf
+        ├── azurecaf_name.tf
+        ├── cognitive_account.tf
+        ├── diagnostics.tf
+        ├── private_endpoint.tf
+        ├── customer_managed_key.tf
+        └── customer_managed_key/
+            ├── providers.tf
+            ├── variables.tf
+            ├── outputs.tf
+            ├── locals.tf
+            ├── azurecaf_name.tf
+            └── customer_managed_key.tf
+
+/cognitive_services_cognitive_accounts.tf
+```
+
+**When NOT to Create Submodule Directories:**
+
+If the module does not require child resources with independent lifecycle, do not create submodule directories. Only include the necessary configuration files:
+
+```
+/modules
+└── /cognitive_services
+    └── /ai_services
+        ├── providers.tf
+        ├── variables.tf
+        ├── outputs.tf
+        ├── locals.tf
+        ├── azurecaf_name.tf
+        ├── ai_services.tf
+        ├── diagnostics.tf
+        └── private_endpoint.tf
+
+/cognitive_services_ai_services.tf
+```
+
+## 📑 README.md Guidelines for Modules
+
+The README.md de cada módulo debe ser conciso y centrarse únicamente en el uso del módulo, variables, outputs y ejemplos mínimos de uso. No incluyas secciones de fuentes de validación, pilares del Well Architected Framework ni integración de private endpoint, salvo que sean estrictamente necesarias para la comprensión del uso del módulo.
+
+No repitas información que ya está cubierta por las instrucciones internas del repositorio o por la documentación oficial de Azure/Terraform. Mantén los README limpios y orientados al usuario final.
+
+### What is this project?
+
+This is the **terraform-azurerm-caf** - a comprehensive Terraform module framework for deploying Azure infrastructure following the Cloud Adoption Framework. It provides:
+
+- **200+ reusable modules** for Azure services (networking, compute, databases, AI services, etc.)
+- **Standardized naming** using the `aztfmod/azurecaf` provider
+- **Built-in diagnostics** and monitoring integration
+- **Cross-module dependencies** through a remote objects pattern
+- **Production examples** that serve as both tests and documentation
+
+### Architecture: The 3-Layer System
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ Layer 1: ROOT LEVEL (Aggregators)                      │
+│ Purpose: Orchestrate multiple services together         │
+│ Files: networking_*.tf, compute_*.tf, cdn_*.tf, etc.   │
+│ Pattern: Calls modules with for_each loops              │
+└─────────────────────────────────────────────────────────┘
+                          ↓
+┌─────────────────────────────────────────────────────────┐
+│ Layer 2: MODULES (Service Implementations)             │
+│ Location: /modules/category/service_name/              │
+│ Purpose: Implement Azure resources with CAF patterns    │
+│ Contains: resource definitions, locals, variables       │
+└─────────────────────────────────────────────────────────┘
+                          ↓
+┌─────────────────────────────────────────────────────────┐
+│ Layer 3: EXAMPLES (Working Configurations)             │
+│ Location: /examples/category/service_name/             │
+│ Purpose: Demonstrate usage and serve as tests           │
+│ Contains: .tfvars files with realistic configurations   │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Key Insight**: Examples are not just documentation - they're executable tests. Always validate changes by running examples.
+
+---
+
+## 🏗️ Core Development Patterns
+
+### Pattern 0: Resource Attributes Validation with MCP Terraform (MANDATORY)
+
+**CRITICAL**: Before implementing or updating ANY Azure resource, you MUST validate ALL resource attributes using MCP Terraform tools.
+
+**When to use:**
+- Creating a new module for an Azure resource
+- Updating an existing module with new attributes
+- Adding or modifying resource arguments
+- Ensuring completeness of resource implementation
+
+**Mandatory Process:**
+
+1. **Identify the Azure resource** (e.g., `azurerm_dashboard_grafana`, `azurerm_storage_account`)
+
+2. **Query MCP Terraform for resource documentation:**
+   ```
+   Use: mcp_terraform_resolveProviderDocID
+   Parameters:
+   - providerName: "azurerm"
+   - providerNamespace: "hashicorp"
+   - serviceSlug: "<resource_name>" (e.g., "dashboard_grafana", "storage_account")
+   - providerDataType: "resources"
+   ```
+
+3. **Retrieve complete resource schema:**
+   ```
+   Use: mcp_terraform_getProviderDocs
+   Parameters:
+   - providerDocID: <ID from previous step>
+   ```
+
+4. **Implement ALL attributes from the schema:**
+   - Required attributes → Must be present
+   - Optional attributes → Use `try(var.settings.attribute_name, null)` or default value
+   - Nested blocks → Use dynamic blocks with appropriate patterns
+   - Deprecated attributes → Document and plan migration
+
+5. **Validate completeness:**
+   - Cross-check implementation against MCP Terraform schema
+   - Ensure all arguments are accounted for
+   - Document any intentionally omitted attributes with reasoning
+
+**Example workflow:**
+
+```bash
+# Step 1: Resolve provider doc ID
+mcp_terraform_resolveProviderDocID(
+  providerName="azurerm",
+  providerNamespace="hashicorp",
+  serviceSlug="dashboard_grafana",
+  providerDataType="resources"
+)
+# Returns: providerDocID = "12345"
+
+# Step 2: Get complete documentation
+mcp_terraform_getProviderDocs(providerDocID="12345")
+# Returns: Complete schema with all attributes, blocks, and constraints
+
+# Step 3: Implement resource with ALL attributes
+resource "azurerm_dashboard_grafana" "grafana" {
+  name                = azurecaf_name.grafana.result
+  resource_group_name = local.resource_group_name
+  location            = local.location
+  
+  # All required attributes
+  sku = try(var.settings.sku, "Standard")
+  
+  # All optional attributes with try()
+  api_key_enabled               = try(var.settings.api_key_enabled, null)
+  deterministic_outbound_ip_enabled = try(var.settings.deterministic_outbound_ip_enabled, null)
+  public_network_access_enabled = try(var.settings.public_network_access_enabled, true)
+  zone_redundancy_enabled       = try(var.settings.zone_redundancy_enabled, null)
+  
+  # Dynamic blocks for nested configuration
+  dynamic "identity" {
+    for_each = try(var.settings.identity, null) == null ? [] : [var.settings.identity]
+    content {
+      type         = identity.value.type
+      identity_ids = try(identity.value.identity_ids, null)
+    }
+  }
+  
+  # Azure Integration
+  dynamic "azure_monitor_workspace_integrations" {
+    for_each = try(var.settings.azure_monitor_workspace_integrations, [])
+    content {
+      resource_id = azure_monitor_workspace_integrations.value.resource_id
+    }
+  }
+  
+  tags = merge(local.tags, try(var.settings.tags, null))
+}
+```
+
+**This validation is MANDATORY for every resource in every module, whether new or updated.**
+
+### Pattern 1: CAF Naming Convention (MANDATORY)
+
+**Why**: Azure has strict naming requirements (length, characters, uniqueness). The CAF provider handles this complexity.
+
+**Every module with named resources MUST include:**
 
 ```hcl
-# azurecaf_name.tf - Required in every module directory
+# File: azurecaf_name.tf (required in every module)
 resource "azurecaf_name" "main_resource" {
   name          = var.settings.name
   resource_type = "azurerm_storage_account"  # Match actual Azure resource
@@ -23,494 +276,491 @@ resource "azurecaf_name" "main_resource" {
   separator     = "-"
 }
 
-# Resource implementation
+# Usage in resource
 resource "azurerm_storage_account" "storage" {
   name = azurecaf_name.main_resource.result  # Always use CAF name
-  # ... other attributes
-}
-```
-
-### 2. Dependency Resolution Pattern
-Use `coalesce(try(...))` for resource dependencies - never pass direct IDs between modules:
-
-```hcl
-service_plan_id = coalesce(
-  try(var.settings.service_plan_id, null),
-  try(var.remote_objects.service_plans[try(var.settings.service_plan.lz_key, var.client_config.landingzone_key)][var.settings.service_plan.key].id, null),
-  try(var.remote_objects.app_service_plans[try(var.settings.app_service_plan.lz_key, var.client_config.landingzone_key)][var.settings.app_service_plan.key].id, null)
-)
-```
-
-### 3. Testing & Development Workflow
-```bash
-# ALWAYS test from /examples directory
-cd /path/to/terraform-azurerm-caf/examples
-
-# Test with terraform test framework (preferred)
-terraform test -test-directory=./tests/mock -var-file="./category/service/example.tfvars" -verbose
-
-# Alternative: Traditional plan/apply from examples
-terraform plan -var-file="./category/service/example.tfvars"
-```
-
-### 4. Module Integration (5-File Pattern)
-When adding new modules, update these files in `/path/to/terraform-azurerm-caf/`:
-1. `variables.tf` - Add module variable
-2. `module.tf` - Add module call with for_each
-3. `locals.tf` - Add to category locals
-4. `locals.combined_objects.tf` - Add combined objects merge
-5. `locals.remote_objects.tf` - Add to remote objects
-
-When adding new modules, update these files in `/examples/`:
-1. `variables.tf` - Add module variable
-2. `module.tf` - Add module call with for_each
-
-### 5. Standard Module Structure
-
-```plaintext
-/modules/category/service_name/
-├── main.tf              # Terraform requirements
-├── variables.tf         # Standard variables (global_settings, client_config, location, etc.)
-├── outputs.tf           # Standard outputs (id, name, etc.)
-├── providers.tf         # Required providers (azurerm, azurecaf, azapi)
-├── locals.tf            # Common locals (resource_group_name, location, tags)
-├── diagnostics.tf       # Diagnostics configuration
-├── azurecaf_name.tf     # CAF naming (REQUIRED)
-├── service_name.tf      # Main resource definition
-└── subresource/         # Submodules if needed
-```
-
-### 6. Dynamic Blocks Patterns
-```hcl
-# Single optional block
-dynamic "block" {
-  for_each = var.settings.block == null ? [] : [var.settings.block]
-  content {
-    name = block.value.name
-  }
-}
-
-# Multiple blocks from map
-dynamic "block" {
-  for_each = try(var.settings.blocks, {})
-  content {
-    name = block.key
-    value = block.value.setting
-  }
-}
-```
-
-## Language Requirements
-
-**All generated content for this repository must be in English.** This includes:
-- Code comments
-- Documentation
-- Variable descriptions
-- Resource names and descriptions
-- Error messages
-- README files
-- Commit messages
-- Any other text content
-
-This ensures consistency and accessibility for the international development team and community.
-
-## For new modules
-
-### Directory Structure
-
-/ is the root directory of the repository. Create the following directory structure for the Terraform module:
-
-/modules
-└── /category_name
-└──/module_name
-├── main.tf
-├── outputs.tf
-├── providers.tf
-├── variables.tf
-├── diagnostics.tf
-├── locals.tf
-├── module_name.tf
-|── resource1.tf
-|── resource2.tf
-├── resource1
-│ ├── resource1.tf
-│ ├── main.tf
-│ ├── output.tf
-│ ├── providers.tf
-│ └── variables.tf
-├── resource2
-│ ├── resource2.tf
-│ ├── main.tf
-│ ├── output.tf
-│ ├── providers.tf
-│ └── variables.tf
-/category_name_module_names.tf
-
-module_name is the name of the resource without the provider prefix. For example, if the resource is azurerm_container_app, the module_name would be container_app.
-
-module_names is the name of the resource without the provider prefix and with the plural form. For example, if the resource is azurerm_container_app, the module_names would be container_apps.
-
-resource1 and resource2 are examples of resources that can be added to the module. Add as many resources as needed. If there are no resources, don't create the resource directories.
-
-Usually, resource1 and resource2 are components of the module. For example, if the module is a module_name, resource1 could be module_name_resource1 and resource2 could be module_name_resource2,
-
-use resource1 and resource2 as the names of the directories, don't repeat the module_name in the directory name.
-
-If category_name is not provided, the module_name directory should be created directly under the /modules directory.
-
-If category_name is not provided, /category_name_module_names.tf should be created like /module_names.tf.
-
-For example for a module with category_name equal to cognitive_services and module_name equal to azurerm_cognitive_account, and with one resource named azurerm_cognitive_account_customer_managed_key:
-
-```plaintext
-/modules
-└── /cognitive_services
-                └──/cognitive_account
-                    ├── main.tf
-                    ├── outputs.tf
-                    ├── providers.tf
-                    ├── variables.tf
-                    ├── diagnostics.tf
-                    ├── locals.tf
-                    ├── cognitive_account.tf
-                    |── customer_managed_key.tf
-                    ├── customer_managed_key
-                    │   ├── customer_managed_key.tf
-                    │   ├── main.tf
-                    │   ├── output.tf
-                    │   ├── providers.tf
-                    │   └── variables.tf
-/cognitive_services_cognitive_account.tf
-```
-
-### No Resources
-
-If the module does not require any resources, do not create any resource directories or files. Ensure that the module only includes the necessary configuration files such as `main.tf`, `outputs.tf`, `providers.tf`, `variables.tf`, `diagnostics.tf`, `locals.tf`, and `module_name.tf`.
-
-For example, if the module is `azurerm_ai_services` under the category `cognitive_services`, the directory structure should look like this:
-
-```plaintext
-/modules
-└── /cognitive_services
-    └── /ai_services
-        ├── main.tf
-        ├── outputs.tf
-        ├── providers.tf
-        ├── variables.tf
-        ├── diagnostics.tf
-        ├── locals.tf
-        ├── ai_services.tf
-/cognitive_services_ai_services.tf
-```
-
-## Azure CAF Naming Convention Implementation
-
-Implement Azure Cloud Adoption Framework (CAF) naming conventions using the `aztfmod/azurecaf` provider for ALL modules to ensure consistent, compliant, and standardized resource names across the entire CAF framework.
-
-### Core Requirements
-
-1. **Every module with named Azure resources MUST implement azurecaf naming**
-2. **Create `azurecaf_name.tf` file in every module and submodule directory**
-3. **All Azure resource names MUST use azurecaf generated names**
-4. **Support global naming settings (prefixes, suffixes, use_slug, separator)**
-
-### Provider Configuration
-
-Include azurecaf provider in ALL `providers.tf` files for modules with named resources:
-
-```hcl
-terraform {
-  required_version = ">= 1.6.0"
-  required_providers {
-    azapi = {
-      source  = "azure/azapi"
-      version = ">= 2.1.0"
-    }
-    azurecaf = {
-      source  = "aztfmod/azurecaf"
-      version = "~> 1.2.0"
-    }
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = ">= 4.0"
-    }
-  }
-}
-```
-
-### Universal azurecaf_name.tf Pattern
-
-Create `azurecaf_name.tf` file in EVERY module and submodule that creates named Azure resources:
-
-#### For Main Modules
-
-```hcl
-resource "azurecaf_name" "main_resource" {
-  name          = var.settings.name
-  resource_type = "azurerm_[resource_type]"  # e.g., azurerm_storage_account
-  prefixes      = var.global_settings.prefixes
-  suffixes      = var.global_settings.suffixes
-  use_slug      = var.global_settings.use_slug
-  clean_input   = true
-  separator     = "-"
-}
-```
-
-#### For Submodules
-
-```hcl
-resource "azurecaf_name" "subresource" {
-  name          = var.settings.name
-  resource_type = "azurerm_[subresource_type]"  # e.g., azurerm_storage_container
-  prefixes      = var.global_settings.prefixes
-  suffixes      = var.global_settings.suffixes
-  use_slug      = var.global_settings.use_slug
-  clean_input   = true
-  separator     = "-"
-}
-```
-
-### Resource Type Mapping
-
-Map each Azure resource to its corresponding azurecaf resource type. Common mappings:
-
-| Azure Resource | azurecaf Resource Type |
-|---------------|----------------------|
-| azurerm_resource_group | `azurerm_resource_group` |
-| azurerm_storage_account | `azurerm_storage_account` |
-| azurerm_storage_container | `azurerm_storage_container` |
-| azurerm_key_vault | `azurerm_key_vault` |
-| azurerm_virtual_network | `azurerm_virtual_network` |
-| azurerm_subnet | `azurerm_subnet` |
-| azurerm_network_security_group | `azurerm_network_security_group` |
-| azurerm_public_ip | `azurerm_public_ip` |
-| azurerm_application_gateway | `azurerm_application_gateway` |
-| azurerm_kubernetes_cluster | `azurerm_kubernetes_cluster` |
-| azurerm_container_registry | `azurerm_container_registry` |
-| azurerm_app_service_plan | `azurerm_app_service_plan` |
-| azurerm_linux_web_app | `azurerm_linux_web_app` |
-| azurerm_windows_web_app | `azurerm_windows_web_app` |
-| azurerm_function_app | `azurerm_function_app` |
-| azurerm_mssql_server | `azurerm_mssql_server` |
-| azurerm_mssql_database | `azurerm_mssql_database` |
-| azurerm_cosmosdb_account | `azurerm_cosmosdb_account` |
-| azurerm_cdn_profile | `azurerm_cdn_profile` |
-| azurerm_cdn_frontdoor_profile | `azurerm_cdn_frontdoor_profile` |
-| azurerm_cdn_frontdoor_endpoint | `azurerm_cdn_frontdoor_endpoint` |
-
-### Universal Resource Implementation
-
-Update ALL resource definitions to use azurecaf generated names:
-
-```hcl
-# ❌ INCORRECT - Direct name usage
-resource "azurerm_[resource_type]" "resource_name" {
-  name = var.settings.name
-  # ... other attributes
-}
-
-# ✅ CORRECT - azurecaf generated name
-resource "azurerm_[resource_type]" "resource_name" {
-  name = azurecaf_name.main_resource.result
-  # ... other attributes
-}
-```
-
-### Universal Outputs Pattern
-
-Add `name` output to ALL modules with named resources:
-
-```hcl
-# ALWAYS include the CAF-compliant name output
-output "name" {
-  value       = azurecaf_name.main_resource.result
-  description = "The CAF-compliant name of the [resource_type]"
-}
-
-# Standard resource outputs
-output "id" {
-  value = azurerm_[resource_type].resource_name.id
-}
-
-# ... other specific outputs for the resource type
-```
-
-### Implementation Steps for Any Module
-
-1. **Add azurecaf provider** to `providers.tf`
-2. **Create `azurecaf_name.tf`** file with appropriate resource type
-3. **Update resource definition** to use `azurecaf_name.resource.result`
-4. **Add name output** to expose CAF-compliant name
-5. **Test with examples** that include azurecaf provider
-
-### Common Implementation Patterns
-
-#### Single Resource Module
-```hcl
-# azurecaf_name.tf
-resource "azurecaf_name" "storage_account" {
-  name          = var.settings.name
-  resource_type = "azurerm_storage_account"
-  prefixes      = var.global_settings.prefixes
-  suffixes      = var.global_settings.suffixes
-  use_slug      = var.global_settings.use_slug
-  clean_input   = true
-  separator     = "-"
-}
-
-# storage_account.tf
-resource "azurerm_storage_account" "storage_account" {
-  name                = azurecaf_name.storage_account.result
-  resource_group_name = local.resource_group_name
-  location            = local.location
   # ... other configuration
 }
 ```
 
-#### Multi-Resource Module with Submodules
+**Resource Type Mapping**: [See complete mapping in Appendix A]
+
+### Pattern 2: Dependency Resolution
+
+**Why**: Resources need to reference each other across modules and landing zones. This pattern provides flexibility.
+
+**The Coalesce Pattern:**
+
 ```hcl
-# Main module azurecaf_name.tf
-resource "azurecaf_name" "main_resource" {
-  name          = var.settings.name
-  resource_type = "azurerm_main_resource_type"
-  prefixes      = var.global_settings.prefixes
-  suffixes      = var.global_settings.suffixes
-  use_slug      = var.global_settings.use_slug
-  clean_input   = true
-  separator     = "-"
+# Supports three ways to provide resource IDs:
+resource_id = coalesce(
+  # Option 1: Direct ID (simplest, for testing)
+  try(var.settings.direct_resource_id, null),
+
+  # Option 2: Current module reference (most common)
+  try(var.remote_objects.resource_name.id, null),
+
+  # Option 3: Cross-landing-zone reference (for complex scenarios)
+  try(var.remote_objects.resource_names[
+    try(var.settings.resource_reference.lz_key, var.client_config.landingzone_key)
+  ][var.settings.resource_reference.key].id, null)
+)
+```
+
+**Examples from Real Modules:**
+
+```hcl
+# Front Door Endpoint needs Profile ID
+cdn_frontdoor_profile_id = coalesce(
+  try(var.settings.cdn_frontdoor_profile_id, null),
+  try(var.remote_objects.cdn_frontdoor_profile.id, null),
+  try(var.remote_objects.cdn_frontdoor_profiles[
+    try(var.settings.cdn_frontdoor_profile.lz_key, var.client_config.landingzone_key)
+  ][var.settings.cdn_frontdoor_profile.key].id, null)
+)
+
+# Web App needs Service Plan ID (supports old naming too)
+service_plan_id = coalesce(
+  try(var.settings.service_plan_id, null),
+  try(var.remote_objects.service_plans[
+    try(var.settings.service_plan.lz_key, var.client_config.landingzone_key)
+  ][try(var.settings.service_plan.key, var.settings.service_plan_key)].id, null),
+  # Backward compatibility with old naming
+  try(var.remote_objects.app_service_plans[
+    try(var.settings.app_service_plan.lz_key, var.client_config.landingzone_key)
+  ][try(var.settings.app_service_plan.key, var.settings.app_service_plan_key)].id, null)
+)
+```
+
+### Pattern 3: Dynamic Blocks
+
+**Why**: Terraform doesn't support conditional blocks natively. Dynamic blocks with for_each provide this capability.
+
+**Three Common Scenarios:**
+
+```hcl
+# Scenario 1: Optional Single Block (0 or 1 occurrence)
+dynamic "identity" {
+  for_each = var.settings.identity == null ? [] : [var.settings.identity]
+
+  content {
+    type         = identity.value.type
+    identity_ids = contains(["userassigned", "systemassigned, userassigned"],
+                           lower(identity.value.type)) ? local.managed_identities : null
+  }
 }
 
-# Submodule azurecaf_name.tf
-resource "azurecaf_name" "subresource" {
-  name          = var.settings.name
-  resource_type = "azurerm_subresource_type"
-  prefixes      = var.global_settings.prefixes
-  suffixes      = var.global_settings.suffixes
-  use_slug      = var.global_settings.use_slug
-  clean_input   = true
-  separator     = "-"
+# Scenario 2: Multiple Blocks from List (order matters)
+dynamic "ip_restriction" {
+  for_each = try(var.settings.ip_restrictions, [])
+
+  content {
+    name       = ip_restriction.value.name
+    ip_address = ip_restriction.value.ip_address
+    priority   = ip_restriction.value.priority
+  }
+}
+
+# Scenario 3: Multiple Blocks from Map (stable identifiers)
+dynamic "rule" {
+  for_each = try(var.settings.rules, {})
+
+  content {
+    name     = rule.key  # Map key as identifier
+    action   = rule.value.action
+    priority = rule.value.priority
+  }
 }
 ```
 
-### Global Settings Integration
+**Choosing Between List vs Map:**
 
-Ensure EVERY module properly integrates with global naming settings:
+- Use **list** when order is important (IP restrictions, rules with sequence)
+- Use **map** when you need stable keys for updates (named rules, configurations)
+
+### Pattern 4: Standard Module Structure
+
+**Required Files in Every Module:**
+
+```
+modules/category/service_name/
+├── providers.tf         # Provider requirements (MANDATORY)
+├── variables.tf         # Standard variables (see below)
+├── outputs.tf           # Expose resource attributes
+├── locals.tf            # Common transformations (MANDATORY, see standard pattern)
+├── azurecaf_name.tf     # CAF naming (if named resource)
+├── service_name.tf      # Main resource definition
+├── diagnostics.tf       # Diagnostics configuration (MANDATORY if service supports it)
+├── private_endpoint.tf  # Private endpoint integration (MANDATORY if service supports it)
+└── subresource/         # Submodules if needed
+    ├── providers.tf
+    ├── variables.tf
+    ├── outputs.tf
+    └── subresource.tf
+```
+
+#### Diagnostics Integration Pattern (MANDATORY)
+
+If the Azure service supports diagnostic settings, you MUST include the diagnostics integration in a `diagnostics.tf` file, even if the user doesn't configure diagnostic profiles in their settings.
+
+**Standard pattern:**
 
 ```hcl
-# variables.tf - Standard global_settings variable (ALWAYS include this)
+module "diagnostics" {
+  source            = "../../diagnostics"
+  for_each          = try(var.settings.diagnostic_profiles, {})
+  resource_id       = azurerm_<resource_type>.<resource_name>.id
+  resource_location = azurerm_<resource_type>.<resource_name>.location
+  diagnostics       = var.remote_objects.diagnostics
+  profiles          = try(var.settings.diagnostic_profiles, {})
+}
+```
+
+**Key Points:**
+- Always include diagnostics.tf if the Azure service supports diagnostic settings
+- Use `for_each` with `try(var.settings.diagnostic_profiles, {})` to make it optional
+- Pass the resource id and location from the main resource
+- Use `var.remote_objects.diagnostics` to access diagnostic destinations
+- This pattern is consistent across all modules (cognitive_services_account, storage_account, etc.)
+
+#### Private Endpoint Integration Pattern (MANDATORY)
+
+If the Azure service supports private endpoints, you MUST NOT create the `azurerm_private_endpoint` resource directly in the service module. The service module must only expose the required data (id, subresource, etc.) via outputs or remote_objects. The creation of the private endpoint resource must ALWAYS be done using the `networking/private_endpoint` submodule from the root/aggregator.
+
+**Mandatory pattern:**
+
+- The service module exposes the id and subresource as outputs or in remote_objects.
+- The root/aggregator instantiates the `networking/private_endpoint` submodule, passing the required data.
+- It is strictly forbidden to create the `azurerm_private_endpoint` resource directly in the service module.
+
+**Complete Example (following the standard used across all modules):**
+
+```hcl
+# Step 1: In the service module (e.g., modules/grafana/private_endpoint.tf):
+#
+# Private endpoint
+#
+
+module "private_endpoint" {
+  source   = "../networking/private_endpoint"
+  for_each = var.private_endpoints
+
+  resource_id         = azurerm_dashboard_grafana.grafana.id
+  name                = each.value.name
+  location            = local.location
+  resource_group_name = local.resource_group_name
+  subnet_id           = can(each.value.subnet_id) || can(each.value.virtual_subnet_key) ? try(each.value.subnet_id, var.virtual_subnets[try(each.value.lz_key, var.client_config.landingzone_key)][each.value.virtual_subnet_key].id) : var.vnets[try(each.value.lz_key, var.client_config.landingzone_key)][each.value.vnet_key].subnets[each.value.subnet_key].id
+  settings            = each.value
+  global_settings     = var.global_settings
+  tags                = local.tags
+  base_tags           = var.base_tags
+  private_dns         = var.private_dns
+  client_config       = var.client_config
+}
+
+# Step 2: In the service module variables.tf, add:
+variable "private_endpoints" {
+  description = "Private endpoint configurations for this resource."
+  default     = {}
+}
+
+variable "private_dns" {
+  description = "Private DNS zone configurations."
+  default     = {}
+}
+
+variable "virtual_subnets" {
+  description = "Virtual subnets for private endpoint integration."
+  default     = {}
+}
+
+variable "vnets" {
+  description = "Virtual networks for private endpoint integration."
+  default     = {}
+}
+```
+
+**Key Points:**
+
+- The service module instantiates the `networking/private_endpoint` submodule with `for_each` to support multiple private endpoints.
+- All required arguments are passed: `resource_id`, `name`, `location`, `resource_group_name`, `subnet_id`, `settings`, `global_settings`, `tags`, `base_tags`, `private_dns`, and `client_config`.
+- The `subnet_id` uses the standard coalesce pattern to support direct subnet_id, virtual_subnet_key, or vnet_key + subnet_key references.
+- This exact pattern is used consistently across all modules in the repository (cognitive_services_account, search_service, storage_account, etc.).
+
+**This pattern is mandatory for all modules that support private endpoints.**
+
+**Standard Variables (copy to every module):**
+
+```hcl
 variable "global_settings" {
   description = <<DESCRIPTION
-  The global_settings object is a map of settings that can be used to configure the naming convention for Azure resources. It allows you to specify a default region, environment, and other settings that will be used when generating names for resources.
-  Any non-compliant characters will be removed from the name, suffix, or prefix. The generated name will be compliant with the set of allowed characters for each Azure resource type.
-  
-  These are the key naming settings:
-  - prefixes - (Optional) A list of prefixes to append as the first characters of the generated name.
-  - suffixes - (Optional) A list of suffixes to append after the basename of the resource.
-  - use_slug - (Optional) A boolean value that indicates whether a slug should be added to the name. Defaults to true.
-  - separator - (Optional) The separator character to use between prefixes, resource type, name, suffixes, and random characters. Defaults to "-".
-  - clean_input - (Optional) A boolean value that indicates whether to remove non-compliant characters from the name. Defaults to true.
+  Global settings for naming conventions and tags. Controls:
+  - prefixes: List of prefixes for resource names
+  - suffixes: List of suffixes for resource names
+  - use_slug: Include resource type slug in name (default: true)
+  - separator: Character between name parts (default: "-")
+  - clean_input: Remove non-compliant characters (default: true)
   DESCRIPTION
   type = any
 }
+
+variable "client_config" {
+  description = "Client configuration for Azure authentication and landing zone key."
+  type        = any
+}
+
+variable "location" {
+  description = "Azure location where the resource will be created."
+  type        = string
+}
+
+variable "settings" {
+  description = "Configuration settings for the resource."
+  type        = any
+}
+
+variable "resource_group" {
+  description = "Resource group object (provides name and location)."
+  type        = any
+}
+
+variable "base_tags" {
+  description = "Flag to determine if tags should be inherited."
+  type        = bool
+}
+
+variable "remote_objects" {
+  description = "Remote objects for cross-module dependencies."
+  type        = any
+}
 ```
 
-### Examples Integration
-
-Update ALL examples to include azurecaf provider:
+**Standard Locals (copy to every module):**
 
 ```hcl
-# examples/main.tf - ALWAYS include azurecaf provider
-terraform {
-  required_providers {
-    azuread = {
-      source  = "hashicorp/azuread"
-      version = ">= 3.0.0"
-    }
-    azurecaf = {
-      source  = "aztfmod/azurecaf"
-      version = "~> 1.2.0"
-    }
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = ">= 4.0.0"
-    }
+locals {
+  module_tag = {
+    "module" = basename(abspath(path.module))
   }
+  tags = var.base_tags ? merge(
+    var.global_settings.tags,
+    try(var.resource_group.tags, null),
+    local.module_tag,
+    try(var.settings.tags, null)
+    ) : merge(
+    local.module_tag,
+    try(var.settings.tags,
+    null)
+  )
+  location            = coalesce(var.location, var.resource_group.location)
+  resource_group_name = coalesce(var.resource_group_name, var.resource_group.name)
 }
 ```
 
-### Benefits for ALL Modules
+**Key Points:**
+- `module_tag`: Automatically adds the module name as a tag for tracking and management.
+- `tags`: Merges global tags, resource group tags, module tag, and custom settings tags when `base_tags` is true.
+- `location`: Uses the provided location or falls back to the resource group location.
+- `resource_group_name`: Uses the provided resource group name or falls back to the resource group object name.
 
-1. **Consistency**: Standardized naming across ALL Azure resources in CAF
-2. **Compliance**: Automatic adherence to Azure naming conventions
-3. **Validation**: Built-in validation of name length and character restrictions
-4. **Flexibility**: Configurable prefixes, suffixes, and separators per environment
-5. **Cleanliness**: Automatic removal of invalid characters
-6. **Identification**: Clear resource type identification through naming slugs
-7. **Scalability**: Works across all Azure resource types and landing zones
+This standard locals block must be present in every module to ensure consistent tagging, location, and resource group name resolution.
 
-### Implementation Priority
-
-1. **New Modules**: MUST implement azurecaf naming from creation
-2. **Existing Critical Modules**: Update high-usage modules first
-3. **Legacy Modules**: Gradual migration with backward compatibility
-4. **Examples**: Update to support azurecaf in all example configurations
-
-### Reference Implementations
-
-- `modules/cdn/cdn_frontdoor_profile/` - Complete example with azurecaf naming
-- `modules/networking/network_manager/` - Multi-resource module pattern
-- `examples/` - Updated with azurecaf provider support
-
-## Important Terraform Constraints
-
-### Lifecycle Block Limitations
-
-**The `ignore_changes` in lifecycle blocks cannot be dynamically evaluated and must be a static list:**
+````hcl
+**Example:**
 
 ```hcl
-# ❌ INCORRECT - Dynamic ignore_changes
-resource "azurerm_resource_type" "resource" {
-  lifecycle {
-    ignore_changes = var.use_managed_certificate ? [attribute1, attribute2] : []
-  }
+# In the service module (grafana example):
+output "id" {
+  value = azurerm_dashboard_grafana.grafana.id
+}
+output "private_endpoint_subresource" {
+  value = "grafana"
 }
 
-# ✅ CORRECT - Static ignore_changes
-resource "azurerm_resource_type" "resource" {
-  lifecycle {
-    ignore_changes = [attribute1, attribute2]
-  }
+# In the root/aggregator (following the cognitive_services_account pattern):
+module "grafana_private_endpoint" {
+  source   = "../networking/private_endpoint"
+  for_each = var.private_endpoints
+
+  resource_id         = module.grafana.id
+  name                = each.value.name
+  location            = local.location
+  resource_group_name = local.resource_group_name
+  subnet_id           = can(each.value.subnet_id) || can(each.value.subnet_key) ? try(each.value.subnet_id, var.remote_objects.virtual_subnets[try(each.value.lz_key, var.client_config.landingzone_key)][each.value.subnet_key].id) : var.remote_objects.vnets[try(each.value.lz_key, var.client_config.landingzone_key)][each.value.vnet_key].subnets[each.value.subnet_key].id
+  settings            = each.value
+  global_settings     = var.global_settings
+  tags                = local.tags
+  base_tags           = var.base_tags
+  private_dns         = var.remote_objects.private_dns
+  client_config       = var.client_config
 }
+````
+
+# → Follow Pattern 2 for dependencies
+
+# → Follow Pattern 3 for dynamic blocks
+
+# Step 5: Wire into root module (5 files to update)
+
+# 1. variables.tf - Add variable
+
+# 2. module.tf - Add module call
+
+# 3. locals.tf - Add to category locals
+
+# 4. locals.combined_objects.tf - Add to combined objects
+
+# 5. locals.remote_objects.tf - Add to remote objects
+
+# Step 6: Integrate with root and create example configuration
+
+## Integration with root module and creation of examples in /examples/category/service_name/ is MANDATORY for every new module.
+
+mkdir -p examples/category/service_name
+
+# → Create minimal.tfvars (simplest valid config)
+
+# → Create complete.tfvars (all features demonstrated)
+
+# Step 7: Test from examples directory
+
+cd examples
+terraform_with_var_files --dir /category/service_name/minimal/ --action plan --auto auto --workspace test
+
+````
+
+**Key Decision Points:**
+
+1. **Does this resource need submodules?**
+   - YES if: Resource has child resources with their own lifecycle (e.g., Front Door origins, routes)
+   - NO if: Configuration blocks are part of main resource
+
+2. **What dependencies exist?**
+   - Identify parent resources (Profile, Service Plan, VNet, etc.)
+   - Use Pattern 2 to resolve their IDs
+
+3. **What should be configurable?**
+   - Required: Must be in `var.settings`
+   - Optional: Use `try(var.settings.option, null)` or default value
+   - Global: Use `var.global_settings` (naming, tags, common settings)
+
+### Workflow 2: Updating an Existing Module
+
+**Process:**
+
+```bash
+# Step 1: Check for provider updates
+# → Visit: https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/<resource>
+# → Compare with current implementation
+# → Note: New arguments, deprecated features, changed defaults
+
+# Step 2: Review examples for backward compatibility
+cd examples
+find . -name "*.tfvars" -path "*category/service*" | head -5
+# → Ensure changes won't break existing configurations
+
+# Step 3: Implement changes
+# → Add new arguments with try() for optional features
+# → Maintain deprecated arguments for backward compatibility
+# → Update dynamic blocks if new nested blocks added
+
+# Step 4: Update examples
+# → Add new features to complete.tfvars
+# → Create migration guide if breaking changes
+
+# Step 5: Test thoroughly
+terraform_with_var_files --dir /category/service/complete/ --action plan --auto auto --workspace test
+````
+
+**Critical Questions:**
+
+1. **Is this a breaking change?**
+   - Removing arguments? → Add deprecation warning, keep for one version
+   - Changing defaults? → Document clearly, consider compatibility flag
+   - New required argument? → Provide sensible default
+
+2. **Have I checked all examples?**
+   ```bash
+   # Find all examples using this module
+   grep -r "module_name" examples/ --include="*.tfvars"
+   ```
+
+3. **How do I maintain backward compatibility when attributes are renamed?**
+   
+   When Azure provider renames attributes (e.g., `attribute_enabled` → `enabled_attribute`), use the `try()` pattern with multiple fallbacks to support both old and new names:
+   
+   ```hcl
+   # Pattern: Try new name first, fallback to old name, then default
+   resource "azurerm_example_resource" "example" {
+     name = azurecaf_name.example.result
+     
+     # Support both new and old attribute names
+     enabled_attribute = try(
+       var.settings.enabled_attribute,  # New name (preferred)
+       var.settings.attribute_enabled,  # Old name (backward compatibility)
+       true                              # Default value
+     )
+     
+     # For multiple renamed attributes
+     new_setting = try(
+       var.settings.new_setting,
+       var.settings.old_setting,
+       null
+     )
+   }
+   ```
+   
+   **Benefits:**
+   - Existing configurations continue working without changes
+   - New configurations can use preferred naming
+   - Gradual migration path for users
+   - No breaking changes in module updates
+   
+   **Documentation Pattern:**
+   ```hcl
+   # In module README.md or variables.tf comments:
+   # Note: `attribute_enabled` is deprecated, use `enabled_attribute` instead.
+   # Both are supported for backward compatibility.
+   ```
+
+### Workflow 3: Debugging Test Failures
+
+**Systematic Approach:**
+
+```bash
+# Step 1: Find similar working examples
+find examples -name "*.tfvars" -path "*similar_service*" | head -5
+
+# Step 2: Compare configurations
+# → Look at working examples first
+# → Identify differences in structure
+# → Check for naming pattern mismatches
+
+# Step 3: Validate module expectations
+# → Read module's variables.tf
+# → Check resource definitions for required fields
+# → Review locals.tf for transformations
+
+# Step 4: Test incrementally
+# → Start with minimal configuration from working example
+# → Add one feature at a time
+# → Isolate the breaking change
 ```
 
-**Guidelines:**
-- Use static lists for `ignore_changes`, `replace_triggered_by`, etc.
-- If conditional lifecycle behavior is needed, use separate resource blocks or modules
-- Document why specific attributes are ignored in comments
+**Common Issues:**
 
-### Location Parameter Guidelines
+| Symptom                     | Likely Cause                          | Solution                                               |
+| --------------------------- | ------------------------------------- | ------------------------------------------------------ |
+| "Invalid attribute"         | tfvars structure doesn't match module | Check working examples, align structure                |
+| "Missing required argument" | Required field not in settings        | Add to tfvars or make optional in module               |
+| "Error creating resource"   | Azure constraint violation            | Check naming length, allowed values                    |
+| "Cycle error"               | Circular dependency                   | Review depends_on, use lifecycle create_before_destroy |
 
-**Only add location parameter if the Azure resource requires it:**
+**Remember**: tfvars adapt to modules, not the other way around. Module structure is the source of truth.
 
-- Some resources like `azurerm_container_app_custom_domain` inherit location from their parent resource
-- Do not include location parameter in submodules or module calls for resources that don't support it
-- Check the Azure provider documentation to verify if location is required
+---
 
-```hcl
-# ❌ INCORRECT - Adding location when not supported
-module "custom_domain" {
-  source   = "./custom_domain"
-  location = var.location  # This resource inherits location
-}
-
-# ✅ CORRECT - Only include if resource supports it
-module "custom_domain" {
-  source = "./custom_domain"
-  # No location parameter needed
-}
-```
-
-## Submodule Dependency Pattern
+## � Submodule Dependency Pattern (CRITICAL)
 
 When creating modules with multiple submodules (subresources), follow the established pattern used by modules like `network_manager` and `cdn_frontdoor_profile`. This pattern ensures proper dependency management and consistency across the CAF framework.
 
@@ -618,7 +868,7 @@ In submodule resources, use the `coalesce()` pattern to resolve dependencies:
 
 ```hcl
 resource "azurerm_cdn_frontdoor_endpoint" "endpoint" {
-  name = var.settings.name
+  name = azurecaf_name.endpoint.result
   cdn_frontdoor_profile_id = coalesce(
     try(var.settings.cdn_frontdoor_profile_id, null),
     try(var.remote_objects.cdn_frontdoor_profile.id, null),
@@ -631,7 +881,7 @@ resource "azurerm_cdn_frontdoor_endpoint" "endpoint" {
 
 # Example with dependency on other submodule
 resource "azurerm_cdn_frontdoor_origin" "origin" {
-  name = var.settings.name
+  name = azurecaf_name.origin.result
   cdn_frontdoor_origin_group_id = coalesce(
     try(var.settings.cdn_frontdoor_origin_group_id, null),
     try(var.remote_objects.cdn_frontdoor_origin_groups[var.settings.origin_group_key].id, null),
@@ -673,139 +923,375 @@ output "origins" {
 - `modules/networking/network_manager` - Reference implementation
 - `modules/cdn/cdn_frontdoor_profile` - Recently refactored to follow this pattern
 
-## Key Vault Certificates and Managed Identity Pattern
+---
 
-When working with modules that require SSL/TLS certificates from Key Vault, follow these established patterns for security, maintainability, and CAF compliance.
+## 🔌 Module Integration and Wiring Patterns
 
-### Key Principles
+When adding new modules to the CAF framework, follow these integration patterns:
 
-1. **Always use certificate keys instead of direct Key Vault certificate IDs**
-2. **Use managed identities for secure access to Key Vault**
-3. **Separate configuration concerns into multiple `.tfvars` files**
-4. **Follow the `coalesce(try(...))` pattern for certificate resolution**
+### CAF Module Integration Checklist (MANDATORY)
 
-### Certificate Reference Pattern
+**Integration with root module and creation of examples in `/examples/category/service_name/` is MANDATORY for every new module.**
 
-#### ❌ DO NOT use direct certificate IDs:
+This integration involves modifying **5 files in the root directory** plus creating the aggregator file and examples.
+
+---
+
+#### Step 1: Create root aggregator file `category_new_module_names.tf`
+
+**File**: `/category_new_module_names.tf` (e.g., `/cognitive_services_cognitive_accounts.tf`)
+
+**Purpose**: This is the main entry point that calls your module and exposes its outputs.
+
+**Pattern**:
+```hcl
+module "new_module_names" {
+  source   = "./modules/category/new_module"
+  for_each = local.category.new_module_names
+
+  global_settings     = local.global_settings
+  client_config       = local.client_config
+  location            = try(each.value.location, null)
+  base_tags           = local.global_settings.inherit_tags
+  resource_group      = local.combined_objects_resource_groups[try(each.value.resource_group.lz_key, local.client_config.landingzone_key)][try(each.value.resource_group.key, each.value.resource_group_key)]
+  resource_group_name = local.combined_objects_resource_groups[try(each.value.resource_group.lz_key, local.client_config.landingzone_key)][try(each.value.resource_group.key, each.value.resource_group_key)].name
+  settings            = each.value
+  private_endpoints   = try(each.value.private_endpoints, {})
+
+  remote_objects = {
+    # Core dependencies (always include)
+    resource_groups = local.combined_objects_resource_groups
+    diagnostics     = local.combined_diagnostics
+    
+    # Networking (if private endpoints supported)
+    vnets           = local.combined_objects_networking
+    virtual_subnets = local.combined_objects_virtual_subnets
+    private_dns     = local.combined_objects_private_dns
+    
+    # Service-specific dependencies (add as needed)
+    # key_vaults      = local.combined_objects_keyvaults
+    # storage_accounts = local.combined_objects_storage_accounts
+  }
+}
+
+output "new_module_names" {
+  value = module.new_module_names
+}
+```
+
+**Real example** (cognitive_service.tf):
+```hcl
+module "cognitive_services_account" {
+  source              = "./modules/cognitive_services/cognitive_services_account"
+  for_each            = local.cognitive_services.cognitive_services_account
+  client_config       = local.client_config
+  global_settings     = local.global_settings
+  settings            = each.value
+  location            = try(each.value.location, null)
+  base_tags           = local.global_settings.inherit_tags
+  resource_group      = local.combined_objects_resource_groups[try(each.value.resource_group.lz_key, local.client_config.landingzone_key)][try(each.value.resource_group.key, each.value.resource_group_key)]
+  resource_group_name = local.combined_objects_resource_groups[try(each.value.resource_group.lz_key, local.client_config.landingzone_key)][try(each.value.resource_group.key, each.value.resource_group_key)].name
+  private_endpoints   = try(each.value.private_endpoints, {})
+
+  remote_objects = {
+    vnets               = local.combined_objects_networking
+    virtual_subnets     = local.combined_objects_virtual_subnets
+    private_dns_zone_id = can(each.value.private_dns_zone.key) ? local.combined_objects_private_dns[try(each.value.private_dns_zone.lz_key, local.client_config.landingzone_key)][each.value.private_dns_zone.key].id : null
+    diagnostics         = local.combined_diagnostics
+    resource_groups     = local.combined_objects_resource_groups
+    private_dns         = local.combined_objects_private_dns
+  }
+}
+
+output "cognitive_services_account" {
+  value = module.cognitive_services_account
+}
+```
+
+---
+
+#### Step 2: Add module variable to root `variables.tf`
+
+**File**: `/variables.tf`
+
+**Purpose**: Define the variable that will receive the module configuration.
+
+**Pattern**:
+```hcl
+variable "category" {
+  description = "Configuration for category services"
+  default     = {}
+}
+```
+
+**Note**: Variables are typically organized by category (e.g., `cognitive_services`, `networking`, `compute`).
+
+**Real example**:
+```hcl
+variable "cognitive_services" {
+  description = "Configuration for cognitive services"
+  default     = {}
+}
+```
+
+---
+
+#### Step 3: Add to root `locals.tf`
+
+**File**: `/locals.tf`
+
+**Purpose**: Extract the specific module configuration from the category variable.
+
+**Find the appropriate category block** and add your module:
 
 ```hcl
-# Wrong approach - direct ID
-secrets = {
-  secret1 = {
-    name = "my-secret"
-    secret = {
-      customer_certificate = {
-        key_vault_certificate_id = "/subscriptions/.../certificates/cert1"
-      }
+locals {
+  category = {
+    existing_module_name = try(var.category.existing_module_name, {})
+    new_module_name      = try(var.category.new_module_name, {})  # Add this line
+  }
+}
+```
+
+**Real example** (locals.tf lines 289-294):
+```hcl
+locals {
+  cognitive_services = {
+    ai_services                            = try(var.cognitive_services.ai_services, {})
+    cognitive_services_account             = try(var.cognitive_services.cognitive_services_account, {})
+    cognitive_account_customer_managed_key = try(var.cognitive_services.cognitive_account_customer_managed_key, {})
+    cognitive_deployment                   = try(var.cognitive_services.cognitive_deployment, {})
+  }
+}
+```
+
+---
+
+#### Step 4: Add combined objects to root `locals.combined_objects.tf`
+
+**File**: `/locals.combined_objects.tf`
+
+**Purpose**: Create a merged object that combines local modules with remote objects and data sources.
+
+**Pattern**:
+```hcl
+combined_objects_new_module_names = merge(
+  tomap({ (local.client_config.landingzone_key) = module.new_module_names }),
+  lookup(var.remote_objects, "new_module_names", {}),
+  lookup(var.data_sources, "new_module_names", {})
+)
+```
+
+**Real example** (locals.combined_objects.tf line 49):
+```hcl
+combined_objects_cognitive_services_accounts = merge(
+  tomap({ (local.client_config.landingzone_key) = module.cognitive_services_account }),
+  lookup(var.remote_objects, "cognitive_services_account", {}),
+  lookup(var.data_sources, "cognitive_services_account", {})
+)
+```
+
+**Important**: The naming convention is `combined_objects_<module_name_plural>`.
+
+---
+
+#### Step 5: Use combined objects in module dependencies
+
+**When your module is referenced by other modules**, they will access it through the combined objects.
+
+**Example**: If another module needs to reference your module:
+```hcl
+module "dependent_module" {
+  # ...
+  remote_objects = {
+    new_module_names = local.combined_objects_new_module_names
+  }
+}
+```
+
+**Note**: There is no separate `locals.remote_objects.tf` file. The `remote_objects` parameter is built inline in each module call (see Step 1).
+
+---
+
+#### Step 6: Create examples (MANDATORY)
+
+**Directory**: `/examples/category/service_name/`
+
+Create at least two example configurations:
+
+1. **`minimal.tfvars`** - Simplest valid configuration
+2. **`complete.tfvars`** - All features demonstrated
+
+**Structure**:
+```
+/examples
+└── /category
+    └── /service_name
+        ├── minimal.tfvars
+        └── complete.tfvars
+```
+
+**Example minimal.tfvars**:
+```hcl
+global_settings = {
+  default_region = "region1"
+  regions = {
+    region1 = "westeurope"
+  }
+}
+
+resource_groups = {
+  rg1 = {
+    name   = "example-rg"
+    region = "region1"
+  }
+}
+
+category = {
+  new_module_names = {
+    example1 = {
+      name               = "example-resource"
+      resource_group_key = "rg1"
+      region             = "region1"
     }
   }
 }
 ```
 
-#### ✅ DO use certificate keys with proper resolution:
+---
+
+#### Step 7: Verify integration files checklist
+
+Before testing, ensure you've modified these **5 files**:
+
+- [ ] `/category_new_module_names.tf` - Main aggregator file (created)
+- [ ] `/variables.tf` - Added variable for category
+- [ ] `/locals.tf` - Added module to category locals
+- [ ] `/locals.combined_objects.tf` - Added combined_objects entry
+- [ ] `/examples/category/service_name/minimal.tfvars` - Created example
+
+**Optional**:
+- [ ] `/examples/category/service_name/complete.tfvars` - Created comprehensive example
+
+---
+
+#### Step 8: Test the integration
+
+```bash
+cd examples
+terraform_with_var_files --dir /category/service_name/minimal/ --action plan --auto auto --workspace test
+```
+
+**Common integration issues**:
+
+| Issue | Solution |
+|-------|----------|
+| "No module call named..." | Check Step 1: aggregator file exists and module source path is correct |
+| "Unknown variable..." | Check Step 2: variable added to variables.tf |
+| "The given key does not identify an element" | Check Step 3: locals.tf has correct path (var.category.module_name) |
+| "Output not found" | Check Step 1: output block exists in aggregator file |
+| "Combined objects not found" | Check Step 4: locals.combined_objects.tf has correct entry |
+
+---
+
+### Integration Pattern Summary
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ 1. Create /category_new_module_names.tf                    │
+│    → Calls module, passes dependencies, exposes output      │
+└─────────────────────────────────────────────────────────────┘
+                          ↓
+┌─────────────────────────────────────────────────────────────┐
+│ 2. Add variable to /variables.tf                           │
+│    → Define category variable                               │
+└─────────────────────────────────────────────────────────────┘
+                          ↓
+┌─────────────────────────────────────────────────────────────┐
+│ 3. Add to /locals.tf                                        │
+│    → Extract module config from category variable           │
+└─────────────────────────────────────────────────────────────┘
+                          ↓
+┌─────────────────────────────────────────────────────────────┐
+│ 4. Add to /locals.combined_objects.tf                      │
+│    → Merge module with remote objects and data sources      │
+└─────────────────────────────────────────────────────────────┘
+                          ↓
+┌─────────────────────────────────────────────────────────────┐
+│ 5. Other modules can now reference via combined objects     │
+│    → local.combined_objects_new_module_names                │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## �📚 Technical Reference
+
+### Appendix A: Azure Resource Type Mapping
+
+| Azure Resource                | azurecaf resource_type          |
+| ----------------------------- | ------------------------------- |
+| azurerm_resource_group        | `azurerm_resource_group`        |
+| azurerm_storage_account       | `azurerm_storage_account`       |
+| azurerm_key_vault             | `azurerm_key_vault`             |
+| azurerm_virtual_network       | `azurerm_virtual_network`       |
+| azurerm_subnet                | `azurerm_subnet`                |
+| azurerm_kubernetes_cluster    | `azurerm_kubernetes_cluster`    |
+| azurerm_container_registry    | `azurerm_container_registry`    |
+| azurerm_linux_web_app         | `azurerm_linux_web_app`         |
+| azurerm_mssql_server          | `azurerm_mssql_server`          |
+| azurerm_cdn_frontdoor_profile | `azurerm_cdn_frontdoor_profile` |
+| azurerm_application_gateway   | `azurerm_application_gateway`   |
+
+[See full list in aztfmod/azurecaf documentation]
+
+### Appendix B: Standard Argument Patterns
 
 ```hcl
-# Correct approach - key reference
-secrets = {
-  secret1 = {
-    name = "my-secret"
-    secret = {
-      customer_certificate = {
-        certificate_request = {
-          key = "my_certificate_key"
-          # lz_key = "remote_lz"  # Optional for remote landing zone
-        }
-      }
-    }
+# Tags - Always merge with global tags
+tags = merge(local.tags, try(var.settings.tags, null))
+
+# Resource Group - Use local
+resource_group_name = local.resource_group_name
+
+# Location - Use local with fallback
+location = local.location
+
+# Optional with default
+enabled = try(var.settings.enabled, true)
+
+# Optional without default
+custom_value = try(var.settings.custom_value, null)
+
+# Conditional argument
+custom_name = var.use_custom ? var.settings.custom_name : null
+
+# Identity (special case)
+dynamic "identity" {
+  for_each = try(var.settings.identity, null) == null ? [] : [var.settings.identity]
+  content {
+    type         = identity.value.type
+    identity_ids = contains(["userassigned", "systemassigned, userassigned"],
+                           lower(identity.value.type)) ? local.managed_identities : null
+  }
+}
+
+# Timeouts (always include)
+dynamic "timeouts" {
+  for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+  content {
+    create = try(timeouts.value.create, null)
+    update = try(timeouts.value.update, null)
+    read   = try(timeouts.value.read, null)
+    delete = try(timeouts.value.delete, null)
   }
 }
 ```
 
-### Key Vault Certificate Request Structure
-
-Use this structure for `keyvault_certificate_requests`:
+### Appendix C: Lifecycle Management Patterns
 
 ```hcl
-keyvault_certificate_requests = {
-  my_certificate_key = {
-    name         = "my-certificate"
-    keyvault_key = "my_keyvault_key"
-
-    certificate_policy = {
-      issuer_key_or_name  = "self"  # or certificate authority name
-      exportable          = true
-      key_size            = 2048    # 2048, 3072, or 4096
-      key_type            = "RSA"
-      reuse_key           = true
-      renewal_action      = "AutoRenew"  # or "EmailContacts"
-      lifetime_percentage = 90
-      content_type        = "application/x-pkcs12"
-
-      x509_certificate_properties = {
-        extended_key_usage = ["1.3.6.1.5.5.7.3.1"]  # Server Authentication
-        key_usage = [
-          "cRLSign",
-          "dataEncipherment",
-          "digitalSignature",
-          "keyAgreement",
-          "keyCertSign",
-          "keyEncipherment",
-        ]
-
-        subject_alternative_names = {
-          dns_names = ["example.com", "www.example.com"]
-          emails    = []
-          upns      = []
-        }
-
-        subject            = "CN=example.com"
-        validity_in_months = 12
-      }
-    }
-
-    tags = {
-      purpose = "ssl-certificate"
-    }
-  }
-}
-```
-
-### Managed Identity Configuration
-
-For secure access to Key Vault certificates, configure managed identities:
-
-```hcl
-managed_identities = {
-  my_service_identity = {
-    name               = "my-service-identity"
-    resource_group_key = "my_rg"
-
-    tags = {
-      purpose = "service-authentication"
-    }
-  }
-}
-```
-
-## Azure Front Door and WAF Patterns
-
-When working with Azure Front Door and Web Application Firewall (WAF), follow these established patterns for security, performance, and CAF compliance.
-
-### Front Door Resource Dependencies
-
-Front Door resources have specific dependency requirements that must be managed carefully:
-
-#### Critical Dependency Order
-
-1. **Profile** → **Origin Groups** → **Origins** → **Endpoints** → **Routes**
-2. **WAF Policy** → **Security Policy** (links WAF to domains/endpoints)
-3. **Custom Domains** → **Routes** (routes reference domains)
-
-#### Lifecycle Management for Front Door
-
-Use `create_before_destroy` for resources that may need replacement:
-
-```hcl
+# Pattern 1: Create before destroy (for resources with dependencies)
 resource "azurerm_cdn_frontdoor_origin_group" "origin_group" {
   # ... configuration ...
 
@@ -814,1426 +1300,839 @@ resource "azurerm_cdn_frontdoor_origin_group" "origin_group" {
   }
 }
 
-resource "azurerm_cdn_frontdoor_origin" "origin" {
-  # ... configuration ...
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-```
-
-#### Explicit Dependencies in Parent Modules
-
-Ensure proper destruction order in parent modules:
-
-```hcl
-module "origins" {
-  source = "./origin"
-  # ... configuration ...
-
-  depends_on = [module.origin_groups]
-}
-
-module "routes" {
-  source = "./route"
-  # ... configuration ...
-
-  depends_on = [module.endpoints, module.origins, module.origin_groups]
-}
-```
-
-### WAF Policy Configuration
-
-#### Standard WAF Policy Structure
-
-```hcl
-resource "azurerm_cdn_frontdoor_firewall_policy" "waf_policy" {
-  name                = azurecaf_name.waf_policy.result
-  resource_group_name = local.resource_group_name
-  sku_name            = var.settings.sku_name  # Must match Front Door profile SKU
-  enabled             = try(var.settings.enabled, true)
-  mode                = try(var.settings.mode, "Prevention")
-
-  # Managed rules are essential for security
-  dynamic "managed_rule" {
-    for_each = try(var.settings.managed_rules, {})
-    content {
-      type    = managed_rule.value.type
-      version = managed_rule.value.version
-      action  = try(managed_rule.value.action, "Block")
-
-      dynamic "exclusion" {
-        for_each = try(managed_rule.value.exclusions, {})
-        content {
-          match_variable = exclusion.value.match_variable
-          operator       = exclusion.value.operator
-          selector       = exclusion.value.selector
-        }
-      }
-
-      dynamic "override" {
-        for_each = try(managed_rule.value.overrides, {})
-        content {
-          rule_group_name = override.value.rule_group_name
-
-          dynamic "rule" {
-            for_each = try(override.value.rules, {})
-            content {
-              rule_id = rule.value.rule_id
-              action  = rule.value.action
-              enabled = try(rule.value.enabled, true)
-            }
-          }
-        }
-      }
-    }
-  }
-
-  # Custom rules for specific requirements
-  dynamic "custom_rule" {
-    for_each = try(var.settings.custom_rules, {})
-    content {
-      name     = custom_rule.value.name
-      action   = custom_rule.value.action
-      enabled  = try(custom_rule.value.enabled, true)
-      priority = custom_rule.value.priority
-      type     = custom_rule.value.type
-
-      dynamic "match_condition" {
-        for_each = custom_rule.value.match_conditions
-        content {
-          match_variable     = match_condition.value.match_variable
-          match_values       = match_condition.value.match_values
-          operator           = match_condition.value.operator
-          selector           = try(match_condition.value.selector, null)
-          negation_condition = try(match_condition.value.negation_condition, false)
-          transforms         = try(match_condition.value.transforms, [])
-        }
-      }
-    }
-  }
-}
-```
-
-#### WAF Policy Best Practices
-
-1. **SKU Compatibility**: WAF policy SKU must match Front Door profile SKU (`Standard_AzureFrontDoor` or `Premium_AzureFrontDoor`)
-2. **Managed Rules**: Always include Microsoft_DefaultRuleSet and Microsoft_BotManagerRuleSet
-3. **Custom Rules**: Use for application-specific security requirements
-4. **Exclusions**: Configure carefully to avoid false positives
-5. **Testing**: Use "Detection" mode first, then switch to "Prevention"
-
-### Front Door Custom Domain with Certificates
-
-#### Certificate Resolution Pattern
-
-```hcl
-resource "azurerm_cdn_frontdoor_custom_domain" "custom_domain" {
-  name                     = azurecaf_name.custom_domain.result
-  cdn_frontdoor_profile_id = var.remote_objects.cdn_frontdoor_profile.id
-  dns_zone_id              = try(var.settings.dns_zone_id, null)
-  host_name                = var.settings.host_name
-
-  dynamic "tls" {
-    for_each = try(var.settings.tls, null) == null ? [] : [var.settings.tls]
-    content {
-      certificate_type    = try(tls.value.certificate_type, "ManagedCertificate")
-      minimum_tls_version = try(tls.value.minimum_tls_version, "TLS12")
-
-      # Certificate resolution using coalesce pattern
-      cdn_frontdoor_secret_id = tls.value.certificate_type == "CustomerCertificate" ? coalesce(
-        try(tls.value.cdn_frontdoor_secret_id, null),
-        try(var.remote_objects.cdn_frontdoor_secrets[try(tls.value.secret.lz_key, var.client_config.landingzone_key)][tls.value.secret.key].id, null)
-      ) : null
-    }
-  }
-}
-```
-
-#### DNS Validation Token Output
-
-Always expose DNS validation tokens for certificate validation:
-
-```hcl
-output "dns_validation_token" {
-  value       = azurerm_cdn_frontdoor_custom_domain.custom_domain.validation_token
-  description = "DNS validation token for custom domain certificate validation"
-}
-
-output "id" {
-  value       = azurerm_cdn_frontdoor_custom_domain.custom_domain.id
-  description = "The ID of the Front Door custom domain"
-}
-```
-
-### Security Policy Linking
-
-Link WAF policies to Front Door domains using security policies:
-
-```hcl
-resource "azurerm_cdn_frontdoor_security_policy" "security_policy" {
-  name                     = azurecaf_name.security_policy.result
-  cdn_frontdoor_profile_id = var.remote_objects.cdn_frontdoor_profile.id
-
-  security_policies {
-    firewall {
-      cdn_frontdoor_firewall_policy_id = coalesce(
-        try(var.settings.firewall_policy_id, null),
-        try(var.remote_objects.cdn_frontdoor_firewall_policies[try(var.settings.firewall_policy.lz_key, var.client_config.landingzone_key)][var.settings.firewall_policy.key].id, null)
-      )
-
-      association {
-        # Link to custom domains
-        dynamic "domain" {
-          for_each = try(var.settings.domains, [])
-          content {
-            cdn_frontdoor_domain_id = coalesce(
-              try(domain.value.cdn_frontdoor_domain_id, null),
-              try(var.remote_objects.cdn_frontdoor_custom_domains[try(domain.value.lz_key, var.client_config.landingzone_key)][domain.value.key].id, null)
-            )
-          }
-        }
-
-        # Link to endpoints
-        dynamic "domain" {
-          for_each = try(var.settings.endpoints, [])
-          content {
-            cdn_frontdoor_domain_id = coalesce(
-              try(domain.value.cdn_frontdoor_domain_id, null),
-              try(var.remote_objects.cdn_frontdoor_endpoints[try(domain.value.lz_key, var.client_config.landingzone_key)][domain.value.key].id, null)
-            )
-          }
-        }
-
-        patterns_to_match = try(var.settings.patterns_to_match, ["/*"])
-      }
-    }
-  }
-}
-```
-
-### Front Door Common Issues and Solutions
-
-#### SKU Mismatch Resolution
-
-**Problem**: WAF policy SKU doesn't match Front Door profile SKU
-**Solution**: Ensure both resources use the same SKU tier
-
-```hcl
-# Front Door Profile
-resource "azurerm_cdn_frontdoor_profile" "profile" {
-  sku_name = "Premium_AzureFrontDoor"  # or "Standard_AzureFrontDoor"
-}
-
-# WAF Policy must match
-resource "azurerm_cdn_frontdoor_firewall_policy" "waf" {
-  sku_name = "Premium_AzureFrontDoor"  # Must match profile SKU
-}
-```
-
-#### Certificate Validation Issues
-
-**Problem**: Custom domain certificate validation fails
-**Solution**: Properly configure DNS validation tokens
-
-```hcl
-# Output validation token for DNS configuration
-output "dns_validation_token" {
-  value = azurerm_cdn_frontdoor_custom_domain.custom_domain.validation_token
-}
-
-# DNS record for validation (external to Terraform)
-# Create DNS TXT record: _dnsauth.yourdomain.com -> validation_token
-```
-
-#### Resource Destruction Order
-
-**Problem**: Resources fail to destroy due to dependencies
-**Solution**: Use lifecycle rules and explicit dependencies
-
-```hcl
-# In parent module
-depends_on = [module.routes, module.security_policies]
-
-# In resources
-lifecycle {
-  create_before_destroy = true
-}
-```
-
-## Code Style
-
-### Necessary Blocks
-
-Use the following structure for necessary blocks:
-
-```hcl
-block_name {
-    argument_name = var.settings.argument_name
-}
-```
-
-### Dependency Resolution Pattern
-
-When resolving dependencies to other resources (especially between submodules), always use the `coalesce()` pattern with `try()` functions to support multiple ways of providing resource IDs:
-
-#### Standard Pattern for Resource ID Resolution
-
-```hcl
-resource_id = coalesce(
-  try(var.settings.direct_resource_id, null),
-  try(var.remote_objects.resource_name.id, null),
-  try(var.remote_objects.resource_names[try(var.settings.resource_reference.lz_key, var.client_config.landingzone_key)][var.settings.resource_reference.key].id, null)
-)
-```
-
-#### Examples
-
-**Profile ID Resolution:**
-
-```hcl
-cdn_frontdoor_profile_id = coalesce(
-  try(var.settings.cdn_frontdoor_profile_id, null),
-  try(var.remote_objects.cdn_frontdoor_profile.id, null),
-  try(var.remote_objects.cdn_frontdoor_profiles[try(var.settings.cdn_frontdoor_profile.lz_key, var.client_config.landingzone_key)][var.settings.cdn_frontdoor_profile.key].id, null)
-)
-```
-
-**Origin Group ID Resolution:**
-
-```hcl
-cdn_frontdoor_origin_group_id = coalesce(
-  try(var.settings.cdn_frontdoor_origin_group_id, null),
-  try(var.remote_objects.cdn_frontdoor_origin_groups[var.settings.origin_group_key].id, null),
-  try(var.remote_objects.cdn_frontdoor_origin_groups[try(var.settings.origin_group.lz_key, var.client_config.landingzone_key)][var.settings.origin_group.key].id, null)
-)
-```
-
-**Service Plan ID Resolution:**
-
-```hcl
-service_plan_id = coalesce(
-    try(var.settings.service_plan_id, null),
-    try(var.remote_objects.service_plans[try(var.settings.service_plan.lz_key, var.client_config.landingzone_key)][try(var.settings.service_plan.key, var.settings.service_plan_key)].id, null),
-    try(var.remote_objects.app_service_plans[try(var.settings.app_service_plan.lz_key, var.client_config.landingzone_key)][try(var.settings.app_service_plan.key, var.settings.app_service_plan_key)].id, null)
-  )
-```
-
-#### Benefits of This Pattern
-
-1. **Flexibility**: Supports direct ID passing, current module references, and cross-landing zone references
-2. **Backward Compatibility**: Maintains support for existing configuration patterns
-3. **Consistency**: Standardized approach across all CAF modules
-4. **Error Prevention**: Graceful handling of missing or null values
-
-### Resource Lifecycle Management
-
-When working with resources that have complex dependencies or need specific creation/destruction order, use these patterns:
-
-#### Create Before Destroy Pattern
-
-For resources that may need to be replaced and have dependent resources, use `create_before_destroy`:
-
-```hcl
-resource "azurerm_resource_type" "resource_name" {
-  # ... configuration ...
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-```
-
-**When to use:**
-- Resources that are referenced by other resources
-- Resources that cannot have downtime during replacement
-- Resources with complex dependencies (e.g., Front Door origins, origin groups)
-
-#### Explicit Dependencies
-
-Use `depends_on` in parent modules to ensure proper destruction order:
-
-```hcl
-module "dependent_resource" {
-  source = "./submodule"
-  # ... configuration ...
-
-  depends_on = [module.prerequisite_resource]
-}
-```
-
-**When to use:**
-- When Terraform cannot automatically detect dependencies
-- When destruction order is critical
-- When submodules have circular or complex dependencies
-
-#### Prevent Destroy Pattern
-
-For critical resources that should never be accidentally destroyed:
-
-```hcl
-resource "azurerm_resource_type" "critical_resource" {
+# Pattern 2: Prevent destroy (for critical resources)
+resource "azurerm_key_vault" "vault" {
   # ... configuration ...
 
   lifecycle {
     prevent_destroy = true
   }
 }
+
+# Pattern 3: Ignore changes (for externally managed attributes)
+resource "azurerm_linux_web_app" "app" {
+  # ... configuration ...
+
+  lifecycle {
+    ignore_changes = [
+      app_settings,  # Managed by application
+      site_config[0].application_stack  # Managed by CI/CD
+    ]
+  }
+}
+
+# ⚠️ IMPORTANT: ignore_changes must be static, not dynamic
+# ❌ WRONG:
+lifecycle {
+  ignore_changes = var.managed_by_external ? [attribute] : []
+}
+
+# ✅ CORRECT:
+lifecycle {
+  ignore_changes = [attribute]  # Always static list
+}
 ```
 
-**When to use:**
-- Production databases
-- Key Vaults with critical secrets
-- Networking resources that would cause widespread outages
+### Appendix D: Submodule Integration Pattern
 
-#### Lifecycle Block Constraints
+**When to use submodules:**
 
-**Important:** The `ignore_changes` in lifecycle blocks cannot be dynamically evaluated and must be a static list:
+- Resource has child resources with independent lifecycle
+- Child resources can be reused across different parents
+- Clear parent-child relationship exists
+
+**Pattern (based on network_manager and cdn_frontdoor_profile):**
 
 ```hcl
-# ❌ INCORRECT - Dynamic ignore_changes
-resource "azurerm_resource_type" "resource" {
-  lifecycle {
-    ignore_changes = var.use_managed_certificate ? [attribute1, attribute2] : []
+# Parent module - Call submodules
+module "endpoints" {
+  source   = "./endpoint"
+  for_each = try(var.settings.endpoints, {})
+
+  global_settings = var.global_settings
+  client_config   = var.client_config
+  location        = var.location
+  resource_group  = var.resource_group
+  base_tags       = var.base_tags
+  settings        = each.value
+
+  # Pass parent resource through remote_objects
+  remote_objects = merge(var.remote_objects, {
+    cdn_frontdoor_profile = azurerm_cdn_frontdoor_profile.profile
+  })
+}
+
+# Submodule depends on another submodule
+module "origins" {
+  source   = "./origin"
+  for_each = try(var.settings.origins, {})
+
+  # ... standard variables ...
+
+  # Pass sibling module through remote_objects
+  remote_objects = merge(var.remote_objects, {
+    cdn_frontdoor_origin_groups = module.origin_groups
+  })
+
+  depends_on = [module.origin_groups]
+}
+
+# Submodule resource - Resolve dependency
+resource "azurerm_cdn_frontdoor_origin" "origin" {
+  name = azurecaf_name.origin.result
+
+  cdn_frontdoor_origin_group_id = coalesce(
+    try(var.settings.cdn_frontdoor_origin_group_id, null),
+    try(var.remote_objects.cdn_frontdoor_origin_groups[var.settings.origin_group_key].id, null),
+    try(var.remote_objects.cdn_frontdoor_origin_groups[
+      try(var.settings.origin_group.lz_key, var.client_config.landingzone_key)
+    ][var.settings.origin_group.key].id, null)
+  )
+}
+```
+
+**Key Rules:**
+
+1. Never pass IDs as separate variables between modules
+2. Always use `var.remote_objects` for dependencies
+3. Use pluralized names for module calls (`endpoints` not `endpoint`)
+4. Use `merge()` to add parent/sibling resources to remote_objects
+5. Add explicit `depends_on` for destruction order
+
+### Appendix E: Common Terraform Constraints
+
+```hcl
+# ⚠️ Constraint 1: Lifecycle blocks must be static
+# Problem: Cannot use dynamic conditions in lifecycle
+
+# ❌ WRONG:
+lifecycle {
+  ignore_changes = var.use_managed_cert ? [tls] : []
+}
+
+# ✅ CORRECT:
+lifecycle {
+  ignore_changes = [tls]  # Always static
+}
+# → If conditional behavior needed, use separate resource blocks or modules
+
+# ⚠️ Constraint 2: Location parameter is resource-specific
+# Problem: Some resources inherit location, others require it
+
+# Check Azure provider documentation:
+# - If "location" argument is listed → include it
+# - If not listed → omit it (e.g., azurerm_container_app_custom_domain)
+
+# ❌ WRONG:
+module "custom_domain" {
+  source   = "./custom_domain"
+  location = var.location  # This resource doesn't support location
+}
+
+# ✅ CORRECT:
+module "custom_domain" {
+  source = "./custom_domain"
+  # No location parameter
+}
+```
+
+---
+
+## 🎓 Best Practices and Principles
+
+### Principle 1: Convention Over Configuration
+
+**Why**: Consistency reduces cognitive load and errors.
+
+- Use standard file names (`providers.tf`, not `main.tf` for providers)
+- Follow naming patterns (`azurecaf_name.tf` for naming)
+- Keep structure predictable across modules
+
+### Principle 2: Explicit Over Implicit
+
+**Why**: Infrastructure as code must be clear and auditable.
+
+```hcl
+# ❌ Implicit: Hard to understand
+enabled = var.settings.enabled
+
+# ✅ Explicit: Clear fallback behavior
+enabled = try(var.settings.enabled, true)
+```
+
+### Principle 3: Flexibility Through Standards
+
+**Why**: Support diverse use cases without breaking patterns.
+
+The coalesce pattern enables:
+
+- Simple deployments (direct IDs)
+- Complex deployments (cross-module references)
+- Enterprise deployments (cross-landing-zone references)
+
+All while maintaining the same module interface.
+
+### Principle 4: Examples as Documentation
+
+**Why**: Working code is better than written instructions.
+
+- Every feature should be demonstrated in examples
+- Examples should be realistic, not just minimal
+- Examples serve as automated tests
+
+### Principle 5: Backward Compatibility Matters
+
+**Why**: Infrastructure changes are risky and costly.
+
+When updating modules:
+
+1. Keep deprecated arguments with warnings
+2. Add new arguments as optional with try()
+3. Document migration paths clearly
+4. Test against existing examples
+
+---
+
+## 🚀 Quick Start Checklist
+
+**Before you start coding:**
+
+- [ ] I understand which layer I'm working in (root/module/example)
+- [ ] I've validated ALL resource attributes using MCP Terraform (Pattern 0 - MANDATORY)
+- [ ] I've read the Azure provider documentation for this resource
+- [ ] I've found similar examples in the repository
+- [ ] I know what dependencies this resource has
+
+**When creating a module:**
+
+- [ ] Validated resource attributes with MCP Terraform (mcp_terraform_resolveProviderDocID + mcp_terraform_getProviderDocs)
+- [ ] Implemented ALL attributes from schema (required, optional, nested blocks)
+- [ ] Created `providers.tf` with required providers
+- [ ] Created `azurecaf_name.tf` for naming (if resource has name)
+- [ ] Implemented standard variables pattern
+- [ ] Implemented standard locals pattern (module_tag, tags, location, resource_group_name)
+- [ ] Added diagnostics.tf if service supports diagnostic settings
+- [ ] Added private_endpoint.tf if service supports private endpoints
+- [ ] Used coalesce pattern for dependencies
+- [ ] Added dynamic blocks for optional features
+- [ ] Created at least minimal.tfvars example
+- [ ] Wired into root module (8 steps completed)
+
+**When updating a module:**
+
+- [ ] Validated ALL resource attributes with MCP Terraform (Pattern 0 - MANDATORY)
+- [ ] Cross-checked implementation against complete schema
+- [ ] Added new optional attributes with try()
+- [ ] Maintained backward compatibility (use try() with fallbacks for renamed attributes)
+- [ ] Updated examples with new features
+
+**When testing:**
+
+- [ ] Tested from `/examples` directory
+- [ ] Used `terraform_with_var_files` command
+- [ ] Validated plan output is correct
+- [ ] Checked for unintended changes
+- [ ] Confirmed examples still work
+
+**Before committing:**
+
+- [ ] All code is in English
+- [ ] Examples work without errors
+- [ ] Documentation is updated
+- [ ] Backward compatibility maintained
+- [ ] No hardcoded values (use variables)
+
+---
+
+## 🆘 When You Need Help
+
+**Ask yourself these questions first:**
+
+1. **Is there a similar module?** → Check `/modules` for patterns
+2. **Is there a working example?** → Check `/examples` for configurations
+3. **Is this documented?** → Search this file and module READMEs
+4. **Is this an Azure constraint?** → Check Azure provider documentation
+
+**How to ask for help:**
+
+✅ Good: "I'm creating a module for azurerm_app_service. Should the service_plan_id use the standard coalesce pattern, or is there a special case for App Services?"
+
+✅ Good: "The example for Front Door origins is failing with 'cycle error'. I've checked the depends_on in the parent module, but I'm not sure where the cycle is coming from."
+
+❌ Bad: "It doesn't work"
+
+❌ Bad: "How do I create a module?" (too broad - specify which resource)
+
+**What context to provide:**
+
+- What you're trying to achieve
+- What you've already tried
+- Error messages (full output)
+- Relevant code snippets
+- Which examples you've referenced
+
+---
+
+## 📝 Testing Commands Reference
+
+```bash
+# Test with plan (safest, always start here)
+terraform_with_var_files --dir /category/service/example/ --action plan --auto auto --workspace test
+
+# Test with apply (creates resources)
+terraform_with_var_files --dir /category/service/example/ --action apply --auto auto --workspace test
+
+# Test with destroy (cleanup)
+terraform_with_var_files --dir /category/service/example/ --action destroy --auto auto --workspace test
+
+# Test with Terraform test framework (preferred for CI)
+terraform test -test-directory=./tests/mock -var-file="./category/service/example.tfvars" -verbose
+
+# Find examples for a specific module
+find examples -name "*.tfvars" -path "*category/service*"
+
+# Check for breaking changes across all examples
+grep -r "module_name" examples/ --include="*.tfvars"
+```
+
+---
+
+## 🔍 Context-Aware Decision Making
+
+**When creating dynamic blocks**, consider:
+
+- Is order important? → Use list with index
+- Do I need stable identifiers? → Use map with keys
+- Will this change frequently? → Map is better for updates
+- Is this a single optional block? → Use null check pattern
+
+**When choosing variable types**, consider:
+
+- Will users provide structured data? → Use `any` with validation
+- Is this a simple value? → Use specific type (`string`, `bool`, `number`)
+- Do I need to merge values? → Use `any` or `map(any)`
+
+**When handling dependencies**, consider:
+
+- Is this a simple reference? → Direct ID might be enough
+- Could this be in another landing zone? → Use full coalesce pattern
+- Is there backward compatibility? → Include deprecated resource names
+
+**When updating modules**, consider:
+
+- How many examples use this module?
+- Are there production deployments?
+- What's the migration cost?
+- Can I maintain backward compatibility?
+
+---
+
+## 🎯 Success Metrics
+
+You're doing well when:
+
+✅ Your modules follow the same patterns as existing ones
+✅ Examples work on first try
+✅ Code is self-explanatory with minimal comments
+✅ Changes don't break existing examples
+✅ Resource names comply with Azure requirements automatically
+✅ Dependencies resolve without manual ID management
+✅ Other developers can understand your code quickly
+
+---
+
+## 🌟 Final Thoughts
+
+This framework represents years of Terraform and Azure experience. The patterns exist for good reasons:
+
+- **CAF naming** → Handles Azure's complex naming requirements
+- **Coalesce pattern** → Supports simple to enterprise-grade deployments
+- **Dynamic blocks** → Provides flexibility within Terraform's constraints
+- **Standard structure** → Makes codebase navigable and maintainable
+- **Examples as tests** → Ensures documentation stays current
+
+When in doubt, look for existing examples. The repository contains solutions to most common problems.
+
+---
+
+## � Code Style and Argument Patterns
+
+### Argument Patterns
+
+When implementing resource arguments, follow these standard patterns:
+
+#### Default Values
+
+For arguments that do not have a default value:
+
+```hcl
+argument_name = try(var.settings.argument_name, null)
+```
+
+For arguments that have default values (adjust default_value):
+
+```hcl
+argument_name = try(var.settings.argument_name, default_value)
+```
+
+#### Conditional Arguments
+
+For arguments that are conditional:
+
+```hcl
+argument_name = var.condition ? var.settings.argument_name : null
+```
+
+#### Tags
+
+Always use this structure for tags:
+
+```hcl
+tags = merge(local.tags, try(var.settings.tags, null))
+```
+
+#### Resource Group
+
+Always use local for resource group:
+
+```hcl
+resource_group_name = local.resource_group_name
+```
+
+#### Location
+
+Always use local for location:
+
+```hcl
+location = local.location
+```
+
+#### Service Plan ID (App Services)
+
+Use this standard pattern for service_plan_id:
+
+```hcl
+service_plan_id = coalesce(
+  try(var.settings.service_plan_id, null),
+  try(var.remote_objects.service_plans[try(var.settings.service_plan.lz_key, var.client_config.landingzone_key)][try(var.settings.service_plan.key, var.settings.service_plan_key)].id, null),
+  try(var.remote_objects.app_service_plans[try(var.settings.app_service_plan.lz_key, var.client_config.landingzone_key)][try(var.settings.app_service_plan.key, var.settings.app_service_plan_key)].id, null)
+)
+```
+
+#### General Approach
+
+- Search in workspace for existing argument definitions and use them as a reference when available
+- Always check the Azure provider documentation for the resource to understand required vs optional arguments
+- Use `try()` for optional arguments to gracefully handle missing values
+- Use `coalesce()` for dependency resolution with multiple fallback options
+
+---
+
+## �🛡️ Technical Validation for Microsoft Products
+
+When generating or recommending technical content for Microsoft products (Azure, Terraform on Azure, Azure services, etc.):
+
+### 1. Coding (Modules, Resources, Patterns)
+
+- The primary source for coding is the local repository standards and Copilot instructions.
+- Only when local standards do not cover a case, validate with MCP Terraform tools:
+  - Use `mcp_terraform_resolveProviderDocID` and `mcp_terraform_getProviderDocs` for resource patterns, arguments, and constraints.
+  - Use `mcp_terraform_searchModules` and `mcp_terraform_moduleDetails` for module usage and examples.
+- Always document the source of validation (local or MCP Terraform) in comments or documentation.
+
+### 2. Examples (Usage, Documentation, Architecture)
+
+- All examples and architectural decisions MUST be aligned with the Microsoft Well Architected Framework pillars (Cost, Security, Reliability, Performance, Operational Excellence).
+- Validate all technical content in examples using MCP MicrosoftDocs tools:
+  - Use `microsoft_docs_search` for concepts, features, and best practices.
+  - Use `microsoft_code_sample_search` for code samples and configuration examples.
+  - Use `microsoft_docs_fetch` for complete documentation when deeper context is needed.
+- **NEVER invent technical information** – all recommendations, code, and explanations MUST be backed by official documentation.
+
+This ensures that all technical guidance is reliable, up-to-date, and aligned with both the repository's standards, Microsoft's best practices, and Terraform community recommendations.
+
+---
+
+## 🔧 MCP Tools Usage Rules
+
+When working with this repository, follow these rules for using MCP tools:
+
+### Azure Tools
+- **Rule**: When handling requests related to Azure, always use your Azure MCP tools when available.
+
+### Azure Code Generation Best Practices
+- **Rule**: When generating code for Azure, running terminal commands for Azure, or performing operations related to Azure, invoke your Azure best practices tools if available.
+- **Only call** when you are sure the user is discussing Azure; do not call otherwise.
+
+### Azure Deployment Best Practices
+- **Rule**: When deploying to Azure or preparing applications for deployment to Azure, invoke your Azure deployment best practices tools if available.
+- **Only call** when you are sure the user is discussing Azure deployment; do not call otherwise.
+
+### Azure Functions Code Generation Best Practices
+- **Rule**: When generating code for Azure Functions or performing operations related to Azure Functions, invoke your Azure Functions best practices tools if available.
+- **Only call** when you are sure the user is discussing Azure Functions; do not call otherwise.
+
+### Azure Static Web Apps Best Practices
+- **Rule**: When working with static web apps, invoke your Azure SWA best practices tools if available.
+- **Only call** when you are sure the user is discussing Azure Static Web Apps; do not call otherwise.
+
+### Search Terraform Azure CAF
+- **Rule**: When searching for existing Terraform code that can be used as reference, invoke your `search_terraform_azure_caf` tool if available.
+
+### Terraform Best Practices
+- **Rule**: When generating Terraform code or performing operations related to Terraform, invoke your Terraform best practices tools if available.
+- **Only call** when you are sure the user is discussing Terraform; do not call otherwise.
+
+---
+
+## 📝 Examples and CI/CD Integration
+
+### Example Structure and Naming Convention (MANDATORY)
+
+All examples MUST follow the numbered directory structure for organization by complexity:
+
+**Pattern**:
+```
+/examples
+└── /category
+    └── /service_name
+        ├── /100-simple-service          # Basic example (minimal config)
+        │   └── configuration.tfvars
+        ├── /200-service-private-endpoint # Intermediate (with networking)
+        │   └── configuration.tfvars
+        └── /300-service-advanced        # Advanced (all features)
+            └── configuration.tfvars
+```
+
+**Numbering Convention**:
+- **100-1XX**: Simple/basic examples (minimal required configuration)
+- **200-2XX**: Intermediate examples (networking, private endpoints, managed identities)
+- **300-3XX**: Advanced examples (all features, complex configurations)
+- **400-4XX**: Integration examples (multiple services working together)
+
+**File Naming**:
+- Always use `configuration.tfvars` (NOT `minimal.tfvars`, `complete.tfvars`, or `example.tfvars`)
+- This ensures consistency with test workflows
+
+### Example Content Guidelines
+
+#### Naming Convention in Examples
+
+**CRITICAL**: Resource names in examples should NOT include prefixes that azurecaf adds automatically.
+
+```hcl
+# ❌ WRONG - Don't include prefixes that azurecaf adds
+resource_groups = {
+  rg1 = {
+    name = "rg-grafana-test-1"  # rg- prefix will be duplicated
   }
 }
 
-# ✅ CORRECT - Static ignore_changes
-resource "azurerm_resource_type" "resource" {
-  lifecycle {
-    ignore_changes = [attribute1, attribute2]
+# ✅ CORRECT - Let azurecaf add the prefix
+resource_groups = {
+  rg1 = {
+    name = "grafana-test-1"  # azurecaf will generate: rg-grafana-test-1-xxxxx
   }
 }
 ```
 
-**Guidelines:**
-- Use static lists for `ignore_changes`, `replace_triggered_by`, etc.
-- If conditional lifecycle behavior is needed, use separate resource blocks or modules
-- Document why specific attributes are ignored in comments
+**Azurecaf Prefixes by Resource Type**:
+- Resource Groups: `rg-`
+- Storage Accounts: `st`
+- Key Vaults: `kv-`
+- Virtual Networks: `vnet-`
+- Subnets: `snet-`
+- Network Security Groups: `nsg-`
+- Azure Managed Grafana: `grafana-`
 
-### Module Integration and Wiring Patterns
+**Always check the azurecaf provider documentation** for the correct prefix for each resource type.
 
-When adding new modules to the CAF framework, follow these integration patterns:
+#### Required Elements in Examples
 
-#### CAF Module Integration Checklist
-
-1. **Add module variable to `examples/variables.tf`**:
+1. **global_settings** (MANDATORY):
    ```hcl
-   variable "new_module_name" {
-     description = "Configuration for new module"
-     type        = any
-     default     = {}
+   global_settings = {
+     default_region = "region1"
+     regions = {
+       region1 = "westeurope"
+     }
+     random_length = 5  # For unique naming
    }
    ```
 
-2. **Add module call to `examples/module.tf`**:
+2. **resource_groups** (MANDATORY):
    ```hcl
-   module "new_module_name" {
-     source   = "../modules/category/new_module"
-     for_each = local.category.new_module_name
-
-     # Standard variables
-     global_settings = local.global_settings
-     client_config   = local.client_config
-     # ... other standard variables
-
-     remote_objects = {
-       # Required remote objects
+   resource_groups = {
+     rg_key = {
+       name = "service-test-1"  # No prefix, azurecaf adds it
      }
    }
    ```
 
-3. **Add to `locals.tf`**:
+3. **Service Configuration** with **Key-based References**:
    ```hcl
-   locals {
-     category = {
-       new_module_name = try(var.category.new_module_name, {})
+   category = {
+     service_name = {
+       instance1 = {
+         name = "service-instance-1"
+         resource_group = {
+           key = "rg_key"  # Key-based reference (preferred)
+           # id = "/subscriptions/..."  # Direct ID (alternative)
+           # lz_key = "remote"  # Cross-landing-zone reference
+         }
+         # ... other settings
+       }
      }
    }
    ```
 
-4. **Add combined objects to `locals.combined_objects.tf`**:
-   ```hcl
-   combined_objects_new_module_name = merge(
-     tomap({ (local.client_config.landingzone_key) = module.new_module_name }),
-     lookup(var.remote_objects, "new_module_name", {}),
-     lookup(var.data_sources, "new_module_name", {})
-   )
-   ```
+4. **Networking** (for examples with private endpoints):
+   - Use `vnets` (not `networking.vnets`)
+   - Use `virtual_subnets` (not `subnets`)
+   - Include `network_security_group_definition`
+   - Include `private_dns` with `vnet_links`
 
-5. **Add to `local.remote_objects.tf`**:
-   ```hcl
-   new_module_name = try(local.combined_objects_new_module_name, null)
-   ```
+#### Example Template for Simple (100-level)
 
-6. **Create root module file `category_new_module_name.tf`**:
-   ```hcl
-   module "new_module_name" {
-     source   = "./modules/category/new_module"
-     for_each = local.category.new_module_name
+```hcl
+global_settings = {
+  default_region = "region1"
+  regions = {
+    region1 = "westeurope"
+  }
+  random_length = 5
+}
 
-     # Standard configuration
+resource_groups = {
+  test_rg = {
+    name = "service-test-1"
+  }
+}
+
+category = {
+  service_name = {
+    instance1 = {
+      name = "service-instance-1"
+      resource_group = {
+        key = "test_rg"
+      }
+      # Minimal required configuration
+      required_setting = "value"
+      
+      tags = {
+        environment = "dev"
+        purpose     = "example"
+      }
+    }
+  }
+}
+```
+
+### CI/CD Workflow Integration (MANDATORY)
+
+Every new example MUST be added to the appropriate workflow file for automated testing.
+
+**Workflow Files**:
+- `/github/workflows/standalone-scenarios.json` - Main scenarios (preferred)
+- `/github/workflows/standalone-scenarios-additional.json` - Additional scenarios
+- `/github/workflows/standalone-compute.json` - Compute-specific
+- `/github/workflows/standalone-networking.json` - Networking-specific
+- `/github/workflows/standalone-dataplat.json` - Data platform-specific
+
+**Integration Steps**:
+
+1. **Identify the correct workflow file** based on category:
+   - Monitoring, cognitive services, storage → `standalone-scenarios.json`
+   - Compute (VMs, AKS, container apps) → `standalone-compute.json`
+   - Networking (VNets, firewalls, gateways) → `standalone-networking.json`
+   - Databases, data factory, synapse → `standalone-dataplat.json`
+
+2. **Find the appropriate section** in the JSON array (they're alphabetically organized by category)
+
+3. **Add your example path** following the pattern:
+   ```json
+   {
+     "config_files": [
+       "existing/examples",
+       "category/service/100-simple-service",  // Add here
+       "more/examples"
+     ]
    }
-
-   output "new_module_name" {
-     value = module.new_module_name
-   }
    ```
 
-### Migration from Deprecated Resources
+**Example Integration** (Grafana):
+```json
+{
+  "config_files": [
+    "monitoring/100-service-health-alerts",
+    "monitoring/101-monitor-action-groups",
+    "monitoring/102-monitor_activity_log_alert",
+    "monitoring/103-monitor_metric_alert",
+    "monitoring/104-log_analytics_storage_insights",
+    "grafana/100-simple-grafana",  // ← Added here
+    "netapp/101-nfs",
+    ...
+  ]
+}
+```
 
-When migrating from deprecated resources to their modern equivalents:
+4. **Verify the path** matches your example directory structure:
+   ```
+   /examples/grafana/100-simple-grafana/configuration.tfvars
+   ```
 
-#### Pre-Migration Checklist
+### Testing Examples Locally
 
-1. **Identify deprecated resources** in the current module
-2. **Find the modern equivalent** using Azure provider documentation
-3. **Assess breaking changes** between old and new resources
-4. **Plan migration strategy** (in-place vs. new module)
-5. **Update examples** to use modern resources
-
-#### Migration Steps
-
-1. **Update resource definitions** to use modern Azure resources
-2. **Update variable schemas** to match new resource requirements
-3. **Update outputs** to expose new resource attributes
-4. **Add lifecycle management** if needed for complex dependencies
-5. **Update documentation** and examples
-6. **Test thoroughly** with example configurations
-
-#### Post-Migration Validation
-
-1. **Verify all arguments** are correctly mapped
-2. **Test resource creation/update/deletion** cycles
-3. **Validate outputs** are accessible and correct
-4. **Check dependency resolution** works properly
-5. **Ensure backward compatibility** where possible
-
-### Testing and Validation
-
-When updating modules, always test from the `/examples` directory:
+Before committing, test examples using terraform test:
 
 ```bash
 # Navigate to examples directory
-cd /home/fdr001/source/github/aztfmodnew/terraform-azurerm-caf/examples
+cd /path/to/terraform-azurerm-caf/examples
 
-# Test with specific module configuration
-terraform_with_var_files --dir /category/module/example/  --action plan  --auto auto  --workspace example
+# Run specific example test
+terraform test -test-directory=./tests/mock -var-file="./grafana/100-simple-grafana/configuration.tfvars" -verbose
 
-# Full deployment test
-terraform_with_var_files --dir /category/module/example/  --action apply  --auto auto  --workspace example
-
-# Cleanup test
-terraform_with_var_files --dir /category/module/example/  --action destroy  --auto auto  --workspace example
+# Run all tests in a category
+terraform test -test-directory=./tests/mock -var-file="./grafana/**/configuration.tfvars" -verbose
 ```
 
-### Documentation Updates
+**Common Test Failures**:
 
-When updating modules, ensure:
+| Error | Cause | Solution |
+|-------|-------|----------|
+| "Unknown variable" | Variable not in examples/variables.tf | Check variable name matches root variables.tf |
+| "Invalid reference" | Using wrong key format | Use `resource_group = { key = "rg_key" }` |
+| "Resource name too long" | Included azurecaf prefix in name | Remove prefix, let azurecaf add it |
+| "Network config invalid" | Using wrong variable names | Use `vnets` and `virtual_subnets`, not `networking` or `subnets` |
 
-1. **Update module README.md** with new configuration examples
-2. **Update example documentation** in `/examples/category/module/README.md`
-3. **Document breaking changes** in appropriate changelog or migration guide
-4. **Update variable descriptions** to reflect new functionality
-5. **Add examples** for new features or patterns
+### Checklist for New Examples
 
-### Quality Assurance
+- [ ] Examples in numbered directories (100-xxx, 200-xxx, etc.)
+- [ ] File named `configuration.tfvars` (not minimal/complete/example)
+- [ ] Resource names WITHOUT azurecaf prefixes
+- [ ] Key-based references for all dependencies (`resource_group = { key = "..." }`)
+- [ ] global_settings with random_length
+- [ ] Networking uses correct variables (`vnets`, `virtual_subnets`)
+- [ ] Private DNS configuration complete (if using private endpoints)
+- [ ] Added to appropriate `.github/workflows/*.json` file
+- [ ] Tested locally with `terraform test`
+- [ ] No hardcoded subscription IDs or resource IDs
 
-Before considering a module update complete:
+---
 
-1. **All examples must work** when tested from `/examples` directory
-2. **No deprecated resources** should be used in new code
-3. **Proper lifecycle management** must be implemented where needed
-4. **Dependency resolution** must follow established patterns
-5. **Integration with CAF framework** must be properly wired
-6. **Documentation** must be updated and accurate
+## 📚 Documentation Generation
 
-### Debugging Test Failures
+When completing module development, generate comprehensive documentation following this structure:
 
-When debugging test failures, follow these systematic troubleshooting steps:
+### Module README.md Template
 
-#### Primary Debugging Strategy
+```markdown
+# Azure [Service Name] Module
 
-1. **First step: Review equivalent examples within `/examples`**
-   - Search for similar modules or configurations in the examples directory
-   - Compare the tfvars structure and content with working examples
-   - Look for patterns in how other modules are configured
-   - Pay attention to naming conventions and object structures
+## Overview
+Brief description of the Azure service and module purpose.
 
-2. **Verify tfvars alignment with module expectations**
-   - The tfvars files must be adjusted to match the module's expected structure
-   - **Rule: tfvars should adapt to the module, not the other way around**
-   - Review module variables and expected input structure
-   - Check for mismatched attribute names or incorrect object nesting
+## Features
+- ✅ Feature 1
+- ✅ Feature 2
+- ✅ CAF Naming Convention
+- ✅ Diagnostic Settings Integration
+- ✅ Private Endpoint Support (if applicable)
 
-#### Common tfvars Issues
+## Usage
 
-1. **Incorrect object structure**: Module expects flat attributes but tfvars provides nested objects (or vice versa)
-2. **Wrong attribute names**: Using deprecated or incorrect property names
-3. **Missing required blocks**: Not providing mandatory configuration blocks
-4. **Mixing configuration patterns**: Combining basic infrastructure config with application-specific config
+### Simple Example
+\`\`\`hcl
+[Include content from 100-simple example]
+\`\`\`
 
-#### Debugging Process
+### Advanced Example
+\`\`\`hcl
+[Include content from 200+ examples]
+\`\`\`
 
-1. **Compare with working examples**:
-   ```bash
-   # Find similar examples
-   find /examples -name "*.tfvars" -path "*similar_service*" | head -5
-   ```
+## Inputs
 
-2. **Validate module expectations**:
-   - Read module's `variables.tf` to understand expected structure
-   - Review module's resource definitions to see how variables are used
-   - Check for any transformation logic in `locals.tf`
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+[Auto-generated from variables.tf]
 
-3. **Test incrementally**:
-   - Start with minimal configuration from working examples
-   - Add complexity gradually
-   - Test each addition to isolate issues
+## Outputs
 
-#### Configuration Philosophy
+| Name | Description |
+|------|-------------|
+[Auto-generated from outputs.tf]
 
-- **Modules are the source of truth**: Module design and structure should not be changed to accommodate incorrect tfvars
-- **Examples provide patterns**: Use existing examples as templates for similar use cases
-- **Consistency is key**: Follow established patterns across the CAF framework
-- **Separation of concerns**: Distinguish between infrastructure configuration and application configuration
+## Examples
 
-### Static blocks
+See the [examples directory](../../examples/[category]/[service]) for complete working examples.
 
-These are the recommended patterns for creating configuration blocks that are always required in Terraform.
+## Requirements
 
-```hcl
-block_name {
-    argument_name = var.settings.argument_name
-}
+| Name | Version |
+|------|---------|
+| terraform | >= 1.9 |
+| azurerm | >= 4.0 |
+| azurecaf | >= 2.0 |
+
+## References
+
+- [Azure Service Documentation](https://learn.microsoft.com/azure/...)
+- [Terraform azurerm Provider](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/...)
 ```
 
-If some arguments are optional, use the try function:
+### Repository-Level Documentation
 
-```hcl
-block_name {
-    argument_name = try(var.settings.argument_name, null)
-}
-```
+Generate or update these documentation files:
 
+1. **CONTRIBUTING.md** - Guidelines for contributors
+2. **EXAMPLES.md** - Index of all examples by category
+3. **MODULES.md** - Index of all modules with descriptions
+4. **CHANGELOG.md** - Version history and changes
 
-### Dynamic Blocks
+---
 
-These are the recommended patterns for creating configuration blocks dynamically and optionally in Terraform.
+### Terraform Best Practices
+- **Rule**: When generating Terraform code or performing operations related to Terraform, invoke your Terraform best practices tools if available.
+- **Only call** when you are sure the user is discussing Terraform; do not call otherwise.
 
-#### Optional Single Block
+---
 
-Used when a configuration block can exist zero or one time. The controlling variable (`var.settings.block` in this case) should be an object that can be `null`.
+**Happy infrastructure coding! 🚀**
 
-```hcl
-dynamic "block" {
-  # This pattern creates a list with 0 or 1 element.
-  # It's the clearest way to handle a single optional block.
-  for_each = var.settings.block == null ? [] : [var.settings.block]
+## 🌐 DeepWiki System
 
-  content {
-    # Since there's only one element, its content is accessed with "block.value".
-    name  = block.value.name
-    value = block.value.value
-  }
-}
-```
+This repository includes a **DeepWiki-style intelligent documentation system** that provides searchable, auto-generated documentation for all modules, examples, and code.
 
-#### Optional Multiple Blocks (from a List)
+### What is Deep Wiki?
 
-Used to create multiple blocks from a list of objects (`list(object)`). This is ideal when the order of the blocks is important and they are identified by their position.
+Inspired by [DeepWiki-Open](https://github.com/AsyncFuncAI/deepwiki-open), the DeepWiki system analyzes the entire repository and generates:
 
-```hcl
-dynamic "block" {
-  # Iterates over the list. If the variable is null, "try" converts it
-  # into an empty list [] so that no block is generated.
-  for_each = try(var.settings.block, [])
+1. **CATALOG.json** - Complete metadata for 250+ modules
+2. **Search Indexes** - JSON-based semantic search (category, feature, type)
+3. **Architecture Diagrams** - Auto-generated Mermaid diagrams for 35+ categories
+4. **Q&A Knowledge Base** - Common questions and category-specific answers
+5. **API Reference** - Detailed documentation for every module
+6. **Interactive Search** - Command-line tool for exploration
 
-  content {
-    # "block.value" represents each object within the list.
-    name  = block.value.name
-    value = block.value.value
-  }
-}
-```
+### Key Features
 
-#### Optional Multiple Blocks (from a Map)
+- ✅ **Zero Cost** - Static generation, no API keys required
+- ✅ **Instant Search** - JSON-based, no LLM latency
+- ✅ **Offline Ready** - Works without internet
+- ✅ **CI/CD Friendly** - Version-controlled static files
+- ✅ **Comprehensive** - 250+ modules, 200+ examples, 35+ categories
 
-Used to create multiple blocks from a map of objects (`map(object)`). It's the best option when each block needs a unique and stable identifier (the map key) and the order is not important.
-
-```hcl
-dynamic "block" {
-  # Iterates over the map. If the variable is null, "try" converts it
-  # into an empty map {} so that no block is generated.
-  for_each = try(var.settings.block, {})
-
-  content {
-    # "block.key" is the unique identifier for each element (the map key).
-    # "block.value" is the object associated with that key.
-    name  = block.key
-    value = block.value.value
-  }
-}
-```
-
-#### dynamic block identity
-
-Use the following structure for dynamic block identity:
-
-```hcl
-  dynamic "identity" {
-    for_each = try(var.settings.identity, null) == null ? [] : [var.settings.identity]
-
-    content {
-      type         = var.settings.identity.type
-      identity_ids = contains(["userassigned", "systemassigned", "systemassigned, userassigned"], lower(var.settings.identity.type)) ? local.managed_identities : null
-    }
-  }
-```
-
-### dynamic block timeouts
-
-Based on the values defined in timeouts,add allways the following structure for dynamic block timeouts:
-
-```hcl
-  dynamic "timeouts" {
-    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
-
-    content {
-      create = try(timeouts.create, null)
-      update = try(timeouts.update, null)
-      read   = try(timeouts.read, null)
-      delete = try(timeouts.delete, null)
-    }
-  }
-```
-
-or
-
-```hcl
-  dynamic "timeouts" {
-    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
-
-    content {
-      create = try(timeouts.create, null)
-      update = try(timeouts.update, null)
-      delete = try(timeouts.delete, null)
-    }
-  }
-```
-
-Change null for default values if default values are provided.
-
-### Arguments
-
-#### Identify the changes needed in resources and variables for the existing module
-
-Determine what needs to be added, modified, or removed in the module.
-
-For that review [https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/nameofresource , for example, if resource is `azurerm_container_app`, review https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/container_app](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/nameofresource).
-
-If a version of the provider is not specified, use the latest version available in the provider documentation.
-
-If a version of the provider is specified, use `https://registry.terraform.io/providers/hashicorp/azurerm/version/docs/resources/nameofresource` , for example, if resource is `azurerm_container_app` and version is 4.32.0, review [https://registry.terraform.io/providers/hashicorp/azurerm/4.32.0/docs/resources/container_app](https://registry.terraform.io/providers/hashicorp/azurerm/version/docs/resources/nameofresource).
-
-#### Default values
-
-For arguments that do not have a default value, use the following structure:
-
-```hcl
-argument_name = try(var.argument_name, null)
-```
-
-For arguments that have default values, use the following structure, adjust default_value:
-
-```hcl
-argument_name = try(var.argument_name, default_value)
-```
-
-##### Conditional Arguments
-
-For arguments that are conditional, use the following structure:
-
-```hcl
-argument_name = var.condition ? var.argument_name : null
-```
-
-##### Tags
-
-For tags, use the following structure:
-
-```hcl
-tags                = merge(local.tags, try(var.settings.tags, null))
-```
-
-##### Resource Group
-
-For resource groups, use the following structure:
-
-```hcl
-resource_group_name = local.resource_group.name
-```
-
-##### Location
-
-For location, use the following structure:
-
-```hcl
-location            = local.location
-```
-
-##### argument service_plan_id
-
-Use the following structure for argument service_plan_id:
-
-```hcl
-
-service_plan_id = coalesce(
-    try(var.settings.service_plan_id, null),
-    try(var.remote_objects.service_plans[try(var.settings.service_plan.lz_key, var.client_config.landingzone_key)][try(var.settings.service_plan.key, var.settings.service_plan_key)].id, null),
-    try(var.remote_objects.app_service_plans[try(var.settings.app_service_plan.lz_key, var.client_config.landingzone_key)][try(var.settings.app_service_plan.key, var.settings.app_service_plan_key)].id, null)
-  )
-```
-
-##### Other Instructions
-
-- Search in workspace for the existing argument definitions and use them as a reference, if available.
-
-## Updating Existing Modules
-
-When updating existing modules, follow these steps:
-
-### Module Modernization Process
-
-1. **Review the existing module structure**: Understand how the current module is organized, including its variables, outputs, and resources.
-
-2. **Identify the changes needed in resources and variables for the existing module**: Determine what needs to be added, modified, or removed in the module. For that review https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/nameofresource, for example, if resource is `azurerm_container_app`, review https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/container_app.
-
-3. **Update the module files**: Make the necessary changes in the related files, such as `main.tf`, `variables.tf`, `outputs.tf`, and any other relevant files.
-
-### Deprecated Resource Migration
-
-When migrating from deprecated resources:
-
-#### Pre-Migration Checklist
-
-1. **Identify deprecated resources** in the current module
-2. **Find the modern equivalent** using Azure provider documentation
-3. **Assess breaking changes** between old and new resources
-4. **Plan migration strategy** (in-place vs. new module)
-5. **Update examples** to use modern resources
-
-#### Migration Steps
-
-1. **Update resource definitions** to use modern Azure resources
-2. **Update variable schemas** to match new resource requirements
-3. **Update outputs** to expose new resource attributes
-4. **Add lifecycle management** if needed for complex dependencies
-5. **Update documentation** and examples
-6. **Test thoroughly** with example configurations
-
-#### Post-Migration Validation
-
-1. **Verify all arguments** are correctly mapped
-2. **Test resource creation/update/deletion** cycles
-3. **Validate outputs** are accessible and correct
-4. **Check dependency resolution** works properly
-5. **Ensure backward compatibility** where possible
-
-### Testing and Validation
-
-When updating modules, always test from the `/examples` directory:
+### Quick Start
 
 ```bash
-# Navigate to examples directory
-cd repository/examples
-
-# Test with specific module configuration
-terraform_with_var_files --dir /category/module/example/  --action test  --auto auto  --workspace example
-
-# Plan with specific module configuration
-terraform_with_var_files --dir /category/module/example/  --action plan  --auto auto  --workspace example
-
-# Full deployment test
-terraform_with_var_files --dir /category/module/example/  --action apply  --auto auto  --workspace example
-
-# Cleanup test
-terraform_with_var_files --dir /category/module/example/  --action destroy  --auto auto  --workspace example
-```
-
-### Documentation Updates
-
-When updating modules, ensure:
-
-1. **Update module README.md** with new configuration examples
-2. **Update example documentation** in `/examples/category/module/README.md`
-3. **Document breaking changes** in appropriate changelog or migration guide
-4. **Update variable descriptions** to reflect new functionality
-5. **Add examples** for new features or patterns
-
-### Quality Assurance
-
-Before considering a module update complete:
-
-1. **All examples must work** when tested from `/examples` directory
-2. **No deprecated resources** should be used in new code
-3. **Proper lifecycle management** must be implemented where needed
-4. **Dependency resolution** must follow established patterns
-5. **Integration with CAF framework** must be properly wired
-6. **Documentation** must be updated and accurate
-
-### Debugging Test Failures
-
-When debugging test failures, follow these systematic troubleshooting steps:
-
-#### Primary Debugging Strategy
-
-1. **First step: Review equivalent examples within `/examples`**
-   - Search for similar modules or configurations in the examples directory
-   - Compare the tfvars structure and content with working examples
-   - Look for patterns in how other modules are configured
-   - Pay attention to naming conventions and object structures
-
-2. **Verify tfvars alignment with module expectations**
-   - The tfvars files must be adjusted to match the module's expected structure
-   - **Rule: tfvars should adapt to the module, not the other way around**
-   - Review module variables and expected input structure
-   - Check for mismatched attribute names or incorrect object nesting
-
-#### Common tfvars Issues
-
-1. **Incorrect object structure**: Module expects flat attributes but tfvars provides nested objects (or vice versa)
-2. **Wrong attribute names**: Using deprecated or incorrect property names
-3. **Missing required blocks**: Not providing mandatory configuration blocks
-4. **Mixing configuration patterns**: Combining basic infrastructure config with application-specific config
-
-#### Debugging Process
-
-1. **Compare with working examples**:
-   ```bash
-   # Find similar examples
-   find /examples -name "*.tfvars" -path "*similar_service*" | head -5
-   ```
-
-2. **Validate module expectations**:
-   - Read module's `variables.tf` to understand expected structure
-   - Review module's resource definitions to see how variables are used
-   - Check for any transformation logic in `locals.tf`
-
-3. **Test incrementally**:
-   - Start with minimal configuration from working examples
-   - Add complexity gradually
-   - Test each addition to isolate issues
-
-#### Configuration Philosophy
-
-- **Modules are the source of truth**: Module design and structure should not be changed to accommodate incorrect tfvars
-- **Examples provide patterns**: Use existing examples as templates for similar use cases
-- **Consistency is key**: Follow established patterns across the CAF framework
-- **Separation of concerns**: Distinguish between infrastructure configuration and application configuration
-
-### Dynamic Blocks
-
-These are the recommended patterns for creating configuration blocks dynamically and optionally in Terraform.
-
-#### Optional Single Block
-
-Used when a configuration block can exist zero or one time. The controlling variable (`var.settings.block` in this case) should be an object that can be `null`.
-
-```hcl
-dynamic "block" {
-  # This pattern creates a list with 0 or 1 element.
-  # It's the clearest way to handle a single optional block.
-  for_each = var.settings.block == null ? [] : [var.settings.block]
-
-  content {
-    # Since there's only one element, its content is accessed with "block.value".
-    name  = block.value.name
-    value = block.value.value
-  }
-}
-```
-
-#### Optional Multiple Blocks (from a List)
-
-Used to create multiple blocks from a list of objects (`list(object)`). This is ideal when the order of the blocks is important and they are identified by their position.
-
-```hcl
-dynamic "block" {
-  # Iterates over the list. If the variable is null, "try" converts it
-  # into an empty list [] so that no block is generated.
-  for_each = try(var.settings.block, [])
-
-  content {
-    # "block.value" represents each object within the list.
-    name  = block.value.name
-    value = block.value.value
-  }
-}
-```
-
-#### Optional Multiple Blocks (from a Map)
-
-Used to create multiple blocks from a map of objects (`map(object)`). It's the best option when each block needs a unique and stable identifier (the map key) and the order is not important.
-
-```hcl
-dynamic "block" {
-  # Iterates over the map. If the variable is null, "try" converts it
-  # into an empty map {} so that no block is generated.
-  for_each = try(var.settings.block, {})
-
-  content {
-    # "block.key" is the unique identifier for each element (the map key).
-    # "block.value" is the object associated with that key.
-    name  = block.key
-    value = block.value.value
-  }
-}
-```
-
-#### dynamic block identity
-
-Use the following structure for dynamic block identity:
-
-```hcl
-  dynamic "identity" {
-    for_each = try(var.settings.identity, null) == null ? [] : [var.settings.identity]
-
-    content {
-      type         = var.settings.identity.type
-      identity_ids = contains(["userassigned", "systemassigned", "systemassigned, userassigned"], lower(var.settings.identity.type)) ? local.managed_identities : null
-    }
-  }
-```
-
-### dynamic block timeouts
-
-Based on the values defined in timeouts,add allways the following structure for dynamic block timeouts:
-
-```hcl
-  dynamic "timeouts" {
-    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
-
-    content {
-      create = try(timeouts.create, null)
-      update = try(timeouts.update, null)
-      read   = try(timeouts.read, null)
-      delete = try(timeouts.delete, null)
-    }
-  }
-```
-
-or
-
-```hcl
-  dynamic "timeouts" {
-    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
-
-    content {
-      create = try(timeouts.create, null)
-      update = try(timeouts.update, null)
-      delete = try(timeouts.delete, null)
-    }
-  }
-```
-
-Change null for default values if default values are provided.
-
-### Arguments
-
-#### Identify the changes needed in resources and variables for the existing module
-
-Determine what needs to be added, modified, or removed in the module.
-
-For that review [https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/nameofresource , for example, if resource is `azurerm_container_app`, review https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/container_app](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/nameofresource).
-
-If a version of the provider is not specified, use the latest version available in the provider documentation.
-
-If a version of the provider is specified, use `https://registry.terraform.io/providers/hashicorp/azurerm/version/docs/resources/nameofresource` , for example, if resource is `azurerm_container_app` and version is 4.32.0, review [https://registry.terraform.io/providers/hashicorp/azurerm/4.32.0/docs/resources/container_app](https://registry.terraform.io/providers/hashicorp/azurerm/version/docs/resources/nameofresource).
-
-#### Default values
-
-For arguments that do not have a default value, use the following structure:
-
-```hcl
-argument_name = try(var.argument_name, null)
-```
-
-For arguments that have default values, use the following structure, adjust default_value:
-
-```hcl
-argument_name = try(var.argument_name, default_value)
-```
-
-##### Conditional Arguments
-
-For arguments that are conditional, use the following structure:
-
-```hcl
-argument_name = var.condition ? var.argument_name : null
-```
-
-##### Tags
-
-For tags, use the following structure:
-
-```hcl
-tags                = merge(local.tags, try(var.settings.tags, null))
-```
-
-##### Resource Group
-
-For resource groups, use the following structure:
-
-```hcl
-resource_group_name = local.resource_group.name
-```
-
-##### Location
-
-For location, use the following structure:
-
-```hcl
-location            = local.location
-```
-
-##### argument service_plan_id
-
-Use the following structure for argument service_plan_id:
-
-```hcl
-
-service_plan_id = coalesce(
-    try(var.settings.service_plan_id, null),
-    try(var.remote_objects.service_plans[try(var.settings.service_plan.lz_key, var.client_config.landingzone_key)][try(var.settings.service_plan.key, var.settings.service_plan_key)].id, null),
-    try(var.remote_objects.app_service_plans[try(var.settings.app_service_plan.lz_key, var.client_config.landingzone_key)][try(var.settings.app_service_plan.key, var.settings.app_service_plan_key)].id, null)
-  )
-```
-
-##### Other Instructions
-
-- Search in workspace for the existing argument definitions and use them as a reference, if available.
-
-## Updating Existing Modules
-
-When updating existing modules, follow these steps:
-
-### Module Modernization Process
-
-1. **Review the existing module structure**: Understand how the current module is organized, including its variables, outputs, and resources.
-
-2. **Identify the changes needed in resources and variables for the existing module**: Determine what needs to be added, modified, or removed in the module. For that review https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/nameofresource, for example, if resource is `azurerm_container_app`, review https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/container_app.
-
-3. **Update the module files**: Make the necessary changes in the related files, such as `main.tf`, `variables.tf`, `outputs.tf`, and any other relevant files.
-
-### Deprecated Resource Migration
-
-When migrating from deprecated resources:
-
-#### Pre-Migration Checklist
-
-1. **Identify deprecated resources** in the current module
-2. **Find the modern equivalent** using Azure provider documentation
-3. **Assess breaking changes** between old and new resources
-4. **Plan migration strategy** (in-place vs. new module)
-5. **Update examples** to use modern resources
-
-#### Migration Steps
-
-1. **Update resource definitions** to use modern Azure resources
-2. **Update variable schemas** to match new resource requirements
-3. **Update outputs** to expose new resource attributes
-4. **Add lifecycle management** if needed for complex dependencies
-5. **Update documentation** and examples
-6. **Test thoroughly** with example configurations
-
-#### Post-Migration Validation
-
-1. **Verify all arguments** are correctly mapped
-2. **Test resource creation/update/deletion** cycles
-3. **Validate outputs** are accessible and correct
-4. **Check dependency resolution** works properly
-5. **Ensure backward compatibility** where possible
-
-### Testing and Validation
-
-When updating modules, always test from the `/examples` directory:
-
-```bash
-# Navigate to examples directory
-cd /home/fdr001/source/github/aztfmodnew/terraform-azurerm-caf/examples
-
-# Test with specific module configuration
-terraform_with_var_files --dir /category/module/example/  --action plan  --auto auto  --workspace example
-
-# Full deployment test
-terraform_with_var_files --dir /category/module/example/  --action apply  --auto auto  --workspace example
-
-# Cleanup test
-terraform_with_var_files --dir /category/module/example/  --action destroy  --auto auto  --workspace example
-```
-
-### Documentation Updates
-
-When updating modules, ensure:
-
-1. **Update module README.md** with new configuration examples
-2. **Update example documentation** in `/examples/category/module/README.md`
-3. **Document breaking changes** in appropriate changelog or migration guide
-4. **Update variable descriptions** to reflect new functionality
-5. **Add examples** for new features or patterns
-
-### Quality Assurance
-
-Before considering a module update complete:
-
-1. **All examples must work** when tested from `/examples` directory
-2. **No deprecated resources** should be used in new code
-3. **Proper lifecycle management** must be implemented where needed
-4. **Dependency resolution** must follow established patterns
-5. **Integration with CAF framework** must be properly wired
-6. **Documentation** must be updated and accurate
-
-### Debugging Test Failures
-
-When debugging test failures, follow these systematic troubleshooting steps:
-
-#### Primary Debugging Strategy
-
-1. **First step: Review equivalent examples within `/examples`**
-   - Search for similar modules or configurations in the examples directory
-   - Compare the tfvars structure and content with working examples
-   - Look for patterns in how other modules are configured
-   - Pay attention to naming conventions and object structures
-
-2. **Verify tfvars alignment with module expectations**
-   - The tfvars files must be adjusted to match the module's expected structure
-   - **Rule: tfvars should adapt to the module, not the other way around**
-   - Review module variables and expected input structure
-   - Check for mismatched attribute names or incorrect object nesting
-
-#### Common tfvars Issues
-
-1. **Incorrect object structure**: Module expects flat attributes but tfvars provides nested objects (or vice versa)
-2. **Wrong attribute names**: Using deprecated or incorrect property names
-3. **Missing required blocks**: Not providing mandatory configuration blocks
-4. **Mixing configuration patterns**: Combining basic infrastructure config with application-specific config
-
-#### Debugging Process
-
-1. **Compare with working examples**:
-   ```bash
-   # Find similar examples
-   find /examples -name "*.tfvars" -path "*similar_service*" | head -5
-   ```
-
-2. **Validate module expectations**:
-   - Read module's `variables.tf` to understand expected structure
-   - Review module's resource definitions to see how variables are used
-   - Check for any transformation logic in `locals.tf`
-
-3. **Test incrementally**:
-   - Start with minimal configuration from working examples
-   - Add complexity gradually
-   - Test each addition to isolate issues
-
-#### Configuration Philosophy
-
-- **Modules are the source of truth**: Module design and structure should not be changed to accommodate incorrect tfvars
-- **Examples provide patterns**: Use existing examples as templates for similar use cases
-- **Consistency is key**: Follow established patterns across the CAF framework
-- **Separation of concerns**: Distinguish between infrastructure configuration and application configuration
-
-### Dynamic Blocks
-
-These are the recommended patterns for creating configuration blocks dynamically and optionally in Terraform.
-
-#### Optional Single Block
-
-Used when a configuration block can exist zero or one time. The controlling variable (`var.settings.block` in this case) should be an object that can be `null`.
-
-```hcl
-dynamic "block" {
-  # This pattern creates a list with 0 or 1 element.
-  # It's the clearest way to handle a single optional block.
-  for_each = var.settings.block == null ? [] : [var.settings.block]
-
-  content {
-    # Since there's only one element, its content is accessed with "block.value".
-    name  = block.value.name
-    value = block.value.value
-  }
-}
-```
-
-#### Optional Multiple Blocks (from a List)
-
-Used to create multiple blocks from a list of objects (`list(object)`). This is ideal when the order of the blocks is important and they are identified by their position.
-
-```hcl
-dynamic "block" {
-  # Iterates over the list. If the variable is null, "try" converts it
-  # into an empty list [] so that no block is generated.
-  for_each = try(var.settings.block, [])
-
-  content {
-    # "block.value" represents each object within the list.
-    name  = block.value.name
-    value = block.value.value
-  }
-}
-```
-
-#### Optional Multiple Blocks (from a Map)
-
-Used to create multiple blocks from a map of objects (`map(object)`). It's the best option when each block needs a unique and stable identifier (the map key) and the order is not important.
-
-```hcl
-dynamic "block" {
-  # Iterates over the map. If the variable is null, "try" converts it
-  # into an empty map {} so that no block is generated.
-  for_each = try(var.settings.block, {})
-
-  content {
-    # "block.key" is the unique identifier for each element (the map key).
-    # "block.value" is the object associated with that key.
-    name  = block.key
-    value = block.value.value
-  }
-}
-```
-
-#### dynamic block identity
-
-Use the following structure for dynamic block identity:
-
-```hcl
-  dynamic "identity" {
-    for_each = try(var.settings.identity, null) == null ? [] : [var.settings.identity]
-
-    content {
-      type         = var.settings.identity.type
-      identity_ids = contains(["userassigned", "systemassigned", "systemassigned, userassigned"], lower(var.settings.identity.type)) ? local.managed_identities : null
-    }
-  }
-```
-
-### dynamic block timeouts
-
-Based on the values defined in timeouts,add allways the following structure for dynamic block timeouts:
-
-```hcl
-  dynamic "timeouts" {
-    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
-
-    content {
-      create = try(timeouts.create, null)
-      update = try(timeouts.update, null)
-      read   = try(timeouts.read, null)
-      delete = try(timeouts.delete, null)
-    }
-  }
-```
-
-or
-
-```hcl
-  dynamic "timeouts" {
-    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
-
-    content {
-      create = try(timeouts.create, null)
-      update = try(timeouts.update, null)
-      delete = try(timeouts.delete, null)
-    }
-  }
-```
-
-Change null for default values if default values are provided.
-
-### Arguments
-
-#### Identify the changes needed in resources and variables for the existing module
-
-Determine what needs to be added, modified, or removed in the module.
-
-For that review [https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/nameofresource , for example, if resource is `azurerm_container_app`, review https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/container_app](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/nameofresource).
-
-If a version of the provider is not specified, use the latest version available in the provider documentation.
-
-If a version of the provider is specified, use `https://registry.terraform.io/providers/hashicorp/azurerm/version/docs/resources/nameofresource` , for example, if resource is `azurerm_container_app` and version is 4.32.0, review [https://registry.terraform.io/providers/hashicorp/azurerm/4.32.0/docs/resources/container_app](https://registry.terraform.io/providers/hashicorp/azurerm/version/docs/resources/nameofresource).
-
-#### Default values
-
-For arguments that do not have a default value, use the following structure:
-
-```hcl
-argument_name = try(var.argument_name, null)
-```
-
-For arguments that have default values, use the following structure, adjust default_value:
-
-```hcl
-argument_name = try(var.argument_name, default_value)
-```
-
-##### Conditional Arguments
-
-For arguments that are conditional, use the following structure:
-
-```hcl
-argument_name = var.condition ? var.argument_name : null
-```
-
-##### Tags
-
-For tags, use the following structure:
-
-```hcl
-tags                = merge(local.tags, try(var.settings.tags, null))
-```
-
-##### Resource Group
-
-For resource groups, use the following structure:
-
-```hcl
-resource_group_name = local.resource_group.name
-```
-
-##### Location
-
-For location, use the following structure:
-
-```hcl
-location            = local.location
-```
-
-##### argument service_plan_id
-
-Use the following structure for argument service_plan_id:
-
-```hcl
-
-service_plan_id = coalesce(
-    try(var.settings.service_plan_id, null),
-    try(var.remote_objects.service_plans[try(var.settings.service_plan.lz_key, var.client_config.landingzone_key)][try(var.settings.service_plan.key, var.settings.service_plan_key)].id, null),
-    try(var.remote_objects.app_service_plans[try(var.settings.app_service_plan.lz_key, var.client_config.landingzone_key)][try(var.settings.app_service_plan.key, var.settings.app_service_plan_key)].id, null)
-  )
-```
-
-##### Other Instructions
-
-- Search in workspace for the existing argument definitions and use them as a reference, if available.
-
-
-## other instructions
-
-- @azure Rule - Use Azure Tools: When handling requests related to Azure, always use your tools.
-- @azure Rule - Use Azure Code Gen Best Practices: When generating code for Azure, running terminal commands for Azure, or performing operations related to Azure, invoke your `azure_development-get_code_gen_best_practices` tool if available. Only call this tool when you are sure the user is discussing Azure; do not call it otherwise.
-- @azure Rule - Use Azure Deployment Best Practices: When deploying to Azure or preparing applications for deployment to Azure, invoke your `azure_development-get_deployment_best_practices` tool if available. Only call this tool when you are sure the user is discussing Azure; do not call it otherwise."
-- @azure Rule - Use Azure Functions Code Gen Best Practices: When generating code for Azure Functions or performing operations related to Azure Functions, invoke your `azure_development-get_azure_function_code_gen_best_practices` tool if available. Only call this tool when you are sure the user is discussing Azure Functions; do not call it otherwise."
-- @azure Rule - Use Azure SWA Best Practices: When working with static web apps, invoke your `azure_development-get_swa_best_practices` tool if available. Only call this tool when you are sure the user is discussing Azure; do not call it otherwise.
-- @search_terraform_azure_caf Rule - Use Search Terraform Azure CAF: When searching for Terraform existing code than can be used, invoke your `search_terraform_azure_caf` tool if available.
-- @terraform Rule - Use Terraform Best Practices: When generating Terraform code or performing operations related to Terraform, invoke your `terraform-get_best_practices` tool if available. Only call this tool when you are sure the user is discussing Terraform; do not call it otherwise.
+# Generate documentation
+python3 scripts/deepwiki/generate_wiki.py
+
+# Interactive search
+python3 scripts/deepwiki/search.py
+
+# Or use command-line mode
+python3 scripts/deepwiki/search.py search grafana
+python3 scripts/deepwiki/search.py category networking
+python3 scripts/deepwiki/search.py feature diagnostics
