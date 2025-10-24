@@ -9,22 +9,22 @@ resource "azurerm_dashboard_grafana" "grafana" {
   grafana_major_version = try(var.settings.grafana_major_version, 11)
 
   # Optional arguments - validated against MCP Terraform schema
-  api_key_enabled                       = try(var.settings.api_key_enabled, false)
+  api_key_enabled                        = try(var.settings.api_key_enabled, false)
   auto_generated_domain_name_label_scope = try(var.settings.auto_generated_domain_name_label_scope, "TenantReuse")
-  deterministic_outbound_ip_enabled     = try(var.settings.deterministic_outbound_ip_enabled, false)
-  public_network_access_enabled         = try(var.settings.public_network_access_enabled, true)
-  sku                                   = try(var.settings.sku, "Standard")
-  zone_redundancy_enabled               = try(var.settings.zone_redundancy_enabled, false)
+  deterministic_outbound_ip_enabled      = try(var.settings.deterministic_outbound_ip_enabled, false)
+  public_network_access_enabled          = try(var.settings.public_network_access_enabled, true)
+  sku                                    = try(var.settings.sku, "Standard")
+  zone_redundancy_enabled                = try(var.settings.zone_redundancy_enabled, false)
 
   # Dynamic block for SMTP configuration
   dynamic "smtp" {
     for_each = try(var.settings.smtp, null) == null ? [] : [var.settings.smtp]
 
     content {
-      enabled                    = try(smtp.value.enabled, false)
-      host                       = smtp.value.host
-      user                       = smtp.value.user
-      password                   = smtp.value.password
+      enabled                   = try(smtp.value.enabled, false)
+      host                      = smtp.value.host
+      user                      = smtp.value.user
+      password                  = smtp.value.password
       start_tls_policy          = smtp.value.start_tls_policy
       from_address              = smtp.value.from_address
       from_name                 = try(smtp.value.from_name, "Azure Managed Grafana Notification")

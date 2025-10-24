@@ -11,12 +11,12 @@ module "grafana" {
   private_endpoints   = try(each.value.private_endpoints, {})
 
   remote_objects = {
-    vnets               = local.combined_objects_networking
-    virtual_subnets     = local.combined_objects_virtual_subnets
-    private_dns         = local.combined_objects_private_dns
-    diagnostics         = local.combined_diagnostics
-    resource_groups     = local.combined_objects_resource_groups
-    managed_identities  = local.combined_objects_managed_identities
+    vnets              = local.combined_objects_networking
+    virtual_subnets    = local.combined_objects_virtual_subnets
+    private_dns        = local.combined_objects_private_dns
+    diagnostics        = local.combined_diagnostics
+    resource_groups    = local.combined_objects_resource_groups
+    managed_identities = local.combined_objects_managed_identities
   }
 }
 
