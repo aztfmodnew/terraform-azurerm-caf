@@ -1,5 +1,5 @@
 module "diagnostics" {
-  source            = "../diagnostics"
+  source            = "../../diagnostics"
   for_each          = try(var.settings.diagnostic_profiles, {})
   resource_id       = azurerm_dashboard_grafana.grafana.id
   resource_location = azurerm_dashboard_grafana.grafana.location
