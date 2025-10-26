@@ -24,7 +24,7 @@ global_settings = {
   regions = {
     region1 = "westeurope"
   }
-  inherit_tags = true
+  inherit_tags  = true
   random_length = 5
   tags = {
     environment = "dev"
@@ -89,12 +89,12 @@ public_ip_addresses = {
 # -------------------
 nat_gateways = {
   agent_nat = {
-    name               = "agent-nat"
-    region             = "region1"
-    resource_group_key = "agent_rg"
-    vnet_key           = "agent_vnet"
-    subnet_key         = "agent_subnet"
-    public_ip_key      = "agent_nat_pip"
+    name                    = "agent-nat"
+    region                  = "region1"
+    resource_group_key      = "agent_rg"
+    vnet_key                = "agent_vnet"
+    subnet_key              = "agent_subnet"
+    public_ip_key           = "agent_nat_pip"
     idle_timeout_in_minutes = 10
   }
 }
@@ -162,7 +162,7 @@ virtual_machines = {
         size                            = "Standard_B2ms"
         admin_username                  = "azureuser"
         disable_password_authentication = true
-        custom_data = <<CUSTOM_DATA
+        custom_data                     = <<CUSTOM_DATA
 #cloud-config
 # This script installs dependencies and prepares the VM for GitHub Actions runner.
 runcmd:
@@ -176,7 +176,7 @@ runcmd:
   # NOTE: You must manually configure the runner registration with your repo URL and token.
   # See: https://docs.github.com/en/actions/hosting-your-own-runners/adding-self-hosted-runners
 CUSTOM_DATA
-        network_interface_keys = ["nic0"]
+        network_interface_keys          = ["nic0"]
         os_disk = {
           name                 = "github-agent-osdisk"
           caching              = "ReadWrite"
