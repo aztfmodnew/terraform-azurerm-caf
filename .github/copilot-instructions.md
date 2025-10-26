@@ -27,6 +27,16 @@ You are an **expert Terraform architect specializing in the Azure Cloud Adoption
 
 ## 📁 Understanding This Repository
 
+### Instruction architecture (how Copilot consumes these rules)
+
+To keep responses fast and focused, this repository uses path-specific Copilot instructions in addition to this file:
+
+- .github/instructions/terraform-modules.instructions.md → applies to modules/**/*.tf
+- .github/instructions/terraform-root.instructions.md → applies to /*.tf (root aggregators)
+- .github/instructions/terraform-examples.instructions.md → applies to examples/**/*.tfvars
+
+This file remains the canonical, detailed guide. The path-specific files distill the critical, actionable rules per area. For detailed migration guidance, see `.github/MODULE_STRUCTURE.md`.
+
 ### Directory Structure for New Modules
 
 When creating a new module, follow this standardized directory structure:
@@ -64,6 +74,7 @@ When creating a new module, follow this standardized directory structure:
 ```
 
 **Naming Conventions:**
+
 - `module_name` = Azure resource name without provider prefix (e.g., `container_app` for `azurerm_container_app`)
 - `module_names` = Plural form (e.g., `container_apps`)
 - `category_name` = Logical grouping (e.g., `cognitive_services`, `networking`, `compute`)
@@ -120,11 +131,13 @@ If the module does not require child resources with independent lifecycle, do no
 All modules MUST follow the standardized **two-level depth structure** (`modules/category/module_name/`) to be correctly processed by the automated documentation generator.
 
 **Why This Matters:**
+
 - The documentation generator (`scripts/deepwiki/generate_mkdocs_auto.py`) expects modules at depth 2
 - Modules at wrong depth (e.g., `modules/grafana/` instead of `modules/monitoring/grafana/`) will NOT be detected
 - Missing modules result in incomplete documentation and broken dependency graphs
 
 **Validation:**
+
 ```bash
 # Check module structure compliance
 find modules -mindepth 2 -maxdepth 2 -type d | wc -l  # Should match module count
@@ -138,6 +151,7 @@ find modules -mindepth 1 -maxdepth 1 -type d -not -name "diagnostics" -not -name
 ```
 
 **If You Need to Move a Module:**
+
 1. See `.github/MODULE_STRUCTURE.md` for complete migration checklist
 2. Update relative paths in module files (e.g., `../../diagnostics` when depth changes)
 3. Update root aggregator file source path
@@ -145,6 +159,7 @@ find modules -mindepth 1 -maxdepth 1 -type d -not -name "diagnostics" -not -name
 5. Regenerate documentation to confirm module appears
 
 **Common Mistake:**
+
 ```
 ❌ WRONG:
 modules/
@@ -214,6 +229,7 @@ This is the **terraform-azurerm-caf** - a comprehensive Terraform module framewo
 **CRITICAL**: Before implementing or updating ANY Azure resource, you MUST validate ALL resource attributes using MCP Terraform tools.
 
 **When to use:**
+
 - Creating a new module for an Azure resource
 - Updating an existing module with new attributes
 - Adding or modifying resource arguments
@@ -224,6 +240,7 @@ This is the **terraform-azurerm-caf** - a comprehensive Terraform module framewo
 1. **Identify the Azure resource** (e.g., `azurerm_dashboard_grafana`, `azurerm_storage_account`)
 
 2. **Query MCP Terraform for resource documentation:**
+
    ```
    Use: mcp_terraform_resolveProviderDocID
    Parameters:
@@ -234,6 +251,7 @@ This is the **terraform-azurerm-caf** - a comprehensive Terraform module framewo
    ```
 
 3. **Retrieve complete resource schema:**
+
    ```
    Use: mcp_terraform_getProviderDocs
    Parameters:
@@ -272,16 +290,16 @@ resource "azurerm_dashboard_grafana" "grafana" {
   name                = azurecaf_name.grafana.result
   resource_group_name = local.resource_group_name
   location            = local.location
-  
+
   # All required attributes
   sku = try(var.settings.sku, "Standard")
-  
+
   # All optional attributes with try()
   api_key_enabled               = try(var.settings.api_key_enabled, null)
   deterministic_outbound_ip_enabled = try(var.settings.deterministic_outbound_ip_enabled, null)
   public_network_access_enabled = try(var.settings.public_network_access_enabled, true)
   zone_redundancy_enabled       = try(var.settings.zone_redundancy_enabled, null)
-  
+
   # Dynamic blocks for nested configuration
   dynamic "identity" {
     for_each = try(var.settings.identity, null) == null ? [] : [var.settings.identity]
@@ -290,7 +308,7 @@ resource "azurerm_dashboard_grafana" "grafana" {
       identity_ids = try(identity.value.identity_ids, null)
     }
   }
-  
+
   # Azure Integration
   dynamic "azure_monitor_workspace_integrations" {
     for_each = try(var.settings.azure_monitor_workspace_integrations, [])
@@ -298,7 +316,7 @@ resource "azurerm_dashboard_grafana" "grafana" {
       resource_id = azure_monitor_workspace_integrations.value.resource_id
     }
   }
-  
+
   tags = merge(local.tags, try(var.settings.tags, null))
 }
 ```
@@ -464,6 +482,7 @@ module "diagnostics" {
 ```
 
 **Key Points:**
+
 - Always include diagnostics.tf if the Azure service supports diagnostic settings
 - Use `for_each` with `try(var.settings.diagnostic_profiles, {})` to make it optional
 - Pass the resource id and location from the main resource
@@ -605,6 +624,7 @@ locals {
 ```
 
 **Key Points:**
+
 - `module_tag`: Automatically adds the module name as a tag for tracking and management.
 - `tags`: Merges global tags, resource group tags, module tag, and custom settings tags when `base_tags` is true.
 - `location`: Uses the provided location or falls back to the resource group location.
@@ -727,27 +747,28 @@ terraform_with_var_files --dir /category/service/complete/ --action plan --auto 
    - New required argument? → Provide sensible default
 
 2. **Have I checked all examples?**
+
    ```bash
    # Find all examples using this module
    grep -r "module_name" examples/ --include="*.tfvars"
    ```
 
 3. **How do I maintain backward compatibility when attributes are renamed?**
-   
+
    When Azure provider renames attributes (e.g., `attribute_enabled` → `enabled_attribute`), use the `try()` pattern with multiple fallbacks to support both old and new names:
-   
+
    ```hcl
    # Pattern: Try new name first, fallback to old name, then default
    resource "azurerm_example_resource" "example" {
      name = azurecaf_name.example.result
-     
+
      # Support both new and old attribute names
      enabled_attribute = try(
        var.settings.enabled_attribute,  # New name (preferred)
        var.settings.attribute_enabled,  # Old name (backward compatibility)
        true                              # Default value
      )
-     
+
      # For multiple renamed attributes
      new_setting = try(
        var.settings.new_setting,
@@ -756,14 +777,15 @@ terraform_with_var_files --dir /category/service/complete/ --action plan --auto 
      )
    }
    ```
-   
+
    **Benefits:**
    - Existing configurations continue working without changes
    - New configurations can use preferred naming
    - Gradual migration path for users
    - No breaking changes in module updates
-   
+
    **Documentation Pattern:**
+
    ```hcl
    # In module README.md or variables.tf comments:
    # Note: `attribute_enabled` is deprecated, use `enabled_attribute` instead.
@@ -991,6 +1013,7 @@ This integration involves modifying **5 files in the root directory** plus creat
 **Purpose**: This is the main entry point that calls your module and exposes its outputs.
 
 **Pattern**:
+
 ```hcl
 module "new_module_names" {
   source   = "./modules/category/new_module"
@@ -1009,12 +1032,12 @@ module "new_module_names" {
     # Core dependencies (always include)
     resource_groups = local.combined_objects_resource_groups
     diagnostics     = local.combined_diagnostics
-    
+
     # Networking (if private endpoints supported)
     vnets           = local.combined_objects_networking
     virtual_subnets = local.combined_objects_virtual_subnets
     private_dns     = local.combined_objects_private_dns
-    
+
     # Service-specific dependencies (add as needed)
     # key_vaults      = local.combined_objects_keyvaults
     # storage_accounts = local.combined_objects_storage_accounts
@@ -1027,6 +1050,7 @@ output "new_module_names" {
 ```
 
 **Real example** (cognitive_service.tf):
+
 ```hcl
 module "cognitive_services_account" {
   source              = "./modules/cognitive_services/cognitive_services_account"
@@ -1064,6 +1088,7 @@ output "cognitive_services_account" {
 **Purpose**: Define the variable that will receive the module configuration.
 
 **Pattern**:
+
 ```hcl
 variable "category" {
   description = "Configuration for category services"
@@ -1074,6 +1099,7 @@ variable "category" {
 **Note**: Variables are typically organized by category (e.g., `cognitive_services`, `networking`, `compute`).
 
 **Real example**:
+
 ```hcl
 variable "cognitive_services" {
   description = "Configuration for cognitive services"
@@ -1101,6 +1127,7 @@ locals {
 ```
 
 **Real example** (locals.tf lines 289-294):
+
 ```hcl
 locals {
   cognitive_services = {
@@ -1121,6 +1148,7 @@ locals {
 **Purpose**: Create a merged object that combines local modules with remote objects and data sources.
 
 **Pattern**:
+
 ```hcl
 combined_objects_new_module_names = merge(
   tomap({ (local.client_config.landingzone_key) = module.new_module_names }),
@@ -1130,6 +1158,7 @@ combined_objects_new_module_names = merge(
 ```
 
 **Real example** (locals.combined_objects.tf line 49):
+
 ```hcl
 combined_objects_cognitive_services_accounts = merge(
   tomap({ (local.client_config.landingzone_key) = module.cognitive_services_account }),
@@ -1147,6 +1176,7 @@ combined_objects_cognitive_services_accounts = merge(
 **When your module is referenced by other modules**, they will access it through the combined objects.
 
 **Example**: If another module needs to reference your module:
+
 ```hcl
 module "dependent_module" {
   # ...
@@ -1170,6 +1200,7 @@ Create at least two example configurations:
 2. **`complete.tfvars`** - All features demonstrated
 
 **Structure**:
+
 ```
 /examples
 └── /category
@@ -1179,6 +1210,7 @@ Create at least two example configurations:
 ```
 
 **Example minimal.tfvars**:
+
 ```hcl
 global_settings = {
   default_region = "region1"
@@ -1218,6 +1250,7 @@ Before testing, ensure you've modified these **5 files**:
 - [ ] `/examples/category/service_name/minimal.tfvars` - Created example
 
 **Optional**:
+
 - [ ] `/examples/category/service_name/complete.tfvars` - Created comprehensive example
 
 ---
@@ -1231,13 +1264,13 @@ terraform_with_var_files --dir /category/service_name/minimal/ --action plan --a
 
 **Common integration issues**:
 
-| Issue | Solution |
-|-------|----------|
-| "No module call named..." | Check Step 1: aggregator file exists and module source path is correct |
-| "Unknown variable..." | Check Step 2: variable added to variables.tf |
-| "The given key does not identify an element" | Check Step 3: locals.tf has correct path (var.category.module_name) |
-| "Output not found" | Check Step 1: output block exists in aggregator file |
-| "Combined objects not found" | Check Step 4: locals.combined_objects.tf has correct entry |
+| Issue                                        | Solution                                                               |
+| -------------------------------------------- | ---------------------------------------------------------------------- |
+| "No module call named..."                    | Check Step 1: aggregator file exists and module source path is correct |
+| "Unknown variable..."                        | Check Step 2: variable added to variables.tf                           |
+| "The given key does not identify an element" | Check Step 3: locals.tf has correct path (var.category.module_name)    |
+| "Output not found"                           | Check Step 1: output block exists in aggregator file                   |
+| "Combined objects not found"                 | Check Step 4: locals.combined_objects.tf has correct entry             |
 
 ---
 
@@ -1805,28 +1838,35 @@ This ensures that all technical guidance is reliable, up-to-date, and aligned wi
 When working with this repository, follow these rules for using MCP tools:
 
 ### Azure Tools
+
 - **Rule**: When handling requests related to Azure, always use your Azure MCP tools when available.
 
 ### Azure Code Generation Best Practices
+
 - **Rule**: When generating code for Azure, running terminal commands for Azure, or performing operations related to Azure, invoke your Azure best practices tools if available.
 - **Only call** when you are sure the user is discussing Azure; do not call otherwise.
 
 ### Azure Deployment Best Practices
+
 - **Rule**: When deploying to Azure or preparing applications for deployment to Azure, invoke your Azure deployment best practices tools if available.
 - **Only call** when you are sure the user is discussing Azure deployment; do not call otherwise.
 
 ### Azure Functions Code Generation Best Practices
+
 - **Rule**: When generating code for Azure Functions or performing operations related to Azure Functions, invoke your Azure Functions best practices tools if available.
 - **Only call** when you are sure the user is discussing Azure Functions; do not call otherwise.
 
 ### Azure Static Web Apps Best Practices
+
 - **Rule**: When working with static web apps, invoke your Azure SWA best practices tools if available.
 - **Only call** when you are sure the user is discussing Azure Static Web Apps; do not call otherwise.
 
 ### Search Terraform Azure CAF
+
 - **Rule**: When searching for existing Terraform code that can be used as reference, invoke your `search_terraform_azure_caf` tool if available.
 
 ### Terraform Best Practices
+
 - **Rule**: When generating Terraform code or performing operations related to Terraform, invoke your Terraform best practices tools if available.
 - **Only call** when you are sure the user is discussing Terraform; do not call otherwise.
 
@@ -1839,6 +1879,7 @@ When working with this repository, follow these rules for using MCP tools:
 All examples MUST follow the numbered directory structure for organization by complexity:
 
 **Pattern**:
+
 ```
 /examples
 └── /category
@@ -1852,12 +1893,14 @@ All examples MUST follow the numbered directory structure for organization by co
 ```
 
 **Numbering Convention**:
+
 - **100-1XX**: Simple/basic examples (minimal required configuration)
 - **200-2XX**: Intermediate examples (networking, private endpoints, managed identities)
 - **300-3XX**: Advanced examples (all features, complex configurations)
 - **400-4XX**: Integration examples (multiple services working together)
 
 **File Naming**:
+
 - Always use `configuration.tfvars` (NOT `minimal.tfvars`, `complete.tfvars`, or `example.tfvars`)
 - This ensures consistency with test workflows
 
@@ -1884,6 +1927,7 @@ resource_groups = {
 ```
 
 **Azurecaf Prefixes by Resource Type**:
+
 - Resource Groups: `rg-`
 - Storage Accounts: `st`
 - Key Vaults: `kv-`
@@ -1897,6 +1941,7 @@ resource_groups = {
 #### Required Elements in Examples
 
 1. **global_settings** (MANDATORY):
+
    ```hcl
    global_settings = {
      default_region = "region1"
@@ -1908,6 +1953,7 @@ resource_groups = {
    ```
 
 2. **resource_groups** (MANDATORY):
+
    ```hcl
    resource_groups = {
      rg_key = {
@@ -1917,6 +1963,7 @@ resource_groups = {
    ```
 
 3. **Service Configuration** with **Key-based References**:
+
    ```hcl
    category = {
      service_name = {
@@ -1965,7 +2012,7 @@ category = {
       }
       # Minimal required configuration
       required_setting = "value"
-      
+
       tags = {
         environment = "dev"
         purpose     = "example"
@@ -1980,6 +2027,7 @@ category = {
 Every new example MUST be added to the appropriate workflow file for automated testing.
 
 **Workflow Files**:
+
 - `/github/workflows/standalone-scenarios.json` - Main scenarios (preferred)
 - `/github/workflows/standalone-scenarios-additional.json` - Additional scenarios
 - `/github/workflows/standalone-compute.json` - Compute-specific
@@ -2001,13 +2049,14 @@ Every new example MUST be added to the appropriate workflow file for automated t
    {
      "config_files": [
        "existing/examples",
-       "category/service/100-simple-service",  // Add here
+       "category/service/100-simple-service", // Add here
        "more/examples"
      ]
    }
    ```
 
 **Example Integration** (Grafana):
+
 ```json
 {
   "config_files": [
@@ -2045,12 +2094,12 @@ terraform test -test-directory=./tests/mock -var-file="./grafana/**/configuratio
 
 **Common Test Failures**:
 
-| Error | Cause | Solution |
-|-------|-------|----------|
-| "Unknown variable" | Variable not in examples/variables.tf | Check variable name matches root variables.tf |
-| "Invalid reference" | Using wrong key format | Use `resource_group = { key = "rg_key" }` |
-| "Resource name too long" | Included azurecaf prefix in name | Remove prefix, let azurecaf add it |
-| "Network config invalid" | Using wrong variable names | Use `vnets` and `virtual_subnets`, not `networking` or `subnets` |
+| Error                    | Cause                                 | Solution                                                         |
+| ------------------------ | ------------------------------------- | ---------------------------------------------------------------- |
+| "Unknown variable"       | Variable not in examples/variables.tf | Check variable name matches root variables.tf                    |
+| "Invalid reference"      | Using wrong key format                | Use `resource_group = { key = "rg_key" }`                        |
+| "Resource name too long" | Included azurecaf prefix in name      | Remove prefix, let azurecaf add it                               |
+| "Network config invalid" | Using wrong variable names            | Use `vnets` and `virtual_subnets`, not `networking` or `subnets` |
 
 ### Checklist for New Examples
 
@@ -2077,9 +2126,11 @@ When completing module development, generate comprehensive documentation followi
 # Azure [Service Name] Module
 
 ## Overview
+
 Brief description of the Azure service and module purpose.
 
 ## Features
+
 - ✅ Feature 1
 - ✅ Feature 2
 - ✅ CAF Naming Convention
@@ -2089,11 +2140,13 @@ Brief description of the Azure service and module purpose.
 ## Usage
 
 ### Simple Example
+
 \`\`\`hcl
 [Include content from 100-simple example]
 \`\`\`
 
 ### Advanced Example
+
 \`\`\`hcl
 [Include content from 200+ examples]
 \`\`\`
@@ -2101,13 +2154,15 @@ Brief description of the Azure service and module purpose.
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
+
 [Auto-generated from variables.tf]
 
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
+
 [Auto-generated from outputs.tf]
 
 ## Examples
@@ -2116,11 +2171,11 @@ See the [examples directory](../../examples/[category]/[service]) for complete w
 
 ## Requirements
 
-| Name | Version |
-|------|---------|
-| terraform | >= 1.9 |
-| azurerm | >= 4.0 |
-| azurecaf | >= 2.0 |
+| Name      | Version |
+| --------- | ------- |
+| terraform | >= 1.9  |
+| azurerm   | >= 4.0  |
+| azurecaf  | >= 2.0  |
 
 ## References
 
@@ -2140,6 +2195,7 @@ Generate or update these documentation files:
 ---
 
 ### Terraform Best Practices
+
 - **Rule**: When generating Terraform code or performing operations related to Terraform, invoke your Terraform best practices tools if available.
 - **Only call** when you are sure the user is discussing Terraform; do not call otherwise.
 
