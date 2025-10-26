@@ -160,7 +160,7 @@ find modules -mindepth 1 -maxdepth 1 -type d -not -name "diagnostics" -not -name
 
 **Common Mistake:**
 
-```
+````
 ❌ WRONG:
 modules/
 ├── grafana/              # Depth 1 - will be skipped
@@ -188,7 +188,7 @@ modules/
 ```bash
 cd examples
 terraform_with_var_files --dir /category/service_name/minimal/ --action plan --auto auto --workspace test
-```
+````
 
 **Common integration issues**:
 
