@@ -1,5 +1,5 @@
 module "grafana" {
-  source              = "./modules/grafana"
+  source              = "./modules/monitoring/grafana"
   for_each            = local.monitoring.grafana
   client_config       = local.client_config
   global_settings     = local.global_settings

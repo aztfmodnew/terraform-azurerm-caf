@@ -29,6 +29,16 @@ Fill the variables as needed and documented, there is a [quick example here](htt
 
 For a complete set of examples you can review the [full library here](https://github.com/aztfmodnew/terraform-azurerm-caf/tree/master/examples).
 
+
+## 📚 Documentation
+
+The full documentation for all modules, usage, and dependency diagrams is published automatically:
+
+- **[CAF Terraform Documentation (MkDocs)](https://aztfmodnew.github.io/terraform-azurerm-caf/)**
+
+Every merge to the `main` branch automatically updates the documentation site.
+
+---
 ## Community
 
 Feel free to open an issue for feature or bug, or to submit a PR, [Please check out the WIKI for coding standards, common patterns and PR checklist.](https://github.com/aztfmodnew/terraform-azurerm-caf/wiki)
