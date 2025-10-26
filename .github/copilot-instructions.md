@@ -115,6 +115,53 @@ If the module does not require child resources with independent lifecycle, do no
 /cognitive_services_ai_services.tf
 ```
 
+**⚠️ CRITICAL: Module Structure Requirements for Documentation Generation**
+
+All modules MUST follow the standardized **two-level depth structure** (`modules/category/module_name/`) to be correctly processed by the automated documentation generator.
+
+**Why This Matters:**
+- The documentation generator (`scripts/deepwiki/generate_mkdocs_auto.py`) expects modules at depth 2
+- Modules at wrong depth (e.g., `modules/grafana/` instead of `modules/monitoring/grafana/`) will NOT be detected
+- Missing modules result in incomplete documentation and broken dependency graphs
+
+**Validation:**
+```bash
+# Check module structure compliance
+find modules -mindepth 2 -maxdepth 2 -type d | wc -l  # Should match module count
+
+# Detect modules at wrong depth (depth 1 - INCORRECT)
+find modules -mindepth 1 -maxdepth 1 -type d -not -name "diagnostics" -not -name "shared_services"
+
+# Example output for non-compliant module:
+# modules/grafana  ← WRONG (depth 1)
+# Should be: modules/monitoring/grafana (depth 2)
+```
+
+**If You Need to Move a Module:**
+1. See `.github/MODULE_STRUCTURE.md` for complete migration checklist
+2. Update relative paths in module files (e.g., `../../diagnostics` when depth changes)
+3. Update root aggregator file source path
+4. Verify paths with `realpath` from module directory
+5. Regenerate documentation to confirm module appears
+
+**Common Mistake:**
+```
+❌ WRONG:
+modules/
+├── grafana/              # Depth 1 - will be skipped
+│   └── main.tf
+
+✅ CORRECT:
+modules/
+└── monitoring/           # Category at depth 1
+    └── grafana/          # Module at depth 2 ✓
+        └── main.tf
+```
+
+See `.github/MODULE_STRUCTURE.md` for detailed guidance on module organization and migration procedures.
+
+---
+
 ## 📑 README.md Guidelines for Modules
 
 The README.md de cada módulo debe ser conciso y centrarse únicamente en el uso del módulo, variables, outputs y ejemplos mínimos de uso. No incluyas secciones de fuentes de validación, pilares del Well Architected Framework ni integración de private endpoint, salvo que sean estrictamente necesarias para la comprensión del uso del módulo.
