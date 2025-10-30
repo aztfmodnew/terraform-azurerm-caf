@@ -576,7 +576,7 @@ variable "monitor_autoscale_settings" {
   type    = any
   default = {}
 }
-variable "monitoring" {
+variable "grafana" {
   type    = any
   default = {}
 }

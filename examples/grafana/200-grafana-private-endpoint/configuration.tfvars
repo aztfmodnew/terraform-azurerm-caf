@@ -12,7 +12,7 @@ resource_groups = {
   }
 }
 
-monitoring = {
+
   grafana = {
     grafana_complete = {
       name                              = "grafana-complete-test"
@@ -86,7 +86,6 @@ monitoring = {
       }
     }
   }
-}
 
 # Virtual Network configuration for private endpoints
 vnets = {

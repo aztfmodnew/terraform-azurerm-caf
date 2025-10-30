@@ -1,6 +1,6 @@
 module "grafana" {
-  source              = "./modules/monitoring/grafana"
-  for_each            = local.monitoring.grafana
+  source              = "./modules/dashboards/grafana"
+  for_each            = local.dashboards.grafana
   client_config       = local.client_config
   global_settings     = local.global_settings
   settings            = each.value

@@ -339,7 +339,12 @@ variable "log_analytics" {
 }
 
 variable "monitoring" {
-  description = "Configuration object - Monitoring resources (Grafana, Monitor Workspaces, etc.)."
+  description = "Configuration object - Monitoring resources (Service Health Alerts, Monitor Metric Alerts, etc.)."
+  default     = {}
+}
+
+variable "dashboards" {
+  description = "Configuration object - Dashboard resources (Grafana, Monitor Workspaces, etc.)."
   default     = {}
 }
 

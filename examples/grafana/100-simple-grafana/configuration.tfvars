@@ -12,7 +12,7 @@ resource_groups = {
   }
 }
 
-monitoring = {
+
   grafana = {
     grafana1 = {
       name                          = "grafana-test-1"
@@ -38,4 +38,4 @@ monitoring = {
       }
     }
   }
-}
+

@@ -537,8 +537,8 @@ locals {
     maintenance_assignment_virtual_machine = try(var.maintenance.maintenance_assignment_virtual_machine, {})
   }
 
-  monitoring = {
-    grafana = try(var.monitoring.grafana, {})
+  dashboards = {
+    grafana = try(var.dashboards.grafana, {})
   }
 
   load_test = try(var.load_test, {})
