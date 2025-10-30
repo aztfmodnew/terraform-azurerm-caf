@@ -1,0 +1,479 @@
+site_name: CAF DeepWiki
+theme:
+  name: material
+nav:
+  - Overview: index.md
+  - Modules:
+      - aadb2c:
+          - aadb2c_directory: modules/aadb2c/aadb2c_directory.md
+      - analytics:
+          - databricks_access_connector: modules/analytics/databricks_access_connector.md
+          - databricks_workspace: modules/analytics/databricks_workspace.md
+          - fabric_capacity: modules/analytics/fabric_capacity.md
+          - machine_learning: modules/analytics/machine_learning.md
+          - machine_learning_compute_instance: modules/analytics/machine_learning_compute_instance.md
+          - synapse: modules/analytics/synapse.md
+      - apim:
+          - api_management: modules/apim/api_management.md
+          - api_management_api: modules/apim/api_management_api.md
+          - api_management_api_diagnostic: modules/apim/api_management_api_diagnostic.md
+          - api_management_api_operation: modules/apim/api_management_api_operation.md
+          - api_management_api_operation_policy: modules/apim/api_management_api_operation_policy.md
+          - api_management_api_operation_tag: modules/apim/api_management_api_operation_tag.md
+          - api_management_api_policy: modules/apim/api_management_api_policy.md
+          - api_management_backend: modules/apim/api_management_backend.md
+          - api_management_certificate: modules/apim/api_management_certificate.md
+          - api_management_custom_domain: modules/apim/api_management_custom_domain.md
+          - api_management_diagnostic: modules/apim/api_management_diagnostic.md
+          - api_management_gateway: modules/apim/api_management_gateway.md
+          - api_management_gateway_api: modules/apim/api_management_gateway_api.md
+          - api_management_group: modules/apim/api_management_group.md
+          - api_management_logger: modules/apim/api_management_logger.md
+          - api_management_product: modules/apim/api_management_product.md
+          - api_management_subscription: modules/apim/api_management_subscription.md
+          - api_management_user: modules/apim/api_management_user.md
+      - app_insights:
+          - standard_web_test: modules/app_insights/standard_web_test.md
+          - web_test: modules/app_insights/web_test.md
+      - automation:
+          - automation_runbook: modules/automation/automation_runbook.md
+          - automation_schedule: modules/automation/automation_schedule.md
+      - azuread:
+          - administrative_unit: modules/azuread/administrative_unit.md
+          - administrative_unit_member: modules/azuread/administrative_unit_member.md
+          - applications: modules/azuread/applications.md
+          - applications_v1: modules/azuread/applications_v1.md
+          - credentials: modules/azuread/credentials.md
+          - groups: modules/azuread/groups.md
+          - groups_members: modules/azuread/groups_members.md
+          - roles: modules/azuread/roles.md
+          - service_principal: modules/azuread/service_principal.md
+          - service_principal_password: modules/azuread/service_principal_password.md
+          - users: modules/azuread/users.md
+      - backup_vault:
+          - backup_vault_instance_blob_storage: modules/backup_vault/backup_vault_instance_blob_storage.md
+          - backup_vault_instance_disk: modules/backup_vault/backup_vault_instance_disk.md
+          - backup_vault_policy_blob_storage: modules/backup_vault/backup_vault_policy_blob_storage.md
+          - backup_vault_policy_disk: modules/backup_vault/backup_vault_policy_disk.md
+      - bot:
+          - azure_bot: modules/bot/azure_bot.md
+      - cdn:
+          - cdn_frontdoor_profile: modules/cdn/cdn_frontdoor_profile.md
+      - cognitive_services:
+          - ai_services: modules/cognitive_services/ai_services.md
+          - cognitive_account_customer_managed_key: modules/cognitive_services/cognitive_account_customer_managed_key.md
+          - cognitive_deployment: modules/cognitive_services/cognitive_deployment.md
+          - cognitive_services_account: modules/cognitive_services/cognitive_services_account.md
+      - communication:
+          - communication_services: modules/communication/communication_services.md
+      - compute:
+          - aks: modules/compute/aks.md
+          - availability_set: modules/compute/availability_set.md
+          - azure_redhat_openshift: modules/compute/azure_redhat_openshift.md
+          - batch: modules/compute/batch.md
+          - container_app: modules/compute/container_app.md
+          - container_app_custom_domain: modules/compute/container_app_custom_domain.md
+          - container_app_dapr_component: modules/compute/container_app_dapr_component.md
+          - container_app_environment: modules/compute/container_app_environment.md
+          - container_app_environment_certificate: modules/compute/container_app_environment_certificate.md
+          - container_app_environment_storage: modules/compute/container_app_environment_storage.md
+          - container_group: modules/compute/container_group.md
+          - container_registry: modules/compute/container_registry.md
+          - dedicated_host_groups: modules/compute/dedicated_host_groups.md
+          - dedicated_hosts: modules/compute/dedicated_hosts.md
+          - proximity_placement_group: modules/compute/proximity_placement_group.md
+          - runbooks: modules/compute/runbooks.md
+          - virtual_machine: modules/compute/virtual_machine.md
+          - virtual_machine_extensions: modules/compute/virtual_machine_extensions.md
+          - virtual_machine_scale_set: modules/compute/virtual_machine_scale_set.md
+          - virtual_machine_scale_set_extensions: modules/compute/virtual_machine_scale_set_extensions.md
+          - vmware_clusters: modules/compute/vmware_clusters.md
+          - vmware_express_route_authorizations: modules/compute/vmware_express_route_authorizations.md
+          - vmware_private_clouds: modules/compute/vmware_private_clouds.md
+          - wvd_application_group: modules/compute/wvd_application_group.md
+          - wvd_applications: modules/compute/wvd_applications.md
+          - wvd_host_pool: modules/compute/wvd_host_pool.md
+          - wvd_workspace: modules/compute/wvd_workspace.md
+      - consumption_budget:
+          - resource_group: modules/consumption_budget/resource_group.md
+          - subscription: modules/consumption_budget/subscription.md
+      - data_factory:
+          - data_factory: modules/data_factory/data_factory.md
+          - data_factory_integration_runtime_azure_ssis: modules/data_factory/data_factory_integration_runtime_azure_ssis.md
+          - data_factory_integration_runtime_self_hosted: modules/data_factory/data_factory_integration_runtime_self_hosted.md
+          - data_factory_pipeline: modules/data_factory/data_factory_pipeline.md
+          - data_factory_trigger_schedule: modules/data_factory/data_factory_trigger_schedule.md
+          - datasets: modules/data_factory/datasets.md
+          - linked_services: modules/data_factory/linked_services.md
+      - databases:
+          - app_config: modules/databases/app_config.md
+          - cosmos_dbs: modules/databases/cosmos_dbs.md
+          - data_explorer: modules/databases/data_explorer.md
+          - database_migration_project: modules/databases/database_migration_project.md
+          - database_migration_service: modules/databases/database_migration_service.md
+          - mssql_database: modules/databases/mssql_database.md
+          - mssql_elastic_pool: modules/databases/mssql_elastic_pool.md
+          - mssql_managed_database: modules/databases/mssql_managed_database.md
+          - mssql_managed_database_restore_v1: modules/databases/mssql_managed_database_restore_v1.md
+          - mssql_managed_database_v1: modules/databases/mssql_managed_database_v1.md
+          - mssql_managed_instance: modules/databases/mssql_managed_instance.md
+          - mssql_managed_instance_v1: modules/databases/mssql_managed_instance_v1.md
+          - mssql_server: modules/databases/mssql_server.md
+          - mysql_flexible_server: modules/databases/mysql_flexible_server.md
+          - postgresql_flexible_server: modules/databases/postgresql_flexible_server.md
+      - event_hubs:
+          - consumer_groups: modules/event_hubs/consumer_groups.md
+          - hubs: modules/event_hubs/hubs.md
+          - namespaces: modules/event_hubs/namespaces.md
+      - identity:
+          - active_directory_domain_service: modules/identity/active_directory_domain_service.md
+          - active_directory_domain_service_replica_set: modules/identity/active_directory_domain_service_replica_set.md
+          - active_directory_domain_service_trust: modules/identity/active_directory_domain_service_trust.md
+      - iot:
+          - consumer_groups: modules/iot/consumer_groups.md
+          - digital_twins: modules/iot/digital_twins.md
+          - iot_central_application: modules/iot/iot_central_application.md
+          - iot_hub: modules/iot/iot_hub.md
+          - iot_hub_dps: modules/iot/iot_hub_dps.md
+          - security: modules/iot/security.md
+      - logic_app:
+          - action_custom: modules/logic_app/action_custom.md
+          - action_http: modules/logic_app/action_http.md
+          - integration_account: modules/logic_app/integration_account.md
+          - standard: modules/logic_app/standard.md
+          - trigger_custom: modules/logic_app/trigger_custom.md
+          - trigger_http_request: modules/logic_app/trigger_http_request.md
+          - trigger_recurrence: modules/logic_app/trigger_recurrence.md
+          - workflow: modules/logic_app/workflow.md
+      - maintenance:
+          - assignment_virtual_machine: modules/maintenance/assignment_virtual_machine.md
+          - configuration: modules/maintenance/configuration.md
+      - maps:
+          - maps_account: modules/maps/maps_account.md
+      - messaging:
+          - eventgrid: modules/messaging/eventgrid.md
+          - servicebus: modules/messaging/servicebus.md
+          - signalr_service: modules/messaging/signalr_service.md
+          - web_pubsub: modules/messaging/web_pubsub.md
+      - monitoring:
+          - log_analytics_storage_insights: modules/monitoring/log_analytics_storage_insights.md
+          - monitor_action_group: modules/monitoring/monitor_action_group.md
+          - monitor_activity_log_alert: modules/monitoring/monitor_activity_log_alert.md
+          - monitor_autoscale_settings: modules/monitoring/monitor_autoscale_settings.md
+          - monitor_metric_alert: modules/monitoring/monitor_metric_alert.md
+          - service_health_alerts: modules/monitoring/service_health_alerts.md
+      - msgraph:
+          - groups: modules/msgraph/groups.md
+      - netapp:
+          - pool: modules/netapp/pool.md
+          - volume: modules/netapp/volume.md
+      - networking:
+          - application_gateway: modules/networking/application_gateway.md
+          - application_gateway_application: modules/networking/application_gateway_application.md
+          - application_gateway_platform: modules/networking/application_gateway_platform.md
+          - application_gateway_waf_policies: modules/networking/application_gateway_waf_policies.md
+          - application_security_group: modules/networking/application_security_group.md
+          - dns_zone: modules/networking/dns_zone.md
+          - domain_name_registrations: modules/networking/domain_name_registrations.md
+          - express_route_circuit: modules/networking/express_route_circuit.md
+          - express_route_circuit_authorization: modules/networking/express_route_circuit_authorization.md
+          - express_route_circuit_peering: modules/networking/express_route_circuit_peering.md
+          - express_route_connection: modules/networking/express_route_connection.md
+          - firewall: modules/networking/firewall.md
+          - firewall_application_rule_collections: modules/networking/firewall_application_rule_collections.md
+          - firewall_dashboard: modules/networking/firewall_dashboard.md
+          - firewall_nat_rule_collections: modules/networking/firewall_nat_rule_collections.md
+          - firewall_network_rule_collections: modules/networking/firewall_network_rule_collections.md
+          - firewall_policies: modules/networking/firewall_policies.md
+          - firewall_policy_rule_collection_groups: modules/networking/firewall_policy_rule_collection_groups.md
+          - frontdoor_rules_engine: modules/networking/frontdoor_rules_engine.md
+          - ip_group: modules/networking/ip_group.md
+          - lb: modules/networking/lb.md
+          - lb_backend_address_pool: modules/networking/lb_backend_address_pool.md
+          - lb_backend_address_pool_address: modules/networking/lb_backend_address_pool_address.md
+          - lb_nat_pool: modules/networking/lb_nat_pool.md
+          - lb_nat_rule: modules/networking/lb_nat_rule.md
+          - lb_outbound_rule: modules/networking/lb_outbound_rule.md
+          - lb_probe: modules/networking/lb_probe.md
+          - lb_rule: modules/networking/lb_rule.md
+          - load_balancers: modules/networking/load_balancers.md
+          - local_network_gateways: modules/networking/local_network_gateways.md
+          - nat_gateways: modules/networking/nat_gateways.md
+          - network_interface_backend_address_pool_association: modules/networking/network_interface_backend_address_pool_association.md
+          - network_manager: modules/networking/network_manager.md
+          - network_profile: modules/networking/network_profile.md
+          - network_security_group: modules/networking/network_security_group.md
+          - network_security_perimeter: modules/networking/network_security_perimeter.md
+          - network_security_security_rules: modules/networking/network_security_security_rules.md
+          - network_watcher: modules/networking/network_watcher.md
+          - networking_interface_asg_association: modules/networking/networking_interface_asg_association.md
+          - private-dns: modules/networking/private-dns.md
+          - private-dns-resolvers: modules/networking/private-dns-resolvers.md
+          - private_dns_resolvers_dns_forwarding_rulesets: modules/networking/private_dns_resolvers_dns_forwarding_rulesets.md
+          - private_dns_resolvers_forwarding_rules: modules/networking/private_dns_resolvers_forwarding_rules.md
+          - private_dns_resolvers_inbound_endpoints: modules/networking/private_dns_resolvers_inbound_endpoints.md
+          - private_dns_resolvers_outbound_endpoints: modules/networking/private_dns_resolvers_outbound_endpoints.md
+          - private_dns_resolvers_virtual_network_links: modules/networking/private_dns_resolvers_virtual_network_links.md
+          - private_dns_vnet_link: modules/networking/private_dns_vnet_link.md
+          - private_dns_vnet_link_v1: modules/networking/private_dns_vnet_link_v1.md
+          - private_endpoint: modules/networking/private_endpoint.md
+          - private_links: modules/networking/private_links.md
+          - public_ip_addresses: modules/networking/public_ip_addresses.md
+          - public_ip_prefixes: modules/networking/public_ip_prefixes.md
+          - relay_hybrid_connection: modules/networking/relay_hybrid_connection.md
+          - relay_namespace: modules/networking/relay_namespace.md
+          - route_tables: modules/networking/route_tables.md
+          - routes: modules/networking/routes.md
+          - subnet_service_endpoint_storage_policy: modules/networking/subnet_service_endpoint_storage_policy.md
+          - traffic_manager: modules/networking/traffic_manager.md
+          - virtual_hub_er_gateway_connection: modules/networking/virtual_hub_er_gateway_connection.md
+          - virtual_hub_route_table_routes: modules/networking/virtual_hub_route_table_routes.md
+          - virtual_hub_route_tables: modules/networking/virtual_hub_route_tables.md
+          - virtual_network: modules/networking/virtual_network.md
+          - virtual_network_gateway_connections: modules/networking/virtual_network_gateway_connections.md
+          - virtual_network_gateways: modules/networking/virtual_network_gateways.md
+          - virtual_wan: modules/networking/virtual_wan.md
+          - vpn_gateway_connection: modules/networking/vpn_gateway_connection.md
+          - vpn_gateway_nat_rule: modules/networking/vpn_gateway_nat_rule.md
+          - vpn_site: modules/networking/vpn_site.md
+      - palo_alto:
+          - cloudngfw: modules/palo_alto/cloudngfw.md
+          - local_rulestack: modules/palo_alto/local_rulestack.md
+          - ngfw: modules/palo_alto/ngfw.md
+      - purview:
+          - purview_accounts: modules/purview/purview_accounts.md
+      - roles:
+          - cosmosdb_custom_roles: modules/roles/cosmosdb_custom_roles.md
+          - custom_roles: modules/roles/custom_roles.md
+          - role_assignment: modules/roles/role_assignment.md
+      - security:
+          - disk_encryption_set: modules/security/disk_encryption_set.md
+          - disk_encryption_set_external: modules/security/disk_encryption_set_external.md
+          - dynamic_keyvault_certificates: modules/security/dynamic_keyvault_certificates.md
+          - dynamic_keyvault_secrets: modules/security/dynamic_keyvault_secrets.md
+          - keyvault: modules/security/keyvault.md
+          - keyvault_access_policies: modules/security/keyvault_access_policies.md
+          - keyvault_certificate: modules/security/keyvault_certificate.md
+          - keyvault_certificate_issuer: modules/security/keyvault_certificate_issuer.md
+          - keyvault_certificate_request: modules/security/keyvault_certificate_request.md
+          - keyvault_key: modules/security/keyvault_key.md
+          - lighthouse_definition: modules/security/lighthouse_definition.md
+          - managed_identity: modules/security/managed_identity.md
+          - sentinel: modules/security/sentinel.md
+      - shared_image_gallery:
+          - image_definitions: modules/shared_image_gallery/image_definitions.md
+          - image_galleries: modules/shared_image_gallery/image_galleries.md
+          - packer_build: modules/shared_image_gallery/packer_build.md
+          - packer_service_principal: modules/shared_image_gallery/packer_service_principal.md
+      - storage_account:
+          - blob: modules/storage_account/blob.md
+          - container: modules/storage_account/container.md
+          - data_lake_filesystem: modules/storage_account/data_lake_filesystem.md
+          - encryption_scope: modules/storage_account/encryption_scope.md
+          - file_share: modules/storage_account/file_share.md
+          - file_share_directory: modules/storage_account/file_share_directory.md
+          - file_share_file: modules/storage_account/file_share_file.md
+          - management_policy: modules/storage_account/management_policy.md
+          - queue: modules/storage_account/queue.md
+      - subscription_billing_role_assignment:
+          - role_assignment: modules/subscription_billing_role_assignment/role_assignment.md
+      - subscriptions:
+          - scripts: modules/subscriptions/scripts.md
+      - webapps:
+          - ase: modules/webapps/ase.md
+          - asev3: modules/webapps/asev3.md
+          - function_app: modules/webapps/function_app.md
+          - linux_function_app: modules/webapps/linux_function_app.md
+          - linux_web_app: modules/webapps/linux_web_app.md
+          - service_plan: modules/webapps/service_plan.md
+          - static_site: modules/webapps/static_site.md
+          - windows_function_app: modules/webapps/windows_function_app.md
+          - windows_web_app: modules/webapps/windows_web_app.md
+      - Index: modules/index.md
+  - Root:
+      - aadb2c: root/aadb2c.md
+      - active_directory_domain_service: root/active_directory_domain_service.md
+      - analytics_fabric_capacities: root/analytics_fabric_capacities.md
+      - api_management: root/api_management.md
+      - app_config: root/app_config.md
+      - app_service_environments: root/app_service_environments.md
+      - application_gateway_applications: root/application_gateway_applications.md
+      - application_gateway_platforms: root/application_gateway_platforms.md
+      - application_gateway_waf_policies: root/application_gateway_waf_policies.md
+      - application_gateways: root/application_gateways.md
+      - application_security_groups: root/application_security_groups.md
+      - automation_runbooks: root/automation_runbooks.md
+      - automation_schedules: root/automation_schedules.md
+      - automations: root/automations.md
+      - azuread_administrative_units: root/azuread_administrative_units.md
+      - azuread_applications: root/azuread_applications.md
+      - azuread_credential_policies: root/azuread_credential_policies.md
+      - azuread_credentials: root/azuread_credentials.md
+      - azuread_groups: root/azuread_groups.md
+      - azuread_roles: root/azuread_roles.md
+      - azuread_service_principal_names: root/azuread_service_principal_names.md
+      - azuread_service_principal_passwords: root/azuread_service_principal_passwords.md
+      - azuread_service_principals: root/azuread_service_principals.md
+      - azuread_users: root/azuread_users.md
+      - azurerm_application_insights: root/azurerm_application_insights.md
+      - backup_vaults: root/backup_vaults.md
+      - bastion_service: root/bastion_service.md
+      - bot_azure_bots: root/bot_azure_bots.md
+      - cdn_cdn_frontdoor_profile: root/cdn_cdn_frontdoor_profile.md
+      - cognitive_service: root/cognitive_service.md
+      - cognitive_services_ai_services: root/cognitive_services_ai_services.md
+      - communication_services: root/communication_services.md
+      - compute_aks_clusters: root/compute_aks_clusters.md
+      - compute_availability_sets: root/compute_availability_sets.md
+      - compute_azure_redhat_openshift: root/compute_azure_redhat_openshift.md
+      - compute_batch_accounts: root/compute_batch_accounts.md
+      - compute_batch_applications: root/compute_batch_applications.md
+      - compute_batch_certificates: root/compute_batch_certificates.md
+      - compute_batch_jobs: root/compute_batch_jobs.md
+      - compute_batch_pools: root/compute_batch_pools.md
+      - compute_container_groups: root/compute_container_groups.md
+      - compute_container_registry: root/compute_container_registry.md
+      - compute_dedicated_hosts: root/compute_dedicated_hosts.md
+      - compute_proximity_placement_groups: root/compute_proximity_placement_groups.md
+      - compute_virtual_machines: root/compute_virtual_machines.md
+      - compute_virtual_machines_extensions: root/compute_virtual_machines_extensions.md
+      - compute_virtual_machines_scale_sets: root/compute_virtual_machines_scale_sets.md
+      - compute_virtual_machines_scale_sets_extensions: root/compute_virtual_machines_scale_sets_extensions.md
+      - compute_vmware_clusters: root/compute_vmware_clusters.md
+      - compute_wvd_application_groups: root/compute_wvd_application_groups.md
+      - compute_wvd_applications: root/compute_wvd_applications.md
+      - compute_wvd_host_pools: root/compute_wvd_host_pools.md
+      - compute_wvd_workspaces: root/compute_wvd_workspaces.md
+      - consumption_budgets: root/consumption_budgets.md
+      - container_app_dapr_components: root/container_app_dapr_components.md
+      - disk_encryption_sets: root/disk_encryption_sets.md
+      - dynamic_secrets: root/dynamic_secrets.md
+      - event_hubs: root/event_hubs.md
+      - eventgrid: root/eventgrid.md
+      - iot: root/iot.md
+      - keyvault: root/keyvault.md
+      - keyvault_certificate_issuers: root/keyvault_certificate_issuers.md
+      - keyvault_certificate_requests: root/keyvault_certificate_requests.md
+      - keyvault_certificates: root/keyvault_certificates.md
+      - keyvault_keys: root/keyvault_keys.md
+      - lb: root/lb.md
+      - lighthouse_definitions: root/lighthouse_definitions.md
+      - load_balancers: root/load_balancers.md
+      - load_test: root/load_test.md
+      - local.remote_objects: root/local.remote_objects.md
+      - locals.combined_objects: root/locals.combined_objects.md
+      - locals: root/locals.md
+      - log_analytics: root/log_analytics.md
+      - logic_app: root/logic_app.md
+      - machine_learning: root/machine_learning.md
+      - main: root/main.md
+      - maintenance: root/maintenance.md
+      - managed_identities: root/managed_identities.md
+      - maps_account: root/maps_account.md
+      - messaging_servicebus_namespaces: root/messaging_servicebus_namespaces.md
+      - messaging_servicebus_queues: root/messaging_servicebus_queues.md
+      - messaging_servicebus_topics: root/messaging_servicebus_topics.md
+      - messaging_signalr_services: root/messaging_signalr_services.md
+      - monitor_action_groups: root/monitor_action_groups.md
+      - monitor_autoscale_settings: root/monitor_autoscale_settings.md
+      - monitoring: root/monitoring.md
+      - mssql_databases: root/mssql_databases.md
+      - mssql_elastic_pools: root/mssql_elastic_pools.md
+      - mssql_servers: root/mssql_servers.md
+      - msssql_managed_databases: root/msssql_managed_databases.md
+      - msssql_managed_databases_v1: root/msssql_managed_databases_v1.md
+      - msssql_managed_instances: root/msssql_managed_instances.md
+      - msssql_managed_instances_v1: root/msssql_managed_instances_v1.md
+      - mysql_flexible_servers: root/mysql_flexible_servers.md
+      - netapp: root/netapp.md
+      - network_interface: root/network_interface.md
+      - network_security_groups: root/network_security_groups.md
+      - network_security_security_rules: root/network_security_security_rules.md
+      - networking: root/networking.md
+      - networking_dns_zones: root/networking_dns_zones.md
+      - networking_domain_name_registrations: root/networking_domain_name_registrations.md
+      - networking_express_route: root/networking_express_route.md
+      - networking_express_route_connections: root/networking_express_route_connections.md
+      - networking_firewall: root/networking_firewall.md
+      - networking_firewall_policy: root/networking_firewall_policy.md
+      - networking_ip_groups: root/networking_ip_groups.md
+      - networking_nat_gateways: root/networking_nat_gateways.md
+      - networking_network_managers: root/networking_network_managers.md
+      - networking_network_security_perimeters: root/networking_network_security_perimeters.md
+      - networking_private_dns: root/networking_private_dns.md
+      - networking_private_dns_resolver_dns_forwarding_rules: root/networking_private_dns_resolver_dns_forwarding_rules.md
+      - networking_private_dns_resolver_dns_forwarding_rulesets: root/networking_private_dns_resolver_dns_forwarding_rulesets.md
+      - networking_private_dns_resolver_inbound_endpoints: root/networking_private_dns_resolver_inbound_endpoints.md
+      - networking_private_dns_resolver_outbound_endpoints: root/networking_private_dns_resolver_outbound_endpoints.md
+      - networking_private_dns_resolver_virtual_network_links: root/networking_private_dns_resolver_virtual_network_links.md
+      - networking_private_dns_resolvers: root/networking_private_dns_resolvers.md
+      - networking_private_links: root/networking_private_links.md
+      - networking_subnet_service_endpoint_storage_policies: root/networking_subnet_service_endpoint_storage_policies.md
+      - networking_virtual_hub_connection: root/networking_virtual_hub_connection.md
+      - networking_virtual_hub_er_connection: root/networking_virtual_hub_er_connection.md
+      - networking_virtual_hub_route_table: root/networking_virtual_hub_route_table.md
+      - networking_virtual_hub_route_table_routes: root/networking_virtual_hub_route_table_routes.md
+      - networking_virtual_hubs: root/networking_virtual_hubs.md
+      - networking_virtual_wan: root/networking_virtual_wan.md
+      - networking_vngw: root/networking_vngw.md
+      - networking_vpn_gateway_connection: root/networking_vpn_gateway_connection.md
+      - networking_vpn_gateway_nat_rule: root/networking_vpn_gateway_nat_rule.md
+      - networking_vpn_site: root/networking_vpn_site.md
+      - outputs: root/outputs.md
+      - palo_alto_cloudngfws: root/palo_alto_cloudngfws.md
+      - postgresql_flexible_servers: root/postgresql_flexible_servers.md
+      - powerbi_embedded: root/powerbi_embedded.md
+      - preview_features: root/preview_features.md
+      - purview: root/purview.md
+      - random_string: root/random_string.md
+      - recovery_vaults: root/recovery_vaults.md
+      - redis_caches: root/redis_caches.md
+      - resource_groups: root/resource_groups.md
+      - resource_provider_registration: root/resource_provider_registration.md
+      - roles: root/roles.md
+      - roles_scope: root/roles_scope.md
+      - runbooks: root/runbooks.md
+      - search_service: root/search_service.md
+      - sentinel: root/sentinel.md
+      - shared_image_gallery: root/shared_image_gallery.md
+      - static_sites: root/static_sites.md
+      - storage_account_blobs: root/storage_account_blobs.md
+      - storage_account_file_shares: root/storage_account_file_shares.md
+      - storage_account_queues: root/storage_account_queues.md
+      - storage_account_static_websites: root/storage_account_static_websites.md
+      - storage_accounts: root/storage_accounts.md
+      - storage_container: root/storage_container.md
+      - subscriptions: root/subscriptions.md
+      - synapses: root/synapses.md
+      - traffic_managers: root/traffic_managers.md
+      - variables: root/variables.md
+      - versions: root/versions.md
+      - web_pubsubs: root/web_pubsubs.md
+      - webapps_linux_function_app: root/webapps_linux_function_app.md
+      - webapps_linux_web_apps: root/webapps_linux_web_apps.md
+      - webapps_service_plans: root/webapps_service_plans.md
+      - webapps_windows_function_app: root/webapps_windows_function_app.md
+      - webapps_windows_web_apps: root/webapps_windows_web_apps.md
+      - Index: root/index.md
+plugins:
+  - search
+  - mermaid2:
+      arguments:
+        maxEdges: 5000
+  #- mkdocs_graphviz
+  #light_theme: 995522
+  #dark_theme: chartreuse
+  #color: 02f514
+  #bgcolor: 0000FF or none
+  #graph_color: FF0000
+  #graph_fontcolor: 00FF00
+  #node_color: FF0000
+  #node_fontcolor: 0000FF
+  #edge_color: FF0000
+  #edge_fontcolor: 00FF00
+  #priority: 100
+
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true

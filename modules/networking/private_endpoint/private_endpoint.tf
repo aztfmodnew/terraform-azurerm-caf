@@ -3,10 +3,12 @@ resource "azurecaf_name" "pep" {
   name          = var.name
   resource_type = "azurerm_private_endpoint"
   prefixes      = var.global_settings.prefixes
+  suffixes      = var.global_settings.suffixes
   random_length = var.global_settings.random_length
-  clean_input   = true
   passthrough   = var.global_settings.passthrough
   use_slug      = var.global_settings.use_slug
+  clean_input   = true
+  separator     = "-"
 }
 
 resource "azurerm_private_endpoint" "pep" {
@@ -18,11 +20,12 @@ resource "azurerm_private_endpoint" "pep" {
   tags                          = local.tags
 
   private_service_connection {
-    name                           = var.settings.private_service_connection.name
-    private_connection_resource_id = var.resource_id
-    is_manual_connection           = try(var.settings.private_service_connection.is_manual_connection, false)
-    subresource_names              = var.settings.private_service_connection.subresource_names
-    request_message                = try(var.settings.private_service_connection.request_message, null)
+    name                              = var.settings.private_service_connection.name
+    private_connection_resource_id    = try(var.settings.private_service_connection.private_connection_resource_id, var.resource_id)
+    private_connection_resource_alias = try(var.settings.private_service_connection.private_connection_resource_alias, null)
+    is_manual_connection              = try(var.settings.private_service_connection.is_manual_connection, false)
+    subresource_names                 = try(var.settings.private_service_connection.subresource_names, null)
+    request_message                   = try(var.settings.private_service_connection.request_message, null)
   }
 
   dynamic "private_dns_zone_group" {
@@ -54,12 +57,23 @@ resource "azurerm_private_endpoint" "pep" {
     }
   }
 
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
+    }
+  }
 }
 
 resource "time_sleep" "delay" {
-  count           = can(lookup(var.settings, var.settings.delay_time_after_creation, false)) ? 1 : 0
+  count           = try(var.settings.delay_time_after_creation, null) != null ? 1 : 0
   depends_on      = [azurerm_private_endpoint.pep]
   create_duration = var.settings.delay_time_after_creation
+
   lifecycle {
     replace_triggered_by = [azurerm_private_endpoint.pep]
   }

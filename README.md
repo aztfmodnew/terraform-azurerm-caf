@@ -1,7 +1,8 @@
 # Cloud Adoption Framework for Azure - Terraform module
 
 [![PR all-tests](https://github.com/aztfmodnew/terraform-azurerm-caf/actions/workflows/pr_tests-scenarios.yaml/badge.svg)](https://github.com/aztfmodnew/terraform-azurerm-caf/actions/workflows/pr_tests-scenarios.yaml)
-[![Integration tests](https://github.com/aztfmodnew/terraform-azurerm-caf/actions/workflows/weekly_workflow.yaml/badge.svg)](https://github.com/aztfmodnew/terraform-azurerm-caf/actions/workflows/weekly_workflow.yaml)
+[![Monthly Integration tests](https://github.com/aztfmodnew/terraform-azurerm-caf/actions/workflows/weekly_workflow.yaml/badge.svg)](https://github.com/aztfmodnew/terraform-azurerm-caf/actions/workflows/monthly_workflow.yaml)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/aztfmodnew/terraform-azurerm-caf)
 
 > :warning: This solution, offered by the Open-Source community, it's based on [https://github.com/aztfmod](https://github.com/aztfmod) and is not supported by Microsoft. It's a community effort to keep the project alive and up to date. If you want to support the project, please consider contributing with code, documentation or any other way you can.
 
@@ -28,11 +29,21 @@ Fill the variables as needed and documented, there is a [quick example here](htt
 
 For a complete set of examples you can review the [full library here](https://github.com/aztfmodnew/terraform-azurerm-caf/tree/master/examples).
 
+
+## 📚 Documentation
+
+The full documentation for all modules, usage, and dependency diagrams is published automatically:
+
+- **[CAF Terraform Documentation (MkDocs)](https://aztfmodnew.github.io/terraform-azurerm-caf/)**
+
+Every merge to the `main` branch automatically updates the documentation site.
+
+---
 ## Community
 
 Feel free to open an issue for feature or bug, or to submit a PR, [Please check out the WIKI for coding standards, common patterns and PR checklist.](https://github.com/aztfmodnew/terraform-azurerm-caf/wiki)
 
-WIP - You can also reach us on [Gitter](https://gitter.im/aztfmodnew/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+You can also reach us on [GitHub Discussions](https://github.com/aztfmodnew/terraform-azurerm-caf/discussions).
 
 ## Contributing
 

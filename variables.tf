@@ -338,6 +338,16 @@ variable "log_analytics" {
   default     = {}
 }
 
+variable "monitoring" {
+  description = "Configuration object - Monitoring resources (Service Health Alerts, Monitor Metric Alerts, etc.)."
+  default     = {}
+}
+
+variable "dashboards" {
+  description = "Configuration object - Dashboard resources (Grafana, Monitor Workspaces, etc.)."
+  default     = {}
+}
+
 variable "diagnostics" {
   description = "Configuration object - Diagnostics object."
   default     = {}
@@ -402,6 +412,12 @@ variable "logic_app" {
 ## Databases variables
 variable "database" {
   description = "Configuration object - databases resources"
+  default     = {}
+}
+
+variable "analytics" {
+  description = "Configuration object - analytics resources"
+  type        = any
   default     = {}
 }
 

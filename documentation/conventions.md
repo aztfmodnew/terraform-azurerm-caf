@@ -31,7 +31,7 @@ The main module directory contains the following files:
 | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | main.tf          | Contains the version requirements, for providers, data sources if needed.                                                                                                                                                                                                                                                                                                    |
 | variables.tf     | Contains the input variables for the whole module.                                                                                                                                                                                                                                                                                                                           |
-| output.tf        | Contains the output variables for the whole module.                                                                                                                                                                                                                                                                                                                          |
+| outputs.tf       | Contains the output variables for the whole module.                                                                                                                                                                                                                                                                                                                          |
 | resourcenames.tf | Contains the call to the resource creation logic. This will call the sub module with all the parameters needed for the particular resource you want to deploy, inside the /module/resourcename folder. When there are a lot of resouces of the same type, they can be grouped into a subdirectory (for instance, all network-related resources are under /module/networking) |
 | README.MD        | Short description of the features the module is achieving, the input and output variables.                                                                                                                                                                                                                                                                                   |
 | UPGRADE.MD       | Contains upgrade instructions if anyfor module update inside a landing zone.                                                                                                                                                                                                                                                                                                 |
@@ -44,40 +44,60 @@ For each sub module directory, you should have the following files:
 | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | main.tf        | Contains the version requirements, for providers, data sources if needed.                                                                                                                                |
 | variables.tf   | Contains the input variables for the whole module.                                                                                                                                                       |
-| output.tf      | Contains the output variables for the whole module.                                                                                                                                                      |
+| outputs.tf     | Contains the output variables for the whole module.                                                                                                                                                      |
 | README.MD      | Short description of the features the module is achieving, the input and output variables.                                                                                                               |
 | diagnostics.tf | Contains the call to the diagnostics and operations logs features for the resources created in the module. This will be called via the external diagnostics module using the arguments passed in tfvars. |
 
-### Examples file structure
+### Examples file structure and testing
 
 Each module must have at least an example located in the `/examples` folder, that must be easy to trigger, and must work:
 
 1. Using rover.
 2. Using native Terraform.
 
-For more information on examples and its structure, please refer to the [example documentation](./examples/README.md)
+For more information on examples and its structure, please refer to the [example documentation](./examples/README.md) and [standalone.md](./examples/standalone.md).
+
+Each module must have at least one example located in the `/examples` folder, following the CAF standard:
+
+- Use numbered directories for complexity: `100-xxx`, `200-xxx`, etc.
+- Each example must use `configuration.tfvars` as the variable file name or multiple `*.tfvars` files.
+- Examples must be easy to trigger and must work with both rover and native Terraform.
+
+#### Mock and CI/CD Testing
+
+- All examples must be tested using mock tests and included in CI/CD workflows.
+- To run mock tests locally:
+  ```bash
+  terraform -chdir=examples test -test-directory=./tests/mock -var-file="<path to your configuration.tfvars>" -verbose
+  ```
+- All new examples must be added to the appropriate workflow file (e.g., `.github/workflows/standalone-scenarios.json`).
+- Use `terraform_with_var_files` for automated plan/apply/destroy testing:
+  ```bash
+  terraform_with_var_files --dir /category/service/100-example/ --action plan --auto auto --workspace test
+  ```
 
 ### Module Output conventions
 
-As a convention we will use the following minimal module outputs:
+As a convention, use the following minimal module outputs in `outputs.tf`:
 
 | Output variable name | Content                          |
 | -------------------- | -------------------------------- |
 | id                   | returns the object identifiers   |
 | name                 | returns the object name          |
 | object               | returns the full resource object |
+| rbac_id              | returns the object RBAC id       |
 
-This can be added with any other resource specific outputs, please remember to mark as sensitive any output including identifiers or secrets in order not to be revealed in log files.
+Add any other resource-specific outputs as needed. Mark as sensitive any output including identifiers or secrets to avoid leaking them in logs.
 
-## Common engineering criteria
+## CAF Engineering Criteria and Patterns
 
 ### CEC1: Using naming convention provider
 
-Every resource created must use the naming convention provider as published on the [Terraform registry](https://registry.terraform.io/providers/aztfmod/azurecaf/latest)
+Every resource created must use the naming convention provider as published on the [Terraform registry](https://registry.terraform.io/providers/aztfmodnew/azurecaf/latest)
 
-All supported resource types are described [in the documentation](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/azurecaf_name)
+All supported resource types are described [in the documentation](https://registry.terraform.io/providers/aztfmodnew/azurecaf/latest/docs/resources/azurecaf_name)
 
-If you are developing a module for which there is no current support for naming convention method, please submit an issue: [https://github.com/aztfmod/terraform-provider-azurecaf/issues](https://github.com/aztfmod/terraform-provider-azurecaf/issues)
+If you are developing a module for which there is no current support for naming convention method, please submit an issue: [https://github.com/aztfmodnew/terraform-provider-azurecaf/issues](https://github.com/aztfmodnew/terraform-provider-azurecaf/issues)
 
 Example of naming convention provider usage to create a virtual network:
 
@@ -106,7 +126,7 @@ resource "azurerm_virtual_network" "vnet" {
 }
 ```
 
-Documentation for all supported field is provided in the [documentation here](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/azurecaf_name)
+Documentation for all supported field is provided in the [documentation here](https://registry.terraform.io/providers/aztfmodnew/azurecaf/latest/docs/resources/azurecaf_name)
 
 ### CEC2: Using global_settings configuration object
 
@@ -156,71 +176,68 @@ Each object within `vnets` object structure can contain one or more Virtual Netw
 
 The module's README.MD (here under ./modules/networking/virtual_network) must expose the required and optional fields inside the object iteration (iterated at `settings = each.value`)
 
-### CEC4 Diagnostics settings deployment
+### CEC4: Diagnostics and Private Endpoint Patterns (CAF Mandatory)
 
-Each module must call the appropriate diagnostics settings leveraging the diagnostics sub module:
+#### Diagnostics Integration
+
+Each module that supports diagnostics must include a `diagnostics.tf` file and use the following pattern:
 
 ```hcl
-module diagnostics {
-  source = "../../diagnostics"
-  count  = var.diagnostic_profiles == null ? 0 : 1
-
-  resource_id       = azurerm_kubernetes_cluster.aks.id
-  resource_location = var.resource_group.location
-  diagnostics       = var.diagnostics
-  profiles          = var.diagnostic_profiles
+module "diagnostics" {
+  source            = "../../diagnostics"
+  for_each          = try(var.settings.diagnostic_profiles, {})
+  resource_id       = azurerm_<resource_type>.<resource_name>.id
+  resource_location = azurerm_<resource_type>.<resource_name>.location
+  diagnostics       = var.remote_objects.diagnostics
+  profiles          = try(var.settings.diagnostic_profiles, {})
 }
 ```
 
-For each resource, the variable `diagnostic_profiles` will be used to store the diagnostic settings for the module as follow:
+#### Private Endpoint Integration
+
+If the service supports private endpoints, do NOT create `azurerm_private_endpoint` directly in the service module. Instead, expose the required data via outputs or `remote_objects` and instantiate the `networking/private_endpoint` submodule from the root/aggregator. See `.github/copilot-instructions.md` for the full pattern.
+
+### CEC5: Dependency Resolution and Submodules (CAF Patterns)
+
+- Use the coalesce pattern for all cross-module and cross-landing-zone dependencies:
+  ```hcl
+  resource_id = coalesce(
+    try(var.settings.direct_resource_id, null),
+    try(var.remote_objects.resource_name.id, null),
+    try(var.remote_objects.resource_names[
+      try(var.settings.resource_reference.lz_key, var.client_config.landingzone_key)
+    ][var.settings.resource_reference.key].id, null)
+  )
+  ```
+- For submodules, always pass dependencies via `remote_objects` and never as direct ID variables. Use pluralized names for module calls and outputs.
+
+### CEC6: Backward Compatibility
+
+When attributes are renamed or deprecated, use the `try()` pattern to support both old and new names, e.g.:
 
 ```hcl
-diagnostic_profiles = {
-      central_logs_region1 = {
-        definition_key   = "azure_kubernetes_cluster"
-        destination_type = "log_analytics" # Can be either a string (allowed values "log_analytics", "storage" or "event_hub") or a list of strings (combination of "log_analytics", "storage", "event_hub", no repeat)
-        destination_key  = "central_logs"
-      }
-    }
+enabled_attribute = try(
+  var.settings.enabled_attribute,  # New name
+  var.settings.attribute_enabled,  # Old name
+  true                            # Default
+)
 ```
 
-In this example, we refer to the diagnostics `definition_key` being `azure_kubernetes_cluster` defined as below:
+Document deprecated attributes and maintain backward compatibility for at least one version.
 
-```hcl
-azure_kubernetes_cluster = {
-  name = "operational_logs_and_metrics"
-  categories = {
-    log = [
-      # ["Category name",  "Diagnostics Enabled(true/false)", "Retention Enabled(true/false)", Retention_period]
-      ["kube-apiserver", true, false, 7],
-      ["kube-audit", true, false, 7],
-      ["kube-audit-admin", true, false, 7],
-      ["kube-controller-manager", true, false, 7],
-      ["kube-scheduler", true, false, 7],
-      ["cluster-autoscaler", true, false, 7],
-      ["guard", true, false, 7],
-    ]
-    metric = [
-      #["Category name",  "Diagnostics Enabled(true/false)", "Retention Enabled(true/false)", Retention_period]
-      ["AllMetrics", true, false, 7],
-    ]
-  }
-}
-```
-
-### CEC5: Standalone resource creation
+### CEC7: Standalone resource creation
 
 Every resource (here sub-module) should be able to be called autonomously from the Terraform registry using the following syntax:
 
 ```hcl
 module "caf_virtual_machine" {
-  source  = "aztfmod/caf/azurerm//modules/compute/virtual_machine"
+  source  = "aztfmodnew/caf/azurerm//modules/compute/virtual_machine"
   version = "4.21.2"
   # insert the 7 required variables here
 }
 ```
 
-### CEC6: Avoid count iterators
+### CEC8: Avoid count iterators
 
 In order to allow reliable iterations within the modules, we recommend using `for_each` iteration and decomission usage of count for iterations as much as possible.
 
@@ -247,7 +264,7 @@ This will allow:
 2. Using ``key` that can be leveraged in other modules or resources iterations.
 3. Better visibility in the log files.
 
-### CEC7: Variables custom validation
+### CEC9: Variables custom validation
 
 Starting in Terraform 0.13, you can leverage custom variables validation. As documented [here](https://www.terraform.io/docs/configuration/variables.html) we recommend roll-out of this feature in the module.
 
@@ -266,7 +283,7 @@ variable convention {
 }
 ```
 
-### CEC8: Complex objects typing
+### CEC10: Complex objects typing
 
 Starting in Terraform 0.14 as experimental, complex object fields can be defined optional, we recommend preparing for this feature roll-out when you write your module.
 
@@ -299,14 +316,17 @@ Modules must be developed using rover version > 2006.x as it comes with required
 - terraform_docs: automated generation of documentation.
 - tfsec: security static code analysis.
 
-## Unit and integration testing
+## Unit, Mock, and Integration Testing
 
-Each module must implement integration and unit testing using GitHub Actions following the example here: [https://github.com/aztfmod/terraform-azurerm-caf-resource-group](https://github.com/aztfmod/terraform-azurerm-caf-resource-group)
+Each module must implement integration and unit testing using GitHub Actions, following the CAF patterns:
 
-Please refer to the unit and integration testing reference article: [https://github.com/Azure/caf-terraform-landingzones/blob/master/documentation/test/unit_test.md](https://github.com/aztfmod/terraform-azurerm-caf-resource-group)
+- All examples must be tested with `terraform test` using the mock framework in `examples/tests/mock`.
+- Add new examples to the appropriate workflow file (e.g., `.github/workflows/standalone-scenarios.json`).
+- Use `terraform_with_var_files` for automated plan/apply/destroy in CI.
+- See [examples/README.md](../examples/README.md) and [standalone.md](../examples/standalone.md) for details and commands.
 
 ### GitHub Actions for Testing
 
-New modules must implement the automation of integration testing using GitHub actions and deploying the examples in an Azure test subscription.
+New modules must automate integration testing using GitHub Actions and deploy examples in an Azure test subscription. Always ensure that all tests pass before merging.
 
 [Back to summary](../README.md)

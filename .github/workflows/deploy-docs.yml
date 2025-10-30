@@ -1,0 +1,26 @@
+name: Deploy MkDocs Documentation
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    permissions:
+      contents: read
+      pages: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@trunk
+        with:
+          python-version: 3.x
+      - name: Install dependencies
+        run: |
+          pip install mkdocs-material mkdocs-mermaid2-plugin python-hcl2
+      - name: Generate documentation
+        run: |
+          python scripts/deepwiki/generate_mkdocs_auto.py --no-force-nav
+      - name: Deploy to GitHub Pages
+        run: |
+          mkdocs gh-deploy --force

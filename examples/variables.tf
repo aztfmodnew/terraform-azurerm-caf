@@ -560,6 +560,10 @@ variable "databricks_access_connectors" {
   type    = any
   default = {}
 }
+variable "fabric_capacities" {
+  type    = any
+  default = {}
+}
 variable "machine_learning_workspaces" {
   type    = any
   default = {}
@@ -573,6 +577,10 @@ variable "monitor_autoscale_settings" {
   default = {}
 }
 variable "monitoring" {
+  type    = any
+  default = {}
+}
+variable "grafana" {
   type    = any
   default = {}
 }
