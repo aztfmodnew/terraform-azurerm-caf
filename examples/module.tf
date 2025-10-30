@@ -449,7 +449,7 @@ module "example" {
   dashboards = {
     grafana = var.grafana
   }
-    
+
 
   load_test = var.load_test
 
