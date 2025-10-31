@@ -30,7 +30,7 @@ vnets = {
 
 public_ip_addresses = {
   pip_appgw = {
-    name               = "pip-appgw"
+    name               = "appgw"
     resource_group_key = "webapp_appgw"
     sku                = "Standard"
     allocation_method  = "Static"

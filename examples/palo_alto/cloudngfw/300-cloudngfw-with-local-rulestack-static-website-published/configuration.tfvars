@@ -156,7 +156,7 @@ vnets = {
 
 public_ip_addresses = {
   ngfw_pip_management = {
-    name               = "pip-ngfw-mgmt"
+    name               = "ngfw-mgmt"
     resource_group_key = "hub_ngfw_rg"
     location           = "westeurope" # Or inherit from RG
     allocation_method  = "Static"
@@ -166,7 +166,7 @@ public_ip_addresses = {
     }
   }
   ngfw_pip_dataplane1 = {
-    name               = "pip-ngfw-dp1"
+    name               = "ngfw-dp1"
     resource_group_key = "hub_ngfw_rg"
     location           = "westeurope" # Or inherit from RG
     allocation_method  = "Static"
@@ -1146,7 +1146,7 @@ diagnostic_storage_accounts = {
 route_tables = {
   # Route table for VM subnet - routes traffic through NGFW Trust interface
   vm_subnet_rt = {
-    name               = "rt-vm-subnet-via-ngfw"
+    name               = "vm-subnet-via-ngfw"
     resource_group_key = "spoke_storage_rg"
 
     # Routes for VM subnet traffic
@@ -1184,7 +1184,7 @@ route_tables = {
 
   # Route table for backend subnet (storage services)
   backend_subnet_rt = {
-    name               = "rt-backend-subnet-via-ngfw"
+    name               = "backend-subnet-via-ngfw"
     resource_group_key = "spoke_storage_rg"
 
     # Routes for backend subnet traffic

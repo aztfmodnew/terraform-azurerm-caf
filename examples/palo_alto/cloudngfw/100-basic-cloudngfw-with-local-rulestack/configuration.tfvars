@@ -58,7 +58,7 @@ vnets = {
 
 public_ip_addresses = {
   ngfw_pip_management = {
-    name               = "pip-ngfw-mgmt"
+    name               = "ngfw-mgmt"
     resource_group_key = "ngfw_rg"
     location           = "westeurope" # Or inherit from RG
     allocation_method  = "Static"
@@ -68,7 +68,7 @@ public_ip_addresses = {
     }
   }
   ngfw_pip_dataplane1 = {
-    name               = "pip-ngfw-dp1"
+    name               = "ngfw-dp1"
     resource_group_key = "ngfw_rg"
     location           = "westeurope" # Or inherit from RG
     allocation_method  = "Static"
