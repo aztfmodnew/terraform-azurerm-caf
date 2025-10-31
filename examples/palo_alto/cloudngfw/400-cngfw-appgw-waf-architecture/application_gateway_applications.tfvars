@@ -61,13 +61,13 @@ application_gateway_applications = {
     }
 
     # Backend Pool
-      backend_pool = {
-        name         = "backend-pool-via-cngfw"
-        ip_addresses = ["10.200.20.10"] # IP dummy
-          # TODO: The backend pool IP is currently static (10.200.20.10).
-          # Pending: Implement dynamic resolution of the Private Endpoint private IP like in CNGFW module
-          # so Application Gateway can consume it automatically from module outputs.
-      }
+    backend_pool = {
+      name         = "backend-pool-via-cngfw"
+      ip_addresses = ["10.200.20.10"] # IP dummy
+      # TODO: The backend pool IP is currently static (10.200.20.10).
+      # Pending: Implement dynamic resolution of the Private Endpoint private IP like in CNGFW module
+      # so Application Gateway can consume it automatically from module outputs.
+    }
 
     # Health Probe
     probes = {
