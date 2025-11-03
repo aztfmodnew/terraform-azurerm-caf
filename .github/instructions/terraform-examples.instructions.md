@@ -9,6 +9,10 @@ When editing files under `examples/**`, treat them as executable tests and docum
 - Directory and naming (MANDATORY)
   - Use numbered directories by complexity: `100-...`, `200-...`, `300-...`.
   - File name must be `configuration.tfvars` (not minimal/complete/example).
+  - Exception (Multi-file pattern): For complex scenarios requiring multiple domains, multiple thematic `.tfvars` files MAY be used (e.g., `network.tfvars`, `security.tfvars`, `application_gateway.tfvars`). When using this pattern:
+    - Provide a README explaining the orchestration order and example invocation.
+    - Ensure CI still has a deterministic entry point (either aggregate `configuration.tfvars` or documented var-file list in workflow JSON).
+    - Keep naming consistency and required blocks spread across files (must still define `global_settings` and `resource_groups` in exactly one file).
 
 - Naming with azurecaf
   - Do NOT include azurecaf prefixes in names (e.g., use `"grafana-test-1"`, not `"rg-grafana-test-1"`).
@@ -16,6 +20,7 @@ When editing files under `examples/**`, treat them as executable tests and docum
 - Required sections
   - `global_settings` with `default_region`, `regions`, and `random_length`.
   - `resource_groups` with key-based references.
+  - For multi-file examples: these mandatory blocks must exist once (do NOT duplicate across files). Document in README which file holds them.
   - Service block under the right category with instance keys.
 
 - References (Key-based preferred)
