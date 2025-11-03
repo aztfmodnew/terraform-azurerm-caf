@@ -177,7 +177,7 @@ jobs:
         id: tf_init
         run: |
           terraform -chdir=${GITHUB_WORKSPACE}/examples \
-          init | grep -P '^- (?=Downloading|Using|Finding|Installing)|^[^-]'
+          init -backend=false | grep -P '^- (?=Downloading|Using|Finding|Installing)|^[^-]'
 
       - name: Terraform Plan example
         id: tf_plan
@@ -189,7 +189,6 @@ jobs:
             -var var_folder_path=${{ env.CURRENT_FOLDER }} \
             -refresh=true \
             -input=false \
-            -state=${{ env.STATE_FILE }} \
             -out=${{ env.PLAN_FILE }}
 
       - name: Terraform Apply example
@@ -198,7 +197,6 @@ jobs:
         run: |
           terraform -chdir=${GITHUB_WORKSPACE}/examples \
             apply \
-            -state=${{ env.STATE_FILE }} \
             ${{ env.PLAN_FILE }}
 
       - name: Get Resource Groups from Terraform State
@@ -208,7 +206,6 @@ jobs:
           # Get Resource Group IDs from Terraform state
           RG_IDS=$(terraform -chdir=${GITHUB_WORKSPACE}/examples \
             show \
-            -state=${{ env.STATE_FILE }} \
             -json | jq -r '.values.root_module.resources[]? | select(.type == "azurerm_resource_group") | .values.id' | tr '\n' ' ')
 
           if [ -n "$RG_IDS" ]; then
@@ -241,7 +238,6 @@ jobs:
             -refresh=true \
             -input=false \
             -destroy \
-            -state=${{ env.STATE_FILE }} \
             -out=${{ env.PLAN_FILE }}-destroy
 
       - name: Terraform Destroy Apply
@@ -251,7 +247,6 @@ jobs:
             apply \
             -refresh=false \
             -auto-approve \
-            -state=${{ env.STATE_FILE }} \
             ${{ env.PLAN_FILE }}-destroy
 
   purge:
