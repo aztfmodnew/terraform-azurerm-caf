@@ -60,13 +60,18 @@ application_gateway_applications = {
       probe_key = "https_health_probe"
     }
 
-    # Backend Pool
+        # Backend Pool
     backend_pool = {
-      name         = "backend-pool-via-cngfw"
-      ip_addresses = ["10.200.20.10"] # IP dummy
-      # TODO: The backend pool IP is currently static (10.200.20.10).
-      # Pending: Implement dynamic resolution of the Private Endpoint private IP like in CNGFW module
-      # so Application Gateway can consume it automatically from module outputs.
+      name = "backend-pool-via-cngfw"
+      # Dynamic resolution of Storage Account Private Endpoint IP
+      storage_accounts = {
+        static_website = {
+          key                  = "demo_static_website"
+          private_endpoint_key = "backend_pe" # Matches the PE key defined in storage_account_static_website.tfvars
+        }
+      }
+      # Fallback: static IPs can still be provided if needed
+      # ip_addresses = ["10.200.20.10"]
     }
 
     # Health Probe

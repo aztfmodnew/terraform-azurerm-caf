@@ -13,7 +13,7 @@
 
 resource_groups = {
   networking_rg = {
-    name     = "rg-cngfw-appgw-waf-example"
+    name     = "cngfw-appgw-waf-example"
     location = "eastus"
     tags = {
       environment = "production"

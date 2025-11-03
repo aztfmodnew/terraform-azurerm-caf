@@ -66,22 +66,6 @@ application_gateways = {
       policy_type = "Predefined"
       policy_name = "AppGwSslPolicy20220101"
     }
-    diagnostic_profiles = {
-      central_logs_region1 = {
-        definition_key   = "application_gateway"
-        destination_type = "log_analytics"
-        destination_key  = "central_logs"
-      }
-    }
-    tags = {
-      environment = "production"
-      tier        = "frontend"
-      protection  = "waf-enabled"
-      ha          = "zone-redundant"
-      cost_center = "infrastructure"
-    }
-
-
 
     # Diagnostic Settings
     # Best Practice: Enable comprehensive logging

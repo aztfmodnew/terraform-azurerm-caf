@@ -155,25 +155,84 @@ Internet
 - Terraform or Azure CLI installed
 - Palo Alto Networks licensing (PAYG or BYOL)
 
+### Multi-file Configuration Pattern
+
+This example uses **multiple thematic `.tfvars` files** instead of a single `configuration.tfvars`, which is an allowed exception for complex scenarios requiring multiple domains.
+
+**Configuration Files**:
+- `resource_groups.tfvars` - Resource group definitions
+- `vnets.tfvars` - Virtual network and subnets
+- `network_security_group_definition.tfvars` - NSG rules
+- `public_ip_addresses.tfvars` - Public IPs for AppGW, NGFW, Bastion
+- `application_gateway.tfvars` - Application Gateway configuration
+- `application_gateway_applications.tfvars` - AppGW listeners, rules, pools
+- `waf.tfvars` - WAF policies (OWASP, Bot Protection, custom rules)
+- `cngfw.tfvars` - Cloud NGFW and rulestack configuration
+- `udrs.tfvars` - User-defined route tables
+- `storage_account_static_website.tfvars` - Static website storage account
+- `storage_account_blobs.tfvars` - Initial web content
+
+**Important Notes**:
+- Mandatory blocks (`global_settings`, `resource_groups`) must be defined exactly once across all files
+- For production deployment, add `global_settings` block to one of the files (e.g., `resource_groups.tfvars`)
+- Remove `rg-` prefix from resource group names (azurecaf adds it automatically)
+- For CI integration, consider creating an aggregate `configuration.tfvars` or listing all var-files in workflow JSON
+
+**Invocation Example**:
+```bash
+terraform plan \
+  -var-file="resource_groups.tfvars" \
+  -var-file="vnets.tfvars" \
+  -var-file="network_security_group_definition.tfvars" \
+  -var-file="public_ip_addresses.tfvars" \
+  -var-file="application_gateway.tfvars" \
+  -var-file="application_gateway_applications.tfvars" \
+  -var-file="waf.tfvars" \
+  -var-file="cngfw.tfvars" \
+  -var-file="udrs.tfvars" \
+  -var-file="storage_account_static_website.tfvars" \
+  -var-file="storage_account_blobs.tfvars"
+```
+
 ### Step 1: Review and Customize Configuration
-1. Review `resource_groups.tfvars` - Update network ranges, regions, naming
-2. Review `waf.tfvars` - Customize WAF rules, geo-filtering countries
-3. Review `application_gateway.tfvars` - Update backend pool IPs, SSL certificates
+1. Review `resource_groups.tfvars` - Remove `rg-` prefix, update regions
+2. Add `global_settings` block with `default_region`, `regions`, and `random_length`
+3. Review `waf.tfvars` - Customize WAF rules, geo-filtering countries
+4. Review `application_gateway.tfvars` - Update backend pool IPs, SSL certificates
+5. Review `udrs.tfvars` - Update next-hop IPs after NGFW deployment
 
 ### Step 2: Deploy Infrastructure
 ```bash
 # Initialize Terraform
 terraform init
 
-# Plan deployment
-terraform plan -var-file="configuration.tfvars" \
-               -var-file="waf.tfvars" \
-               -var-file="application_gateway.tfvars"
+# Plan deployment (using all var-files)
+terraform plan \
+  -var-file="resource_groups.tfvars" \
+  -var-file="vnets.tfvars" \
+  -var-file="network_security_group_definition.tfvars" \
+  -var-file="public_ip_addresses.tfvars" \
+  -var-file="application_gateway.tfvars" \
+  -var-file="application_gateway_applications.tfvars" \
+  -var-file="waf.tfvars" \
+  -var-file="cngfw.tfvars" \
+  -var-file="udrs.tfvars" \
+  -var-file="storage_account_static_website.tfvars" \
+  -var-file="storage_account_blobs.tfvars"
 
 # Deploy
-terraform apply -var-file="configuration.tfvars" \
-                -var-file="waf.tfvars" \
-                -var-file="application_gateway.tfvars"
+terraform apply \
+  -var-file="resource_groups.tfvars" \
+  -var-file="vnets.tfvars" \
+  -var-file="network_security_group_definition.tfvars" \
+  -var-file="public_ip_addresses.tfvars" \
+  -var-file="application_gateway.tfvars" \
+  -var-file="application_gateway_applications.tfvars" \
+  -var-file="waf.tfvars" \
+  -var-file="cngfw.tfvars" \
+  -var-file="udrs.tfvars" \
+  -var-file="storage_account_static_website.tfvars" \
+  -var-file="storage_account_blobs.tfvars"
 ```
 
 ### Step 3: Configure Cloud NGFW
@@ -186,8 +245,8 @@ terraform apply -var-file="configuration.tfvars" \
 ### Step 4: Update User-Defined Routes
 After NGFW deployment, update UDR next-hop IP addresses:
 1. Get NGFW trust interface private IP
-2. Update `configuration.tfvars` route table next-hop IPs
-3. Reapply Terraform configuration
+2. Update `udrs.tfvars` route table next-hop IPs (replace placeholder `10.200.10.4`)
+3. Reapply Terraform configuration with all var-files
 
 ### Step 5: Test and Validate
 1. **Test WAF**:
