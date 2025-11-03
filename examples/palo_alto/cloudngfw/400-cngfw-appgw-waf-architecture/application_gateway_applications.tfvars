@@ -60,7 +60,7 @@ application_gateway_applications = {
       probe_key = "https_health_probe"
     }
 
-        # Backend Pool
+    # Backend Pool
     backend_pool = {
       name = "backend-pool-via-cngfw"
       # Dynamic resolution of Storage Account Private Endpoint IP
