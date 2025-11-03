@@ -624,6 +624,11 @@ All examples MUST follow the numbered directory structure for organization by co
 
 - Always use `configuration.tfvars` (NOT `minimal.tfvars`, `complete.tfvars`, or `example.tfvars`)
 - This ensures consistency with test workflows
+- Multi-file Exception: For complex scenarios requiring multiple domains, you MAY split configuration across multiple themed `.tfvars` files (e.g. `network.tfvars`, `security.tfvars`, `application_gateway.tfvars`). When doing so:
+  - Provide a README detailing all var-files and recommended invocation order.
+  - Ensure CI has a deterministic entry point (either add an aggregate `configuration.tfvars` or list all var-files explicitly in the workflow JSON array for that scenario).
+  - Keep mandatory blocks (`global_settings`, `resource_groups`) defined exactly once (do not duplicate across files).
+  - Maintain naming and key-based reference standards across all files.
 
 ### Example Content Guidelines
 
