@@ -31,6 +31,15 @@ application_gateways = {
       key = "production_waf_policy"
     }
 
+    # Managed Identity for Key Vault Access
+    # Best Practice: Use managed identity instead of service principal
+    identity = {
+      type = "UserAssigned"
+      managed_identity_keys = [
+        "appgw_keyvault_identity"
+      ]
+    }
+
     # Capacity Configuration
     # Best Practice: Use autoscaling for production workloads
     capacity = {
@@ -65,6 +74,18 @@ application_gateways = {
     ssl_policy = {
       policy_type = "Predefined"
       policy_name = "AppGwSslPolicy20220101"
+    }
+
+    # Redirect Configurations
+    # Best Practice: Redirect HTTP to HTTPS for security
+    redirect_configurations = {
+      http_to_https = {
+        name                 = "http-to-https"
+        redirect_type        = "Permanent"
+        target_listener_name = "listener-https-443"
+        include_path         = true
+        include_query_string = true
+      }
     }
 
     # Diagnostic Settings

@@ -28,6 +28,14 @@ palo_alto_cloudngfws = {
         }
       ]
 
+      # Egress NAT IP addresses for outbound traffic
+      # Best practice: Use dedicated IP for egress NAT
+      egress_nat_ip_address_keys = [
+        {
+          key = "ngfw_dataplane_pip" # Use dataplane PIP for egress NAT
+        }
+      ]
+
       enable_egress_nat = true
     }
 
@@ -82,7 +90,7 @@ palo_alto_cloudngfws = {
         "allow-dns" = {
           priority     = 110
           action       = "Allow"
-          applications = ["dns"]
+          applications = ["any"]
           description  = "Allow DNS queries with DNS security"
           enabled      = true
           source = {

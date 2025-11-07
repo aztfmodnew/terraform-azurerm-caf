@@ -17,35 +17,25 @@ application_gateway_applications = {
         host_name                      = "app.example.com"
         require_sni                    = true
         request_routing_rule_key       = "https_routing"
-      }
-      http_listener = {
-        name                           = "listener-http-80"
-        front_end_ip_configuration_key = "public"
-        front_end_port_key             = "http"
-        protocol                       = "Http"
-        host_name                      = "app.example.com"
-        request_routing_rule_key       = "http_to_https_redirect"
+        # Reference Key Vault certificate
+        keyvault_certificate = {
+          certificate_key = "app_example_com"
+        }
       }
     }
 
     # Request Routing Rules
     request_routing_rules = {
-      http_to_https_redirect = {
-        rule_type                   = "Basic"
-        priority                    = 100
-        redirect_configuration_name = "http-to-https"
-      }
       https_routing = {
-        rule_type                 = "Basic"
-        priority                  = 200
-        backend_address_pool_key  = "backend-pool-via-cngfw"
-        backend_http_settings_key = "backend-http-settings-443"
+        rule_type = "Basic"
+        priority  = 200
+        # Module automatically associates backend pool and http settings based on application name
       }
     }
 
     # Backend HTTP Settings
     backend_http_setting = {
-      name                                = "backend-http-settings-443"
+      # No name - module uses application name automatically
       cookie_based_affinity               = "Disabled"
       affinity_cookie_name                = "ApplicationGatewayAffinity"
       port                                = 443
@@ -62,7 +52,7 @@ application_gateway_applications = {
 
     # Backend Pool
     backend_pool = {
-      name = "backend-pool-via-cngfw"
+      # No name - module uses application name automatically
       # Dynamic resolution of Storage Account Private Endpoint IP
       storage_accounts = {
         static_website = {
@@ -98,6 +88,32 @@ application_gateway_applications = {
       protection  = "waf-enabled"
       ha          = "zone-redundant"
       cost_center = "infrastructure"
+    }
+  }
+
+  # HTTP to HTTPS Redirect
+  http_redirect = {
+    name                    = "http-redirect"
+    type                    = "redirect"
+    application_gateway_key = "production_appgw"
+
+    listeners = {
+      http_listener = {
+        name                           = "listener-http-80"
+        front_end_ip_configuration_key = "public"
+        front_end_port_key             = "http"
+        protocol                       = "Http"
+        host_name                      = "app.example.com"
+        request_routing_rule_key       = "redirect_rule"
+      }
+    }
+
+    request_routing_rules = {
+      redirect_rule = {
+        rule_type                   = "Basic"
+        priority                    = 100
+        redirect_configuration_name = "http-to-https"
+      }
     }
   }
 }

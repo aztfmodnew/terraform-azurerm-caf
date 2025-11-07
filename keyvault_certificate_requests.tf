@@ -3,7 +3,11 @@
 # configuration breaking change when migration from module keyvault_certificate
 #
 module "keyvault_certificate_requests" {
-  depends_on = [module.keyvault_certificate_issuers, module.domain_name_registrations]
+  depends_on = [
+    module.keyvault_certificate_issuers,
+    module.domain_name_registrations,
+    time_sleep.keyvault_certificates_logged_in
+  ]
   source     = "./modules/security/keyvault_certificate_request"
   for_each   = local.security.keyvault_certificate_requests
 

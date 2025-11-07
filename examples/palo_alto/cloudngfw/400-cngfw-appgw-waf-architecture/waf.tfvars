@@ -37,14 +37,16 @@ application_gateway_waf_policies = {
     # Best Practice: Block malicious IPs and implement geo-filtering
     custom_rules = {
       # Rate Limiting Rule
+      # Blocks IPs that exceed 100 requests per minute
       rate_limit_rule = {
         name      = "RateLimitRule"
         priority  = 10
         rule_type = "RateLimitRule"
         action    = "Block"
 
-        rate_limit_duration_in_minutes = 1
-        rate_limit_threshold           = 100
+        rate_limit_duration  = "OneMin"     # Possible values: "OneMin" or "FiveMins"
+        rate_limit_threshold = 100          # Must be >= 1
+        group_rate_limit_by  = "ClientAddr" # Count requests by client IP
 
         match_conditions = {
           mc1 = {
