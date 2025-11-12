@@ -14,13 +14,13 @@ resource "azurerm_role_assignment" "keyvault_certificates_logged_in" {
 }
 
 resource "time_sleep" "keyvault_certificates_logged_in" {
-  for_each      = length(local.keyvault_certificates_logged_in_access) > 0 ? { wait = true } : {}
-  depends_on    = [azurerm_role_assignment.keyvault_certificates_logged_in]
+  for_each        = length(local.keyvault_certificates_logged_in_access) > 0 ? { wait = true } : {}
+  depends_on      = [azurerm_role_assignment.keyvault_certificates_logged_in]
   create_duration = "3m"
 }
 
 module "keyvault_certificates" {
-  source     = "./modules/security/keyvault_certificate"
+  source = "./modules/security/keyvault_certificate"
   depends_on = [
     module.keyvaults,
     module.keyvault_access_policies,
