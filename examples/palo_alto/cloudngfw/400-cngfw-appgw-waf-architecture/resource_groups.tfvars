@@ -16,7 +16,7 @@ resource_groups = {
     name     = "cngfw-appgw-waf-example"
     location = "eastus"
     tags = {
-      environment = "sandbox"
+      environment = "production"
       deployment  = "cngfw-appgw-waf-architecture"
     }
   }

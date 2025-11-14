@@ -7,7 +7,8 @@ public_ip_addresses = {
     allocation_method  = "Static"
     zones              = ["1", "2", "3"] # Zone-redundant for high availability
     tags = {
-      purpose = "Application Gateway Public IP"
+      environment = "production"
+      purpose     = "Application Gateway Public IP"
     }
   }
 
@@ -18,7 +19,8 @@ public_ip_addresses = {
     allocation_method  = "Static"
     zones              = ["1", "2", "3"]
     tags = {
-      purpose = "Cloud NGFW Management"
+      environment = "production"
+      purpose     = "Cloud NGFW Management"
     }
   }
 
@@ -29,7 +31,8 @@ public_ip_addresses = {
     allocation_method  = "Static"
     zones              = ["1", "2", "3"]
     tags = {
-      purpose = "Cloud NGFW Data Plane"
+      environment = "production"
+      purpose     = "Cloud NGFW Data Plane"
     }
   }
 
@@ -40,7 +43,8 @@ public_ip_addresses = {
     allocation_method  = "Static"
     zones              = ["1", "2", "3"]
     tags = {
-      purpose = "Azure Bastion"
+      environment = "production"
+      purpose     = "Azure Bastion"
     }
   }
 }

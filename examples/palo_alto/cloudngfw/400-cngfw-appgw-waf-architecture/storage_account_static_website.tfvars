@@ -1,4 +1,4 @@
-# Storage Account con Static Website y Private Endpoint en la subred de backend
+# Storage account hosting the static website behind the WAF/NGFW chain plus a private endpoint on the backend subnet
 
 storage_accounts = {
   demo_static_website = {
@@ -14,7 +14,7 @@ storage_accounts = {
       error_404_document = "404.html"
     }
     tags = {
-      environment = "demo"
+      environment = "production"
       purpose     = "static-website"
     }
     # Private Endpoint en la subred de backend
@@ -37,4 +37,4 @@ storage_accounts = {
   }
 }
 
-# Puedes subir el contenido web a mano tras el despliegue usando Azure Portal o azcopy.
+# Web content is uploaded automatically through storage_account_blobs.tfvars; manual uploads are optional for customization.

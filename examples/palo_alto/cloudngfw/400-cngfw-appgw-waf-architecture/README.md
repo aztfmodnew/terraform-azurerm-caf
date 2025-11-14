@@ -160,22 +160,46 @@ Internet
 This example uses **multiple thematic `.tfvars` files** instead of a single `configuration.tfvars`, which is an allowed exception for complex scenarios requiring multiple domains.
 
 **Configuration Files**:
+- `global_settings.tfvars` - CAF global configuration (regions, randomness, defaults)
 - `resource_groups.tfvars` - Resource group definitions
+- `role_mapping.tfvars` - RBAC for operators and managed identities
+- `managed_identities.tfvars` - User-assigned managed identity for App Gateway
+- `keyvault.tfvars` - Key Vault storing SSL certificates
 - `vnets.tfvars` - Virtual network and subnets
 - `network_security_group_definition.tfvars` - NSG rules
 - `public_ip_addresses.tfvars` - Public IPs for AppGW, NGFW, Bastion
+- `storage_account_static_website.tfvars` - Static website storage account + private endpoint
+- `storage_account_blobs.tfvars` - Initial web content automatically uploaded
 - `application_gateway.tfvars` - Application Gateway configuration
 - `application_gateway_applications.tfvars` - AppGW listeners, rules, pools
 - `waf.tfvars` - WAF policies (OWASP, Bot Protection, custom rules)
 - `cngfw.tfvars` - Cloud NGFW and rulestack configuration
 - `udrs.tfvars` - User-defined route tables
-- `storage_account_static_website.tfvars` - Static website storage account
-- `storage_account_blobs.tfvars` - Initial web content
+
+**Var-file inventory**
+
+| File | Purpose | Mandatory |
+| --- | --- | --- |
+| `global_settings.tfvars` | Defines CAF global settings (`default_region`, `regions`, `random_length`) | ✅ |
+| `resource_groups.tfvars` | Creates shared resource groups | ✅ |
+| `role_mapping.tfvars` | Grants Key Vault Administrator to operator and certificate access to AppGW identity | ✅ |
+| `managed_identities.tfvars` | Provisions the App Gateway Key Vault user-assigned identity | ✅ |
+| `keyvault.tfvars` | Creates Key Vault and certificate | ✅ |
+| `public_ip_addresses.tfvars` | Allocates public IPs for AppGW, NGFW, Bastion | ✅ |
+| `vnets.tfvars` | Defines hub VNet, subnets, delegations, route-table bindings | ✅ |
+| `network_security_group_definition.tfvars` | NSG definitions for every subnet | ✅ |
+| `storage_account_static_website.tfvars` | Storage account and private endpoint hosting the website | ✅ |
+| `storage_account_blobs.tfvars` | Seeds `index.html` and `404.html` content | Optional (remove if uploading content differently) |
+| `application_gateway.tfvars` | Core Application Gateway settings | ✅ |
+| `application_gateway_applications.tfvars` | Listener/rule/backend composition | ✅ |
+| `waf.tfvars` | WAF policy definitions | ✅ |
+| `cngfw.tfvars` | Palo Alto Cloud NGFW and rulestack policy | ✅ |
+| `udrs.tfvars` | Route tables forcing traffic through NGFW | ✅ |
 
 **Important Notes**:
-- Mandatory blocks (`global_settings`, `resource_groups`) must be defined exactly once across all files
-- For production deployment, add `global_settings` block to one of the files (e.g., `resource_groups.tfvars`)
+- Mandatory blocks (`global_settings`, `resource_groups`) already live in their own tfvars files; do not duplicate them elsewhere
 - Remove `rg-` prefix from resource group names (azurecaf adds it automatically)
+- Static website content is uploaded automatically through `storage_account_blobs.tfvars`; adjust or remove that file if you plan to publish different files manually
 - For CI integration, consider creating an aggregate `configuration.tfvars` or listing all var-files in workflow JSON
 
 **Invocation Example**:
@@ -196,7 +220,7 @@ terraform plan \
 
 ### Step 1: Review and Customize Configuration
 1. Review `resource_groups.tfvars` - Remove `rg-` prefix, update regions
-2. Add `global_settings` block with `default_region`, `regions`, and `random_length`
+2. Review `global_settings.tfvars` to confirm `default_region`, `regions`, and `random_length` match your landing zone standards
 3. Review `waf.tfvars` - Customize WAF rules, geo-filtering countries
 4. Review `application_gateway.tfvars` - Update backend pool IPs, SSL certificates
 5. Review `udrs.tfvars` - Update next-hop IPs after NGFW deployment
