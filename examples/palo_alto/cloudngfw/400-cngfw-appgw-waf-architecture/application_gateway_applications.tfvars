@@ -1,6 +1,6 @@
 # Application Gateway Applications Configuration
 # Este fichero define los listeners, reglas, pools y settings requeridos por el módulo CAF
-# siguiendo el patrón de los ejemplos funcionales y la documentación oficial.
+# following the pattern from functional examples and official documentation.
 
 application_gateway_applications = {
   cngfw_app = {
