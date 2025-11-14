@@ -1,4 +1,4 @@
-# Blobs para el Storage Account del sitio estático protegido por WAF y NGFW
+# Blobs for the Storage Account of the static website protected by WAF and NGFW
 
 storage_account_blobs = {
   index_html = {
