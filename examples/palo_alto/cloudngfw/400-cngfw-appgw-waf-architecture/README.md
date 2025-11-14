@@ -184,6 +184,7 @@ This example uses **multiple thematic `.tfvars` files** instead of a single `con
 - `public_ip_addresses.tfvars` - Public IPs for AppGW, NGFW, Bastion
 - `storage_account_static_website.tfvars` - Static website storage account + private endpoint
 - `storage_account_blobs.tfvars` - Initial web content automatically uploaded
+- `private_dns.tfvars` - Private DNS zone for storage account private endpoint
 - `log_analytics.tfvars` - Central Log Analytics workspace plus diagnostic destinations
 - `application_gateway.tfvars` - Application Gateway configuration
 - `application_gateway_applications.tfvars` - AppGW listeners, rules, pools
@@ -205,6 +206,7 @@ This example uses **multiple thematic `.tfvars` files** instead of a single `con
 | `network_security_group_definition.tfvars` | NSG definitions for every subnet                                                        | ✅                                                 |
 | `storage_account_static_website.tfvars`    | Storage account and private endpoint hosting the website                                | ✅                                                 |
 | `storage_account_blobs.tfvars`             | Seeds `index.html` and `404.html` content                                               | Optional (remove if uploading content differently) |
+| `private_dns.tfvars`                       | Private DNS zone for blob storage private endpoint resolution                           | ✅                                                 |
 | `log_analytics.tfvars`                     | Central Log Analytics workspace plus diagnostics definition/destination for App Gateway | ✅                                                 |
 | `application_gateway.tfvars`               | Core Application Gateway settings                                                       | ✅                                                 |
 | `application_gateway_applications.tfvars`  | Listener/rule/backend composition                                                       | ✅                                                 |
@@ -239,6 +241,7 @@ terraform plan \
    -var-file="udrs.tfvars" \
    -var-file="storage_account_static_website.tfvars" \
    -var-file="storage_account_blobs.tfvars" \
+   -var-file="private_dns.tfvars" \
    -var-file="log_analytics.tfvars"
 ```
 
@@ -276,6 +279,7 @@ terraform plan \
    -var-file="udrs.tfvars" \
    -var-file="storage_account_static_website.tfvars" \
    -var-file="storage_account_blobs.tfvars" \
+   -var-file="private_dns.tfvars" \
    -var-file="log_analytics.tfvars"
 
 # Deploy
@@ -295,6 +299,7 @@ terraform apply \
    -var-file="udrs.tfvars" \
    -var-file="storage_account_static_website.tfvars" \
    -var-file="storage_account_blobs.tfvars" \
+   -var-file="private_dns.tfvars" \
    -var-file="log_analytics.tfvars"
 ```
 
@@ -318,23 +323,23 @@ After NGFW deployment, update UDR next-hop IP addresses:
 
 1. **Test WAF**:
 
-    ```bash
-    # Test SQL injection detection
-    curl "https://app.example.com/?id=1' OR '1'='1"
+   ```bash
+   # Test SQL injection detection
+   curl "https://app.example.com/?id=1' OR '1'='1"
 
-    # Test XSS detection
-    curl "https://app.example.com/?search=<script>alert(1)</script>"
-    ```
+   # Test XSS detection
+   curl "https://app.example.com/?search=<script>alert(1)</script>"
+   ```
 
 2. **Test NGFW**:
-    - Attempt to access blocked URLs
-    - Test application-based policies
-    - Verify threat prevention logs
+   - Attempt to access blocked URLs
+   - Test application-based policies
+   - Verify threat prevention logs
 
 3. **Monitor Logs**:
-    - Application Gateway logs
-    - WAF logs
-    - Cloud NGFW logs
+   - Application Gateway logs
+   - WAF logs
+   - Cloud NGFW logs
 
 ### Step 6: Tune WAF Policies
 
@@ -344,22 +349,23 @@ After NGFW deployment, update UDR next-hop IP addresses:
 4. Switch to **Prevention Mode**
 
 | ------------------------------------------ | --------------------------------------------------------------------------------------- | -------------------------------------------------- |
-| `global_settings.tfvars`                   | Defines CAF global settings (`default_region`, `regions`, `random_length`)              | ✅                                                 |
-| `resource_groups.tfvars`                   | Creates shared resource groups                                                          | ✅                                                 |
-| `role_mapping.tfvars`                      | Grants Key Vault Administrator to operator and certificate access to AppGW identity     | ✅                                                 |
-| `managed_identities.tfvars`                | Provisions the App Gateway Key Vault user-assigned identity                             | ✅                                                 |
-| `keyvault.tfvars`                          | Creates Key Vault and certificate                                                       | ✅                                                 |
-| `public_ip_addresses.tfvars`               | Allocates public IPs for AppGW, NGFW, Bastion                                           | ✅                                                 |
-| `vnets.tfvars`                             | Defines hub VNet, subnets, delegations, route-table bindings                            | ✅                                                 |
-| `network_security_group_definition.tfvars` | NSG definitions for every subnet                                                        | ✅                                                 |
-| `storage_account_static_website.tfvars`    | Storage account and private endpoint hosting the website                                | ✅                                                 |
-| `storage_account_blobs.tfvars`             | Seeds `index.html` and `404.html` content                                               | Optional (remove if uploading content differently) |
-| `log_analytics.tfvars`                     | Central Log Analytics workspace plus diagnostics definition/destination for App Gateway | ✅                                                 |
-| `application_gateway.tfvars`               | Core Application Gateway settings                                                       | ✅                                                 |
-| `application_gateway_applications.tfvars`  | Listener/rule/backend composition                                                       | ✅                                                 |
-| `waf.tfvars`                               | WAF policy definitions                                                                  | ✅                                                 |
-| `cngfw.tfvars`                             | Palo Alto Cloud NGFW and rulestack policy                                               | ✅                                                 |
-| `udrs.tfvars`                              | Route tables forcing traffic through NGFW                                               | ✅                                                 |
+| `global_settings.tfvars` | Defines CAF global settings (`default_region`, `regions`, `random_length`) | ✅ |
+| `resource_groups.tfvars` | Creates shared resource groups | ✅ |
+| `role_mapping.tfvars` | Grants Key Vault Administrator to operator and certificate access to AppGW identity | ✅ |
+| `managed_identities.tfvars` | Provisions the App Gateway Key Vault user-assigned identity | ✅ |
+| `keyvault.tfvars` | Creates Key Vault and certificate | ✅ |
+| `public_ip_addresses.tfvars` | Allocates public IPs for AppGW, NGFW, Bastion | ✅ |
+| `vnets.tfvars` | Defines hub VNet, subnets, delegations, route-table bindings | ✅ |
+| `network_security_group_definition.tfvars` | NSG definitions for every subnet | ✅ |
+| `storage_account_static_website.tfvars` | Storage account and private endpoint hosting the website | ✅ |
+| `storage_account_blobs.tfvars` | Seeds `index.html` and `404.html` content | Optional (remove if uploading content differently) |
+| `private_dns.tfvars` | Private DNS zone for blob storage private endpoint resolution | ✅ |
+| `log_analytics.tfvars` | Central Log Analytics workspace plus diagnostics definition/destination for App Gateway | ✅ |
+| `application_gateway.tfvars` | Core Application Gateway settings | ✅ |
+| `application_gateway_applications.tfvars` | Listener/rule/backend composition | ✅ |
+| `waf.tfvars` | WAF policy definitions | ✅ |
+| `cngfw.tfvars` | Palo Alto Cloud NGFW and rulestack policy | ✅ |
+| `udrs.tfvars` | Route tables forcing traffic through NGFW | ✅ |
 
 **Important Notes**:
 
@@ -384,6 +390,7 @@ terraform plan \
   -var-file="udrs.tfvars" \
   -var-file="storage_account_static_website.tfvars" \
    -var-file="storage_account_blobs.tfvars" \
+   -var-file="private_dns.tfvars" \
    -var-file="log_analytics.tfvars"
 ```
 
@@ -414,6 +421,7 @@ terraform plan \
   -var-file="udrs.tfvars" \
   -var-file="storage_account_static_website.tfvars" \
    -var-file="storage_account_blobs.tfvars" \
+   -var-file="private_dns.tfvars" \
    -var-file="log_analytics.tfvars"
 
 # Deploy
@@ -429,6 +437,7 @@ terraform apply \
   -var-file="udrs.tfvars" \
   -var-file="storage_account_static_website.tfvars" \
    -var-file="storage_account_blobs.tfvars" \
+   -var-file="private_dns.tfvars" \
    -var-file="log_analytics.tfvars"
 ```
 
