@@ -1,4 +1,4 @@
-# Storage Account con Static Website y Private Endpoint en la subred de backend
+# Storage Account with Static Website and Private Endpoint in the backend subnet
 
 storage_accounts = {
   demo_static_website = {
@@ -17,7 +17,7 @@ storage_accounts = {
       environment = "demo"
       purpose     = "static-website"
     }
-    # Private Endpoint en la subred de backend
+    # Private Endpoint in the backend subnet
     private_endpoints = {
       backend_pe = {
         name       = "backend-pe"
@@ -37,4 +37,4 @@ storage_accounts = {
   }
 }
 
-# Puedes subir el contenido web a mano tras el despliegue usando Azure Portal o azcopy.
+# You can upload web content manually after deployment using Azure Portal or azcopy.
