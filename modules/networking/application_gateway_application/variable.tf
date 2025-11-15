@@ -38,3 +38,8 @@ variable "application_gateway_waf_policies" {
   default = {}
   type    = map(any)
 }
+variable "remote_objects" {
+  description = "Remote objects for cross-module references"
+  default     = {}
+  type        = any
+}

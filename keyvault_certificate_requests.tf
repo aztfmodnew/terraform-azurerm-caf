@@ -3,9 +3,13 @@
 # configuration breaking change when migration from module keyvault_certificate
 #
 module "keyvault_certificate_requests" {
-  depends_on = [module.keyvault_certificate_issuers, module.domain_name_registrations]
-  source     = "./modules/security/keyvault_certificate_request"
-  for_each   = local.security.keyvault_certificate_requests
+  depends_on = [
+    module.keyvault_certificate_issuers,
+    module.domain_name_registrations,
+    time_sleep.keyvault_certificates_logged_in
+  ]
+  source   = "./modules/security/keyvault_certificate_request"
+  for_each = local.security.keyvault_certificate_requests
 
   keyvault_id               = can(each.value.keyvault_id) ? each.value.keyvault_id : local.combined_objects_keyvaults[try(each.value.lz_key, local.client_config.landingzone_key)][each.value.keyvault_key].id
   keyvault_uri              = can(each.value.keyvault_uri) ? each.value.keyvault_uri : local.combined_objects_keyvaults[try(each.value.lz_key, local.client_config.landingzone_key)][each.value.keyvault_key].vault_uri

@@ -13,6 +13,11 @@ resource "azurerm_web_application_firewall_policy" "wafpolicy" {
       rule_type = custom_rules.value.rule_type
       action    = custom_rules.value.action
 
+      # Rate limiting parameters (only for RateLimitRule type)
+      rate_limit_duration  = try(custom_rules.value.rate_limit_duration, null)
+      rate_limit_threshold = try(custom_rules.value.rate_limit_threshold, null)
+      group_rate_limit_by  = try(custom_rules.value.group_rate_limit_by, null)
+
       dynamic "match_conditions" {
         for_each = custom_rules.value.match_conditions
         content {

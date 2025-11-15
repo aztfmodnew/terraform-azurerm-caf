@@ -167,6 +167,8 @@ subnets = {
 terraform test -test-directory=./tests/mock -var-file="./path/to/example.tfvars"
 ```
 
+For multi-file scenarios (like the Cloud NGFW + AppGW example) the command MUST include every `.tfvars` file referenced in the README. The canonical recipe lives in `examples/tests/README.md`; mirror that structure by running `terraform init -upgrade` inside `examples/` first, then invoking `terraform test -test-directory=./tests/mock` with `-var-file="./category/service/.../file.tfvars"` for each file listed in the example’s documentation.
+
 **Implication**: All resources must be properly defined and cross-referenced. Missing keys or invalid structures will cause test failures.
 
 **AI Responsibility**: Ensure generated configurations are self-contained and all referenced keys exist within the same file or are standard CAF framework keys.

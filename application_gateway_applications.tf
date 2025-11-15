@@ -12,6 +12,10 @@ module "application_gateway_applications" {
   keyvault_certificates            = local.combined_objects_keyvault_certificates
   keyvaults                        = local.combined_objects_keyvaults
   application_gateway_waf_policies = local.combined_objects_application_gateway_waf_policies
+
+  remote_objects = {
+    storage_accounts = local.combined_objects_storage_accounts
+  }
 }
 
 output "application_gateway_applications_v1" {
