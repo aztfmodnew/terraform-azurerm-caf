@@ -85,7 +85,7 @@ jobs:
       - name: Terraform Init example with ${{ github.event.inputs.base_version }}
         run: |
           terraform -chdir=${GITHUB_WORKSPACE}/examples \
-          init -upgrade=true | grep -P '^- (?=Downloading|Using|Finding|Installing)|^[^-]'
+          init -backend=false -upgrade=true | grep -P '^- (?=Downloading|Using|Finding|Installing)|^[^-]'
 
       - name: Terraform Plan example with ${{ github.event.inputs.base_version }}
         run: |
@@ -96,7 +96,6 @@ jobs:
             -var var_folder_path=${{ env.CURRENT_FOLDER }} \
             -refresh=true \
             -input=false \
-            -state=${{ env.STATE_FILE }} \
             -out=${{ env.PLAN_FILE }}
 
       - name: Terraform Apply example with ${{ github.event.inputs.base_version }}
@@ -104,7 +103,6 @@ jobs:
           terraform -chdir=${GITHUB_WORKSPACE}/examples \
             apply \
             -parallelism=30 \
-            -state=${{ env.STATE_FILE }} \
             ${{ env.PLAN_FILE }}
 
       - name: Checkout from selected branch
@@ -113,7 +111,7 @@ jobs:
       - name: Terraform Init example with selected branch
         run: |
           terraform -chdir=${GITHUB_WORKSPACE}/examples \
-          init -upgrade=true | grep -P '^- (?=Downloading|Using|Finding|Installing)|^[^-]'
+          init -backend=false -upgrade=true | grep -P '^- (?=Downloading|Using|Finding|Installing)|^[^-]'
 
       - name: Terraform Refresh example with selected branch
         run: |
@@ -122,8 +120,7 @@ jobs:
             ${{ env.PARAMETER_FILES }} \
             -var tags='{testing_job_id='"${{ github.run_id }}"'}' \
             -var var_folder_path=${{ env.CURRENT_FOLDER }} \
-            -input=false \
-            -state=${{ env.STATE_FILE }}
+            -input=false
 
       - name: Terraform Plan example with selected branch
         run: |
@@ -135,7 +132,6 @@ jobs:
             -refresh=true \
             -input=false \
             -detailed-exitcode \
-            -state=${{ env.STATE_FILE }} \
             -out=${{ env.PLAN_FILE }}-delta
 
       - name: Terraform Apply example with selected branch
@@ -143,7 +139,6 @@ jobs:
           terraform -chdir=${GITHUB_WORKSPACE}/examples \
             apply \
             -parallelism=30 \
-            -state=${{ env.STATE_FILE }} \
             ${{ env.PLAN_FILE }}-delta
 
       - name: Terraform Destroy planning example
@@ -157,7 +152,6 @@ jobs:
             -refresh=true \
             -input=false \
             -destroy \
-            -state=${{ env.STATE_FILE }} \
             -out=${{ env.PLAN_FILE }}-destroy
 
       - name: Terraform Destroy apply example
@@ -168,7 +162,6 @@ jobs:
             -refresh=false \
             -parallelism=30 \
             -auto-approve \
-            -state=${{ env.STATE_FILE }} \
             ${{ env.PLAN_FILE }}-destroy
 
   purge:
