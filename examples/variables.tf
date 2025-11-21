@@ -303,6 +303,10 @@ variable "route_tables" {
   type    = any
   default = {}
 }
+variable "route_servers" {
+  type    = any
+  default = {}
+}
 variable "subnet_service_endpoint_storage_policies" {
   type    = any
   default = {}
