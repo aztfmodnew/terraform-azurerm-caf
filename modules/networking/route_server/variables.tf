@@ -35,23 +35,25 @@ variable "settings" {
   description = <<DESCRIPTION
 Settings object for route_server:
 
-- name                : (Required) Base name without CAF prefix
-- vnet_key            : (Required) Key of the virtual network containing the RouteServerSubnet
-- subnet_key          : (Required) Key of the dedicated Route Server subnet inside the VNet
-- lz_key              : (Optional) Landing zone key for the VNet (defaults to client_config.landingzone_key)
-- public_ip_key       : (Required) Key of the public IP address
-- subnet_id           : (Optional) Direct override for subnet id
-- public_ip_address_id: (Optional) Direct override for public IP id
-- sku                 : (Optional) SKU, defaults to Standard
-- tags                : (Optional) Additional tags specific to the Route Server
+- name                            : (Required) Base name without CAF prefix
+- vnet_key                        : (Required) Key of the virtual network containing the RouteServerSubnet
+- subnet_key                      : (Required) Key of the dedicated Route Server subnet inside the VNet (typically "RouteServerSubnet")
+- lz_key                          : (Optional) Landing zone key for the VNet (defaults to client_config.landingzone_key)
+- public_ip_key                   : (Required) Key of the public IP address
+- subnet_id                       : (Optional) Direct override for subnet id
+- public_ip_address_id            : (Optional) Direct override for public IP id
+- sku                             : (Optional) SKU, defaults to Standard
+- branch_to_branch_traffic_enabled: (Optional) Enable branch-to-branch traffic, defaults to false
+- hub_routing_preference          : (Optional) The routing preference. Possible values are ExpressRoute, ASPath or VpnGateway
+- tags                            : (Optional) Additional tags specific to the Route Server
 
 Example:
 ```hcl
 settings = {
 	name           = "rs-core"
 	vnet_key       = "hub"
-	subnet_key     = "routeserver"
-	public_ip_keys = ["rs-pip1", "rs-pip2"]
+	subnet_key     = "RouteServerSubnet"
+	public_ip_key  = "rs-pip"
 }
 ```
 DESCRIPTION

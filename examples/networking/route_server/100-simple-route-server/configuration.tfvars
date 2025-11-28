@@ -31,7 +31,7 @@ vnets = {
 
 public_ip_addresses = {
   rs_pip = {
-    name               = "rs-pip"
+    name               = "rs"
     resource_group_key = "test"
     sku                = "Standard" # must be 'Standard' SKU
     allocation_method  = "Static"

@@ -10,7 +10,7 @@ resource "azurerm_bot_channel_ms_teams" "ms_teams_channel" {
   # Optional arguments
   calling_web_hook       = try(var.settings.calling_web_hook, null)
   deployment_environment = try(var.settings.deployment_environment, "CommercialDeployment")
-  enable_calling         = try(var.settings.enable_calling, false)
+  calling_enabled        = try(var.settings.calling_enabled, try(var.settings.enable_calling, false))
 
   dynamic "timeouts" {
     for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
