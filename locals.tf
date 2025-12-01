@@ -405,7 +405,6 @@ locals {
     vpn_gateway_connections                                 = try(var.networking.vpn_gateway_connections, {})
     vpn_gateway_nat_rules                                   = try(var.networking.vpn_gateway_nat_rules, {})
     vpn_sites                                               = try(var.networking.vpn_sites, {})
-    route_servers                                           = try(var.networking.route_servers, {})
   }
 
   palo_alto = {
