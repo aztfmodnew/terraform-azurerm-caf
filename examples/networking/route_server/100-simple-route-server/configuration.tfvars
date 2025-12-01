@@ -14,7 +14,9 @@ resource_groups = {
 
 vnets = {
   hub_vnet = {
-    resource_group_key = "test"
+    resource_group = {
+      key = "test"
+    }
     vnet = {
       name          = "hub-vnet"
       address_space = ["10.0.0.0/16"]
@@ -31,22 +33,26 @@ vnets = {
 
 public_ip_addresses = {
   rs_pip = {
-    name               = "rs"
-    resource_group_key = "test"
-    sku                = "Standard" # must be 'Standard' SKU
-    allocation_method  = "Static"
-    ip_version         = "IPv4"
+    name = "rs"
+    resource_group = {
+      key = "test"
+    }
+    sku               = "Standard" # must be 'Standard' SKU
+    allocation_method = "Static"
+    ip_version        = "IPv4"
   }
 }
 
 route_servers = {
   rs1 = {
-    name               = "core-rs"
-    resource_group_key = "test"
-    vnet_key           = "hub_vnet"
-    subnet_key         = "RouteServerSubnet"
-    public_ip_key      = "rs_pip"
-    sku                = "Standard"
+    name = "core-rs"
+    resource_group = {
+      key = "test"
+    }
+    vnet_key      = "hub_vnet"
+    subnet_key    = "RouteServerSubnet"
+    public_ip_key = "rs_pip"
+    sku           = "Standard"
 
     tags = {
       purpose = "route-server-example"
