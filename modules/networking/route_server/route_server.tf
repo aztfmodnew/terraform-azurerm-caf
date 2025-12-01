@@ -21,4 +21,15 @@ resource "azurerm_route_server" "route_server" {
   # Optional attributes
   branch_to_branch_traffic_enabled = try(var.settings.branch_to_branch_traffic_enabled, false)
   hub_routing_preference           = try(var.settings.hub_routing_preference, null)
+
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
+    }
+  }
 }
