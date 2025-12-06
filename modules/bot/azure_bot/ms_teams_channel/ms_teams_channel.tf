@@ -15,10 +15,10 @@ resource "azurerm_bot_channel_ms_teams" "ms_teams_channel" {
   dynamic "timeouts" {
     for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
     content {
-      create = try(timeouts.value.create, "30m")
-      update = try(timeouts.value.update, "30m")
-      read   = try(timeouts.value.read, "5m")
-      delete = try(timeouts.value.delete, "30m")
+      create = try(timeouts.value.create, null)
+      update = try(timeouts.value.update, null)
+      read   = try(timeouts.value.read, null)
+      delete = try(timeouts.value.delete, null)
     }
   }
 }
