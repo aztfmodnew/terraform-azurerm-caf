@@ -10,15 +10,15 @@ resource "azurerm_bot_channel_ms_teams" "ms_teams_channel" {
   # Optional arguments
   calling_web_hook       = try(var.settings.calling_web_hook, null)
   deployment_environment = try(var.settings.deployment_environment, "CommercialDeployment")
-  enable_calling         = try(var.settings.enable_calling, false)
+  calling_enabled        = try(var.settings.calling_enabled, try(var.settings.enable_calling, false))
 
   dynamic "timeouts" {
     for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
     content {
-      create = try(timeouts.value.create, "30m")
-      update = try(timeouts.value.update, "30m")
-      read   = try(timeouts.value.read, "5m")
-      delete = try(timeouts.value.delete, "30m")
+      create = try(timeouts.value.create, null)
+      update = try(timeouts.value.update, null)
+      read   = try(timeouts.value.read, null)
+      delete = try(timeouts.value.delete, null)
     }
   }
 }

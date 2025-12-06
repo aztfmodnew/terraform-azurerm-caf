@@ -1,62 +1,55 @@
 global_settings = {
   default_region = "region1"
   regions = {
-    region1 = "northeurope"
+    region1 = "westeurope"
   }
+  random_length = 5
 }
-resource_groups = {
-  rg-routeserver = {
-    name = "rg-routeserver"
-  }
-}
-vnets = {
-  vnet-routeserver = {
-    resource_group_key = "rg-routeserver"
-    vnet = {
-      name          = "vnet-routeserver"
-      address_space = ["172.20.0.0/24"]
-    }
-    subnets = {
-      RouteServerSubnet = {
-        name = "RouteServerSubnet"
-        cidr = ["172.20.0.128/27"]
-      }
-    }
-  }
-}
-public_ip_addresses = {
-  virtual_hub_ip = {
-    name                    = "pip-aa-conn-vhub"
-    resource_group_key      = "rg-routeserver"
-    sku                     = "Standard"
-    allocation_method       = "Static"
-    ip_version              = "IPv4"
-    idle_timeout_in_minutes = "4"
-  }
-}
-virtual_hubs = {
-  hub1 = {
-    hub_name = "vhub-routeserver"
-    region   = "region1"
-    sku      = "Standard"
-    resource_group = {
-      key = "rg-routeserver"
-    }
-    hub_ip = {
-      hip1 = {
-        name = "vhubip-routeserver"
-        subnet = {
-          vnet_key   = "vnet-routeserver"
-          subnet_key = "RouteServerSubnet"
-        }
-        private_ip_address           = "172.20.0.134"
-        private_ip_allocation_method = "Static"
-        public_ip_address = {
-          #lz_key = "connectivity"
-          public_ip_address_key = "virtual_hub_ip"
-        }
-      }
-    }
 
+resource_groups = {
+  test = {
+    name = "route-server-test"
+  }
+}
+
+vnets = {
+  hub_vnet = {
+    resource_group_key = "test"
+    vnet = {
+      name          = "hub-vnet"
+      address_space = ["10.0.0.0/16"]
+    }
+    specialsubnets = {
+      RouteServerSubnet = {
+        name = "RouteServerSubnet" # must be named RouteServerSubnet
+        cidr = ["10.0.1.0/24"]
+      }
+    }
+    subnets = {}
+  }
+}
+
+public_ip_addresses = {
+  rs_pip = {
+    name               = "rs"
+    resource_group_key = "test"
+    sku                = "Standard" # must be 'Standard' SKU
+    allocation_method  = "Static"
+    ip_version         = "IPv4"
+  }
+}
+
+route_servers = {
+  rs1 = {
+    name               = "core-rs"
+    resource_group_key = "test"
+    vnet_key           = "hub_vnet"
+    subnet_key         = "RouteServerSubnet"
+    public_ip_key      = "rs_pip"
+    sku                = "Standard"
+
+    tags = {
+      purpose = "route-server-example"
+    }
   }
 }

@@ -18,7 +18,7 @@ output "deployment_environment" {
   description = "The deployment environment for Microsoft Teams channel calls"
 }
 
-output "enable_calling" {
-  value       = azurerm_bot_channel_ms_teams.ms_teams_channel.enable_calling
+output "calling_enabled" {
+  value       = azurerm_bot_channel_ms_teams.ms_teams_channel.calling_enabled
   description = "Whether Microsoft Teams channel calls are enabled"
 }

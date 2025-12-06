@@ -382,6 +382,7 @@ locals {
     relay_hybrid_connection                                 = try(var.networking.relay_hybrid_connection, {})
     relay_namespace                                         = try(var.networking.relay_namespace, {})
     public_ip_prefixes                                      = try(var.networking.public_ip_prefixes, {})
+    route_servers                                           = try(var.networking.route_servers, {})
     route_tables                                            = try(var.networking.route_tables, {})
     subnet_service_endpoint_storage_policies                = try(var.networking.subnet_service_endpoint_storage_policies, {})
     traffic_manager_profile                                 = try(var.networking.traffic_manager_profile, {})

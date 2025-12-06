@@ -261,6 +261,7 @@ module "example" {
     relay_hybrid_connection                                 = var.relay_hybrid_connection
     public_ip_prefixes                                      = var.public_ip_prefixes
     route_tables                                            = var.route_tables
+    route_servers                                           = var.route_servers
     subnet_service_endpoint_storage_policies                = var.subnet_service_endpoint_storage_policies
     traffic_manager_profile                                 = var.traffic_manager_profile
     traffic_manager_nested_endpoint                         = var.traffic_manager_nested_endpoint
