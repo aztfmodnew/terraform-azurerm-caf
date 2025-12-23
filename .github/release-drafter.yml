@@ -93,6 +93,17 @@ autolabeler:
     title:
       - '/^enhance(\(.+\))?: .+/'
       - '/^improvement(\(.+\))?: .+/'
+  - label: "bug"
+    title:
+      - '/^bug(\(.+\))?: .+/'
+      - '/^bugfix(\(.+\))?: .+/'
+  - label: "documentation"
+    title:
+      - '/^documentation(\(.+\))?: .+/'
+  - label: "maintenance"
+    title:
+      - '/^maintenance(\(.+\))?: .+/'
+      - '/^maint(\(.+\))?: .+/'
   - label: "dependencies"
     title:
       - '/^dep(\(.+\))?: .+/'
