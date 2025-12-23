@@ -31,6 +31,15 @@ categories:
     labels:
       - "test"
       - "tests"
+  - title: "🔧 CI/CD"
+    labels:
+      - "ci"
+  - title: "⚡ Performance"
+    labels:
+      - "perf"
+  - title: "🔒 Security"
+    labels:
+      - "security"
 change-template: "- $TITLE @$AUTHOR (#$NUMBER)"
 change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.
 version-resolver:
@@ -41,9 +50,8 @@ version-resolver:
   minor:
     labels:
       - "minor"
-      - "feature"
-      - "new submodule"
       - "feat"
+      - "new submodule"
       - "enhancement"
   patch:
     labels:
@@ -81,3 +89,37 @@ autolabeler:
   - label: "test"
     title:
       - '/^test(\(.+\))?: .+/'
+  - label: "enhancement"
+    title:
+      - '/^enhance(\(.+\))?: .+/'
+      - '/^improvement(\(.+\))?: .+/'
+  - label: "dependencies"
+    title:
+      - '/^dep(\(.+\))?: .+/'
+      - '/^deps(\(.+\))?: .+/'
+    branches:
+      - '/^dependabot\//'
+  - label: "new submodule"
+    title:
+      - '/^feat\(submodule\): .+/'
+      - '/^submodule(\(.+\))?: .+/'
+    files:
+      - "modules/**/*"
+  - label: "breaking-change"
+    title:
+      - '/^feat(\(.+\))?!: .+/'
+      - '/^fix(\(.+\))?!: .+/'
+      - '/^refactor(\(.+\))?!: .+/'
+      - "/!:/"
+  - label: "ci"
+    title:
+      - '/^ci(\(.+\))?: .+/'
+    files:
+      - ".github/**/*"
+  - label: "perf"
+    title:
+      - '/^perf(\(.+\))?: .+/'
+  - label: "security"
+    title:
+      - '/^security(\(.+\))?: .+/'
+      - '/^sec(\(.+\))?: .+/'
