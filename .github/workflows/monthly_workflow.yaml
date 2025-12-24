@@ -275,6 +275,21 @@ jobs:
             done
           done
 
+      - name: Commit Infrastructure Diagram to Repository
+        if: steps.generate_diagram.outcome == 'success'
+        continue-on-error: true
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs: update infrastructure diagram for ${{ matrix.config_files }} [skip ci]"
+          file_pattern: "examples/${{ matrix.config_files }}/azure-infrastructure.drawio"
+          commit_user_name: GitHub Actions Bot
+          commit_user_email: github-actions[bot]@users.noreply.github.com
+          skip_dirty_check: false
+          skip_fetch: false
+          skip_checkout: false
+          disable_globbing: false
+          create_branch: false
+
   purge:
     permissions:
       id-token: write
