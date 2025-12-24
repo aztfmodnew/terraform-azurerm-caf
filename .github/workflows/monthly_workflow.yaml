@@ -262,6 +262,19 @@ jobs:
             -state=${{ env.STATE_FILE }} \
             ${{ env.PLAN_FILE }}-destroy
 
+      - name: Cleanup Databricks Managed Resource Groups
+        if: always()
+        continue-on-error: true
+        run: |
+          # Databricks managed resource groups are not automatically deleted by Terraform
+          # Find and delete them based on the testing_job_id tag from the Databricks workspace state
+          for workspace_rg in `terraform -chdir=${GITHUB_WORKSPACE}/examples show -state=${{ env.STATE_FILE }} -json 2>/dev/null | jq -r '.values.root_module.resources[]? | select(.type == "azurerm_databricks_workspace") | .values.resource_group_name' 2>/dev/null`; do
+            for managed_rg in `az group list --query "[?contains(name, 'databricks-rg-') && tags.testing_job_id=='${{ github.run_id }}'].name" -o tsv 2>/dev/null`; do
+              echo "Cleaning up Databricks managed resource group: $managed_rg"
+              az group delete -n $managed_rg -y --no-wait || true
+            done
+          done
+
   purge:
     permissions:
       id-token: write
@@ -291,6 +304,39 @@ jobs:
           for i in `az ad group list --query "[?contains(displayName, '${{ github.run_id }}')].id" -o tsv`; do echo "purging Azure AD group: $i" && $(az ad group delete --verbose --group $i || true); done
           for i in `az ad app list --query "[?contains(displayName, '${{ github.run_id }}')].appId" -o tsv`; do echo "purging Azure AD app: $i" && $(az ad app delete --verbose --id $i || true); done
           for i in `az keyvault list-deleted --query "[?tags.testing_job_id=='${{ github.run_id }}'].name" -o tsv`; do az keyvault purge --name $i; done
-          for i in `az group list --query "[?tags.testing_job_id=='${{ github.run_id }}'].name" -o tsv`; do echo "removing locks from resource group: $i" && for lock in `az lock list --resource-group $i --query "[].name" -o tsv 2>/dev/null`; do echo "  deleting lock: $lock" && $(az lock delete --name $lock --resource-group $i || true); done; echo "purging resource group: $i" && $(az group delete -n $i -y --no-wait || true); done
+
+          # Clean Recovery Services Vaults and Backup Vaults before deleting resource groups
+          for rg in `az group list --query "[?tags.testing_job_id=='${{ github.run_id }}'].name" -o tsv`; do
+            echo "=== Processing resource group: $rg ==="
+
+            # Remove soft-delete protection and delete Recovery Services Vaults
+            for vault in `az backup vault list --resource-group $rg --query "[].name" -o tsv 2>/dev/null`; do
+              echo "  Processing Recovery Services Vault: $vault"
+              # Disable soft delete
+              az backup vault backup-properties set --name $vault --resource-group $rg --soft-delete-feature-state Disable 2>/dev/null || true
+              # Delete backup items
+              for container in `az backup container list --vault-name $vault --resource-group $rg --backup-management-type AzureIaasVM --query "[].name" -o tsv 2>/dev/null`; do
+                for item in `az backup item list --vault-name $vault --resource-group $rg --container-name $container --query "[].name" -o tsv 2>/dev/null`; do
+                  echo "    Deleting backup item: $item"
+                  az backup protection disable --vault-name $vault --resource-group $rg --container-name $container --item-name $item --delete-backup-data true --yes 2>/dev/null || true
+                done
+              done
+              # Delete vault
+              echo "    Deleting Recovery Services Vault: $vault"
+              az backup vault delete --name $vault --resource-group $rg --yes 2>/dev/null || true
+            done
+
+            # Remove locks
+            echo "  Removing locks..."
+            for lock in `az lock list --resource-group $rg --query "[].id" -o tsv 2>/dev/null`; do
+              echo "    Deleting lock: $lock"
+              az lock delete --ids $lock 2>/dev/null || true
+            done
+
+            # Delete resource group
+            echo "  Deleting resource group: $rg"
+            az group delete -n $rg -y --no-wait || true
+          done
+
           for i in `az role assignment list --query "[?contains(roleDefinitionName, '${{ github.run_id }}')].roleDefinitionName" -o tsv`; do echo "purging role assignment: $i" && $(az role assignment delete --role $i || true); done
           for i in `az role definition list --query "[?contains(roleName, '${{ github.run_id }}')].roleName" -o tsv`; do echo "purging custom role definition: $i" && $(az role definition delete --name $i || true); done
