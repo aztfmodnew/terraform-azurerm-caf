@@ -323,21 +323,57 @@ jobs:
           for rg in `az group list --query "[?tags.testing_job_id=='${{ github.run_id }}'].name" -o tsv`; do
             echo "=== Processing resource group: $rg ==="
 
-            # Remove soft-delete protection and delete Recovery Services Vaults
+            # Process Backup Vaults (Microsoft.DataProtection/BackupVaults)
+            for vault in `az dataprotection backup-vault list --resource-group $rg --query "[].name" -o tsv 2>/dev/null`; do
+              echo "  Processing Backup Vault: $vault"
+
+              # Delete backup instances first
+              for instance in `az dataprotection backup-instance list --vault-name $vault --resource-group $rg --query "[].name" -o tsv 2>/dev/null`; do
+                echo "    Deleting backup instance: $instance"
+                az dataprotection backup-instance delete --name $instance --vault-name $vault --resource-group $rg --yes 2>/dev/null || true
+              done
+
+              # Wait a bit for instances to be deleted
+              sleep 5
+
+              # Delete backup policies
+              for policy in `az dataprotection backup-policy list --vault-name $vault --resource-group $rg --query "[].name" -o tsv 2>/dev/null`; do
+                echo "    Deleting backup policy: $policy"
+                az dataprotection backup-policy delete --name $policy --vault-name $vault --resource-group $rg --yes 2>/dev/null || true
+              done
+
+              # Disable soft-delete for Backup Vaults
+              echo "    Disabling soft-delete for Backup Vault: $vault"
+              az dataprotection backup-vault update --vault-name $vault --resource-group $rg \
+                --soft-delete-state Off --soft-delete-retention 0 2>/dev/null || true
+
+              # Delete the vault
+              echo "    Deleting Backup Vault: $vault"
+              az dataprotection backup-vault delete --vault-name $vault --resource-group $rg --yes 2>/dev/null || true
+            done
+
+            # Process Recovery Services Vaults (Microsoft.RecoveryServices/vaults)
             for vault in `az backup vault list --resource-group $rg --query "[].name" -o tsv 2>/dev/null`; do
               echo "  Processing Recovery Services Vault: $vault"
-              # Disable soft delete
+
+              # Disable soft delete first
+              echo "    Disabling soft-delete for Recovery Services Vault: $vault"
               az backup vault backup-properties set --name $vault --resource-group $rg --soft-delete-feature-state Disable 2>/dev/null || true
-              # Delete backup items
-              for container in `az backup container list --vault-name $vault --resource-group $rg --backup-management-type AzureIaasVM --query "[].name" -o tsv 2>/dev/null`; do
-                for item in `az backup item list --vault-name $vault --resource-group $rg --container-name $container --query "[].name" -o tsv 2>/dev/null`; do
-                  echo "    Deleting backup item: $item"
-                  az backup protection disable --vault-name $vault --resource-group $rg --container-name $container --item-name $item --delete-backup-data true --yes 2>/dev/null || true
+
+              # Delete backup items for all backup management types
+              for backup_type in AzureIaasVM AzureStorage AzureWorkload; do
+                for container in `az backup container list --vault-name $vault --resource-group $rg --backup-management-type $backup_type --query "[].name" -o tsv 2>/dev/null`; do
+                  for item in `az backup item list --vault-name $vault --resource-group $rg --container-name $container --query "[].name" -o tsv 2>/dev/null`; do
+                    echo "    Deleting backup item ($backup_type): $item"
+                    az backup protection disable --vault-name $vault --resource-group $rg --container-name $container --item-name $item --delete-backup-data true --yes 2>/dev/null || true
+                  done
                 done
               done
-              # Delete vault
-              echo "    Deleting Recovery Services Vault: $vault"
-              az backup vault delete --name $vault --resource-group $rg --yes 2>/dev/null || true
+
+              # Try to delete the vault (may fail if metadata is corrupted)
+              echo "    Attempting to delete Recovery Services Vault: $vault"
+              az backup vault delete --name $vault --resource-group $rg --yes 2>/dev/null || \
+                echo "    Warning: Vault $vault could not be deleted (may have corrupted metadata). Resource group deletion will handle cleanup."
             done
 
             # Remove locks
@@ -347,10 +383,15 @@ jobs:
               az lock delete --ids $lock 2>/dev/null || true
             done
 
-            # Delete resource group
-            echo "  Deleting resource group: $rg"
+            # Delete resource group (will eventually clean up any remaining vaults with corrupted metadata)
+            echo "  Initiating resource group deletion: $rg"
             az group delete -n $rg -y --no-wait || true
           done
+
+          # Log resource groups that are still in deletion state
+          echo ""
+          echo "=== Resource groups in deletion state ==="
+          az group list --query "[?tags.testing_job_id=='${{ github.run_id }}' && properties.provisioningState=='Deleting'].{Name:name, State:properties.provisioningState}" -o table || true
 
           for i in `az role assignment list --query "[?contains(roleDefinitionName, '${{ github.run_id }}')].roleDefinitionName" -o tsv`; do echo "purging role assignment: $i" && $(az role assignment delete --role $i || true); done
           for i in `az role definition list --query "[?contains(roleName, '${{ github.run_id }}')].roleName" -o tsv`; do echo "purging custom role definition: $i" && $(az role definition delete --name $i || true); done
