@@ -4,7 +4,7 @@
 
 All modules MUST follow this standardized structure:
 
-```
+```text
 modules/
 ├── category_name/          # Category directory (e.g., monitoring, networking, compute)
 │   └── module_name/        # Module directory
@@ -119,14 +119,14 @@ When moving a module from `modules/module_name/` to `modules/category/module_nam
 
 ### ❌ Wrong: Module at root level
 
-```
+```text
 modules/
 └── grafana/  # Missing category
 ```
 
 ### ✅ Correct: Module in category
 
-```
+```text
 modules/
 └── monitoring/
     └── grafana/

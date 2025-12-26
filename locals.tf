@@ -22,6 +22,10 @@ locals {
     aadb2c_directory = try(var.aadb2c.aadb2c_directory, {})
   }
 
+  cache = {
+    managed_redis = try(var.cache.managed_redis, {})
+  }
+
   azuread = {
     azuread_administrative_unit_members = try(var.azuread.azuread_administrative_unit_members, {})
     azuread_administrative_units        = try(var.azuread.azuread_administrative_units, {})

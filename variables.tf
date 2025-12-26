@@ -95,6 +95,12 @@ variable "client_config" {
 
 }
 
+variable "cache" {
+  description = "Configuration object - Azure cache resources"
+  type        = any
+  default     = {}
+}
+
 variable "cdn" {
   description = <<DESCRIPTION
   Configuration object - Azure CDN resources"

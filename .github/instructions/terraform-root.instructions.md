@@ -15,6 +15,7 @@ When editing Terraform at the repo root (aggregators), wire modules consistently
   - `for_each = local.<category>.<module_name_plural>`
   - Pass standard arguments: `global_settings`, `client_config`, `location = try(each.value.location, null)`, `base_tags`, `resource_group`, `resource_group_name`, `settings = each.value`.
   - Private endpoints (if supported): `private_endpoints = try(each.value.private_endpoints, {})`.
+  - If the underlying resource is deprecated in the provider docs, do NOT add the module call here; use the non-deprecated replacement module instead.
 
 - remote_objects
   - Always pass a `remote_objects` map merging core dependencies:

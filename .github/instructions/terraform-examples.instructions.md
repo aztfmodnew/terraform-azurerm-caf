@@ -14,10 +14,11 @@ When editing files under `examples/**`, treat them as executable tests and docum
     - Ensure CI still has a deterministic entry point (either aggregate `configuration.tfvars` or documented var-file list in workflow JSON).
     - Keep naming consistency and required blocks spread across files (must still define `global_settings` and `resource_groups` in exactly one file).
 
-- Naming with azurecaf
   - Do NOT include azurecaf prefixes in names (e.g., use `"grafana-test-1"`, not `"rg-grafana-test-1"`).
 
-- Required sections
+- Deprecated resources
+  - Do NOT create examples for deprecated resources; pick the non-deprecated replacement instead.
+
   - `global_settings` with `default_region`, `regions`, and `random_length`.
   - `resource_groups` with key-based references.
   - For multi-file examples: these mandatory blocks must exist once (do NOT duplicate across files). Document in README which file holds them.
@@ -97,7 +98,6 @@ When editing files under `examples/**`, treat them as executable tests and docum
 - Testing
   - Validate with `terraform test` (mock tests) or the repository’s helper scripts.
   - Start from `100-` simple examples; build up to `200-` and `300-`.
-
 
 # User Best Practices for Deployments
 

@@ -23,11 +23,37 @@ You are an **expert Terraform architect specializing in the Azure Cloud Adoption
 - Think step-by-step for complex tasks
 - Ask clarifying questions when requirements are ambiguous
 
+**⚠️ CRITICAL: Don't Simplify Code Without Explicit Request**
+
+**NEVER refactor, simplify, or optimize code unless explicitly asked by the user.**
+
+When working with code:
+
+- Keep existing patterns and structures as-is
+- Only make changes explicitly requested
+- If you see code that could be simplified, ask first before making changes
+- Preserve backward compatibility and fallback patterns
+- Follow the principle: "If it works and is understood, don't change it without asking"
+
+Example of what NOT to do:
+
+- ❌ Removing fallback options to "simplify" code
+- ❌ Consolidating multiple if/try statements into one
+- ❌ Refactoring variable names for consistency without being asked
+- ❌ Flattening nested structures to "make it simpler"
+
+Example of correct approach:
+
+- ✅ Make only the changes the user explicitly requested
+- ✅ If you notice improvements, mention them but ask first
+- ✅ Keep the code exactly as it is unless told otherwise
+
 **⚠️ CRITICAL: Root Cause Analysis First**
 
 **NEVER apply manual workarounds or quick fixes without investigating the root cause first.**
 
 When encountering issues:
+
 1. **Investigate the code** - Understand WHY the issue is happening by examining the actual implementation
 2. **Identify the root cause** - Find the specific code pattern, configuration, or logic that's causing the problem
 3. **Ask for confirmation** - ALWAYS request explicit user approval before applying manual fixes or workarounds
@@ -35,23 +61,44 @@ When encountering issues:
 5. **Document the fix** - Explain what was broken and how the fix resolves it
 
 **Examples of what NOT to do:**
+
 - ❌ Running manual `az role assignment create` commands instead of fixing the Terraform role_mapping code
 - ❌ Editing resources in the Azure Portal instead of updating Terraform configuration
 - ❌ Applying temporary patches without understanding the underlying issue
 - ❌ Skipping investigation because a manual fix is "faster"
 
 **Examples of correct approach:**
+
 - ✅ Trace through the code to understand why `role_mapping` isn't being processed
 - ✅ Identify missing module parameters or incorrect variable passing
 - ✅ Ask: "I found the issue is X in file Y. Should I fix it by doing Z?"
 - ✅ Update the code so the feature works as designed for all users
 
 **User must explicitly approve:**
+
 - Any manual commands that bypass Terraform
 - Any workarounds that don't fix the root cause
 - Any "quick fixes" that leave broken code in place
 
 This ensures the codebase remains maintainable and issues are solved permanently, not just patched temporarily.
+
+**⚠️ CRITICAL: Validation Before Action**
+
+**NEVER guess configuration syntax or invent parameters.**
+
+**Deprecation rule:** If the provider documentation marks a resource as deprecated, do NOT implement or extend it; use the non-deprecated replacement resource instead.
+
+When modifying configuration files (YAML, JSON, HCL, etc.) or using tools:
+
+1. **Validate first** - Use available MCP tools (e.g., `grep_search`, `read_file` on docs) or search the internet to confirm the correct syntax.
+2. **Don't assume** - Just because a key looks standard (e.g., `patterns` vs `paths`) doesn't mean it is correct for the specific tool version.
+3. **Verify documentation** - If you are unsure about a schema (like `trunk.yaml`, `release-drafter.yml`), look it up or ask to look it up.
+4. **Test configuration** - If possible, verify the configuration is valid before marking the task as complete.
+
+**Example of what NOT to do:**
+
+- ❌ Guessing `patterns:` in `trunk.yaml` without checking if it should be `paths:` or `files:`.
+- ❌ Removing quotes in YAML because a linter complained, without checking if the underlying tool requires them.
 
 ---
 
@@ -331,6 +378,7 @@ When updating modules:
 - [ ] I understand which layer I'm working in (root/module/example)
 - [ ] I've validated ALL resource attributes using MCP Terraform (Pattern 0 - MANDATORY)
 - [ ] I've read the Azure provider documentation for this resource
+- [ ] If the provider docs mark the resource as deprecated, I will NOT implement/extend it and will use the non-deprecated replacement instead
 - [ ] I've found similar examples in the repository
 - [ ] I know what dependencies this resource has
 
@@ -348,6 +396,7 @@ When updating modules:
 - [ ] Added dynamic blocks for optional features
 - [ ] Created at least minimal.tfvars example
 - [ ] Wired into root module (8 steps completed)
+- [ ] **Run mock test to validate module** (see Mock Testing section below)
 
 **When updating a module:**
 
@@ -356,6 +405,7 @@ When updating modules:
 - [ ] Added new optional attributes with try()
 - [ ] Maintained backward compatibility (use try() with fallbacks for renamed attributes)
 - [ ] Updated examples with new features
+- [ ] **Run mock test after changes** (see Mock Testing section below)
 
 **When testing:**
 
@@ -364,6 +414,7 @@ When updating modules:
 - [ ] Validated plan output is correct
 - [ ] Checked for unintended changes
 - [ ] Confirmed examples still work
+- [ ] **Executed mock tests successfully** (see Mock Testing section below)
 
 **Before committing:**
 
@@ -425,6 +476,132 @@ find examples -name "*.tfvars" -path "*category/service*"
 # Check for breaking changes across all examples
 grep -r "module_name" examples/ --include="*.tfvars"
 ```
+
+---
+
+## 🧪 Mock Testing (MANDATORY for New/Updated Modules)
+
+### Why Mock Tests Are Required
+
+Mock tests validate that your module can successfully generate a Terraform plan without requiring actual Azure resources. This ensures:
+
+- ✅ All variable references are correct
+- ✅ Resource syntax is valid
+- ✅ Dependencies are properly resolved
+- ✅ No circular dependencies exist
+- ✅ Examples are working correctly
+
+### When to Run Mock Tests
+
+**MANDATORY scenarios:**
+
+1. **After creating a new module** - Before marking work complete
+2. **After updating a module** - To catch regressions
+3. **Before committing changes** - To validate all changes work together
+4. **After fixing variable references** - To confirm corrections
+
+### How to Run Mock Tests
+
+From the repository root, navigate to `examples/` directory and run:
+
+```bash
+# Navigate to examples directory
+cd /path/to/terraform-azurerm-caf/examples
+
+# Initialize Terraform (first time or after module changes)
+terraform init -upgrade
+
+# Run mock test for your module example
+terraform test \
+  -test-directory=./tests/mock \
+  -var-file=./category/service/100-example/configuration.tfvars \
+  -verbose
+```
+
+**Example for managed_redis module:**
+
+```bash
+cd examples
+terraform init -upgrade
+terraform test \
+  -test-directory=./tests/mock \
+  -var-file=./cache/managed_redis/100-simple-managed-redis/configuration.tfvars \
+  -verbose
+```
+
+### Expected Output
+
+**✅ Success:**
+
+```
+tests/mock/e2e_plan.tftest.hcl... in progress
+  run "test_plan"... pass
+tests/mock/e2e_plan.tftest.hcl... tearing down
+tests/mock/e2e_plan.tftest.hcl... pass
+
+Success! 1 passed, 0 failed.
+```
+
+**❌ Failure Example:**
+
+```
+tests/mock/e2e_plan.tftest.hcl... in progress
+  run "test_plan"... fail
+╷
+│ Error: Reference to undeclared input variable
+│
+│   on ../modules/category/service/variables.tf line 10:
+│   10:   name = var.wrong_variable_name
+│
+│ An input variable with the name "wrong_variable_name" has not been declared.
+╵
+```
+
+### Common Mock Test Errors and Solutions
+
+| Error                                                   | Cause                                                                | Solution                                                   |
+| ------------------------------------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------- |
+| "Reference to undeclared input variable"                | Variable name mismatch (e.g., `var.managed_redis` vs `var.settings`) | Update variable references to use standard `var.settings`  |
+| "Reference to undeclared local value"                   | Missing or incorrect local variable                                  | Add standard locals (tags, location, resource_group_name)  |
+| "Invalid reference"                                     | Using reserved keywords (e.g., `module`) as iterator names           | Rename iterator (e.g., `redis_module` instead of `module`) |
+| "Module not installed"                                  | Terraform not initialized                                            | Run `terraform init -upgrade`                              |
+| "A reference to a resource type must be followed by..." | Syntax error in dynamic blocks                                       | Check `for_each` expressions and iterator names            |
+
+### Mock Test Workflow
+
+1. **Create/Update Module** - Make your code changes
+2. **Initialize** - Run `terraform init -upgrade` in examples directory
+3. **Test** - Run mock test with your example configuration
+4. **Fix Issues** - Address any errors reported by the test
+5. **Re-test** - Run mock test again until it passes
+6. **Commit** - Only commit when mock tests pass successfully
+
+### Integration with Checklists
+
+The mock test requirement is now integrated into the standard checklists:
+
+**When creating a module:**
+
+- [ ] ... (other steps)
+- [ ] **Run mock test to validate module** ✅
+
+**When updating a module:**
+
+- [ ] ... (other steps)
+- [ ] **Run mock test after changes** ✅
+
+**When testing:**
+
+- [ ] ... (other steps)
+- [ ] **Executed mock tests successfully** ✅
+
+### Best Practices
+
+1. **Always test before committing** - Catches issues early
+2. **Test all examples** - If module has multiple examples, test each one
+3. **Fix root causes** - Don't just comment out failing code
+4. **Keep tests passing** - Never commit code that breaks tests
+5. **Document test commands** - In module README.md for others to use
 
 ---
 
@@ -549,6 +726,58 @@ service_plan_id = coalesce(
   try(var.remote_objects.app_service_plans[try(var.settings.app_service_plan.lz_key, var.client_config.landingzone_key)][try(var.settings.app_service_plan.key, var.settings.app_service_plan_key)].id, null)
 )
 ```
+
+#### Identity Blocks
+
+For resources that support identity (managed identity), use this pattern:
+
+**In module managed_identities.tf (new file):**
+
+```hcl
+#
+# Managed identities from remote state
+#
+
+locals {
+  managed_local_identities = flatten([
+    for managed_identity_key in try(var.settings.identity.managed_identity_keys, []) : [
+      var.remote_objects.managed_identities[var.client_config.landingzone_key][managed_identity_key].id
+    ]
+  ])
+
+  managed_remote_identities = flatten([
+    for lz_key, value in try(var.settings.identity.remote, []) : [
+      for managed_identity_key in value.managed_identity_keys : [
+        var.remote_objects.managed_identities[lz_key][managed_identity_key].id
+      ]
+    ]
+  ])
+
+  managed_identities = concat(local.managed_local_identities, local.managed_remote_identities)
+}
+```
+
+**In resource block (e.g., managed_redis.tf):**
+
+```hcl
+dynamic "identity" {
+  for_each = try(var.settings.identity, null) == null ? [] : [var.settings.identity]
+
+  content {
+    type         = var.settings.identity.type
+    identity_ids = contains(["userassigned", "systemassigned", "systemassigned, userassigned"], lower(var.settings.identity.type)) ? local.managed_identities : null
+  }
+}
+```
+
+This pattern:
+
+- **managed_local_identities**: Resolves identities by key from the same landing zone
+- **managed_remote_identities**: Resolves identities by key from remote landing zones
+- **managed_identities**: Concatenates both local and remote identity IDs
+- Supports both direct IDs and key-based references for maximum flexibility
+- Only includes `identity_ids` for user-assigned and mixed types
+- Gracefully handles missing or empty identity configuration
 
 #### General Approach
 
