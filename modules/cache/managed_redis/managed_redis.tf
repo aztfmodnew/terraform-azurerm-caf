@@ -30,13 +30,13 @@ resource "azurerm_managed_redis" "managed_redis" {
     for_each = try(var.settings.default_database, null) == null ? [] : [var.settings.default_database]
 
     content {
-      access_keys_authentication_enabled        = try(default_database.value.access_keys_authentication_enabled, false)
-      client_protocol                           = try(default_database.value.client_protocol, null)
-      clustering_policy                         = try(default_database.value.clustering_policy, null)
-      eviction_policy                           = try(default_database.value.eviction_policy, null)
-      geo_replication_group_name                = try(default_database.value.geo_replication_group_name, null)
+      access_keys_authentication_enabled            = try(default_database.value.access_keys_authentication_enabled, false)
+      client_protocol                               = try(default_database.value.client_protocol, null)
+      clustering_policy                             = try(default_database.value.clustering_policy, null)
+      eviction_policy                               = try(default_database.value.eviction_policy, null)
+      geo_replication_group_name                    = try(default_database.value.geo_replication_group_name, null)
       persistence_append_only_file_backup_frequency = try(default_database.value.persistence_append_only_file_backup_frequency, null)
-      persistence_redis_database_backup_frequency  = try(default_database.value.persistence_redis_database_backup_frequency, null)
+      persistence_redis_database_backup_frequency   = try(default_database.value.persistence_redis_database_backup_frequency, null)
 
       dynamic "module" {
         for_each = can(default_database.value.modules) ? (

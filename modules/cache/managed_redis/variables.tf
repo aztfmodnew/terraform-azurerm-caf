@@ -24,17 +24,17 @@ variable "settings" {
       - timeouts - (Optional) A timeouts block that defines create, read, update, and delete timeout values.
     DESCRIPTION
   type = object({
-    name                          = string
-    resource_group_key            = optional(string)
-    sku_name                      = string
-    high_availability_enabled     = optional(bool)
-    public_network_access         = optional(string)
-    identity                      = optional(any)
-    customer_managed_key          = optional(any)
-    default_database              = optional(any)
-    tags                          = optional(map(string))
-    timeouts                      = optional(any)
-    azurecaf_resource_type        = optional(string)
+    name                      = string
+    resource_group_key        = optional(string)
+    sku_name                  = string
+    high_availability_enabled = optional(bool)
+    public_network_access     = optional(string)
+    identity                  = optional(any)
+    customer_managed_key      = optional(any)
+    default_database          = optional(any)
+    tags                      = optional(map(string))
+    timeouts                  = optional(any)
+    azurecaf_resource_type    = optional(string)
   })
   validation {
     condition = length(setsubtract(
