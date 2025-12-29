@@ -232,7 +232,7 @@ jobs:
 
       - name: Upload Infrastructure Diagram
         if: steps.generate_diagram.outcome == 'success'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: diagram-${{ matrix.config_files }}
           path: ${{ env.CURRENT_FOLDER }}/azure-infrastructure.drawio
