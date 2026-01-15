@@ -17,7 +17,12 @@ variable "settings" {
   description = <<DESCRIPTION
   Configuration object for the Linux Web App Slot (`azurerm_linux_web_app_slot`).
 
-  Supported top-level attributes include (non-exhaustive):
+  Consumed top-level attributes:
+  - name
+  - app_settings
+  - dynamic_app_settings
+  - application_insight
+  - connection_strings
   - client_affinity_enabled
   - client_certificate_enabled
   - client_certificate_mode
@@ -26,23 +31,26 @@ variable "settings" {
   - ftp_publish_basic_authentication_enabled
   - https_only
   - public_network_access_enabled
-  - key_vault_reference_identity_id / key_vault_reference_identity(.lz_key, .key)
-  - virtual_network_subnet_id / virtual_network_subnet(.lz_key, .vnet_key, .subnet_key)
+  - key_vault_reference_identity_id
+  - key_vault_reference_identity
+  - key_vault_reference_identity_key
+  - virtual_network_subnet_id
+  - virtual_network_subnet
   - webdeploy_publish_basic_authentication_enabled
   - zip_deploy_file
   - tags
-
-  Nested blocks implemented by this module include:
   - site_config
   - auth_settings
   - auth_settings_v2
   - backup
-  - connection_string
   - identity
   - logs
   - storage_account
-  - sticky_settings
   - timeouts
+
+  Notes:
+  - `connection_strings` is consumed from `var.settings.connection_strings` and rendered into the provider `connection_string` nested blocks.
+  - `sticky_settings` is not consumed by this submodule.
 
   Provider reference used for this submodule:
   - hashicorp/azurerm `linux_web_app_slot` (v4.74.0 docs)
