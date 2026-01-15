@@ -52,6 +52,22 @@ Orchestrate complex tasks by delegating to specialized agents in sequence (or pa
 
 ## Strict Delegation Contract (Reliability)
 
+## Non-Negotiable Scope and MCP Rules
+
+- Enforce strict file scope from `scope_paths` in every handoff. If a delegated response edits files outside scope, reject it and re-issue a narrowed handoff.
+- For module documentation campaigns, default editable scope is:
+  - `modules/<category>/<module>/variables.tf`
+  - `modules/<category>/<module>/<submodule>/variables.tf`
+  - Root aggregators/examples only when explicitly requested or when a proven contract mismatch requires it.
+- Do NOT modify example `README.md` files unless the user explicitly requests README changes.
+- MCP Terraform is mandatory before `azurerm_*` resource or contract updates:
+  - `search_providers` (or equivalent discovery)
+  - `get_provider_details`
+- Do NOT include MCP internals in user-facing variable descriptions:
+  - providerDocID values
+  - artifact paths/IDs
+  - lines like “Provider reference used for this contract …”.
+
 - Delegate only to agents listed in frontmatter `agents:`. Do not invent agent names.
 - If a step maps to a skill (for example `root-module-integration`), request that procedure within the delegated agent prompt.
 - Skills are not handoff targets and not subagents. They are task capabilities invoked by relevance or explicit mention.
