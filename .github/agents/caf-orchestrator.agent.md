@@ -113,6 +113,25 @@ Use both agents and skills:
 
 When a subtask maps to a known skill, explicitly request that procedure in the delegated prompt.
 
+## Internal Handoff Contract (Hidden from End Users)
+
+Every delegation MUST include an internal handoff payload following `.github/agents/handoff.schema.yaml`.
+
+Required minimum fields per handoff:
+- `task_id`, `agent_name`, `objective`
+- `scope_paths`, `constraints`
+- `required_skill_workflows`, `acceptance_criteria`
+- `validation_commands`, `artifacts_expected`
+
+Execution rules:
+1. Emit one handoff per delegated phase (research, implementation, validation, docs, CI).
+2. Keep handoffs concise, deterministic, and path-scoped.
+3. Include explicit non-goals to avoid accidental overreach.
+4. Require the delegated agent to return: changed files, validations run, residual risks.
+5. Record a short decision-log line when branching strategy changes.
+
+If a delegated agent response is incomplete, re-issue a narrowed handoff that references the missing schema fields.
+
 ## Output Contract
 
 Always return:
