@@ -23,9 +23,7 @@ agents:
   - CI Workflow Manager
   - Migration Assistant
   - Remote State Orchestrator
-model:
-  - Auto (copilot)
-  
+model: Auto (copilot)
 ---
 
 # CAF Orchestrator - Coordinator Agent
