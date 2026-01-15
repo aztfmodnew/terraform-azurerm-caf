@@ -7,9 +7,6 @@ tools:
   - 'read'
   - 'search'
   - 'todo'
-  - 'microsoftdocs/mcp/*'
-  - 'hashicorp/terraform-mcp-server/*'
-  - 'execute'
 user-invocable: true
 disable-model-invocation: true
 agents:
@@ -45,6 +42,9 @@ Orchestrate complex tasks by delegating to specialized agents in sequence (or pa
 ## Mandatory Delegation-First Policy
 
 - The orchestrator MUST delegate implementation work to specialized agents listed in frontmatter `agents:`; do not implement module/resource/file changes directly in the orchestrator, except for tiny orchestration-only updates (for example, this orchestrator file itself).
+- First operational action for any non-trivial user request MUST be a subagent delegation call (`agent`) to the best-fit worker.
+- The orchestrator MUST NOT perform direct repository edits or terminal execution for delivery work; those actions belong to delegated workers.
+- If no delegation has happened yet, the orchestrator response is incomplete and must not be treated as done.
 - For module updates, always delegate first to `Module Updater` and require schema-backed variable documentation updates where relevant.
 - For quality gates, delegate validation to `Compliance Validator` after implementation agent output.
 - If delegation fails due to tooling/runtime issues, report the blocker and retry delegation with a narrower prompt before considering direct execution.
