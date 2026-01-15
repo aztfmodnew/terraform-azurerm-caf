@@ -1,100 +1,120 @@
 # Linux Web App with Deployment Slots
 
-This example demonstrates how to create a Linux Web App with deployment slots for staging and A/B testing scenarios.
+This example demonstrates how to deploy a Linux Web App with two deployment slots using the CAF split-tfvars pattern.
 
 ## Overview
 
 This example creates:
-- A Linux Web App with Node.js 20 LTS runtime
-- Two deployment slots: `smoke-test` and `ab-testing`
-- Different app settings for each slot to demonstrate environment-specific configurations
-- Health check configuration for all slots
-- Modern security settings (TLS 1.2, FTPS only, HTTP/2)
 
-## Deployment Slots
+- One Linux Web App instance named `simple_app`
+- A main app configuration backed by a Linux App Service plan
+- Two deployment slots: `staging` and `testing`
+- Slot-specific app settings and site configuration
+- Health checks enabled on the main app and both slots
 
-### Production Slot (Main)
-- **Environment**: production
-- **Node.js Version**: 20 LTS
-- **Health Check**: `/health` endpoint with 5-minute eviction time
+The example matches the contents of `linux_web_apps.tfvars` and uses the current module naming in this repository.
 
-### Smoke Test Slot
-- **Environment**: staging
-- **Purpose**: Pre-production testing and validation
-- **Configuration**: Similar to production but with staging-specific settings
+## Example contents
 
-### A/B Testing Slot
-- **Environment**: testing
-- **Purpose**: A/B testing and feature flag experiments
-- **Configuration**: Includes experimental feature flags
+### Main app
 
-## Key Features
+- **Resource key**: `simple_app`
+- **App name**: `simple-linux-web-app`
+- **Runtime**: Node.js 22 LTS
+- **Health check path**: `/health`
+- **Health check eviction time**: 5 minutes
+- **App settings**:
+  - `WEBSITE_NODE_DEFAULT_VERSION = ~22`
+  - `WEBSITE_RUN_FROM_PACKAGE = 1`
 
-1. **Multiple Deployment Slots**: Enables blue-green deployments and testing
-2. **Environment-Specific Settings**: Different app settings per slot
-3. **Health Monitoring**: Health checks configured for all slots
-4. **Modern Runtime**: Node.js 20 LTS (latest supported version)
-5. **Security**: TLS 1.2, FTPS only, and HTTP/2 enabled
+### Slot: `staging`
+
+- **Slot name**: `staging`
+- **Runtime**: Node.js 22 LTS
+- **App settings**:
+  - `WEBSITE_NODE_DEFAULT_VERSION = ~22`
+  - `WEBSITE_RUN_FROM_PACKAGE = 1`
+  - `ENVIRONMENT = staging`
+  - `NODE_ENV = staging`
+- **Site configuration**:
+  - `minimum_tls_version = 1.2`
+  - `ftps_state = FtpsOnly`
+  - `http2_enabled = true`
+  - `health_check_path = /health`
+  - `health_check_eviction_time_in_min = 5`
+
+### Slot: `testing`
+
+- **Slot name**: `testing`
+- **Runtime**: Node.js 22 LTS
+- **App settings**:
+  - `WEBSITE_NODE_DEFAULT_VERSION = ~22`
+  - `WEBSITE_RUN_FROM_PACKAGE = 1`
+  - `ENVIRONMENT = testing`
+  - `NODE_ENV = testing`
+  - `FEATURE_FLAGS = experimental`
+- **Site configuration**:
+  - `minimum_tls_version = 1.2`
+  - `ftps_state = FtpsOnly`
+  - `http2_enabled = true`
+  - `health_check_path = /health`
+  - `health_check_eviction_time_in_min = 5`
 
 ## Prerequisites
 
-- Azure subscription with appropriate permissions
+- Azure CLI installed and configured
 - Terraform >= 1.6.0
-- Azure CLI or service principal authentication
+- CAF Terraform provider configured
+- Permissions to create the resource group, App Service plan, and Linux Web App resources
+
+## Configuration files
+
+This example follows the split-var-file layout used across the repository:
+
+- `resource_groups.tfvars` - Resource group and shared location settings
+- `service_plans.tfvars` - Linux App Service plan configuration
+- `linux_web_apps.tfvars` - Linux Web App and slot configuration
 
 ## Deployment
 
+From the `examples` directory, run Terraform with all three var files:
+
 ```bash
-# Navigate to examples directory
 cd /path/to/terraform-azurerm-caf/examples
 
-# Initialize and deploy
 terraform init
-terraform plan -var-file=./webapps/linux_web_app/102-linux_web_app-slots/configuration.tfvars
-terraform apply -var-file=./webapps/linux_web_app/102-linux_web_app-slots/configuration.tfvars
+terraform plan \
+  -var-file=./webapps/linux_web_app/102-linux_web_app-slots/resource_groups.tfvars \
+  -var-file=./webapps/linux_web_app/102-linux_web_app-slots/service_plans.tfvars \
+  -var-file=./webapps/linux_web_app/102-linux_web_app-slots/linux_web_apps.tfvars
+
+terraform apply \
+  -var-file=./webapps/linux_web_app/102-linux_web_app-slots/resource_groups.tfvars \
+  -var-file=./webapps/linux_web_app/102-linux_web_app-slots/service_plans.tfvars \
+  -var-file=./webapps/linux_web_app/102-linux_web_app-slots/linux_web_apps.tfvars
 ```
 
 ## Usage
 
 After deployment, you can:
 
-1. **Deploy to slots**: Use Azure DevOps, GitHub Actions, or manual deployment to deploy different versions to each slot
-2. **Test in isolation**: Each slot has its own URL and configuration
-3. **Swap slots**: Use slot swapping to promote staging to production with zero downtime
-4. **Monitor health**: Each slot reports health status independently
+1. Deploy new versions to `staging` or `testing` independently
+2. Validate changes in a non-production slot before swapping
+3. Swap a slot into the main app when you are ready to promote it
+4. Monitor each slot separately using the `/health` endpoint
 
-## Expected Outputs
+## Notes
 
-- **Main Web App**: `https://linux-webapp-slots-{random}.azurewebsites.net`
-- **Smoke Test Slot**: `https://linux-webapp-slots-{random}-smoke-test.azurewebsites.net`
-- **A/B Testing Slot**: `https://linux-webapp-slots-{random}-ab-testing.azurewebsites.net`
-
-## Health Check Endpoint
-
-Your application should implement a `/health` endpoint that returns:
-- **Status Code**: 200 (OK)
-- **Response**: JSON with application health status
-
-Example implementation:
-```javascript
-app.get('/health', (req, res) => {
-  res.status(200).json({
-    status: 'healthy',
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'production'
-  });
-});
-```
+- Deployment slots are supported by Standard, Premium, and Isolated App Service plans
+- The example intentionally uses only the slots defined in `linux_web_apps.tfvars`
+- The example does not include A/B testing or smoke-test slot names
+- Slot-specific settings can be adjusted in `linux_web_apps.tfvars` without changing the README workflow
 
 ## Cleanup
 
 ```bash
-terraform destroy -var-file=./webapps/linux_web_app/102-linux_web_app-slots/configuration.tfvars
+terraform destroy \
+  -var-file=./webapps/linux_web_app/102-linux_web_app-slots/resource_groups.tfvars \
+  -var-file=./webapps/linux_web_app/102-linux_web_app-slots/service_plans.tfvars \
+  -var-file=./webapps/linux_web_app/102-linux_web_app-slots/linux_web_apps.tfvars
 ```
-
-## Notes
-
-- Deployment slots are only available in Standard, Premium, and Isolated service plans
-- Each slot has its own configuration and can be deployed independently
-- Slot swapping allows zero-downtime deployments
-- Health checks help ensure application availability across all slots
