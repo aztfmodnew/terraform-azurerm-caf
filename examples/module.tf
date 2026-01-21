@@ -100,6 +100,7 @@ module "example" {
   bot = {
     azure_bots = var.azure_bots
   }
+  chaos_studio = var.chaos_studio
   communication = {
     communication_services = var.communication_services
   }

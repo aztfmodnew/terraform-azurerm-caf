@@ -598,6 +598,11 @@ variable "bot" {
   default     = {}
 }
 
+variable "chaos_studio" {
+  description = "Configuration object - Chaos Studio resources"
+  default     = {}
+}
+
 variable "communication" {
   description = "Configuration object - communication resources"
   default     = {}
@@ -751,8 +756,8 @@ variable "aadb2c" {
   })
   sensitive = false
   validation {
-    # Check if aadb2c_directory is null OR if all keys within each directory object are valid.
-    condition = var.aadb2c.aadb2c_directory == {} || alltrue([
+    # Check if aadb2c_directory is null, empty OR if all keys within each directory object are valid.
+    condition = var.aadb2c.aadb2c_directory == null || var.aadb2c.aadb2c_directory == {} || alltrue([
       for dir_key, dir_value in var.aadb2c.aadb2c_directory :
       length(setsubtract(keys(dir_value), [
         "country_code",

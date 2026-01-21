@@ -16,6 +16,51 @@ This is the Azure Cloud Adoption Framework (CAF) Terraform module repository. Wh
 
 **Testing Approach**: All examples are validated using `terraform test` with mock providers from `/examples/tests/mock/` directory. Never assume real Azure resources exist.
 
+### Two Types of Examples
+
+**CRITICAL**: There are TWO distinct types of examples with different purposes:
+
+#### 1. Deployment Examples (`examples/<category>/<service>/`)
+
+**Purpose**: Production deployment patterns
+- Show how to use modules in real deployments
+- Use key-based references: `resource_group = { key = "rg1" }`
+- Rely on `remote_objects` for dependency resolution
+- Intended for actual Azure deployments
+
+**Example structure**:
+```
+examples/chaos_studio/100-simple-chaos-target/
+├── configuration.tfvars  # Key-based references
+└── README.md            # Deployment instructions
+```
+
+#### 2. Mock Test Examples (`examples/tests/<category>/<service>/`)
+
+**Purpose**: Validate module syntax and planning
+- Test modules without actual Azure resources
+- Use direct resource IDs: `resource_group_id = "/subscriptions/.../resourceGroups/rg-test"`
+- NO dependency on `remote_objects`
+- Intended for `terraform test` validation only
+
+**Example structure**:
+```
+examples/tests/chaos_studio/100-simple-chaos-target-mock/
+├── configuration.tfvars  # Direct IDs
+└── README.md            # Mock test instructions
+```
+
+**Why Separate?**
+
+Terraform mock tests cannot populate `remote_objects` from resources defined in the same plan. This is a framework limitation:
+- Deployment examples would fail in mock tests (key-based refs need remote_objects)
+- Mock examples use direct IDs to bypass this limitation
+- Both serve important but different purposes
+
+**AI Rule**: When creating examples, create BOTH types:
+1. Deployment example with key-based references
+2. Mock test example with direct IDs
+
 When creating a new example, always search the repository's existing `examples/` directory for similar example patterns or tfvars that can be reused or adapted. Reusing existing examples reduces duplication, ensures consistency with repository conventions, and helps avoid missing fields or unsupported structures.
 
 ## Critical AI Guidelines for Code Generation
