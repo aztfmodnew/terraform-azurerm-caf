@@ -54,8 +54,20 @@ variable "remote_objects" {
     resource_groups    = optional(map(any), {})
     storage_accounts   = optional(map(any), {})
     virtual_machines   = optional(map(any), {})
+    virtual_machine_scale_sets = optional(map(any), {})
     aks_clusters       = optional(map(any), {})
-    azurerm_firewalls  = optional(map(any), {})
+    cosmos_dbs         = optional(map(any), {})
+    redis_caches               = optional(map(any), {})
+    managed_redis              = optional(map(any), {})
+    linux_web_apps             = optional(map(any), {})
+    windows_web_apps           = optional(map(any), {})
+    network_security_groups    = optional(map(any), {})
+    azurerm_firewalls          = optional(map(any), {})
+    keyvaults                  = optional(map(any), {})
+    servicebus_namespaces      = optional(map(any), {})
+    event_hub_namespaces       = optional(map(any), {})
+    load_tests                 = optional(map(any), {})
+
   })
   default = {}
 }
