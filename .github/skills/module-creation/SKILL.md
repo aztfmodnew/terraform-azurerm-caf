@@ -543,25 +543,28 @@ resource_groups = {
 
 ### Step 12: Run Mock Tests (MANDATORY)
 
-**Before running tests**, verify you have created BOTH example types:
-1. **Deployment example**: `examples/<category>/<module_name>/100-simple-<module_name>/` (key-based refs)
-2. **Mock test example**: `examples/tests/<category>/<module_name>/100-simple-<module_name>-mock/` (direct IDs)
-
-**ONLY mock test examples are used for terraform test**:
+**Mock tests validate module syntax without Azure deployment using the same configuration files:**
 
 ```bash
 cd examples
 terraform init -upgrade
-terraform test -test-directory=./tests/mock -var-file=./tests/<category>/<module_name>/100-simple-<module_name>-mock/configuration.tfvars -verbose
+terraform test \
+  -test-directory=./tests/mock \
+  -var-file=./<category>/<module_name>/100-simple-<module_name>/configuration.tfvars \
+  -verbose
 ```
 
-**Mock tests MUST pass before proceeding.**
+**Alternative**: `terraform -chdir=examples test -test-directory=./tests/mock -var-file=...`
 
-**DO NOT use mock examples for terraform plan/apply** - they contain fake resource IDs.
+**Mock tests MUST pass before proceeding.** They validate:
+- ✅ All variable references are correct
+- ✅ Resource syntax is valid
+- ✅ Dependencies properly resolved
+- ✅ No circular dependencies
 
 ### Step 12.5: Real Deployment Test (OPTIONAL)
 
-**⚠️ CRITICAL: ONLY use deployment examples for real Azure plan/apply, NEVER mock examples:**
+**⚠️ CRITICAL: Only after mock tests pass, optionally test real Azure deployment:**
 
 ```bash
 # 1. ALWAYS verify Azure subscription FIRST
@@ -574,12 +577,12 @@ az account show --query "{subscriptionId:id, name:name, state:state}" -o table
 export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
 echo "Using subscription: $ARM_SUBSCRIPTION_ID"
 
-# 4. Use DEPLOYMENT example (not mock example)
+# 4. Plan with same configuration file used for mock test
 cd examples
 terraform plan -var-file=./<category>/<module_name>/100-simple-<module_name>/configuration.tfvars
 ```
 
-**Key Point**: Use examples in `examples/<category>/<module_name>/` for real deployment, NEVER `examples/tests/<category>/<module_name>/`.
+**Key Point**: Mock tests and deployment use the same configuration files in `examples/<category>/<module_name>/`.
 
 Common errors:
 - "Reference to undeclared input variable" → Check variable names match `var.settings`

@@ -17,49 +17,35 @@ Mock tests ensure:
 - ✅ Examples work correctly
 - ✅ No breaking changes introduced
 
-## Directory Structure: Deployment vs Mock Examples
+## Directory Structure: Examples and Mock Tests
 
-**CRITICAL**: Mock test examples are stored separately from deployment examples:
+**Mock tests use the same configuration files as deployment examples**:
 
 ```
 examples/
 ├── <category>/
 │   └── <service>/
-│       └── 100-simple-service/          # Deployment example
-│           ├── configuration.tfvars     # Uses key-based references
+│       └── 100-simple-service/
+│           ├── configuration.tfvars     # Used for both deployment and mock tests
 │           └── README.md
 └── tests/
-    ├── mock/
-    │   └── e2e_plan.tftest.hcl          # Test framework
-    └── <category>/
-        └── <service>/
-            └── 100-simple-service-mock/  # Mock test example
-                ├── configuration.tfvars  # Uses direct IDs
-                └── README.md
+    └── mock/
+        └── e2e_plan.tftest.hcl          # Test framework (validates syntax)
 ```
 
-### When to Create Each Type
+### Configuration Pattern
 
-**Deployment Example** (`examples/<category>/<service>/`):
+**Examples** (`examples/<category>/<service>/`):
 - Production-ready configuration patterns
-- Key-based resource references
-- Shows how to use the module in real deployments
+- Key-based resource references for deployment
+- Same files used for mock tests (validates syntax)
 - Example: `resource_group = { key = "rg1" }`
 
-**Mock Test Example** (`examples/tests/<category>/<service>/`):
-- Validates module syntax and planning
-- Direct resource IDs (no remote_objects dependencies)
-- Tests module without actual Azure resources
-- Example: `resource_group_id = "/subscriptions/.../resourceGroups/rg-test"`
+### Why This Works
 
-### Why This Separation?
+**Mock tests validate syntax without creating resources**: The test framework uses mock providers to validate that Terraform can generate a valid plan without actually connecting to Azure.
 
-**Terraform Limitation**: Mock tests cannot populate `remote_objects` from resources defined in the same test plan. This is a framework constraint, not a bug.
-
-**Solution**: 
-- Deployment examples use key-based refs (rely on remote_objects)
-- Mock examples use direct IDs (no remote_objects needed)
-- Both serve different but important purposes
+**Same configuration for both**: Since mock tests only validate syntax and planning, the same key-based references work perfectly for both deployment and testing.
 
 ## When to Run Mock Tests
 
@@ -70,25 +56,54 @@ examples/
 3. **Before committing changes** - To validate all changes work together
 4. **After fixing variable references** - To confirm corrections
 
-### ⚠️ CRITICAL: What NOT to Do
+### ⚠️ CRITICAL: Mock Tests vs Real Deployments
 
-**NEVER use mock test examples for terraform plan/apply on real Azure:**
+**Mock tests validate syntax only** - they don't deploy to Azure.
+
+**For real deployments**, use terraform plan/apply in the examples directory:
 
 ```bash
-# ❌ WRONG - Mock examples only for testing, not for real deployment
-cd examples/tests/chaos_studio/100-simple-chaos-target-mock/
-terraform plan  # DON'T DO THIS
-terraform apply # DON'T DO THIS
+# ✅ CORRECT - For real deployment
+cd examples
+terraform_with_var_files \
+  --dir /chaos_studio/100-simple-chaos-target/ \
+  --action plan
+```
 
-# ✅ CORRECT - Use deployment examples for real Azure
-cd examples/chaos_studio/100-simple-chaos-target/
-terraform plan  # Use this path
-terraform apply # Use this path
+**For mock tests**, use terraform test command:
+
+```bash
+# ✅ CORRECT - For syntax validation (no Azure connection)
+terraform -chdir=examples \
+  test \
+  -test-directory=./tests/mock \
+  -var-file=./chaos_studio/100-simple-chaos-target/configuration.tfvars \
+  -verbose
 ```
 
 Mock examples contain fake Azure resource IDs that don't exist in your subscription.
 
 ## How to Execute Mock Tests
+
+**Standard Mock Test Command**:
+```bash
+cd examples
+terraform test \
+  -test-directory=./tests/mock \
+  -var-file=./<category>/<service>/100-example/configuration.tfvars \
+  -verbose
+```
+
+**Example for chaos_studio module**:
+```bash
+cd examples
+terraform test \
+  -test-directory=./tests/mock \
+  -var-file=./chaos_studio/100-simple-chaos-target/configuration.tfvars \
+  -verbose
+```
+
+**Alternative (single command)**: Use `terraform -chdir=examples test ...` if you don't want to change directories.
 
 ### ⚠️ CRITICAL: Azure Subscription Verification (for real deployments only)
 

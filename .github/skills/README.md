@@ -36,7 +36,33 @@ Complete workflow for creating a new Azure CAF Terraform module from scratch.
 
 ---
 
-#### 2. **mock-testing**
+#### 2. **root-module-integration**
+8-step process for integrating a new module into the root framework.
+
+**Use when:**
+- After creating a new module
+- Need to wire module into root aggregator
+- Setting up combined_objects
+- Creating examples and CI integration
+
+**Covers:**
+- Creating root aggregator file
+- Adding variables
+- Configuring locals
+- Setting up combined_objects
+- Example creation
+- CI/CD integration
+- Testing integration
+
+**Trigger phrases:**
+- "Integrate module into root"
+- "Wire up the new module"
+- "Connect module to framework"
+- "Set up combined objects"
+
+---
+
+#### 3. **mock-testing**
 Execute and debug Terraform mock tests for modules.
 
 **Use when:**
@@ -59,7 +85,7 @@ Execute and debug Terraform mock tests for modules.
 
 ---
 
-#### 3. **azure-schema-validation**
+#### 4. **azure-schema-validation**
 Validate Azure resource schemas using MCP Terraform tools (Pattern 0 - MANDATORY).
 
 **Use when:**
@@ -80,6 +106,78 @@ Validate Azure resource schemas using MCP Terraform tools (Pattern 0 - MANDATORY
 - "Check resource attributes"
 - "Is this resource deprecated?"
 - "What attributes does azurerm_* support?"
+
+---
+
+#### 5. **diagnostics-integration**
+Add Azure Monitor diagnostic settings to modules for logging and monitoring.
+
+**Use when:**
+- Adding diagnostics to new or existing module
+- Implementing compliance logging requirements
+- Setting up monitoring for Azure resources
+- User asks to "enable logging" or "add monitoring"
+
+**Covers:**
+- Creating diagnostics.tf with module integration
+- Configuring Log Analytics destinations
+- Setting up log categories and metrics
+- Retention policies and best practices
+- Example creation with diagnostics
+
+**Trigger phrases:**
+- "Add diagnostics to module"
+- "Enable monitoring"
+- "Add diagnostic settings"
+- "Set up logging"
+
+---
+
+#### 6. **private-endpoint-integration**
+Add Azure Private Endpoint support for secure, private network connectivity.
+
+**Use when:**
+- Adding private networking to modules
+- Implementing zero-trust architecture
+- Disabling public access
+- User asks to "add private endpoint" or "enable private connectivity"
+
+**Covers:**
+- Identifying service-specific subresource names
+- Creating private_endpoint.tf
+- VNet, subnet, and DNS configuration
+- Network security setup
+- Example creation with private endpoints
+
+**Trigger phrases:**
+- "Add private endpoint"
+- "Enable private connectivity"
+- "Add Azure Private Link"
+- "Disable public access"
+
+---
+
+#### 7. **caf-naming-validation**
+Validate Azure CAF naming conventions across modules and examples.
+
+**Use when:**
+- Creating modules with named resources
+- Debugging naming errors (too long, invalid characters)
+- Reviewing examples for compliance
+- User asks to "validate names" or "check naming"
+
+**Covers:**
+- azurecaf_name.tf validation
+- Resource type mapping
+- Length and character constraint checking
+- Prefix/suffix handling
+- Example name validation
+
+**Trigger phrases:**
+- "Validate CAF naming"
+- "Check naming conventions"
+- "Fix naming error"
+- "Why is name invalid?"
 
 ---
 
@@ -150,11 +248,11 @@ To add a new skill:
 
 ## Planned Skills (Future Implementation)
 
-### Phase 2 (Integration & Compliance)
-- [ ] **root-module-integration** - 8-step integration workflow
-- [ ] **caf-naming-validation** - Validate CAF naming conventions
-- [ ] **diagnostics-integration** - Add diagnostics to existing module
-- [ ] **private-endpoint-integration** - Add private endpoints to module
+### Phase 2 (Integration & Compliance) ✅ COMPLETED
+- [x] **root-module-integration** - 8-step integration workflow
+- [x] **caf-naming-validation** - Validate CAF naming conventions
+- [x] **diagnostics-integration** - Add diagnostics to existing module
+- [x] **private-endpoint-integration** - Add private endpoints to module
 
 ### Phase 3 (Examples & Documentation)
 - [ ] **example-creation** - Create tfvars examples with correct structure
@@ -176,11 +274,15 @@ To add a new skill:
 
 Track which skills are most useful:
 
-| Skill                      | Status   | Usage | Last Updated |
-|----------------------------|----------|-------|--------------|
-| module-creation            | ✅ Active | TBD   | 2026-01-19   |
-| mock-testing               | ✅ Active | TBD   | 2026-01-19   |
-| azure-schema-validation    | ✅ Active | TBD   | 2026-01-19   |
+| Skill                         | Status   | Usage | Last Updated |
+|-------------------------------|----------|-------|--------------||
+| module-creation               | ✅ Active | TBD   | 2026-01-19   |
+| mock-testing                  | ✅ Active | TBD   | 2026-01-19   |
+| azure-schema-validation       | ✅ Active | TBD   | 2026-01-19   |
+| root-module-integration       | ✅ Active | TBD   | 2026-01-23   |
+| diagnostics-integration       | ✅ Active | TBD   | 2026-01-23   |
+| private-endpoint-integration  | ✅ Active | TBD   | 2026-01-23   |
+| caf-naming-validation         | ✅ Active | TBD   | 2026-01-23   |
 
 ## Contributing
 
