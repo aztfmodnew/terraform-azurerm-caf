@@ -51,12 +51,12 @@ variable "base_tags" {
 variable "remote_objects" {
   description = "Remote objects for dependency resolution"
   type = object({
-    resource_groups    = optional(map(any), {})
-    storage_accounts   = optional(map(any), {})
-    virtual_machines   = optional(map(any), {})
+    resource_groups            = optional(map(any), {})
+    storage_accounts           = optional(map(any), {})
+    virtual_machines           = optional(map(any), {})
     virtual_machine_scale_sets = optional(map(any), {})
-    aks_clusters       = optional(map(any), {})
-    cosmos_dbs         = optional(map(any), {})
+    aks_clusters               = optional(map(any), {})
+    cosmos_dbs                 = optional(map(any), {})
     redis_caches               = optional(map(any), {})
     managed_redis              = optional(map(any), {})
     linux_web_apps             = optional(map(any), {})

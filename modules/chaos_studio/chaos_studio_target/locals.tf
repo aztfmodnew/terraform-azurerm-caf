@@ -26,21 +26,21 @@ locals {
   # Resolve target_resource_id based on target_type using remote_objects
   # Supported target types: https://learn.microsoft.com/azure/chaos-studio/chaos-studio-fault-providers
   # Use can() to safely check resource existence before accessing
-  cosmos_db_id                  = can(var.remote_objects.cosmos_dbs[local.lz_key][local.resource_key].id) ? var.remote_objects.cosmos_dbs[local.lz_key][local.resource_key].id : null
-  storage_account_id            = can(var.remote_objects.storage_accounts[local.lz_key][local.resource_key].id) ? var.remote_objects.storage_accounts[local.lz_key][local.resource_key].id : null
-  virtual_machine_id            = can(var.remote_objects.virtual_machines[local.lz_key][local.resource_key].id) ? var.remote_objects.virtual_machines[local.lz_key][local.resource_key].id : null
-  virtual_machine_scale_set_id  = can(var.remote_objects.virtual_machine_scale_sets[local.lz_key][local.resource_key].id) ? var.remote_objects.virtual_machine_scale_sets[local.lz_key][local.resource_key].id : null
-  aks_cluster_id                = can(var.remote_objects.aks_clusters[local.lz_key][local.resource_key].id) ? var.remote_objects.aks_clusters[local.lz_key][local.resource_key].id : null
-  redis_cache_id                = can(var.remote_objects.redis_caches[local.lz_key][local.resource_key].id) ? var.remote_objects.redis_caches[local.lz_key][local.resource_key].id : null
-  managed_redis_id              = can(var.remote_objects.managed_redis[local.lz_key][local.resource_key].id) ? var.remote_objects.managed_redis[local.lz_key][local.resource_key].id : null
-  linux_web_app_id              = can(var.remote_objects.linux_web_apps[local.lz_key][local.resource_key].id) ? var.remote_objects.linux_web_apps[local.lz_key][local.resource_key].id : null
-  windows_web_app_id            = can(var.remote_objects.windows_web_apps[local.lz_key][local.resource_key].id) ? var.remote_objects.windows_web_apps[local.lz_key][local.resource_key].id : null
-  network_security_group_id     = can(var.remote_objects.network_security_groups[local.lz_key][local.resource_key].id) ? var.remote_objects.network_security_groups[local.lz_key][local.resource_key].id : null
-  azurerm_firewall_id           = can(var.remote_objects.azurerm_firewalls[local.lz_key][local.resource_key].id) ? var.remote_objects.azurerm_firewalls[local.lz_key][local.resource_key].id : null
-  keyvault_id                   = can(var.remote_objects.keyvaults[local.lz_key][local.resource_key].id) ? var.remote_objects.keyvaults[local.lz_key][local.resource_key].id : null
-  servicebus_namespace_id       = can(var.remote_objects.servicebus_namespaces[local.lz_key][local.resource_key].id) ? var.remote_objects.servicebus_namespaces[local.lz_key][local.resource_key].id : null
-  event_hub_namespace_id        = can(var.remote_objects.event_hub_namespaces[local.lz_key][local.resource_key].id) ? var.remote_objects.event_hub_namespaces[local.lz_key][local.resource_key].id : null
-  load_test_id                  = can(var.remote_objects.load_tests[local.lz_key][local.resource_key].id) ? var.remote_objects.load_tests[local.lz_key][local.resource_key].id : null
+  cosmos_db_id                 = can(var.remote_objects.cosmos_dbs[local.lz_key][local.resource_key].id) ? var.remote_objects.cosmos_dbs[local.lz_key][local.resource_key].id : null
+  storage_account_id           = can(var.remote_objects.storage_accounts[local.lz_key][local.resource_key].id) ? var.remote_objects.storage_accounts[local.lz_key][local.resource_key].id : null
+  virtual_machine_id           = can(var.remote_objects.virtual_machines[local.lz_key][local.resource_key].id) ? var.remote_objects.virtual_machines[local.lz_key][local.resource_key].id : null
+  virtual_machine_scale_set_id = can(var.remote_objects.virtual_machine_scale_sets[local.lz_key][local.resource_key].id) ? var.remote_objects.virtual_machine_scale_sets[local.lz_key][local.resource_key].id : null
+  aks_cluster_id               = can(var.remote_objects.aks_clusters[local.lz_key][local.resource_key].id) ? var.remote_objects.aks_clusters[local.lz_key][local.resource_key].id : null
+  redis_cache_id               = can(var.remote_objects.redis_caches[local.lz_key][local.resource_key].id) ? var.remote_objects.redis_caches[local.lz_key][local.resource_key].id : null
+  managed_redis_id             = can(var.remote_objects.managed_redis[local.lz_key][local.resource_key].id) ? var.remote_objects.managed_redis[local.lz_key][local.resource_key].id : null
+  linux_web_app_id             = can(var.remote_objects.linux_web_apps[local.lz_key][local.resource_key].id) ? var.remote_objects.linux_web_apps[local.lz_key][local.resource_key].id : null
+  windows_web_app_id           = can(var.remote_objects.windows_web_apps[local.lz_key][local.resource_key].id) ? var.remote_objects.windows_web_apps[local.lz_key][local.resource_key].id : null
+  network_security_group_id    = can(var.remote_objects.network_security_groups[local.lz_key][local.resource_key].id) ? var.remote_objects.network_security_groups[local.lz_key][local.resource_key].id : null
+  azurerm_firewall_id          = can(var.remote_objects.azurerm_firewalls[local.lz_key][local.resource_key].id) ? var.remote_objects.azurerm_firewalls[local.lz_key][local.resource_key].id : null
+  keyvault_id                  = can(var.remote_objects.keyvaults[local.lz_key][local.resource_key].id) ? var.remote_objects.keyvaults[local.lz_key][local.resource_key].id : null
+  servicebus_namespace_id      = can(var.remote_objects.servicebus_namespaces[local.lz_key][local.resource_key].id) ? var.remote_objects.servicebus_namespaces[local.lz_key][local.resource_key].id : null
+  event_hub_namespace_id       = can(var.remote_objects.event_hub_namespaces[local.lz_key][local.resource_key].id) ? var.remote_objects.event_hub_namespaces[local.lz_key][local.resource_key].id : null
+  load_test_id                 = can(var.remote_objects.load_tests[local.lz_key][local.resource_key].id) ? var.remote_objects.load_tests[local.lz_key][local.resource_key].id : null
 
   target_resource_id = try(var.settings.target_resource_id, null) != null ? var.settings.target_resource_id : (
     var.settings.target_type == "Microsoft-StorageAccount" ? local.storage_account_id :

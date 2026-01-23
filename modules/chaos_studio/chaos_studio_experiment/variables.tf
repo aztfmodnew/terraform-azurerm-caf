@@ -59,10 +59,10 @@ variable "base_tags" {
 variable "remote_objects" {
   description = "Remote objects for dependency resolution"
   type = object({
-    resource_groups            = optional(map(any), {})
-    chaos_studio_targets       = optional(map(any), {})
-    chaos_studio_capabilities  = optional(map(any), {})
-    managed_identities         = optional(map(any), {})
+    resource_groups           = optional(map(any), {})
+    chaos_studio_targets      = optional(map(any), {})
+    chaos_studio_capabilities = optional(map(any), {})
+    managed_identities        = optional(map(any), {})
   })
   default = {}
 }

@@ -55,12 +55,12 @@ cosmos_dbs = {
       primary = {
         region            = "region1"
         failover_priority = 0
-        zone_redundant    = false  # Disable zone redundancy to avoid capacity issues
+        zone_redundant    = false # Disable zone redundancy to avoid capacity issues
       }
       secondary = {
         region            = "region2"
         failover_priority = 1
-        zone_redundant    = false  # Disable zone redundancy to avoid capacity issues
+        zone_redundant    = false # Disable zone redundancy to avoid capacity issues
       }
     }
 

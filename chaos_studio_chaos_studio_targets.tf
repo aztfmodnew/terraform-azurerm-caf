@@ -1,7 +1,7 @@
 module "chaos_studio_targets" {
   source   = "./modules/chaos_studio/chaos_studio_target"
   for_each = local.chaos_studio.chaos_studio_targets
-  
+
   depends_on = [
     module.storage_accounts,
     module.virtual_machines,
