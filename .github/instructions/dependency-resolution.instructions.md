@@ -75,27 +75,131 @@ locals {
 }
 ```
 
-**Pattern 3: Using can() for Existence Checks (Less Common)**
+**Pattern 3: Multi-Type Dependencies with can() Guards (Chaos Studio Pattern)**
+
+For complex modules with multiple resource types and conditional resolution:
 
 ```hcl
-# Only when you need explicit existence check
+# File: modules/chaos_studio/chaos_studio_target/locals.tf
+
 locals {
-  lz_key         = try(var.settings.resource.lz_key, var.client_config.landingzone_key)
-  resource_key   = try(var.settings.resource.key, var.settings.resource_key)
-  
-  # Check existence first (2 evaluations - slower)
-  storage_account_id = can(var.remote_objects.storage_accounts[local.lz_key][local.resource_key].id) 
-    ? var.remote_objects.storage_accounts[local.lz_key][local.resource_key].id 
-    : null
-    
-  resource_id = coalesce(
-    try(var.settings.resource_id, null),
-    local.storage_account_id
+  lz_key       = coalesce(try(var.settings.target_resource.lz_key, null), var.client_config.landingzone_key)
+  resource_key = try(var.settings.target_resource.key, var.settings.target_resource_key, null)
+
+  # Pre-resolve all possible resource types with can() guards
+  cosmos_db_id                  = can(var.remote_objects.cosmos_dbs[local.lz_key][local.resource_key].id) ? var.remote_objects.cosmos_dbs[local.lz_key][local.resource_key].id : null
+  storage_account_id            = can(var.remote_objects.storage_accounts[local.lz_key][local.resource_key].id) ? var.remote_objects.storage_accounts[local.lz_key][local.resource_key].id : null
+  virtual_machine_id            = can(var.remote_objects.virtual_machines[local.lz_key][local.resource_key].id) ? var.remote_objects.virtual_machines[local.lz_key][local.resource_key].id : null
+  virtual_machine_scale_set_id  = can(var.remote_objects.virtual_machine_scale_sets[local.lz_key][local.resource_key].id) ? var.remote_objects.virtual_machine_scale_sets[local.lz_key][local.resource_key].id : null
+  aks_cluster_id                = can(var.remote_objects.aks_clusters[local.lz_key][local.resource_key].id) ? var.remote_objects.aks_clusters[local.lz_key][local.resource_key].id : null
+  redis_cache_id                = can(var.remote_objects.redis_caches[local.lz_key][local.resource_key].id) ? var.remote_objects.redis_caches[local.lz_key][local.resource_key].id : null
+  managed_redis_id              = can(var.remote_objects.managed_redis[local.lz_key][local.resource_key].id) ? var.remote_objects.managed_redis[local.lz_key][local.resource_key].id : null
+  linux_web_app_id              = can(var.remote_objects.linux_web_apps[local.lz_key][local.resource_key].id) ? var.remote_objects.linux_web_apps[local.lz_key][local.resource_key].id : null
+  windows_web_app_id            = can(var.remote_objects.windows_web_apps[local.lz_key][local.resource_key].id) ? var.remote_objects.windows_web_apps[local.lz_key][local.resource_key].id : null
+  network_security_group_id     = can(var.remote_objects.network_security_groups[local.lz_key][local.resource_key].id) ? var.remote_objects.network_security_groups[local.lz_key][local.resource_key].id : null
+  azurerm_firewall_id           = can(var.remote_objects.azurerm_firewalls[local.lz_key][local.resource_key].id) ? var.remote_objects.azurerm_firewalls[local.lz_key][local.resource_key].id : null
+  keyvault_id                   = can(var.remote_objects.keyvaults[local.lz_key][local.resource_key].id) ? var.remote_objects.keyvaults[local.lz_key][local.resource_key].id : null
+  servicebus_namespace_id       = can(var.remote_objects.servicebus_namespaces[local.lz_key][local.resource_key].id) ? var.remote_objects.servicebus_namespaces[local.lz_key][local.resource_key].id : null
+  event_hub_namespace_id        = can(var.remote_objects.event_hub_namespaces[local.lz_key][local.resource_key].id) ? var.remote_objects.event_hub_namespaces[local.lz_key][local.resource_key].id : null
+  load_test_id                  = can(var.remote_objects.load_tests[local.lz_key][local.resource_key].id) ? var.remote_objects.load_tests[local.lz_key][local.resource_key].id : null
+
+  # Final resolution based on target_type with ternary cascade
+  target_resource_id = try(var.settings.target_resource_id, null) != null ? var.settings.target_resource_id : (
+    var.settings.target_type == "Microsoft-CosmosDB" ? local.cosmos_db_id :
+    var.settings.target_type == "Microsoft-StorageAccount" ? local.storage_account_id :
+    var.settings.target_type == "Microsoft-VirtualMachine" ? local.virtual_machine_id :
+    var.settings.target_type == "Microsoft-VirtualMachineScaleSet" ? local.virtual_machine_scale_set_id :
+    var.settings.target_type == "Microsoft-AzureKubernetesServiceChaosMesh" ? local.aks_cluster_id :
+    var.settings.target_type == "Microsoft-ContainerService/managedClusters" ? local.aks_cluster_id :
+    var.settings.target_type == "Microsoft-AzureCacheForRedis" ? local.redis_cache_id :
+    var.settings.target_type == "Microsoft-ManagedRedis" ? local.managed_redis_id :
+    var.settings.target_type == "Microsoft-AppService" ? coalesce(local.linux_web_app_id, local.windows_web_app_id) :
+    var.settings.target_type == "Microsoft-NetworkSecurityGroup" ? local.network_security_group_id :
+    var.settings.target_type == "Microsoft-Firewalls" ? local.azurerm_firewall_id :
+    var.settings.target_type == "Microsoft-KeyVault" ? local.keyvault_id :
+    var.settings.target_type == "Microsoft-ServiceBus" ? local.servicebus_namespace_id :
+    var.settings.target_type == "Microsoft-EventHub" ? local.event_hub_namespace_id :
+    var.settings.target_type == "Microsoft-AzureLoadTest" ? local.load_test_id :
+    null
   )
 }
 ```
 
-**Performance Note**: `try()` (1 evaluation) is 50% faster than `can()` + ternary (2 evaluations). Use `can()` only when you need explicit existence check.
+**Pattern 3 Requirements**:
+- Module variable `remote_objects` with explicit type definition for ALL resource types
+- Root aggregator passes ALL `local.combined_objects_*` needed
+- Each resource type gets individual `can()` check for safe existence validation
+- Final ternary cascade based on type attribute (e.g., `target_type`, `resource_type`)
+- Graceful null fallback for unknown types
+
+**Pattern 3 Remote Objects Variable**:
+```hcl
+# File: modules/chaos_studio/chaos_studio_target/variables.tf
+
+variable "remote_objects" {
+  description = "Remote objects for dependency resolution"
+  type = object({
+    resource_groups            = optional(map(any), {})
+    storage_accounts           = optional(map(any), {})
+    virtual_machines           = optional(map(any), {})
+    virtual_machine_scale_sets = optional(map(any), {})
+    aks_clusters               = optional(map(any), {})
+    cosmos_dbs                 = optional(map(any), {})
+    redis_caches               = optional(map(any), {})
+    managed_redis              = optional(map(any), {})
+    linux_web_apps             = optional(map(any), {})
+    windows_web_apps           = optional(map(any), {})
+    network_security_groups    = optional(map(any), {})
+    azurerm_firewalls          = optional(map(any), {})
+    keyvaults                  = optional(map(any), {})
+    servicebus_namespaces      = optional(map(any), {})
+    event_hub_namespaces       = optional(map(any), {})
+    load_tests                 = optional(map(any), {})
+  })
+  default = {}
+}
+```
+
+**Pattern 3 Root Aggregator**:
+```hcl
+# File: chaos_studio_chaos_studio_targets.tf
+
+module "chaos_studio_targets" {
+  source   = "./modules/chaos_studio/chaos_studio_target"
+  for_each = local.chaos_studio.chaos_studio_targets
+
+  depends_on = [
+    module.storage_accounts,
+    module.virtual_machines,
+    module.aks_clusters,
+    module.cosmos_dbs,
+    # ... all dependent modules
+  ]
+
+  settings = each.value  # Pass settings directly
+
+  remote_objects = {
+    resource_groups            = local.combined_objects_resource_groups
+    storage_accounts           = local.combined_objects_storage_accounts
+    virtual_machines           = local.combined_objects_virtual_machines
+    virtual_machine_scale_sets = local.combined_objects_virtual_machine_scale_sets
+    aks_clusters               = local.combined_objects_aks_clusters
+    cosmos_dbs                 = local.combined_objects_cosmos_dbs
+    redis_caches               = local.combined_objects_redis_caches
+    managed_redis              = local.combined_objects_managed_redis
+    linux_web_apps             = local.combined_objects_linux_web_apps
+    windows_web_apps           = local.combined_objects_windows_web_apps
+    network_security_groups    = local.combined_objects_network_security_groups
+    azurerm_firewalls          = local.combined_objects_azurerm_firewalls
+    keyvaults                  = local.combined_objects_keyvaults
+    servicebus_namespaces      = local.combined_objects_servicebus_namespaces
+    event_hub_namespaces       = local.combined_objects_event_hub_namespaces
+    load_tests                 = local.combined_objects_load_test
+  }
+}
+```
+
+**Performance Note**: Pattern 3 uses `can()` (2 evaluations per check) instead of `try()` (1 evaluation). Accept this performance cost for robust existence checking in complex multi-type scenarios.
 
 ### Root Aggregator Layer (Pass Dependencies Only)
 
@@ -157,17 +261,23 @@ Does the module depend on multiple resource types?
           ├─ NO → Use Pattern 1 (Simple Coalesce)
           │        Single resource type, simple key lookup
           │
-          └─ YES → Use Pattern 2 (Ternary Cascade)
-                    Conditional ternary based on type attribute
-                    Examples: target_type, resource_type, scope_type
+          └─ YES → How many resource types and how complex?
+                    │
+                    ├─ 2-3 types, simple logic → Use Pattern 2 (Ternary Cascade)
+                    │                            Conditional ternary based on type attribute
+                    │                            Examples: target_type with few types
+                    │
+                    └─ 5+ types, complex logic → Use Pattern 3 (can() Guards + Ternary)
+                                                 Pre-resolve all types with can()
+                                                 Examples: Chaos Studio multi-target support
                     
-Do you need explicit existence check before accessing?
+Do you need robust existence checking during planning?
 │
 ├─ NO → Prefer Pattern 1 or 2 with try() (faster)
 │
 └─ YES → Use Pattern 3 (can() + ternary)
-          Only when error handling requires existence check
-          Accept 50% performance cost
+          Accept performance cost for robust error handling
+          Essential for complex multi-type scenarios
 ```
 
 ---

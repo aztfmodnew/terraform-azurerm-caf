@@ -382,7 +382,7 @@ locals {
 subnet_id = local.subnet_id
 ```
 
-**Pattern 2: Multi-Type Conditional (Complex)**
+**Pattern 2: Multi-Type Conditional (Medium Complexity)**
 
 ```hcl
 # In module locals.tf - Use ternary cascade based on type
@@ -400,27 +400,48 @@ locals {
 }
 ```
 
-**Pattern 3: Using can() for Safe Checks (Less Performant)**
+**Pattern 3: Multi-Type Complex with can() Guards (Chaos Studio Pattern)**
 
 ```hcl
-# Only if you need explicit existence check before accessing
+# For complex multi-type scenarios (5+ resource types)
 locals {
-  lz_key       = try(var.settings.resource.lz_key, var.client_config.landingzone_key)
-  resource_key = try(var.settings.resource.key, var.settings.resource_key)
+  lz_key       = coalesce(try(var.settings.target_resource.lz_key, null), var.client_config.landingzone_key)
+  resource_key = try(var.settings.target_resource.key, var.settings.target_resource_key, null)
 
-  # Check existence first
-  resource_id = can(var.remote_objects.resources[local.lz_key][local.resource_key].id)
-    ? var.remote_objects.resources[local.lz_key][local.resource_key].id
-    : null
+  # Pre-resolve all resource types with can() guards
+  cosmos_db_id                  = can(var.remote_objects.cosmos_dbs[local.lz_key][local.resource_key].id) ? var.remote_objects.cosmos_dbs[local.lz_key][local.resource_key].id : null
+  storage_account_id            = can(var.remote_objects.storage_accounts[local.lz_key][local.resource_key].id) ? var.remote_objects.storage_accounts[local.lz_key][local.resource_key].id : null
+  virtual_machine_id            = can(var.remote_objects.virtual_machines[local.lz_key][local.resource_key].id) ? var.remote_objects.virtual_machines[local.lz_key][local.resource_key].id : null
+  # ... continue for all supported types
 
-  final_id = coalesce(try(var.settings.resource_id, null), local.resource_id)
+  # Final ternary cascade with pre-resolved locals
+  target_resource_id = try(var.settings.target_resource_id, null) != null ? var.settings.target_resource_id : (
+    var.settings.target_type == "Microsoft-CosmosDB" ? local.cosmos_db_id :
+    var.settings.target_type == "Microsoft-StorageAccount" ? local.storage_account_id :
+    var.settings.target_type == "Microsoft-VirtualMachine" ? local.virtual_machine_id :
+    # ... continue for all types
+    null
+  )
 }
 ```
 
 **Performance Consideration**:
 
-- `try()` alone: 1 evaluation (preferred)
-- `can()` + ternary: 2 evaluations (50% slower, use only when explicit existence check needed)
+- `try()` alone: 1 evaluation (fastest - Pattern 1 & 2)
+- `can()` + ternary: 2 evaluations (slower, but robust - Pattern 3)
+
+**Pattern 3 requires explicit remote_objects variable definition**:
+```hcl
+variable "remote_objects" {
+  type = object({
+    storage_accounts   = optional(map(any), {})
+    virtual_machines   = optional(map(any), {})
+    cosmos_dbs         = optional(map(any), {})
+    # ... all supported resource types
+  })
+  default = {}
+}
+```
 
 **Root Aggregator Responsibility**:
 
@@ -445,8 +466,17 @@ module "chaos_studio_targets" {
 **When to use which pattern**:
 
 - **Pattern 1**: Most common - single resource type dependency
-- **Pattern 2**: When resolution depends on a type attribute (target_type, resource_type, etc.)
-- **Pattern 3**: Only when you need explicit existence check for error handling
+- **Pattern 2**: When resolution depends on a type attribute with 2-3 simple types
+- **Pattern 3**: Complex multi-type scenarios (5+ types) requiring robust existence checking
+
+| Scenario                                         | Pattern | Method                                   |
+| ------------------------------------------------ | ------- | ---------------------------------------- |
+| Simple single resource type resolution          | 1       | `try()` + coalesce                       |
+| 2-3 types with simple conditional logic         | 2       | Ternary with `try()`                     |
+| 5+ types with complex conditional logic         | 3       | `can()` guards + ternary cascade         |
+| Multiple landing zones, same resource type      | 1       | Flatten + concat pattern                 |
+| Complex cross-type with cross-landing-zone      | 3       | Module resolution with explicit typing   |
+| Need robust existence checking during planning  | 3       | `can()` checks with type definitions     |
 
 ### Principle 4: Examples as Documentation
 
