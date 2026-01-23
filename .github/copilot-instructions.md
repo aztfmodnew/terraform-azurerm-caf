@@ -312,7 +312,7 @@ terraform_with_var_files --dir /category/service_name/minimal/ --action plan --a
 
 ## �📚 Technical Reference
 
-Resource type mapping and extended patterns (argument defaults, lifecycle rules, submodule integration, and common constraints) are documented in the aztfmod/azurecaf provider docs and in the scoped module instructions (`.github/instructions/terraform-modules.instructions.md`).
+Resource type mapping and extended patterns (argument defaults, lifecycle rules, submodule integration, and common constraints) are documented in the aztfmodnew/azurecaf provider docs and in the scoped module instructions (`.github/instructions/terraform-modules.instructions.md`).
 
 ---
 

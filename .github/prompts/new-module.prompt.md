@@ -130,4 +130,4 @@ Helpful references:
 - `.github/instructions/terraform-root.instructions.md`
 - `.github/instructions/terraform-examples.instructions.md`
 - `.github/MODULE_STRUCTURE.md`
-- aztfmod/azurecaf provider docs
+- aztfmodnew/azurecaf provider docs

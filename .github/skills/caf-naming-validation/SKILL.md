@@ -30,7 +30,7 @@ The Azure Cloud Adoption Framework defines naming standards for consistency, gov
 
 ### Handled by azurecaf Provider
 
-This framework uses the **aztfmod/azurecaf** Terraform provider to automatically:
+This framework uses the **aztfmodnew/azurecaf** Terraform provider to automatically:
 - ✅ Add appropriate prefixes
 - ✅ Enforce character constraints
 - ✅ Apply length limits
@@ -135,7 +135,7 @@ The azurecaf provider uses specific resource type identifiers.
 **Verification**:
 ```bash
 # Check azurecaf provider documentation
-terraform providers schema -json | jq '.provider_schemas."registry.terraform.io/aztfmod/azurecaf"'
+terraform providers schema -json | jq '.provider_schemas."registry.terraform.io/aztfmodnew/azurecaf"'
 ```
 
 ---
@@ -601,8 +601,8 @@ resource_groups = {
 terraform {
   required_providers {
     azurecaf = {
-      source  = "aztfmod/azurecaf"
-      version = "~> 1.2"  # Check for latest version
+      source  = "aztfmodnew/azurecaf"
+      version = ">= 1.2.0"
     }
   }
 }
