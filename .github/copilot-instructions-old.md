@@ -205,7 +205,7 @@ For example, if the module is `azurerm_ai_services` under the category `cognitiv
 
 ## Azure CAF Naming Convention Implementation
 
-Implement Azure Cloud Adoption Framework (CAF) naming conventions using the `aztfmod/azurecaf` provider for ALL modules to ensure consistent, compliant, and standardized resource names across the entire CAF framework.
+Implement Azure Cloud Adoption Framework (CAF) naming conventions using the `aztfmodnew/azurecaf` provider for ALL modules to ensure consistent, compliant, and standardized resource names across the entire CAF framework.
 
 ### Core Requirements
 
@@ -227,8 +227,8 @@ terraform {
       version = ">= 2.1.0"
     }
     azurecaf = {
-      source  = "aztfmod/azurecaf"
-      version = "~> 1.2.0"
+      source  = "aztfmodnew/azurecaf"
+      version = ">= 1.2.0"
     }
     azurerm = {
       source  = "hashicorp/azurerm"
@@ -427,8 +427,8 @@ terraform {
       version = ">= 3.0.0"
     }
     azurecaf = {
-      source  = "aztfmod/azurecaf"
-      version = "~> 1.2.0"
+      source  = "aztfmodnew/azurecaf"
+      version = ">= 1.2.0"
     }
     azurerm = {
       source  = "hashicorp/azurerm"

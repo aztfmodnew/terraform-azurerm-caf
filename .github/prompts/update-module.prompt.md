@@ -34,11 +34,21 @@ Steps:
 5. Outputs
    - Expose useful outputs consistently (id, name, resource-specific ids where appropriate).
 6. Examples
-   - Update `examples/<category>/<module_name>/**/configuration.tfvars` to demonstrate new features.
-   - Keep names without CAF prefixes; ensure key-based references; update networking when PEs are added.
-   - Add/update CI workflow JSON entries when adding new example folders.
+   - Update deployment examples in `examples/<category>/<module_name>/**/configuration.tfvars` to demonstrate new features (use key-based references).
+   - Update mock test examples in `examples/tests/<category>/<module_name>/**-mock/configuration.tfvars` to match (use direct IDs).
+   - Keep names without CAF prefixes; ensure key-based references in deployment examples; use direct IDs in mock examples.
+   - Update networking when PEs are added.
+   - Add/update CI workflow JSON entries when adding new example folders (deployment examples only, NOT mock paths).
 7. Tests / Validation
-   - Run terraform plan on examples; ensure no unintended diffs.
+   - Run mock tests (syntax validation ONLY, uses examples/tests/):
+     - `cd examples && terraform test -test-directory=./tests/mock -var-file=./tests/<category>/<module_name>/100-*-mock/configuration.tfvars -verbose`
+   - Mock tests MUST pass before proceeding.
+   - **DO NOT use mock examples for terraform plan/apply** - they have fake resource IDs
+   - Run terraform plan on deployment examples (OPTIONAL, for real Azure):
+     - ⚠️ CRITICAL: Verify Azure subscription first: `az account show --query "{subscriptionId:id, name:name, state:state}" -o table`
+     - Get user confirmation, then export: `export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)`
+     - **Use DEPLOYMENT examples** (examples/<category>/<module_name>/, NOT examples/tests/)
+     - Run plan and ensure no unintended diffs.
    - Verify module appears in docs; dependency graphs include new `remote_objects` where used.
 8. Documentation
    - If a README exists for the module, update usage and inputs/outputs sections.
@@ -48,6 +58,8 @@ Acceptance criteria:
 
 - No breaking changes for existing examples.
 - New attributes covered with try() and documented.
+- **Both deployment and mock test examples updated** (deployment in `examples/`, mock in `examples/tests/`).
+- **Mock tests pass** using updated mock test examples.
 - Examples plan cleanly and illustrate new features.
 - Docs and dependency graphs updated.
 

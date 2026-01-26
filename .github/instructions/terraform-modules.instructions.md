@@ -61,8 +61,50 @@ Use these rules when editing files under `modules/**`. Focus on correctness, CAF
   - Expose id/subresource via outputs; instantiate `../networking/private_endpoint` submodule with `for_each = var.private_endpoints` and pass `resource_id`, `subnet_id` via the coalesce pattern.
   - Module variables: `private_endpoints`, `private_dns`, `virtual_subnets`, `vnets` with defaults `{}`.
 
-- Dependency resolution (MANDATORY)
-  - Use the coalesce pattern with `var.settings.*`, `var.remote_objects.<plural>`, and cross-landing-zone lookups. Never pass raw IDs as separate variables between submodules—use `remote_objects`.
+- Dependency resolution (MANDATORY - remote_objects pattern)
+  - **Always use remote_objects pattern**: Resolve dependencies in module locals using `var.remote_objects`, NOT in aggregator
+  - **Standard resolution pattern** (single resource type):
+
+    ```hcl
+    # In module locals.tf
+    lz_key = try(var.settings.resource.lz_key, var.client_config.landingzone_key)
+    resource_key = try(var.settings.resource.key, var.settings.resource_key)
+
+    resource_id = coalesce(
+      try(var.settings.resource_id, null),  # Direct ID
+      try(var.remote_objects.resources[local.lz_key][local.resource_key].id, null)  # Key-based
+    )
+    ```
+
+  - **Multi-type conditional resolution** (e.g., target can be Storage/VM/AKS based on type):
+    ```hcl
+    # Use ternary cascade with explicit type checks
+    target_resource_id = (
+      var.settings.target_resource_id != null ? var.settings.target_resource_id :
+      var.settings.target_type == "Microsoft-StorageAccount" ? try(var.remote_objects.storage_accounts[lz_key][resource_key].id, null) :
+      var.settings.target_type == "Microsoft-VirtualMachine" ? try(var.remote_objects.virtual_machines[lz_key][resource_key].id, null) :
+      null
+    )
+    ```
+  - **CRITICAL - Avoiding coalesce errors**: If all try() expressions might return null:
+    - ❌ WRONG: `coalesce(try(..., null), try(..., null), try(..., null))` → fails if all null
+    - ✅ CORRECT Option 1: Use ternary cascade with explicit null checks (see above)
+    - ✅ CORRECT Option 2: Use `can()` for existence checks before accessing:
+      ```hcl
+      resource_id = can(var.remote_objects.resources[lz][key].id) ? var.remote_objects.resources[lz][key].id : null
+      value = coalesce(try(var.settings.id, null), local.resource_id)
+      ```
+    - ⚠️ Performance: `try()` is 50% faster than `can()` + ternary (1 evaluation vs 2)
+  - **Never pass raw IDs as separate variables between submodules—use `remote_objects`**
+  - **Root aggregator responsibility**: Pass ALL dependencies via `remote_objects` block:
+    ```hcl
+    remote_objects = {
+      resource_groups   = local.combined_objects_resource_groups
+      storage_accounts  = local.combined_objects_storage_accounts
+      virtual_machines  = local.combined_objects_virtual_machines
+      # ... all dependencies the module needs
+    }
+    ```
   - For identity blocks: Create dedicated `managed_identities.tf` file that resolves managed identity IDs from `var.remote_objects.managed_identities` supporting both local (same landing zone) and remote (cross-landing-zone) references via `settings.identity.managed_identity_keys` and `settings.identity.remote` patterns.
 
 - Dynamic blocks

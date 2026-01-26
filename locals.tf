@@ -299,6 +299,11 @@ locals {
   bot = {
     azure_bots = try(var.bot.azure_bots, {})
   }
+  chaos_studio = {
+    chaos_studio_targets      = try(var.chaos_studio.chaos_studio_targets, {})
+    chaos_studio_capabilities = try(var.chaos_studio.chaos_studio_capabilities, {})
+    chaos_studio_experiments  = try(var.chaos_studio.chaos_studio_experiments, {})
+  }
   search_services = {
     search_services = try(var.search_services.search_services, {})
   }

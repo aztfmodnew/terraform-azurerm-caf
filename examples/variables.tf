@@ -1037,6 +1037,11 @@ variable "azure_bots" {
   default = {}
 }
 
+variable "chaos_studio" {
+  type    = any
+  default = {}
+}
+
 variable "database_migration_services" {
   type    = any
   default = {}
