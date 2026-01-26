@@ -80,7 +80,7 @@ cd examples
 terraform init -upgrade
 terraform test \
   -test-directory=./tests/mock \
-  -var-file=./tests/chaos_studio/100-simple-chaos-target-mock/configuration.tfvars \
+  -var-file=./chaos_studio/400-storage-nsg-block/configuration.tfvars \
   -verbose
 ```
 
