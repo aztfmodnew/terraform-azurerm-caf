@@ -13,7 +13,7 @@ All examples in this directory use **officially documented** Chaos Studio capabi
 - **Target Type**: `Microsoft-CosmosDB`
 - **Use Case**: Database regional outage and automatic failover testing
 - **Features**:
-  - Multi-region Cosmos DB (West Europe + North Europe)
+  - Multi-region Cosmos DB (North Europe + Australia Central)
   - Automatic failover enabled
   - Simulates primary region failure
   - Tests application resilience to database failover
