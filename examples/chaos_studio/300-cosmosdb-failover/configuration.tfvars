@@ -143,7 +143,7 @@ chaos_studio = {
                     key = "failover_capability"
                   }
                   parameters = {
-                    readRegion = "Australia Central" # Región secundaria para failover
+                    readRegion = "Australia Central" # Secondary region for failover
                   }
                 }
               ]
