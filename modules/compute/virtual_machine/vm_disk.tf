@@ -27,7 +27,8 @@ resource "azurerm_managed_disk" "disk" {
   disk_encryption_set_id = can(each.value.disk_encryption_set_id) ? each.value.disk_encryption_set_id : can(each.value.disk_encryption_set_key) ? var.disk_encryption_sets[try(each.value.lz_key, var.client_config.landingzone_key)][each.value.disk_encryption_set_key].id : null
   lifecycle {
     ignore_changes = [
-      name, #for ASR disk restores
+      name,               #for ASR disk restores
+      storage_account_id, #for ASR disk restores
     ]
   }
 }
