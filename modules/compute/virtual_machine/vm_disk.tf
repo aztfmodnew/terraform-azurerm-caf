@@ -19,6 +19,7 @@ resource "azurerm_managed_disk" "disk" {
   storage_account_type   = each.value.storage_account_type
   create_option          = each.value.create_option
   disk_size_gb           = each.value.disk_size_gb
+  max_shares             = try(each.value.max_shares, null)
   zone                   = try(each.value.zone, each.value.zones[0], null)
   disk_iops_read_write   = try(each.value.disk_iops_read_write, null)
   disk_mbps_read_write   = try(each.value.disk.disk_mbps_read_write, null)
@@ -29,7 +30,6 @@ resource "azurerm_managed_disk" "disk" {
       name, #for ASR disk restores
     ]
   }
-
 }
 
 resource "azurerm_virtual_machine_data_disk_attachment" "disk" {
@@ -40,5 +40,4 @@ resource "azurerm_virtual_machine_data_disk_attachment" "disk" {
   lun                       = each.value.lun
   caching                   = lookup(each.value, "caching", "None")
   write_accelerator_enabled = lookup(each.value, "write_accelerator_enabled", false)
-
 }
