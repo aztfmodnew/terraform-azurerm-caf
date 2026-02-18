@@ -62,67 +62,25 @@ Root wiring (required):
 
 Examples (required):
 
-**CRITICAL**: Create BOTH deployment and mock test examples.
-
-**Deployment examples** (production patterns):
 - examples/<category>/<module_name>/
-  - 100-simple-service/configuration.tfvars (mandatory minimal, key-based references)
+  - 100-simple-service/configuration.tfvars (mandatory minimal)
   - 200-.../configuration.tfvars (private endpoint if supported)
   - 300-.../configuration.tfvars (advanced)
 
-**Mock test examples** (syntax validation):
-- examples/tests/<category>/<module_name>/
-  - 100-simple-service-mock/configuration.tfvars (mandatory minimal, direct IDs)
-  - (optional 200-/300- mock variants if complex)
-
 Example rules:
 
-**Deployment examples** (`examples/<category>/<module_name>/`):
-- Use key-based references: `resource_group = { key = "rg_key" }`
-- Rely on remote_objects for dependency resolution
-- Show production-ready patterns
-
-**Mock test examples** (`examples/tests/<category>/<module_name>/`):
-- Use direct resource IDs: `resource_group_id = "/subscriptions/..."`
-- NO dependency on remote_objects (mock tests can't populate them)
-- Suffix directory name with `-mock` (e.g., `100-simple-service-mock`)
-- Match deployment example structure but with direct IDs
-
-**Common rules for both**:
-- Do NOT include CAF prefixes in names (e.g., use `grafana-test-1`, not `rg-grafana-test-1`)
-- Include `global_settings.random_length` to ensure unique naming
-- For networking examples: use `vnets` and `virtual_subnets`; include NSG definitions and private DNS when using PEs
-- Add ONLY deployment example paths to workflow JSON under `.github/workflows/` (NOT mock paths)
-
-**Mock test validation** (NO Azure subscription needed, syntax validation only):
-```bash
-cd examples
-terraform init -upgrade
-terraform test -test-directory=./tests/mock -var-file=./tests/<category>/<module_name>/100-simple-service-mock/configuration.tfvars -verbose
-```
-Mock test MUST pass before proceeding.
-
-**⚠️ CRITICAL: Real deployment uses deployment examples, NOT mock examples:**
-```bash
-# ⚠️ ALWAYS verify Azure subscription first
-az account show --query "{subscriptionId:id, name:name, state:state}" -o table
-# Confirm with user, then export:
-export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
-
-# Use DEPLOYMENT example (examples/<category>/<module_name>/), NOT tests/
-terraform plan -var-file=./examples/<category>/<module_name>/100-simple-service/configuration.tfvars
-```
-Never use examples/tests/ for real Azure deployments - they contain fake resource IDs.
+- Do NOT include CAF prefixes in names (e.g., use `grafana-test-1`, not `rg-grafana-test-1`).
+- Use key-based references: `resource_group = { key = "rg_key" }`.
+- Include `global_settings.random_length` to ensure unique naming.
+- For networking examples: use `vnets` and `virtual_subnets`; include NSG definitions and private DNS when using PEs.
+- Add example paths to the correct workflow JSON under `.github/workflows/`.
 
 Acceptance criteria:
 
 - Module compiles (terraform validate) and examples plan successfully.
-- **Mock tests pass** using mock test example from `examples/tests/<category>/<module_name>/`.
-- **Both deployment and mock test examples created** (deployment in `examples/`, mock in `examples/tests/`).
 - Module appears in docs (two-level depth) and dependency graphs resolve (including `var.remote_objects.*`).
 - Root aggregator, variables, locals, and combined_objects updated.
 - Code follows try()/coalesce() patterns and tag/location/resource_group standards.
-- Only deployment examples registered in CI workflow JSON (NOT mock test paths).
 
 Helpful references:
 

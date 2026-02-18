@@ -2,7 +2,7 @@
 name: Example Generator
 description: Generates consistent, realistic .tfvars examples at multiple complexity levels following CAF standards
 tools:
-  - read_files
+  - read_file
   - grep_search
   - semantic_search
   - file_search
@@ -22,34 +22,6 @@ You are an expert at creating consistent, realistic `.tfvars` examples for Terra
 - Mastery of key-based reference patterns
 - Knowledge of networking configuration patterns
 - Understanding of CI/CD workflow registration
-
-## Example Types
-
-### Deployment Examples
-
-**Location**: `examples/<category>/<service>/NNN-description/`
-
-**Purpose**: Production deployment patterns
-
-**Characteristics**:
-- Use key-based references (`resource_group = { key = "rg1" }`)
-- Demonstrate real-world usage patterns
-- Rely on remote_objects for dependency resolution
-- Intended for actual Azure deployments
-
-### Mock Test Examples
-
-**Location**: `examples/tests/<category>/<service>/NNN-description-mock/`
-
-**Purpose**: Module syntax and planning validation
-
-**Characteristics**:
-- Use direct resource IDs (`resource_group_id = "/subscriptions/..."`)
-- NO dependency on remote_objects
-- Validate module without Azure resources
-- Suffix with `-mock` in directory name
-
-**Why Both?** Terraform mock tests cannot populate remote_objects from same-plan resources. Mock examples bypass this limitation.
 
 ## Example Complexity Levels
 
@@ -114,28 +86,19 @@ Based on user request or module features:
 
 #### Step 2.2: Create Directory Structure
 
-**IMPORTANT**: Create BOTH deployment and mock test examples:
-
 ```
 examples/
-├── <category>/
-│   └── <service_name>/
-│       └── <NNN>-<description>/           # Deployment example
-│           ├── configuration.tfvars       # Key-based references
-│           └── README.md
-└── tests/
-    └── <category>/
-        └── <service_name>/
-            └── <NNN>-<description>-mock/  # Mock test example
-                ├── configuration.tfvars   # Direct IDs
-                └── README.md
+└── <category>/
+    └── <service_name>/
+        └── <NNN>-<description>/
+            ├── configuration.tfvars
+            └── README.md
 ```
 
 **Naming Convention**:
 
 - Use numbered prefix (100, 200, 300, etc.)
 - Use descriptive name (simple-service, service-private-endpoint, service-advanced)
-- Add `-mock` suffix for mock test examples
 - Use kebab-case
 
 ### Phase 3: Configuration Generation
@@ -393,21 +356,13 @@ Before marking complete:
 - [ ] File named `configuration.tfvars` (not minimal/complete/example)
 - [ ] Global settings with random_length included
 - [ ] Resource names WITHOUT azurecaf prefixes
-- [ ] **Key-based references used everywhere** (resource_group = { key = "..." })
+- [ ] Key-based references used everywhere
 - [ ] Networking uses correct variables (vnets, virtual_subnets)
 - [ ] Private DNS configured (if using private endpoints)
 - [ ] Tags included
-- [ ] README.md created with deployment instructions
+- [ ] README.md created
 - [ ] Registered in appropriate CI workflow JSON
-
-**Mock Test Example** (`examples/tests/<category>/<service>/`):
-- [ ] Directory has `-mock` suffix (e.g., 100-simple-service-mock)
-- [ ] File named `configuration.tfvars`
-- [ ] **Direct resource IDs used** (resource_group_id = "/subscriptions/...")
-- [ ] NO dependency on remote_objects
-- [ ] Matches deployment example structure (same resources)
-- [ ] README.md created with mock test instructions
-- [ ] Mock test passes: `terraform test -test-directory=./tests/mock -var-file=./tests/<path>/configuration.tfvars`
+- [ ] No hardcoded subscription IDs or resource IDs
 
 ## Common Patterns
 

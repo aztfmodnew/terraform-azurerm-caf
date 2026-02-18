@@ -253,9 +253,7 @@ combined_objects_<service_names> = merge(
 
 ### Phase 4: Examples Creation
 
-**CRITICAL**: Create BOTH deployment and mock test examples.
-
-#### Step 4.1: Create Deployment Example (100-level)
+#### Step 4.1: Create Simple Example (100-level)
 
 Directory: `examples/<category>/<service_name>/100-simple-<service>`
 
@@ -289,85 +287,19 @@ resource_groups = {
 }
 ```
 
-File: `README.md`
+#### Step 4.2: Create README for Example
 
-Document deployment instructions with key-based references pattern.
+Document:
 
-#### Step 4.2: Create Mock Test Example (100-level)
+- Purpose
+- Prerequisites
+- Deployment steps
+- Validation steps
+- Cleanup steps
 
-Directory: `examples/tests/<category>/<service_name>/100-simple-<service>-mock`
+#### Step 4.3: Register in CI Workflow
 
-File: `configuration.tfvars`
-
-```hcl
-global_settings = {
-  default_region = "region1"
-  regions = {
-    region1 = "westeurope"
-  }
-  random_length = 5
-}
-
-resource_groups = {
-  test_rg = {
-    name = "service-test"  # NO azurecaf prefix
-  }
-}
-
-<category> = {
-  <service_name> = {
-    instance1 = {
-      name = "test-instance"  # NO azurecaf prefix
-      # Use direct IDs for mock testing
-      resource_group_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-service-test-00001"
-      # Minimal required configuration
-    }
-  }
-}
-```
-
-File: `README.md`
-
-Document mock testing purpose and usage:
-- Explain this is for syntax validation
-- Note it uses direct IDs (no remote_objects)
-- Show terraform test command
-
-#### Step 4.3: Run Mock Test
-
-**ONLY use mock test examples for terraform test (syntax validation):**
-
-```bash
-cd examples
-terraform init -upgrade
-terraform test -test-directory=./tests/mock -var-file=./tests/<category>/<service_name>/100-simple-<service>-mock/configuration.tfvars -verbose
-```
-
-**Must pass before proceeding.**
-
-#### Step 4.4: Real Deployment Test (Optional)
-
-**⚠️ CRITICAL: For real Azure, ONLY use deployment examples (never mock examples):**
-
-```bash
-# 1. Check Azure subscription
-az account show --query "{subscriptionId:id, name:name, state:state}" -o table
-
-# 2. Confirm with user
-# MUST get explicit confirmation
-
-# 3. Export subscription
-export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
-
-# 4. Use DEPLOYMENT example from examples/<category>/<service_name>/
-# NOT from examples/tests/<category>/<service_name>/
-cd examples
-terraform plan -var-file=./<category>/<service_name>/100-simple-<service>/configuration.tfvars
-```
-
-#### Step 4.5: Register in CI Workflow
-
-Add deployment example path (NOT mock test path) to appropriate `.github/workflows/standalone-*.json` file.
+Add example path to appropriate `.github/workflows/standalone-*.json` file.
 
 ### Phase 5: Documentation
 
@@ -413,10 +345,8 @@ Before marking complete:
 - [ ] Private endpoint support added (if applicable)
 - [ ] Root aggregator created and wired
 - [ ] Combined objects updated
-- [ ] **Deployment example created** (`examples/<category>/<service>/`)
-- [ ] **Mock test example created** (`examples/tests/<category>/<service>/`)
-- [ ] **Mock tests pass** (using mock test example)
-- [ ] Deployment example registered in CI workflow
+- [ ] Simple example created
+- [ ] Example registered in CI workflow
 - [ ] Module README created
 - [ ] CHANGELOG.md updated
 

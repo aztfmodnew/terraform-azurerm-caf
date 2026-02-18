@@ -350,134 +350,6 @@ The coalesce pattern enables:
 
 All while maintaining the same module interface.
 
-### Principle 3.5: Use Remote Objects Pattern for All Dependency Resolution
-
-**Why**: Consistent pattern across all modules, handles complex dependencies, avoids planning-time errors.
-
-**Standard Pattern**: ALL modules resolve dependencies in module locals using `var.remote_objects`, NOT in aggregator.
-
-**Problem to Avoid**: Using `coalesce()` with multiple `try()` expressions that all might return `null` causes:
-
-```
-Error: Call to function "coalesce" failed: no non-null, non-empty-string arguments.
-```
-
-**Solution Patterns**:
-
-**Pattern 1: Single Resource Type (Simple)**
-
-```hcl
-# In module locals.tf
-locals {
-  lz_key       = try(var.settings.subnet.lz_key, var.client_config.landingzone_key)
-  resource_key = try(var.settings.subnet.key, var.settings.subnet_key)
-
-  subnet_id = coalesce(
-    try(var.settings.subnet_id, null),  # Direct ID
-    try(var.remote_objects.virtual_subnets[local.lz_key][local.resource_key].id, null)  # Key-based
-  )
-}
-
-# In main resource file
-subnet_id = local.subnet_id
-```
-
-**Pattern 2: Multi-Type Conditional (Medium Complexity)**
-
-```hcl
-# In module locals.tf - Use ternary cascade based on type
-locals {
-  lz_key       = try(var.settings.target_resource.lz_key, var.client_config.landingzone_key)
-  resource_key = try(var.settings.target_resource.key, var.settings.target_resource_key)
-
-  target_resource_id = (
-    var.settings.target_resource_id != null ? var.settings.target_resource_id :
-    var.settings.target_type == "Microsoft-StorageAccount" ? try(var.remote_objects.storage_accounts[local.lz_key][local.resource_key].id, null) :
-    var.settings.target_type == "Microsoft-VirtualMachine" ? try(var.remote_objects.virtual_machines[local.lz_key][local.resource_key].id, null) :
-    var.settings.target_type == "Microsoft-AKSCluster" ? try(var.remote_objects.aks_clusters[local.lz_key][local.resource_key].id, null) :
-    null  # Clean fallback
-  )
-}
-```
-
-**Pattern 3: Multi-Type Complex with can() Guards (Chaos Studio Pattern)**
-
-```hcl
-# For complex multi-type scenarios (5+ resource types)
-locals {
-  lz_key       = coalesce(try(var.settings.target_resource.lz_key, null), var.client_config.landingzone_key)
-  resource_key = try(var.settings.target_resource.key, var.settings.target_resource_key, null)
-
-  # Pre-resolve all resource types with can() guards
-  cosmos_db_id                  = can(var.remote_objects.cosmos_dbs[local.lz_key][local.resource_key].id) ? var.remote_objects.cosmos_dbs[local.lz_key][local.resource_key].id : null
-  storage_account_id            = can(var.remote_objects.storage_accounts[local.lz_key][local.resource_key].id) ? var.remote_objects.storage_accounts[local.lz_key][local.resource_key].id : null
-  virtual_machine_id            = can(var.remote_objects.virtual_machines[local.lz_key][local.resource_key].id) ? var.remote_objects.virtual_machines[local.lz_key][local.resource_key].id : null
-  # ... continue for all supported types
-
-  # Final ternary cascade with pre-resolved locals
-  target_resource_id = try(var.settings.target_resource_id, null) != null ? var.settings.target_resource_id : (
-    var.settings.target_type == "Microsoft-CosmosDB" ? local.cosmos_db_id :
-    var.settings.target_type == "Microsoft-StorageAccount" ? local.storage_account_id :
-    var.settings.target_type == "Microsoft-VirtualMachine" ? local.virtual_machine_id :
-    # ... continue for all types
-    null
-  )
-}
-```
-
-**Performance Consideration**:
-
-- `try()` alone: 1 evaluation (fastest - Pattern 1 & 2)
-- `can()` + ternary: 2 evaluations (slower, but robust - Pattern 3)
-
-**Pattern 3 requires explicit remote_objects variable definition**:
-```hcl
-variable "remote_objects" {
-  type = object({
-    storage_accounts   = optional(map(any), {})
-    virtual_machines   = optional(map(any), {})
-    cosmos_dbs         = optional(map(any), {})
-    # ... all supported resource types
-  })
-  default = {}
-}
-```
-
-**Root Aggregator Responsibility**:
-
-```hcl
-# In root aggregator - Pass ALL dependencies, do NOT resolve here
-module "chaos_studio_targets" {
-  source   = "./modules/chaos_studio/chaos_studio_target"
-  for_each = local.chaos_studio.chaos_studio_targets
-
-  settings = each.value  # Pass settings directly, NO merge with resolved IDs
-
-  # Pass all dependencies
-  remote_objects = {
-    resource_groups   = local.combined_objects_resource_groups
-    storage_accounts  = local.combined_objects_storage_accounts
-    virtual_machines  = local.combined_objects_virtual_machines
-    aks_clusters      = local.combined_objects_aks_clusters
-  }
-}
-```
-
-**When to use which pattern**:
-
-- **Pattern 1**: Most common - single resource type dependency
-- **Pattern 2**: When resolution depends on a type attribute with 2-3 simple types
-- **Pattern 3**: Complex multi-type scenarios (5+ types) requiring robust existence checking
-
-| Scenario                                         | Pattern | Method                                   |
-| ------------------------------------------------ | ------- | ---------------------------------------- |
-| Simple single resource type resolution          | 1       | `try()` + coalesce                       |
-| 2-3 types with simple conditional logic         | 2       | Ternary with `try()`                     |
-| 5+ types with complex conditional logic         | 3       | `can()` guards + ternary cascade         |
-| Multiple landing zones, same resource type      | 1       | Flatten + concat pattern                 |
-| Complex cross-type with cross-landing-zone      | 3       | Module resolution with explicit typing   |
-| Need robust existence checking during planning  | 3       | `can()` checks with type definitions     |
-
 ### Principle 4: Examples as Documentation
 
 **Why**: Working code is better than written instructions.
@@ -521,7 +393,6 @@ When updating modules:
 - [ ] Added diagnostics.tf if service supports diagnostic settings
 - [ ] Added private_endpoint.tf if service supports private endpoints
 - [ ] Used coalesce pattern for dependencies
-- [ ] ✅ **If module has complex dependencies**: Evaluated whether to resolve in aggregator using Principle 3.5
 - [ ] Added dynamic blocks for optional features
 - [ ] Created at least minimal.tfvars example
 - [ ] Wired into root module (8 steps completed)
@@ -647,51 +518,6 @@ Mock tests validate that your module can successfully generate a Terraform plan 
 - ✅ No circular dependencies exist
 - ✅ Examples are working correctly
 
-### ⚠️ CRITICAL: Mock Examples vs Deployment Examples
-
-**NEVER use mock examples for terraform plan/apply on real Azure:**
-
-- **Mock examples** (`examples/tests/`) → **ONLY for** `terraform test` syntax validation
-- **Deployment examples** (`examples/<category>/<service>/`) → **ONLY for** `terraform plan/apply` on real Azure
-
-Mock examples use direct IDs which don't exist in your Azure subscription.
-
-### Directory Structure: Deployment vs Mock Tests
-
-**IMPORTANT**: Mock test examples are separated from deployment examples:
-
-```
-examples/
-├── <category>/
-│   └── <service>/
-│       └── 100-simple-service/          # Deployment example (key-based refs)
-│           ├── configuration.tfvars
-│           └── README.md
-└── tests/
-    ├── mock/
-    │   └── e2e_plan.tftest.hcl
-    └── <category>/
-        └── <service>/
-            └── 100-simple-service-mock/  # Mock test example (direct IDs)
-                ├── configuration.tfvars
-                └── README.md
-```
-
-**Key Differences:**
-
-| Aspect     | Deployment Examples                            | Mock Test Examples                                      |
-| ---------- | ---------------------------------------------- | ------------------------------------------------------- |
-| Location   | `examples/<category>/<service>/`               | `examples/tests/<category>/<service>/`                  |
-| References | Key-based (`resource_group = { key = "rg1" }`) | Direct IDs (`resource_group_id = "/subscriptions/..."`) |
-| Purpose    | Production deployment patterns                 | Validate module syntax and planning                     |
-| Suffix     | No suffix (e.g., `100-simple-service`)         | `-mock` suffix (e.g., `100-simple-service-mock`)        |
-
-**Why Separate?**
-
-- **Terraform Limitation**: Mock tests can't populate `remote_objects` from resources defined in the same plan
-- **Clarity**: Prevents confusion - deployment examples show production patterns, mock examples show test patterns
-- **Organization**: Clear separation of concerns
-
 ### When to Run Mock Tests
 
 **MANDATORY scenarios:**
@@ -712,21 +538,21 @@ cd /path/to/terraform-azurerm-caf/examples
 # Initialize Terraform (first time or after module changes)
 terraform init -upgrade
 
-# Run mock test using mock test example
+# Run mock test for your module example
 terraform test \
   -test-directory=./tests/mock \
-  -var-file=./tests/category/service/100-example-mock/configuration.tfvars \
+  -var-file=./category/service/100-example/configuration.tfvars \
   -verbose
 ```
 
-**Example for chaos_studio module:**
+**Example for managed_redis module:**
 
 ```bash
 cd examples
 terraform init -upgrade
 terraform test \
   -test-directory=./tests/mock \
-  -var-file=./tests/chaos_studio/100-simple-chaos-target-mock/configuration.tfvars \
+  -var-file=./cache/managed_redis/100-simple-managed-redis/configuration.tfvars \
   -verbose
 ```
 
@@ -980,90 +806,12 @@ This pattern:
 - Only includes `identity_ids` for user-assigned and mixed types
 - Gracefully handles missing or empty identity configuration
 
-#### Remote Objects Handling (Complex Dependencies)
-
-When a module depends on multiple resource types and needs conditional resolution based on configuration, handle remote objects carefully:
-
-**Problem Pattern** (⚠️ AVOID):
-
-```hcl
-# ❌ Inside module - fails during planning when remote_objects values are not yet available
-target_resource_id = coalesce(
-  try(var.settings.target_resource_id, null),
-  try(var.remote_objects.storage_accounts[lz_key][resource_key].id, null),
-  try(var.remote_objects.virtual_machines[lz_key][resource_key].id, null),
-  try(var.remote_objects.aks_clusters[lz_key][resource_key].id, null)
-)
-```
-
-**Solution Pattern** (✅ CORRECT):
-
-For complex conditional resolution based on multiple resource types:
-
-1. **In locals.tf** (simple case without conditions):
-
-   ```hcl
-   locals {
-     lz_key      = try(var.settings.target_resource.lz_key, var.client_config.landingzone_key)
-     resource_key = try(var.settings.target_resource.key, var.settings.target_resource_key, null)
-
-     # Separate resolution per resource type for clarity
-     storage_account_id = can(var.remote_objects.storage_accounts[local.lz_key][local.resource_key].id)
-       ? var.remote_objects.storage_accounts[local.lz_key][local.resource_key].id
-       : null
-
-     target_resource_id = coalesce(
-       try(var.settings.target_resource_id, null),
-       local.storage_account_id
-     )
-   }
-   ```
-
-2. **In root aggregator** (complex case with conditional logic based on target_type):
-   ```hcl
-   module "chaos_studio_targets" {
-     for_each = local.chaos_studio.chaos_studio_targets
-
-     settings = merge(
-       each.value,
-       {
-         target_resource_id = (
-           each.value.target_type == "Microsoft-StorageAccount"
-           ? try(local.combined_objects_storage_accounts[try(each.value.target_resource.lz_key, local.client_config.landingzone_key)][try(each.value.target_resource.key, null)].id, null)
-           : (
-             each.value.target_type == "Microsoft-VirtualMachine"
-             ? try(local.combined_objects_virtual_machines[try(each.value.target_resource.lz_key, local.client_config.landingzone_key)][try(each.value.target_resource.key, null)].id, null)
-             : try(each.value.target_resource_id, null)
-           )
-         )
-       }
-     )
-   }
-   ```
-
-**When to use which approach**:
-
-| Scenario                                   | Location        | Method                             |
-| ------------------------------------------ | --------------- | ---------------------------------- |
-| Simple single resource type resolution     | Module locals   | `try()` + `can()` + coalesce       |
-| Conditional logic based on resource type   | Root aggregator | Ternary with `try()`               |
-| Multiple landing zones, same resource type | Module locals   | Flatten + concat pattern           |
-| Complex cross-type with cross-landing-zone | Root aggregator | Aggregator resolution with merge() |
-
-**Key Principles**:
-
-- **Module level**: Keep resolution simple, use `can()` to check existence before accessing
-- **Aggregator level**: Use `local.combined_objects_*` which have full visibility into all resolved resources
-- **Planning safety**: Conditional expressions in aggregators are evaluated before module planning starts
-- **Fallback order**: Direct ID → Key-based reference (same LZ) → Key-based reference (remote LZ) → null
-
 #### General Approach
 
 - Search in workspace for existing argument definitions and use them as a reference when available
 - Always check the Azure provider documentation for the resource to understand required vs optional arguments
 - Use `try()` for optional arguments to gracefully handle missing values
 - Use `coalesce()` for dependency resolution with multiple fallback options
-- For complex remote object dependencies, resolve in the aggregator layer, not in modules
 
 ---
 
