@@ -23,10 +23,16 @@ variable "settings" {
       key    = string
       lz_key = optional(string)
     }))
+    tags = optional(map(string))
+    timeouts = optional(object({
+      create = optional(string)
+      delete = optional(string)
+      read   = optional(string)
+    }))
   })
   validation {
-    condition     = length(setsubtract(keys(var.settings), ["capability_type", "chaos_studio_target_id", "chaos_studio_target", "timeouts"])) == 0
-    error_message = "Unsupported attributes in settings. Allowed: capability_type, chaos_studio_target_id, chaos_studio_target, timeouts."
+    condition     = length(setsubtract(keys(var.settings), ["capability_type", "chaos_studio_target_id", "chaos_studio_target", "tags", "timeouts"])) == 0
+    error_message = "Unsupported attributes in settings. Allowed: capability_type, chaos_studio_target_id, chaos_studio_target, tags, timeouts."
   }
 }
 

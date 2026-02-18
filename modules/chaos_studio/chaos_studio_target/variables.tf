@@ -30,11 +30,19 @@ variable "settings" {
       key    = string
       lz_key = optional(string)
     }))
-    target_type = string
+    target_type    = string
+    resource_group = optional(any)
+    tags           = optional(map(string))
+    timeouts = optional(object({
+      create = optional(string)
+      delete = optional(string)
+      read   = optional(string)
+      update = optional(string)
+    }))
   })
   validation {
-    condition     = length(setsubtract(keys(var.settings), ["location", "target_resource_id", "target_resource", "target_type", "tags", "timeouts"])) == 0
-    error_message = "Unsupported attributes in settings. Allowed: location, target_resource_id, target_resource, target_type, tags, timeouts."
+    condition     = length(setsubtract(keys(var.settings), ["location", "target_resource_id", "target_resource", "target_type", "resource_group", "tags", "timeouts"])) == 0
+    error_message = "Unsupported attributes in settings. Allowed: location, target_resource_id, target_resource, target_type, resource_group, tags, timeouts."
   }
 }
 

@@ -43,7 +43,57 @@ variable "settings" {
               - key - Capability key
               - lz_key - (Optional) Cross-landing-zone key
     DESCRIPTION
-  type        = any
+  type = object({
+    name     = string
+    location = optional(string)
+    resource_group = optional(object({
+      key    = optional(string)
+      lz_key = optional(string)
+    }))
+    identity = optional(object({
+      type                 = string
+      managed_identity_keys = optional(list(string), [])
+      remote = optional(map(object({
+        managed_identity_keys = list(string)
+      })), {})
+    }))
+    selectors = optional(list(object({
+      name                    = string
+      chaos_studio_target_ids = optional(list(string))
+      chaos_studio_targets = optional(list(object({
+        key    = string
+        lz_key = optional(string)
+      })), [])
+    })), [])
+    steps = optional(list(object({
+      name = string
+      branch = list(object({
+        name = string
+        actions = list(object({
+          action_type   = string
+          duration      = optional(string)
+          parameters    = optional(map(string))
+          selector_name = optional(string)
+          urn           = optional(string)
+          capability = optional(object({
+            key    = string
+            lz_key = optional(string)
+          }))
+        }))
+      }))
+    })), [])
+    tags = optional(map(string))
+    timeouts = optional(object({
+      create = optional(string)
+      delete = optional(string)
+      read   = optional(string)
+      update = optional(string)
+    }))
+  })
+  validation {
+    condition     = length(setsubtract(keys(var.settings), ["name", "location", "resource_group", "identity", "selectors", "steps", "tags", "timeouts"])) == 0
+    error_message = "Unsupported attributes in settings. Allowed: name, location, resource_group, identity, selectors, steps, tags, timeouts."
+  }
 }
 
 variable "resource_group" {
