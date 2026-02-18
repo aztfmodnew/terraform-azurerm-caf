@@ -5,7 +5,7 @@ This example demonstrates how to use Azure Chaos Studio to test Cosmos DB failov
 ## Overview
 
 This configuration:
-1. Creates a Cosmos DB account with multi-region replication (West Europe + North Europe)
+1. Creates a Cosmos DB account with multi-region replication (North Europe + Australia Central)
 2. Enables Chaos Studio target on the Cosmos DB account
 3. Adds the Failover capability
 4. Creates an experiment that triggers a failover from primary to secondary region
