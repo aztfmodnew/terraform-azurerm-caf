@@ -51,7 +51,7 @@ variable "settings" {
       lz_key = optional(string)
     }))
     identity = optional(object({
-      type                 = string
+      type                  = string
       managed_identity_keys = optional(list(string), [])
       remote = optional(map(object({
         managed_identity_keys = list(string)
