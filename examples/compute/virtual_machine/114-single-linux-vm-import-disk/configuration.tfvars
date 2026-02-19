@@ -54,6 +54,7 @@ virtual_machines = {
         admin_username                  = "adminuser"
         disable_password_authentication = true
         keyvault_key                    = "example_vm_rg1"
+        network_interface_keys          = ["nic0"]
 
         os_disk = {
           name                 = "example-import-vm-os"
