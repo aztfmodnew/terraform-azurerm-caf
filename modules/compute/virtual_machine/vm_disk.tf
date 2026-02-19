@@ -21,7 +21,10 @@ resource "azurerm_managed_disk" "disk" {
   disk_size_gb           = try(each.value.disk_size_gb, null)
   max_shares             = try(each.value.max_shares, null)
   source_uri             = try(each.value.source_uri, null)
-  storage_account_id     = can(each.value.storage_account_id) ? each.value.storage_account_id : can(each.value.storage_account_key) ? var.storage_accounts[try(each.value.lz_key, var.client_config.landingzone_key)][each.value.storage_account_key].id : null
+  storage_account_id = try(coalesce(
+    try(each.value.storage_account_id, null),
+    try(var.storage_accounts[try(each.value.lz_key, var.client_config.landingzone_key)][each.value.storage_account_key].id, null)
+  ), null)
   zone                   = try(each.value.zone, each.value.zones[0], null)
   disk_iops_read_write   = try(each.value.disk_iops_read_write, null)
   disk_mbps_read_write   = try(each.value.disk.disk_mbps_read_write, null)
