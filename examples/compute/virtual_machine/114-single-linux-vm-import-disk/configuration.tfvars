@@ -1,5 +1,6 @@
 global_settings = {
   default_region = "region1"
+  random_length  = 0
   regions = {
     region1 = "australiaeast"
   }
@@ -80,9 +81,12 @@ virtual_machines = {
         storage_account_type = "Standard_LRS"
         create_option        = "Import"
         # source_uri is the full URL of the VHD blob to import.
-        # Replace with the actual blob URL from your storage account.
+        # This must reference the actual storage account primary blob endpoint
+        # (obtain from Azure Portal or: azurerm_storage_account.*.primary_blob_endpoint).
+        # NOTE: This is a two-phase deployment — the storage account must be created first
+        # and the VHD uploaded before running apply with create_option = "Import".
         source_uri = "https://vhdimportstorage.blob.core.windows.net/vhds/data-disk.vhd"
-        # storage_account_key references the storage account defined in this file.
+        # storage_account_key references a storage account managed in this configuration.
         # Alternatively, use storage_account_id with a full resource ID for pre-existing storage accounts:
         #   storage_account_id = "/subscriptions/<sub-id>/resourceGroups/<rg>/providers/Microsoft.Storage/storageAccounts/<name>"
         storage_account_key = "vhd_storage"
