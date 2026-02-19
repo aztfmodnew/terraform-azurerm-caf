@@ -10,7 +10,6 @@ resource "azurerm_chaos_studio_target" "target" {
       create = try(timeouts.value.create, null)
       delete = try(timeouts.value.delete, null)
       read   = try(timeouts.value.read, null)
-      update = try(timeouts.value.update, null)
     }
   }
 }
