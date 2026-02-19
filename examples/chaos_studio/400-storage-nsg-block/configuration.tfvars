@@ -48,13 +48,12 @@ vnets = {
 
 virtual_subnets = {
   test_subnet = {
-    name               = "storage-subnet"
-    vnet_key           = "test_vnet"
-    resource_group_key = "chaos_rg"
-    address_prefixes   = ["10.0.1.0/24"]
-
-    # Associate NSG with subnet
-    network_security_group_key = "storage_nsg"
+    name    = "storage-subnet"
+    cidr    = ["10.0.1.0/24"]
+    nsg_key = "storage_nsg"
+    vnet = {
+      key = "test_vnet"
+    }
   }
 }
 
