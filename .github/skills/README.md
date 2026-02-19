@@ -276,9 +276,9 @@ Track which skills are most useful:
 
 | Skill                         | Status   | Usage | Last Updated |
 |-------------------------------|----------|-------|--------------||
-| module-creation               | ✅ Active | TBD   | 2026-01-19   |
+| module-creation               | ✅ Active | TBD   | 2026-02-19   |
 | mock-testing                  | ✅ Active | TBD   | 2026-01-19   |
-| azure-schema-validation       | ✅ Active | TBD   | 2026-01-19   |
+| azure-schema-validation       | ✅ Active | TBD   | 2026-02-19   |
 | root-module-integration       | ✅ Active | TBD   | 2026-01-23   |
 | diagnostics-integration       | ✅ Active | TBD   | 2026-01-23   |
 | private-endpoint-integration  | ✅ Active | TBD   | 2026-01-23   |
@@ -294,6 +294,49 @@ When creating or updating skills:
 4. **Test with Copilot** before committing
 5. **Keep focused** - one skill per task type
 6. **Update this README** when adding new skills
+
+## MCP Terraform Server
+
+Skills that perform schema validation require the **HashiCorp Terraform MCP Server**.
+
+### Configuration (`.mcp.json` in project root)
+
+```json
+{
+  "mcpServers": {
+    "terraform": {
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "hashicorp/terraform-mcp-server"]
+    }
+  }
+}
+```
+
+### Available Tools
+
+| Tool | Purpose |
+|------|---------|
+| `mcp__terraform__search_providers` | Search for a resource to obtain its numeric `provider_doc_id` |
+| `mcp__terraform__get_provider_details` | Fetch full resource schema using a numeric `provider_doc_id` |
+| `mcp__terraform__get_provider_capabilities` | List all resources/data-sources available in a provider |
+| `mcp__terraform__get_latest_provider_version` | Get the latest version of a provider |
+| `mcp__terraform__search_modules` | Search Terraform Registry for modules |
+| `mcp__terraform__get_module_details` | Get details and inputs/outputs of a module |
+
+### Correct Schema Validation Flow
+
+```
+1. mcp__terraform__search_providers(
+     provider_namespace="hashicorp",
+     provider_name="azurerm",
+     service_slug="<resource_name>",   # e.g. "chaos_studio_target"
+     provider_document_type="resources"
+   )
+   → Returns: provider_doc_id (numeric, e.g. "8894603")
+
+2. mcp__terraform__get_provider_details(provider_doc_id="8894603")
+   → Returns: full schema, all arguments, nested blocks, timeouts, deprecation status
+```
 
 ## Resources
 

@@ -10,6 +10,7 @@ description: Validate Azure Terraform resource schemas using MCP Terraform tools
 ## Why This is Mandatory
 
 Validating the resource schema ensures:
+
 - ✅ All required attributes are implemented
 - ✅ All optional attributes are handled with proper try() patterns
 - ✅ Nested blocks are implemented as dynamic blocks
@@ -24,35 +25,56 @@ Validating the resource schema ensures:
 ### Step 1: Identify the Resource
 
 Get the full Azure resource type name:
+
 - Format: `azurerm_<resource_name>`
 - Example: `azurerm_managed_redis`, `azurerm_container_app`, `azurerm_kubernetes_cluster`
 
-### Step 2: Resolve Provider Documentation ID
+### Step 2: Search for Resource Documentation ID
 
-Use MCP Terraform tool to get the provider documentation ID:
+Use MCP Terraform tool to find the numeric documentation ID for the resource:
 
 ```
-Tool: mcp_terraform_get_provider_details
+Tool: mcp__terraform__search_providers
 Parameters:
-  namespace: "hashicorp"
-  name: "azurerm"  
-  provider_doc_id: "resources/<resource_name>"
+  provider_namespace: "hashicorp"
+  provider_name: "azurerm"
+  service_slug: "<resource_name>"       # e.g., "chaos_studio_target", "managed_redis"
+  provider_document_type: "resources"
 ```
 
 **Example:**
+
 ```
-mcp_terraform_get_provider_details(
-  namespace="hashicorp",
-  name="azurerm",
-  provider_doc_id="resources/managed_redis"
+mcp__terraform__search_providers(
+  provider_namespace="hashicorp",
+  provider_name="azurerm",
+  service_slug="managed_redis",
+  provider_document_type="resources"
 )
 ```
 
+This returns a list with a numeric `provider_doc_id` (e.g., `"8894603"`).
+
 ### Step 3: Fetch Complete Documentation
 
-Once you have the provider_doc_id, fetch the complete documentation:
+Use the numeric `provider_doc_id` from Step 2 to fetch the full schema:
+
+```
+Tool: mcp__terraform__get_provider_details
+Parameters:
+  provider_doc_id: "<numeric_id_from_step_2>"    # e.g., "8894603"
+```
+
+**Example:**
+
+```
+mcp__terraform__get_provider_details(
+  provider_doc_id="8894603"
+)
+```
 
 **This will return:**
+
 - Full resource schema
 - All arguments (required and optional)
 - Nested block structures
@@ -67,6 +89,7 @@ From the documentation, extract:
 #### A. Required Arguments
 
 List all required arguments that MUST be present:
+
 ```hcl
 # Example for azurerm_managed_redis
 resource_group_name = var.settings.resource_group_name  # Required, no try()
@@ -77,6 +100,7 @@ sku_name            = var.settings.sku_name            # Required, no try()
 #### B. Optional Arguments
 
 List all optional arguments with proper try() patterns:
+
 ```hcl
 # Arguments with no default (defaults to null)
 family_name = try(var.settings.family_name, null)
@@ -90,11 +114,12 @@ public_network_access_enabled = try(var.settings.public_network_access_enabled, 
 #### C. Nested Blocks
 
 Identify blocks that should be implemented as dynamic blocks:
+
 ```hcl
 # Single optional block
 dynamic "identity" {
   for_each = try(var.settings.identity, null) == null ? [] : [var.settings.identity]
-  
+
   content {
     type         = identity.value.type
     identity_ids = try(identity.value.identity_ids, null)
@@ -104,7 +129,7 @@ dynamic "identity" {
 # Multiple blocks (list)
 dynamic "access_policy" {
   for_each = try(var.settings.access_policies, [])
-  
+
   content {
     tenant_id = access_policy.value.tenant_id
     object_id = access_policy.value.object_id
@@ -114,7 +139,7 @@ dynamic "access_policy" {
 # Multiple blocks (map - preferred for stable keys)
 dynamic "zone_mapping" {
   for_each = try(var.settings.zone_mappings, {})
-  
+
   content {
     zone_id   = zone_mapping.value.zone_id
     subnet_id = zone_mapping.value.subnet_id
@@ -124,15 +149,21 @@ dynamic "zone_mapping" {
 
 #### D. Timeouts Block
 
-Always implement timeouts block:
+**⚠️ CRITICAL**: Not all resources support all timeout operations. Always verify which timeouts the resource supports from the MCP documentation before implementing.
+
+- Immutable resources (e.g., `azurerm_chaos_studio_target`) only support `create`, `read`, `delete` — **never `update`**
+- Mutable resources support all four: `create`, `read`, `update`, `delete`
+
+Implement only the timeouts that the schema declares:
+
 ```hcl
 dynamic "timeouts" {
   for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
-  
+
   content {
     create = try(timeouts.value.create, null)
     read   = try(timeouts.value.read, null)
-    update = try(timeouts.value.update, null)
+    update = try(timeouts.value.update, null)  # ⚠️ Only if resource supports update
     delete = try(timeouts.value.delete, null)
   }
 }
@@ -141,12 +172,14 @@ dynamic "timeouts" {
 ### Step 5: Check Deprecation Status
 
 **CRITICAL**: If the documentation shows the resource is deprecated:
+
 - ❌ DO NOT implement this resource
 - ❌ DO NOT extend this resource
 - ✅ Use the replacement resource mentioned in the deprecation notice
 - ✅ Inform the user about the deprecation and the correct alternative
 
 **Example:**
+
 ```
 DEPRECATED: azurerm_redis_cache is deprecated. Use azurerm_managed_redis instead.
 ```
@@ -156,18 +189,21 @@ DEPRECATED: azurerm_redis_cache is deprecated. Use azurerm_managed_redis instead
 Create a validation checklist for the resource:
 
 ```markdown
-## Schema Validation for azurerm_<resource_name>
+## Schema Validation for azurerm\_<resource_name>
 
 ### Required Arguments
+
 - [ ] argument1 - type: string
 - [ ] argument2 - type: number
 
 ### Optional Arguments
+
 - [ ] optional1 - type: string, default: null
 - [ ] optional2 - type: bool, default: true
 - [ ] optional3 - type: list(string), default: []
 
 ### Nested Blocks
+
 - [ ] block1 (optional, single)
   - [ ] attribute1 - type: string
   - [ ] attribute2 - type: number
@@ -175,12 +211,14 @@ Create a validation checklist for the resource:
   - [ ] attribute1 - type: string
 
 ### Timeouts
+
 - [ ] create
 - [ ] read
 - [ ] update
 - [ ] delete
 
 ### Deprecation Status
+
 - [ ] NOT deprecated ✅
 - [ ] OR deprecated → use <replacement_resource> instead
 ```
@@ -190,12 +228,14 @@ Create a validation checklist for the resource:
 After validating the schema, implement the resource following these patterns:
 
 ### Required Arguments Pattern
+
 ```hcl
 # No try() - must be provided
 required_argument = var.settings.required_argument
 ```
 
 ### Optional Arguments Pattern
+
 ```hcl
 # No default value in provider
 optional_argument = try(var.settings.optional_argument, null)
@@ -205,6 +245,7 @@ optional_with_default = try(var.settings.optional_with_default, "provider_defaul
 ```
 
 ### Boolean Arguments Pattern
+
 ```hcl
 # Explicitly default to provider default
 enabled = try(var.settings.enabled, true)  # If provider defaults to true
@@ -212,6 +253,7 @@ disabled = try(var.settings.disabled, false)  # If provider defaults to false
 ```
 
 ### List Arguments Pattern
+
 ```hcl
 # Empty list as default
 allowed_values = try(var.settings.allowed_values, [])
@@ -221,12 +263,14 @@ optional_list = try(var.settings.optional_list, null)
 ```
 
 ### Map Arguments Pattern
+
 ```hcl
 # Empty map as default
 configurations = try(var.settings.configurations, {})
 ```
 
 ### Standard Attributes Pattern
+
 ```hcl
 # Always use locals for these
 location            = local.location
@@ -242,40 +286,40 @@ After schema validation, define the variable with complete type specification:
 variable "settings" {
   description = <<DESCRIPTION
     Settings object for azurerm_<resource_name>. Configuration attributes:
-    
+
     Required:
       - required_arg1 - (string) Description from Azure docs
       - required_arg2 - (number) Description from Azure docs
-    
+
     Optional:
       - optional_arg1 - (string) Description. Defaults to null.
       - optional_arg2 - (bool) Description. Defaults to true.
       - nested_block - (object) Optional nested configuration:
           - nested_attr1 - (string) Description
           - nested_attr2 - (number) Description
-    
+
     DESCRIPTION
-  
+
   type = object({
     # Required arguments
     required_arg1 = string
     required_arg2 = number
-    
+
     # Optional arguments
     optional_arg1 = optional(string)
     optional_arg2 = optional(bool)
-    
+
     # Optional nested block
     nested_block = optional(object({
       nested_attr1 = string
       nested_attr2 = number
     }))
-    
+
     # Standard optional attributes
     location            = optional(string)
     resource_group_name = optional(string)
     tags                = optional(map(string))
-    
+
     # Timeouts
     timeouts = optional(object({
       create = optional(string)
@@ -284,7 +328,7 @@ variable "settings" {
       delete = optional(string)
     }))
   })
-  
+
   validation {
     condition = length(setsubtract(keys(var.settings), [
       "required_arg1", "required_arg2",
@@ -301,6 +345,7 @@ variable "settings" {
 ## Common Validation Pitfalls
 
 ### ❌ Mistake 1: Skipping Validation
+
 ```hcl
 # ❌ WRONG - Guessing attributes
 resource "azurerm_resource" "example" {
@@ -311,6 +356,7 @@ resource "azurerm_resource" "example" {
 ```
 
 ### ❌ Mistake 2: Incorrect Default Values
+
 ```hcl
 # ❌ WRONG - Using wrong default
 enabled = try(var.settings.enabled, false)  # Provider default is true!
@@ -320,6 +366,7 @@ enabled = try(var.settings.enabled, true)
 ```
 
 ### ❌ Mistake 3: Missing Nested Blocks
+
 ```hcl
 # ❌ WRONG - Not implementing nested blocks from schema
 resource "azurerm_resource" "example" {
@@ -330,7 +377,7 @@ resource "azurerm_resource" "example" {
 # ✅ CORRECT - Implement all nested blocks
 resource "azurerm_resource" "example" {
   name = var.settings.name
-  
+
   dynamic "identity" {
     for_each = try(var.settings.identity, null) == null ? [] : [var.settings.identity]
     content {
@@ -341,6 +388,7 @@ resource "azurerm_resource" "example" {
 ```
 
 ### ❌ Mistake 4: Not Checking Deprecation
+
 ```hcl
 # ❌ WRONG - Implementing deprecated resource
 resource "azurerm_redis_cache" "example" {
@@ -355,25 +403,29 @@ resource "azurerm_managed_redis" "example" {
 
 ## Quick Reference: MCP Terraform Tools
 
-### Get Provider Details
+### Step 1: Search for Resource (get numeric doc ID)
+
 ```
-Tool: mcp_terraform_get_provider_details
+Tool: mcp__terraform__search_providers
 Parameters:
-  namespace: "hashicorp"
-  name: "azurerm"
-  provider_doc_id: "resources/<resource_name>"
+  provider_namespace: "hashicorp"
+  provider_name: "azurerm"
+  service_slug: "<resource_name>"        # e.g., "chaos_studio_target"
+  provider_document_type: "resources"
 ```
 
-### Search for Resources
+### Step 2: Get Full Resource Schema
+
 ```
-Tool: mcp_terraform_search_providers
+Tool: mcp__terraform__get_provider_details
 Parameters:
-  query: "<resource_name> OR <service_name>"
+  provider_doc_id: "<numeric_id_from_search>"   # e.g., "8894603"
 ```
 
-### Get Provider Capabilities
+### List All Provider Resources
+
 ```
-Tool: mcp_terraform_get_provider_capabilities
+Tool: mcp__terraform__get_provider_capabilities
 Parameters:
   namespace: "hashicorp"
   name: "azurerm"
@@ -383,7 +435,7 @@ Parameters:
 
 Before implementing or modifying a resource:
 
-- [ ] Identified full resource type name (azurerm_*)
+- [ ] Identified full resource type name (azurerm\_\*)
 - [ ] Fetched provider documentation using MCP Terraform tools
 - [ ] Verified resource is NOT deprecated
 - [ ] Extracted all required arguments
@@ -399,6 +451,7 @@ Before implementing or modifying a resource:
 ## When to Re-validate
 
 Re-run schema validation:
+
 - When Azure provider version updates
 - When adding new attributes to existing resource
 - When users report missing attributes

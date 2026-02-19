@@ -28,11 +28,16 @@ Before starting, verify:
 Use MCP Terraform tools to get complete resource documentation:
 
 ```bash
-# 1. Get provider doc ID
-mcp_terraform_resolveProviderDocID(namespace="hashicorp", name="azurerm", resource_type="<resource_name>")
+# 1. Search for the resource to get the numeric documentation ID
+mcp__terraform__search_providers(
+  provider_namespace="hashicorp",
+  provider_name="azurerm",
+  service_slug="<resource_name>",          # e.g., "chaos_studio_target"
+  provider_document_type="resources"
+)
 
-# 2. Fetch complete documentation
-mcp_terraform_getProviderDocs(provider_doc_id="<id_from_step_1>")
+# 2. Fetch complete documentation using the numeric ID returned above
+mcp__terraform__get_provider_details(provider_doc_id="<numeric_id_from_step_1>")
 ```
 
 **What to extract:**
@@ -302,9 +307,10 @@ resource "azurerm_<resource_type>" "<module_name>" {
 
     content {
       create = try(timeouts.value.create, null)
-      delete = try(timeouts.value.delete, null)
       read   = try(timeouts.value.read, null)
-      update = try(timeouts.value.update, null)
+      # ⚠️ Only include 'update' if the resource schema supports it (verify in Step 0)
+      # update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
     }
   }
 }
@@ -314,40 +320,6 @@ resource "azurerm_<resource_type>" "<module_name>" {
 - Pattern 1 (Simple): Single resource type with coalesce
 - Pattern 2 (Conditional): Multi-type with ternary cascade
 - Pattern 3 (Safe check): Using can() for existence validation
-  
-  # Dynamic blocks for optional nested configuration
-  dynamic "optional_block" {
-    for_each = try(var.settings.optional_block, null) == null ? [] : [var.settings.optional_block]
-    
-    content {
-      attribute = optional_block.value.attribute
-    }
-  }
-  
-  # Identity block (if supported)
-  dynamic "identity" {
-    for_each = try(var.settings.identity, null) == null ? [] : [var.settings.identity]
-    
-    content {
-      type         = var.settings.identity.type
-      identity_ids = contains(["userassigned", "systemassigned, userassigned"], lower(var.settings.identity.type)) ? local.managed_identities : null
-    }
-  }
-  
-  tags = merge(local.tags, try(var.settings.tags, null))
-  
-  dynamic "timeouts" {
-    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
-    
-    content {
-      create = try(timeouts.value.create, null)
-      read   = try(timeouts.value.read, null)
-      update = try(timeouts.value.update, null)
-      delete = try(timeouts.value.delete, null)
-    }
-  }
-}
-```
 
 ### Step 7: Create diagnostics.tf (if supported)
 
