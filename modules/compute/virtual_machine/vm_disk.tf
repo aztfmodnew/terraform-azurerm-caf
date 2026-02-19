@@ -13,14 +13,14 @@ data "azurecaf_name" "disk" {
 resource "azurerm_managed_disk" "disk" {
   for_each = lookup(var.settings, "data_disks", {})
 
-  name                   = data.azurecaf_name.disk[each.key].result
-  location               = local.location
-  resource_group_name    = local.resource_group_name
-  storage_account_type   = each.value.storage_account_type
-  create_option          = each.value.create_option
-  disk_size_gb           = try(each.value.disk_size_gb, null)
-  max_shares             = try(each.value.max_shares, null)
-  source_uri             = try(each.value.source_uri, null)
+  name                 = data.azurecaf_name.disk[each.key].result
+  location             = local.location
+  resource_group_name  = local.resource_group_name
+  storage_account_type = each.value.storage_account_type
+  create_option        = each.value.create_option
+  disk_size_gb         = try(each.value.disk_size_gb, null)
+  max_shares           = try(each.value.max_shares, null)
+  source_uri           = try(each.value.source_uri, null)
   storage_account_id = try(coalesce(
     try(each.value.storage_account_id, null),
     try(var.storage_accounts[try(each.value.lz_key, var.client_config.landingzone_key)][each.value.storage_account_key].id, null)
