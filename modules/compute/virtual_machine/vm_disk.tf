@@ -18,7 +18,10 @@ resource "azurerm_managed_disk" "disk" {
   resource_group_name    = local.resource_group_name
   storage_account_type   = each.value.storage_account_type
   create_option          = each.value.create_option
-  disk_size_gb           = each.value.disk_size_gb
+  disk_size_gb           = try(each.value.disk_size_gb, null)
+  max_shares             = try(each.value.max_shares, null)
+  source_uri             = try(each.value.source_uri, null)
+  storage_account_id     = can(each.value.storage_account_id) ? each.value.storage_account_id : can(each.value.storage_account_key) ? var.storage_accounts[try(each.value.lz_key, var.client_config.landingzone_key)][each.value.storage_account_key].id : null
   zone                   = try(each.value.zone, each.value.zones[0], null)
   disk_iops_read_write   = try(each.value.disk_iops_read_write, null)
   disk_mbps_read_write   = try(each.value.disk.disk_mbps_read_write, null)
@@ -26,10 +29,10 @@ resource "azurerm_managed_disk" "disk" {
   disk_encryption_set_id = can(each.value.disk_encryption_set_id) ? each.value.disk_encryption_set_id : can(each.value.disk_encryption_set_key) ? var.disk_encryption_sets[try(each.value.lz_key, var.client_config.landingzone_key)][each.value.disk_encryption_set_key].id : null
   lifecycle {
     ignore_changes = [
-      name, #for ASR disk restores
+      name,               #for ASR disk restores
+      storage_account_id, #set on creation (Import/ImportSecure), ignored post-creation to prevent ASR drift
     ]
   }
-
 }
 
 resource "azurerm_virtual_machine_data_disk_attachment" "disk" {
