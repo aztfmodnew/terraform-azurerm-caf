@@ -93,7 +93,7 @@ modules/
 terraform {
   required_providers {
     azurecaf = {
-      source = "aztfmod/azurecaf"
+      source = "aztfmodnew/azurecaf"
     }
   }
 }
@@ -270,16 +270,16 @@ global_settings = {
 
 resource_groups = {
   test_rg = {
-    name = "service-test"
+    name = "service-test"  # NO azurecaf prefix
   }
 }
 
 <category> = {
   <service_name> = {
     instance1 = {
-      name = "test-instance"
+      name = "test-instance"  # NO azurecaf prefix
       resource_group = {
-        key = "test_rg"
+        key = "test_rg"  # Key-based reference
       }
       # Minimal required configuration
     }

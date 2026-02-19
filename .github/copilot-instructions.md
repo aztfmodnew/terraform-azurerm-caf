@@ -312,7 +312,7 @@ terraform_with_var_files --dir /category/service_name/minimal/ --action plan --a
 
 ## �📚 Technical Reference
 
-Resource type mapping and extended patterns (argument defaults, lifecycle rules, submodule integration, and common constraints) are documented in the aztfmod/azurecaf provider docs and in the scoped module instructions (`.github/instructions/terraform-modules.instructions.md`).
+Resource type mapping and extended patterns (argument defaults, lifecycle rules, submodule integration, and common constraints) are documented in the aztfmodnew/azurecaf provider docs and in the scoped module instructions (`.github/instructions/terraform-modules.instructions.md`).
 
 ---
 
@@ -456,6 +456,33 @@ When updating modules:
 ---
 
 ## 📝 Testing Commands Reference
+
+### ⚠️ CRITICAL: Azure Subscription Verification (MANDATORY before plan/apply)
+
+**ALWAYS verify and confirm Azure subscription before running terraform plan or apply:**
+
+```bash
+# 1. Check current Azure subscription
+az account show --query "{subscriptionId:id, name:name, state:state}" -o table
+
+# 2. Confirm with user that this is the correct subscription
+# MUST get explicit confirmation before proceeding
+
+# 3. Export subscription ID for Terraform (if confirmed)
+export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+echo "Using subscription: $ARM_SUBSCRIPTION_ID"
+
+# 4. ONLY THEN proceed with terraform commands
+```
+
+**Why this is critical:**
+
+- Prevents deploying to wrong subscription
+- Avoids costly mistakes and security issues
+- Ensures user intent matches actual deployment target
+- Required for terraform azurerm provider authentication
+
+### Standard Testing Commands
 
 ```bash
 # Test with plan (safest, always start here)
