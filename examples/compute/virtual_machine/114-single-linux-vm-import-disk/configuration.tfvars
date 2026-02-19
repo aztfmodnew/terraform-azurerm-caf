@@ -80,7 +80,7 @@ virtual_machines = {
         create_option        = "Import"
         # source_uri is the full URL of the VHD blob to import.
         # Replace with the actual blob URL from your storage account.
-        source_uri          = "https://vhdimportstorage.blob.core.windows.net/vhds/data-disk.vhd"
+        source_uri = "https://vhdimportstorage.blob.core.windows.net/vhds/data-disk.vhd"
         # storage_account_key references the storage account defined in this file.
         # Alternatively, use storage_account_id with a full resource ID for pre-existing storage accounts:
         #   storage_account_id = "/subscriptions/<sub-id>/resourceGroups/<rg>/providers/Microsoft.Storage/storageAccounts/<name>"
