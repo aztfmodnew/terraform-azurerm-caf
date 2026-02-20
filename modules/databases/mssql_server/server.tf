@@ -25,9 +25,12 @@ resource "azurerm_mssql_server" "mssql" {
     for_each = can(var.settings.identity) ? [var.settings.identity] : []
 
     content {
-      type = identity.value.type
+      type         = identity.value.type
+      identity_ids = try(local.managed_identities, null)
     }
   }
+
+  primary_user_assigned_identity_id = try(var.settings.identity.primary_user_assigned_identity_id, null)
 
 }
 

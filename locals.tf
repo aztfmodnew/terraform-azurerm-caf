@@ -318,6 +318,7 @@ locals {
     eventgrid_system_event_subscription = try(var.messaging.eventgrid_system_event_subscription, {})
     web_pubsubs                         = try(var.messaging.web_pubsubs, {})
     web_pubsub_hubs                     = try(var.messaging.web_pubsub_hubs, {})
+    notification_hub_namespaces         = try(var.messaging.notification_hub_namespaces, {})
   }
 
   networking = {
@@ -449,6 +450,7 @@ locals {
     automation_log_analytics_links            = try(var.shared_services.automation_log_analytics_links, {})
     automation_software_update_configurations = try(var.shared_services.automation_software_update_configurations, {})
     consumption_budgets                       = try(var.shared_services.consumption_budgets, {})
+    cost_anomaly_alerts                       = try(var.shared_services.cost_anomaly_alerts, {})
     image_definitions                         = try(var.shared_services.image_definitions, {})
     log_analytics_storage_insights            = try(var.shared_services.log_analytics_storage_insights, {})
     monitor_autoscale_settings                = try(var.shared_services.monitor_autoscale_settings, {})
@@ -459,6 +461,7 @@ locals {
     packer_service_principal                  = try(var.shared_services.packer_service_principal, {})
     packer_build                              = try(var.shared_services.packer_build, {})
     recovery_vaults                           = try(var.shared_services.recovery_vaults, {})
+    management_locks                          = try(var.shared_services.management_locks, {})
     shared_image_galleries                    = try(var.shared_services.shared_image_galleries, {})
   }
 

@@ -71,13 +71,23 @@ resource "azurerm_linux_function_app" "linux_function_app" {
     dynamic "ip_restriction" {
       for_each = try(var.settings.site_config.ip_restriction, [])
       content {
-        action                    = try(var.settings.site_config.ip_restriction.action, null)
-        ip_address                = try(var.settings.site_config.ip_restriction.ip_address, null)
-        name                      = try(var.settings.site_config.ip_restriction.name, null)
-        priority                  = try(var.settings.site_config.ip_restriction.priority, null)
-        service_tag               = try(var.settings.site_config.ip_restriction.service_tag, null)
-        virtual_network_subnet_id = try(var.settings.site_config.ip_restriction.virtual_network_subnet_id, null)
-        description               = try(var.settings.site_config.ip_restriction.description, null)
+        action                    = try(ip_restriction.value.action, null)
+        ip_address                = try(ip_restriction.value.ip_address, null)
+        name                      = try(ip_restriction.value.name, null)
+        priority                  = try(ip_restriction.value.priority, null)
+        service_tag               = try(ip_restriction.value.service_tag, null)
+        virtual_network_subnet_id = try(ip_restriction.value.virtual_network_subnet_id, null)
+        description               = try(ip_restriction.value.description, null)
+
+        dynamic "headers" {
+          for_each = try(ip_restriction.value.headers, null) == null ? [] : [ip_restriction.value.headers]
+          content {
+            x_azure_fdid      = try(headers.value.x_azure_fdid, null)
+            x_fd_health_probe = try(headers.value.x_fd_health_probe, null)
+            x_forwarded_for   = try(headers.value.x_forwarded_for, null)
+            x_forwarded_host  = try(headers.value.x_forwarded_host, null)
+          }
+        }
       }
 
     }
@@ -92,13 +102,23 @@ resource "azurerm_linux_function_app" "linux_function_app" {
     dynamic "scm_ip_restriction" {
       for_each = try(var.settings.site_config.scm_ip_restriction, [])
       content {
-        action                    = try(var.settings.site_config.scm_ip_restriction.action, null)
-        ip_address                = try(var.settings.site_config.scm_ip_restriction.ip_address, null)
-        name                      = try(var.settings.site_config.scm_ip_restriction.name, null)
-        priority                  = try(var.settings.site_config.scm_ip_restriction.priority, null)
-        service_tag               = try(var.settings.site_config.scm_ip_restriction.service_tag, null)
-        virtual_network_subnet_id = try(var.settings.site_config.scm_ip_restriction.virtual_network_subnet_id, null)
-        description               = try(var.settings.site_config.scm_ip_restriction.description, null)
+        action                    = try(scm_ip_restriction.value.action, "Allow")
+        ip_address                = try(scm_ip_restriction.value.ip_address, null)
+        name                      = try(scm_ip_restriction.value.name, null)
+        priority                  = try(scm_ip_restriction.value.priority, 65000)
+        service_tag               = try(scm_ip_restriction.value.service_tag, null)
+        virtual_network_subnet_id = try(scm_ip_restriction.value.virtual_network_subnet_id, null)
+        description               = try(scm_ip_restriction.value.description, null)
+
+        dynamic "headers" {
+          for_each = try(scm_ip_restriction.value.headers, null) == null ? [] : [scm_ip_restriction.value.headers]
+          content {
+            x_azure_fdid      = try(headers.value.x_azure_fdid, null)
+            x_fd_health_probe = try(headers.value.x_fd_health_probe, null)
+            x_forwarded_for   = try(headers.value.x_forwarded_for, null)
+            x_forwarded_host  = try(headers.value.x_forwarded_host, null)
+          }
+        }
       }
     }
     scm_ip_restriction_default_action = try(var.settings.site_config.scm_ip_restriction_default_action, null)
