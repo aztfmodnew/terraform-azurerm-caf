@@ -1729,6 +1729,10 @@ variable "maintenance_assignment_virtual_machine" {
   type    = any
   default = {}
 }
+variable "maintenance_assignment_dynamic_scope" {
+  type    = any
+  default = {}
+}
 variable "search_services" {
   type    = any
   default = {}
