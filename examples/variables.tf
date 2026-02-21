@@ -644,6 +644,10 @@ variable "recovery_vaults" {
   type    = any
   default = {}
 }
+variable "management_locks" {
+  type    = any
+  default = {}
+}
 variable "availability_sets" {
   type    = any
   default = {}

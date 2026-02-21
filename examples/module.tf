@@ -326,6 +326,7 @@ module "example" {
     consumption_budgets            = var.consumption_budgets
     image_definitions              = var.image_definitions
     log_analytics_storage_insights = var.log_analytics_storage_insights
+    management_locks               = var.management_locks
     monitor_action_groups          = var.monitor_action_groups
     monitor_autoscale_settings     = var.monitor_autoscale_settings
     monitoring                     = var.monitoring

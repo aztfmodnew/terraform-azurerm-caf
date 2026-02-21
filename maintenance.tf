@@ -53,4 +53,3 @@ module "maintenance_assignment_dynamic_scope" {
 output "maintenance_assignment_dynamic_scope" {
   value = module.maintenance_assignment_dynamic_scope
 }
-
