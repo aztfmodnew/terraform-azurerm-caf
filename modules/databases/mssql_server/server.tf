@@ -10,6 +10,8 @@ resource "azurerm_mssql_server" "mssql" {
   minimum_tls_version           = try(var.settings.minimum_tls_version, "1.2")
   tags                          = local.tags
 
+  transparent_data_encryption_key_vault_key_id = try(var.settings.transparent_data_encryption_key_vault_key_id, null)
+
   dynamic "azuread_administrator" {
     for_each = can(var.settings.azuread_administrator) ? [var.settings.azuread_administrator] : []
 
