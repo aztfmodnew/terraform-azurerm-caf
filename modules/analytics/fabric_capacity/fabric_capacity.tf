@@ -24,12 +24,12 @@ resource "azurerm_fabric_capacity" "fabric_capacity" {
 
   lifecycle {
     precondition {
-      condition     = local.resource_group.name != null && trim(local.resource_group.name) != ""
+      condition     = local.resource_group.name != null && trimspace(local.resource_group.name) != ""
       error_message = "Fabric Capacity requires a valid target resource group."
     }
 
     precondition {
-      condition     = local.sku.name != null && trim(local.sku.name) != ""
+      condition     = local.sku.name != null && trimspace(local.sku.name) != ""
       error_message = "Fabric Capacity requires \"settings.sku.name\" to be specified."
     }
   }
