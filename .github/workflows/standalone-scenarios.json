@@ -30,6 +30,7 @@
     "automation/102-automation-msi",
     "automation/103-automation-private-endpoints",
     "automation/104-automation-schedule-runbook",
+    "automation/105-automation-powershell-module",
     "cdn/cdn_frontdoor_profile/100-basic",
     "cdn/cdn_frontdoor_profile/200-full-setup-managed-certificates",
     "cognitive_services/100-cognitive-services-account-OpenAI",

@@ -750,6 +750,9 @@ variable "automations" {
   type    = any
   default = {}
 }
+variable "automation_powershell72_module" {
+  default = {}
+}
 variable "automation_schedules" {
   type    = any
   default = {}
