@@ -47,7 +47,7 @@ role_mapping = {
           managed_identities = {
             keys = [
               {
-                key = "msi01"
+                key       = "msi01"
                 condition = <<EOT
                   (
                     (

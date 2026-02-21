@@ -49,7 +49,7 @@ aks_clusters = {
     }
 
     default_node_pool = {
-      name = "sharedsvc"
+      name    = "sharedsvc"
       vm_size = "Standard_F4s_v2"
       subnet = {
         key = "aks_nodepool_system"
