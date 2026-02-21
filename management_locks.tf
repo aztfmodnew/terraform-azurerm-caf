@@ -1,5 +1,5 @@
 module "management_locks" {
-  source   = "./modules/management_lock"
+  source   = "./modules/governance/management_lock"
   for_each = local.shared_services.management_locks
 
   global_settings = local.global_settings
