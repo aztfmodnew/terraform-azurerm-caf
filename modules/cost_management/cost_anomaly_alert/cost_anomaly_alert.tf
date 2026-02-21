@@ -1,7 +1,7 @@
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cost_anomaly_alert
 
 resource "azurerm_cost_anomaly_alert" "cost_anomaly_alert" {
-  name               = var.settings.name
+  name               = azurecaf_name.cost_anomaly_alert.result
   display_name       = var.settings.display_name
   email_addresses    = var.settings.email_addresses
   email_subject      = var.settings.email_subject

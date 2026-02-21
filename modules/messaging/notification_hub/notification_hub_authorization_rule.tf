@@ -14,7 +14,7 @@ resource "azurerm_notification_hub_authorization_rule" "notification_hub_authori
     ]) : value.key => value
   }
 
-  name                  = each.value.rule.name
+  name                  = azurecaf_name.notification_hub_authorization_rule[each.key].result
   notification_hub_name = azurerm_notification_hub.notification_hub[each.value.hub_key].name
   namespace_name        = azurerm_notification_hub_namespace.notification_hub_namespace.name
   resource_group_name   = local.resource_group_name

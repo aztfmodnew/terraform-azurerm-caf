@@ -3,7 +3,7 @@
 resource "azurerm_notification_hub" "notification_hub" {
   for_each = try(var.settings.hubs, {})
 
-  name                = each.value.name
+  name                = azurecaf_name.notification_hub[each.key].result
   namespace_name      = azurerm_notification_hub_namespace.notification_hub_namespace.name
   resource_group_name = local.resource_group_name
   location            = local.location
