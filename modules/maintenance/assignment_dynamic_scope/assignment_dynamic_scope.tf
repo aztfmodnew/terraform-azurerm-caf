@@ -27,10 +27,10 @@ resource "azurerm_maintenance_assignment_dynamic_scope" "assignment_dynamic_scop
     for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
 
     content {
-      create = try(timeouts.value.create, "30m")
-      read   = try(timeouts.value.read, "5m")
-      update = try(timeouts.value.update, "30m")
-      delete = try(timeouts.value.delete, "10m")
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
     }
   }
 }

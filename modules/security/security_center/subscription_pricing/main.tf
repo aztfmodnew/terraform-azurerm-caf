@@ -17,10 +17,10 @@ resource "azurerm_security_center_subscription_pricing" "pricing" {
     for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
 
     content {
-      create = try(timeouts.value.create, "1h")
-      read   = try(timeouts.value.read, "5m")
-      update = try(timeouts.value.update, "1h")
-      delete = try(timeouts.value.delete, "1h")
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
     }
   }
 }
