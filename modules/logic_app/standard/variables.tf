@@ -36,8 +36,8 @@ variable "vnets" {
 variable "base_tags" {
   default = {}
 }
-variable "identity" {
-  default = null
+variable "managed_identities" {
+  default = {}
 }
 variable "combined_objects" {
   default = {}
