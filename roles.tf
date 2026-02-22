@@ -76,6 +76,18 @@ data "azurerm_management_group" "level" {
   name = lower(each.key) == "root" ? data.azurerm_client_config.current.tenant_id : each.key
 }
 
+data "azurerm_key_vault_secret" "key_vault_secret" {
+  depends_on = [
+    module.dynamic_keyvault_secrets,
+    time_sleep.azurerm_role_assignment_for
+  ]
+  for_each = {
+    for key, value in try(var.role_mapping.built_in_role_mapping.dynamic_keyvault_secrets, {}) : key => value
+  }
+  key_vault_id = try(local.combined_objects_keyvaults[var.current_landingzone_key][each.value.keyvault_key].id, null)
+  name         = try(local.security.dynamic_keyvault_secrets[each.value.keyvault_key][each.key].secret_name, null)
+}
+
 locals {
 
   aks_ingress_application_gateway_identities = tomap(
@@ -100,10 +112,20 @@ locals {
     }
   )
 
+  dynamic_keyvault_secrets = tomap({
+    (var.current_landingzone_key) = {
+      for key, value in try(var.role_mapping.built_in_role_mapping.dynamic_keyvault_secrets, {}) :
+      key => {
+        id = data.azurerm_key_vault_secret.key_vault_secret[key].resource_versionless_id
+      }
+    }
+  })
+
   # Nested objects that must be processed after the services_roles
   services_roles_deferred = {
     storage_containers          = local.combined_objects_storage_containers
     storage_account_file_shares = local.combined_objects_storage_account_file_shares
+    dynamic_keyvault_secrets    = local.dynamic_keyvault_secrets
   }
 
 
@@ -231,20 +253,22 @@ locals {
             for scope_key_resource, role_mapping in role_mappings : [   #         seacluster = {
               for role_definition_name, resources in role_mapping : [   #           "Azure Kubernetes Service Cluster Admin Role" = {
                 for object_id_key, object_resources in resources : [    #             azuread_group_keys = {
-                  for object_id_key_resource in object_resources.keys : #               keys = [ "aks_admins" ] ----End of variable
-                  {                                                     # "seacluster_Azure_Kubernetes_Service_Cluster_Admin_Role_aks_admins" = {
-                    mode                    = key_mode                  #   "mode" = "built_in_role_mapping"
-                    scope_resource_key      = key
-                    scope_lz_key            = try(role_mapping.lz_key, null)
-                    scope_key_resource      = scope_key_resource
-                    role_definition_name    = role_definition_name
-                    object_id_resource_type = object_id_key
-                    object_id_key_resource  = try(object_id_key_resource.key, object_id_key_resource) #   "object_id_key_resource" = "aks_admins"
-                    object_id_lz_key        = try(object_id_key_resource.lz_key, object_resources.lz_key, null)
-                    condition               = try(object_id_key_resource.condition, null)
-                  }
-                ]
-              ] if role_definition_name != "lz_key"
+                  for object_id_lz_keys, object_resource in object_resources : [
+                    for object_id_key_resource in(can(object_resources.keys)) ? object_resources.keys : object_resource.keys :
+                    {                                                     # "seacluster_Azure_Kubernetes_Service_Cluster_Admin_Role_aks_admins" = {
+                      mode                    = key_mode                  #   "mode" = "built_in_role_mapping"
+                      scope_resource_key      = key
+                      scope_lz_key            = try(role_mapping.lz_key, null)
+                      scope_key_resource      = scope_key_resource
+                      role_definition_name    = role_definition_name
+                      object_id_resource_type = object_id_key
+                      object_id_key_resource  = object_id_key_resource   #   "object_id_key_resource" = "aks_admins"
+                      object_id_lz_key        = can(object_resources.keys) ? try(object_resources.lz_key, null) : object_id_lz_keys
+                      condition               = try(object_id_key_resource.condition, null)
+                    }
+                  ] if object_id_lz_keys != "lz_key"
+                ] if object_id_key != "lz_key"
+              ] if !contains(["lz_key", "keyvault_key"], role_definition_name)
             ]
           ]
         ]
