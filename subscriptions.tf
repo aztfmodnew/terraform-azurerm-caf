@@ -10,6 +10,7 @@ module "subscriptions" {
   client_config    = local.client_config
   diagnostics      = local.combined_diagnostics
   tags             = merge(var.tags, lookup(each.value, "tags", {}))
+  billing_scope_id = can(each.value.invoice_section_key) ? local.combined_objects_invoice_sections[try(each.value.lz_key, local.client_config.landingzone_key)][each.value.invoice_section_key].id : null
 }
 
 module "subscription_billing_role_assignments" {

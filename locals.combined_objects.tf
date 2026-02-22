@@ -229,5 +229,10 @@ locals {
     lookup(var.remote_objects, "subscriptions", {})
   )
 
+  combined_objects_invoice_sections = merge(
+    tomap({ (local.client_config.landingzone_key) = module.invoice_section }),
+    try(var.remote_objects.invoice_sections, {})
+  )
+
 
 }
