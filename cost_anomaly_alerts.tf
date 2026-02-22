@@ -4,6 +4,7 @@ module "cost_anomaly_alerts" {
 
   global_settings = local.global_settings
   client_config   = local.client_config
+  base_tags       = local.global_settings.inherit_tags
   settings        = each.value
 }
 
