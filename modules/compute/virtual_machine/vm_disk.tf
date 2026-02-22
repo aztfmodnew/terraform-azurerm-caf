@@ -35,7 +35,7 @@ resource "azurerm_managed_disk" "disk" {
 resource "azurerm_virtual_machine_data_disk_attachment" "disk" {
   for_each = lookup(var.settings, "data_disks", {})
 
-  managed_disk_id           = can(azurerm_managed_disk.disk[each.key].id) ? azurerm_managed_disk.disk[each.key].id : each.value.restored_disk_id
+  managed_disk_id           = can(each.value.restored_disk_id) ? each.value.restored_disk_id : azurerm_managed_disk.disk[each.key].id
   virtual_machine_id        = local.os_type == "linux" ? azurerm_linux_virtual_machine.vm["linux"].id : azurerm_windows_virtual_machine.vm["windows"].id
   lun                       = each.value.lun
   caching                   = lookup(each.value, "caching", "None")
