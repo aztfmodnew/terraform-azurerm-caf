@@ -1,12 +1,12 @@
 data "azurerm_billing_enrollment_account_scope" "sub" {
-  count = !can(var.settings.subscription_id) && var.subscription_key != "logged_in_subscription" && can(var.settings.enrollment_account_name) ? 1 : 0
+  count = try(var.settings.subscription_id, null) == null && var.subscription_key != "logged_in_subscription" && try(var.settings.enrollment_account_name, null) != null ? 1 : 0
 
   billing_account_name    = var.settings.billing_account_name
   enrollment_account_name = var.settings.enrollment_account_name
 }
 
 data "azurerm_billing_mca_account_scope" "sub" {
-  count = !can(var.settings.subscription_id) && var.subscription_key != "logged_in_subscription" && can(var.settings.billing_profile_name) && !can(var.settings.invoice_section_key) ? 1 : 0
+  count = try(var.settings.subscription_id, null) == null && var.subscription_key != "logged_in_subscription" && try(var.settings.billing_profile_name, null) != null && try(var.settings.invoice_section_key, null) == null ? 1 : 0
 
   billing_account_name = var.settings.billing_account_name
   billing_profile_name = var.settings.billing_profile_name

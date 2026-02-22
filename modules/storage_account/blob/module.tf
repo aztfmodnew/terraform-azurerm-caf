@@ -21,9 +21,6 @@ resource "azurerm_storage_blob" "blob" {
     replace_triggered_by = [
       random_id.md5
     ]
-    ignore_changes = [
-      source
-    ]
   }
 }
 

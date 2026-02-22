@@ -36,8 +36,8 @@ variable "vnets" {
 variable "base_tags" {
   default = {}
 }
-variable "managed_identities" {
-  default = {}
+variable "identity" {
+  default = null
 }
 variable "combined_objects" {
   default = {}
@@ -46,5 +46,8 @@ variable "virtual_subnets" {
   default = {}
 }
 variable "vnet_integration" {
+  default = {}
+}
+variable "managed_identities" {
   default = {}
 }
