@@ -133,7 +133,7 @@ module "logic_app_standard" {
   private_dns        = local.combined_objects_private_dns
   vnets              = local.combined_objects_networking
   virtual_subnets    = local.combined_objects_virtual_subnets
-  base_tags          = try(local.global_settings.inherit_tags, false)
+  base_tags          = try(local.global_settings.inherit_tags, false) ? try(local.combined_objects_resource_groups[try(each.value.resource_group.lz_key, local.client_config.landingzone_key)][try(each.value.resource_group.key, each.value.resource_group_key)].tags, {}) : {}
   vnet_integration   = try(each.value.vnet_integration, {})
 }
 
