@@ -6,5 +6,5 @@ module "mi_federated_credentials" {
   settings            = each.value
   managed_identities  = var.managed_identities
   oidc_issuer_url     = azurerm_kubernetes_cluster.aks.oidc_issuer_url
-  resource_group_name = coalesce(try(var.resource_groups[try(each.value.managed_identity.resource_group.lz_key, var.client_config.landingzone_key)][try(each.value.managed_identity.resource_group.key, each.value.managed_identity.resource_group_key)].name, null), try(var.resource_group.name, null))
+  resource_group_name = var.managed_identities[try(each.value.managed_identity.lz_key, var.client_config.landingzone_key)][each.value.managed_identity.key].resource_group_name
 }

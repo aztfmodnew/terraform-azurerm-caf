@@ -9,11 +9,7 @@ resource_groups = {
   aks_re1 = {
     name   = "aks-re1"
     region = "region1"
-  }
-  msi_region1 = {
-    name   = "security-rg1"
-    region = "region1"
-  }
+  }  
 }
 
 aks_clusters = {
@@ -91,7 +87,7 @@ aks_clusters = {
 managed_identities = {
   workload_system_mi = {
     name               = "demo-mi-wi"
-    resource_group_key = "msi_region1"
+    resource_group_key = "aks_re1"
   }
 }
 
