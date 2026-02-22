@@ -66,8 +66,4 @@ variable "settings" {
       delete = optional(string)
     }))
   })
-  validation {
-    condition     = contains(keys(var.settings), "name")
-    error_message = "settings.name is required for Dynamic Maintenance Assignment."
-  }
 }

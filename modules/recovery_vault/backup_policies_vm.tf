@@ -64,10 +64,13 @@ resource "azurerm_backup_policy_vm" "vm" {
   dynamic "tiering_policy" {
     for_each = lookup(each.value, "tiering_policy", null) == null ? [] : [1]
     content {
-      archived_restore_point {
-        mode          = each.value.tiering_policy.archived_restore_point.mode
-        duration      = try(each.value.tiering_policy.archived_restore_point.duration, null)
-        duration_type = try(each.value.tiering_policy.archived_restore_point.duration_type, null)
+      dynamic "archived_restore_point" {
+        for_each = try(each.value.tiering_policy.archived_restore_point, null) == null ? [] : [each.value.tiering_policy.archived_restore_point]
+        content {
+          mode          = archived_restore_point.value.mode
+          duration      = try(archived_restore_point.value.duration, null)
+          duration_type = try(archived_restore_point.value.duration_type, null)
+        }
       }
     }
   }

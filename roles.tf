@@ -264,7 +264,7 @@ locals {
                       object_id_resource_type = object_id_key
                       object_id_key_resource  = object_id_key_resource #   "object_id_key_resource" = "aks_admins"
                       object_id_lz_key        = can(object_resources.keys) ? try(object_resources.lz_key, null) : object_id_lz_keys
-                      condition               = try(object_id_key_resource.condition, null)
+                      condition               = try(object_resources.condition, null)
                     }
                   ] if object_id_lz_keys != "lz_key"
                 ] if object_id_key != "lz_key"

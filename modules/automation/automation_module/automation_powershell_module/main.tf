@@ -16,10 +16,14 @@ resource "azurerm_automation_powershell72_module" "automation_powershell72_modul
     }
   }
 
-  timeouts {
-    create = try(var.settings.timeouts.create, null)
-    read   = try(var.settings.timeouts.read, null)
-    update = try(var.settings.timeouts.update, null)
-    delete = try(var.settings.timeouts.delete, null)
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
+    }
   }
 }
