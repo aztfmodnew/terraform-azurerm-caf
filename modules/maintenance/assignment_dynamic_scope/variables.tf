@@ -46,14 +46,14 @@ variable "settings" {
   type = object({
     name = string
     filter = optional(object({
-      locations         = optional(list(string), [])
-      os_types          = optional(list(string), [])
-      resource_groups   = optional(list(string), [])
-      resource_types    = optional(list(string), [])
-      tag_filter        = optional(string, "Any")
-      resource_group_key = optional(string)
-      resources_groups  = optional(map(any))
-      tags              = optional(map(object({
+      locations          = optional(list(string), [])
+      os_types           = optional(list(string), [])
+      resource_groups    = optional(list(string), [])
+      resource_types     = optional(list(string), [])
+      tag_filter         = optional(string, "Any")
+      resource_group_key = optional(list(string))
+      resources_groups   = optional(map(any))
+      tags               = optional(map(object({
         tag    = string
         values = list(string)
       })))
