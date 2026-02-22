@@ -7,6 +7,7 @@ module "automation_powershell72_module" {
   client_config         = local.client_config
   automation_account_id = can(each.value.automation_account_id) ? each.value.automation_account_id : local.combined_objects_automations[try(each.value.lz_key, local.client_config.landingzone_key)][each.value.automation_account_key].id
   base_tags             = local.global_settings.inherit_tags
+  resource_group        = try(each.value.resource_group, null)
 }
 
 output "automation_powershell72_module" {
