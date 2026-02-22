@@ -10,5 +10,5 @@ locals {
   }
 
   # tags = merge(var.base_tags, local.module_tag, var.tags)
-  tags = var.tags # temporal use until tag uppercase fixed
+  tags = merge(local.base_tags, local.module_tag, var.tags)
 }
