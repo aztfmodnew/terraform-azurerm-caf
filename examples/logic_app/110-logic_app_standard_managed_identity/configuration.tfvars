@@ -51,8 +51,8 @@ logic_app_standard = {
     }
 
     identity = {
-      type = "UserAssigned"
-      key  = "logicapp_msi"
+      type                  = "UserAssigned"
+      managed_identity_keys = ["logicapp_msi"]
     }
   }
 }

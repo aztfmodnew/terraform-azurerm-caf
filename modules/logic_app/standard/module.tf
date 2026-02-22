@@ -45,10 +45,10 @@ resource "azurerm_logic_app_standard" "logic_app_standard" {
   }
 
   dynamic "identity" {
-    for_each = lookup(var.settings, "identity", {}) != {} ? [1] : []
+    for_each = try(var.settings.identity, null) == null ? [] : [var.settings.identity]
     content {
-      type         = lookup(var.settings.identity, "type", null)
-      identity_ids = can(var.settings.identity.ids) ? var.settings.identity.ids : can(var.settings.identity.key) ? [var.managed_identities[try(var.settings.identity.lz_key, var.client_config.landingzone_key)][var.settings.identity.key].id] : null
+      type         = var.settings.identity.type
+      identity_ids = contains(["userassigned", "systemassigned, userassigned"], lower(var.settings.identity.type)) ? local.managed_identities : null
     }
   }
 }
