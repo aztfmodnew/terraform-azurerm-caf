@@ -1,4 +1,4 @@
-output "maintenance_assignment_dynamic_scope_id" {
+output "id" {
   description = "The ID of the Dynamic Maintenance Assignment."
-  value       = azurerm_maintenance_assignment_dynamic_scope.maintenance_assignment_dynamic_scope.id
+  value       = azurerm_maintenance_assignment_dynamic_scope.assignment_dynamic_scope.id
 }

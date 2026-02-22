@@ -44,7 +44,8 @@ module "maintenance_assignment_dynamic_scope" {
 
   client_config                = local.client_config
   global_settings              = local.global_settings
-  name                         = each.value.name
+  base_tags                    = local.global_settings.inherit_tags
+  resource_group               = try(each.value.resource_group, null)
   maintenance_configuration_id = can(each.value.maintenance_configuration_id) ? each.value.maintenance_configuration_id : local.combined_objects_maintenance_configuration[try(each.value.lz_key, local.client_config.landingzone_key)][each.value.maintenance_configuration_key].id
   resource_groups              = local.combined_objects_resource_groups
   settings                     = each.value
