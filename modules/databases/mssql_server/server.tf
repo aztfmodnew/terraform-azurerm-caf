@@ -32,7 +32,7 @@ resource "azurerm_mssql_server" "mssql" {
     }
   }
 
-  primary_user_assigned_identity_id = try(var.settings.identity.primary_user_assigned_identity_id, null)
+  primary_user_assigned_identity_id = try(var.settings.identity.primary_user_assigned_identity_id, var.managed_identities[var.client_config.landingzone_key][var.settings.identity.primary_user_assigned_identity_key].id, null)
 
 }
 
