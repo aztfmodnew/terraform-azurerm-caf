@@ -36,14 +36,14 @@ variable "settings" {
       - tags - (Optional) Tags to assign to the invoice section.
     DESCRIPTION
   type = object({
-    name                = string
-    billing_account_id  = string
-    billing_profile_id  = string
-    labels              = optional(map(string))
-    tags                = optional(map(string))
+    name               = string
+    billing_account_id = string
+    billing_profile_id = string
+    labels             = optional(map(string))
+    tags               = optional(map(string))
   })
   validation {
-    condition = length(setsubtract(keys(var.settings), ["name", "billing_account_id", "billing_profile_id", "labels", "tags"])) == 0
+    condition     = length(setsubtract(keys(var.settings), ["name", "billing_account_id", "billing_profile_id", "labels", "tags"])) == 0
     error_message = "Unsupported attributes in settings. Allowed: name, billing_account_id, billing_profile_id, labels, tags."
   }
 }

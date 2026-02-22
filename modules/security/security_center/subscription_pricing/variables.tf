@@ -33,7 +33,7 @@ variable "settings" {
     tier          = string
     resource_type = optional(string, "VirtualMachines")
     subplan       = optional(string)
-    extensions    = optional(map(object({
+    extensions = optional(map(object({
       name                            = string
       additional_extension_properties = optional(map(string))
     })))

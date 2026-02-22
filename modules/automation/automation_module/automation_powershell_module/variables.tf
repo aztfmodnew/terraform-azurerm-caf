@@ -30,7 +30,7 @@ variable "settings" {
   type = object({
     name = string
     module_link = object({
-      uri  = string
+      uri = string
       hash = optional(object({
         algorithm = string
         value     = string
@@ -45,7 +45,7 @@ variable "settings" {
     tags = optional(map(string))
   })
   validation {
-    condition = length(setsubtract(keys(var.settings), ["name", "module_link", "timeouts", "tags"])) == 0
+    condition     = length(setsubtract(keys(var.settings), ["name", "module_link", "timeouts", "tags"])) == 0
     error_message = "Unsupported attributes in settings. Allowed: name, module_link, timeouts, tags."
   }
 }

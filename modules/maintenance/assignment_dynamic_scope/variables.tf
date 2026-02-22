@@ -53,12 +53,12 @@ variable "settings" {
       tag_filter         = optional(string, "Any")
       resource_group_key = optional(list(string))
       resources_groups   = optional(map(any))
-      tags               = optional(map(object({
+      tags = optional(map(object({
         tag    = string
         values = list(string)
       })))
     }))
-    tags     = optional(map(string))
+    tags = optional(map(string))
     timeouts = optional(object({
       create = optional(string)
       read   = optional(string)
