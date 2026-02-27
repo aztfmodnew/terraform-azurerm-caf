@@ -1748,6 +1748,14 @@ variable "load_test" {
   default = {}
   type    = any
 }
+variable "subscriptions" {
+  description = "Configuration object - Subscriptions resources."
+  default     = {}
+}
+variable "invoice_sections" {
+  description = "Configuration object - Billing Invoice Section resources."
+  default     = {}
+}
 variable "cdn_frontdoor_profiles" {
   description = "Configuring Front Door Profiles."
   default     = {}

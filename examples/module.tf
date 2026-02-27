@@ -21,6 +21,8 @@ module "example" {
   resource_groups                       = var.resource_groups
   role_mapping                          = var.role_mapping
   storage_accounts                      = var.storage_accounts
+  subscriptions                        = var.subscriptions
+  invoice_sections                      = var.invoice_sections
   subscription_billing_role_assignments = var.subscription_billing_role_assignments
   resource_provider_registration        = var.resource_provider_registration
   var_folder_path                       = var.var_folder_path
