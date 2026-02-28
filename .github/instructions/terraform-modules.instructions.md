@@ -48,9 +48,13 @@ Use these rules when editing files under `modules/**`. Focus on correctness, CAF
         ```
   - Locals: compute `module_tag`, `tags = merge(...)`, `location`, `resource_group_name` using the standard block.
 
-- Pattern 0: Validate resource schema
-  - Before adding/altering resource arguments, validate ALL attributes using Terraform azurerm docs. Required -> present; optional -> `try(var.settings.<arg>, null)`; nested -> dynamic blocks; include a `timeouts` dynamic block.
-  - If the provider doc marks a resource as deprecated in the provider docs, do NOT implement it; use the non-deprecated replacement resource instead.
+- Pattern 0: Validate resource schema (ALWAYS MANDATORY — use MCP tools)
+  - **BEFORE writing any resource arguments**, call these MCP tools in order:
+    1. `mcp_terraform_get_provider_capabilities(namespace="hashicorp", name="azurerm")` → find the `provider_doc_id` for the target resource.
+    2. `mcp_terraform_get_provider_details(provider_doc_id="<id>")` → fetch the full schema with all arguments, nested blocks, defaults, and deprecation notices.
+  - Never rely on training data or memory for argument names. The azurerm provider evolves rapidly and attributes are added/removed/renamed frequently.
+  - Apply the schema: Required → present without `try()`; Optional → `try(var.settings.<arg>, null)` or `try(var.settings.<arg>, <default>)`; Nested block → `dynamic` block; always include a `timeouts` dynamic block.
+  - If the provider doc marks a resource as deprecated, do NOT implement it; use the non-deprecated replacement resource instead.
 
 - Diagnostics integration (MANDATORY when supported)
   - Create `diagnostics.tf`. Always:

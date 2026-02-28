@@ -894,6 +894,44 @@ When working with this repository, follow these rules for using MCP tools:
 - **Rule**: When generating Terraform code or performing operations related to Terraform, invoke your Terraform best practices tools if available.
 - **Only call** when you are sure the user is discussing Terraform; do not call otherwise.
 
+### ⚠️ CRITICAL: Terraform MCP Validation (Pattern 0 — ALWAYS MANDATORY)
+
+**EVERY TIME** you implement or modify an `azurerm_*` resource block, you MUST validate the schema using these MCP tools **in order**, before writing any HCL code:
+
+1. **Find the `provider_doc_id`** — search the provider resource index:
+   ```
+   mcp_terraform_get_provider_capabilities(
+     namespace="hashicorp",
+     name="azurerm"
+   )
+   # Then use the returned provider_doc_id for the specific resource
+   ```
+   Or use the search tool if available:
+   ```
+   mcp_terraform_search_providers(
+     provider_namespace="hashicorp",
+     provider_name="azurerm",
+     service_slug="<resource_name>",    # e.g. "federated_identity_credential"
+     provider_document_type="resources"
+   )
+   ```
+
+2. **Fetch full schema** — get every argument, nested block, and deprecation notice:
+   ```
+   mcp_terraform_get_provider_details(
+     provider_doc_id="<id_from_step_1>"
+   )
+   ```
+
+**Rules after fetching docs:**
+- Required argument → include without `try()`
+- Optional argument → wrap in `try(var.settings.<arg>, null)` or `try(var.settings.<arg>, <default>)`
+- Nested block → implement as `dynamic` block
+- Deprecated resource → **do NOT implement**; use the non-deprecated replacement
+- Always include a `timeouts` dynamic block
+
+**There are NO exceptions to this rule.** Do not rely on training data or memory — the provider changes frequently.
+
 ---
 
 ## 📝 Examples and CI/CD Integration
