@@ -1,0 +1,6 @@
+{
+  "config_files": [
+    "chaos_studio/300-cosmosdb-failover",
+    "chaos_studio/400-storage-nsg-block"
+  ]
+}

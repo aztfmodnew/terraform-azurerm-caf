@@ -92,8 +92,9 @@ When editing files under `examples/**`, treat them as executable tests and docum
     }
     ```
 
-- CI integration (MANDATORY)
-  - Ensure the example path is added to the appropriate workflow JSON in `.github/workflows/`.
+- CI integration
+  - Add the example path to the appropriate workflow JSON in `.github/workflows/` **only if** the example can be fully validated by a mock plan (i.e., all required resources are self-contained in the tfvars and no real Azure infrastructure is needed at plan time).
+  - **Do NOT add** examples that have hard prerequisites that cannot be mocked — for example, `create_option = "Import"` requires a pre-existing VHD blob in a real Azure Storage Account. Adding such examples to the CI matrix would cause every CI run to fail. These examples serve as documentation and can be validated locally against a real environment.
 
 - Testing
   - Validate with `terraform test` (mock tests) or the repository’s helper scripts.

@@ -63,6 +63,18 @@ Use these rules when editing files under `modules/**`. Focus on correctness, CAF
 
 - Dependency resolution (MANDATORY)
   - Use the coalesce pattern with `var.settings.*`, `var.remote_objects.<plural>`, and cross-landing-zone lookups. Never pass raw IDs as separate variables between submodules—use `remote_objects`.
+  - **Prefer `try(coalesce(), null)` over nested `can()` ternaries** for optional dependency resolution:
+    ```hcl
+    # ❌ AVOID: nested can() ternary — hard to read and extend
+    resource_id = can(each.value.resource_id) ? each.value.resource_id : can(each.value.resource_key) ? var.remote_objects.resources[...][each.value.resource_key].id : null
+
+    # ✅ PREFER: try(coalesce()) — each path explicit, easy to add cross-LZ fallbacks
+    resource_id = try(coalesce(
+      try(each.value.resource_id, null),
+      try(var.remote_objects.resources[try(each.value.lz_key, var.client_config.landingzone_key)][each.value.resource_key].id, null)
+    ), null)
+    ```
+    The outer `try(..., null)` is required when the attribute is optional — `coalesce()` throws if all arguments are null. For **required** dependencies (where at least one path must resolve), `coalesce()` alone is sufficient and the error is desirable.
   - For identity blocks: Create dedicated `managed_identities.tf` file that resolves managed identity IDs from `var.remote_objects.managed_identities` supporting both local (same landing zone) and remote (cross-landing-zone) references via `settings.identity.managed_identity_keys` and `settings.identity.remote` patterns.
 
 - Dynamic blocks
