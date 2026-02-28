@@ -644,6 +644,10 @@ variable "recovery_vaults" {
   type    = any
   default = {}
 }
+variable "management_locks" {
+  type    = any
+  default = {}
+}
 variable "availability_sets" {
   type    = any
   default = {}
@@ -748,6 +752,9 @@ variable "event_hubs" {
 }
 variable "automations" {
   type    = any
+  default = {}
+}
+variable "automation_powershell72_module" {
   default = {}
 }
 variable "automation_schedules" {
@@ -1734,6 +1741,10 @@ variable "maintenance_assignment_virtual_machine" {
   type    = any
   default = {}
 }
+variable "maintenance_assignment_dynamic_scope" {
+  type    = any
+  default = {}
+}
 variable "search_services" {
   type    = any
   default = {}
@@ -1741,6 +1752,14 @@ variable "search_services" {
 variable "load_test" {
   default = {}
   type    = any
+}
+variable "subscriptions" {
+  description = "Configuration object - Subscriptions resources."
+  default     = {}
+}
+variable "invoice_sections" {
+  description = "Configuration object - Billing Invoice Section resources."
+  default     = {}
 }
 variable "cdn_frontdoor_profiles" {
   description = "Configuring Front Door Profiles."

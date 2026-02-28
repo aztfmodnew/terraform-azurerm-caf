@@ -10,6 +10,8 @@ resource "azurerm_mssql_server" "mssql" {
   minimum_tls_version           = try(var.settings.minimum_tls_version, "1.2")
   tags                          = local.tags
 
+  transparent_data_encryption_key_vault_key_id = try(var.settings.transparent_data_encryption_key_vault_key_id, null)
+
   dynamic "azuread_administrator" {
     for_each = can(var.settings.azuread_administrator) ? [var.settings.azuread_administrator] : []
 
@@ -25,9 +27,12 @@ resource "azurerm_mssql_server" "mssql" {
     for_each = can(var.settings.identity) ? [var.settings.identity] : []
 
     content {
-      type = identity.value.type
+      type         = identity.value.type
+      identity_ids = try(local.managed_identities, null)
     }
   }
+
+  primary_user_assigned_identity_id = try(var.settings.identity.primary_user_assigned_identity_id, var.managed_identities[var.client_config.landingzone_key][var.settings.identity.primary_user_assigned_identity_key].id, null)
 
 }
 

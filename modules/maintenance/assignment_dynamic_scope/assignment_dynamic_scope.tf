@@ -1,0 +1,36 @@
+# https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/maintenance_assignment_dynamic_scope
+
+resource "azurerm_maintenance_assignment_dynamic_scope" "assignment_dynamic_scope" {
+  name                         = azurecaf_name.assignment_dynamic_scope.result
+  maintenance_configuration_id = var.maintenance_configuration_id
+
+  filter {
+    locations       = try(var.settings.filter.locations, [])
+    os_types        = try(var.settings.filter.os_types, [])
+    resource_groups = local.filter_resource_groups
+    resource_types  = try(var.settings.filter.resource_types, [])
+    tag_filter      = try(var.settings.filter.tag_filter, null)
+
+    dynamic "tags" {
+      for_each = {
+        for key, value in try(var.settings.filter.tags, {}) : key => value
+      }
+
+      content {
+        tag    = tags.value.tag
+        values = tags.value.values
+      }
+    }
+  }
+
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
+    }
+  }
+}

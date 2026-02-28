@@ -21,6 +21,8 @@ module "example" {
   resource_groups                       = var.resource_groups
   role_mapping                          = var.role_mapping
   storage_accounts                      = var.storage_accounts
+  subscriptions                         = var.subscriptions
+  invoice_sections                      = var.invoice_sections
   subscription_billing_role_assignments = var.subscription_billing_role_assignments
   resource_provider_registration        = var.resource_provider_registration
   var_folder_path                       = var.var_folder_path
@@ -322,12 +324,14 @@ module "example" {
 
   shared_services = {
     automations                    = var.automations
+    automation_powershell72_module = var.automation_powershell72_module
     automation_schedules           = var.automation_schedules
     automation_runbooks            = var.automation_runbooks
     automation_log_analytics_links = var.automation_log_analytics_links
     consumption_budgets            = var.consumption_budgets
     image_definitions              = var.image_definitions
     log_analytics_storage_insights = var.log_analytics_storage_insights
+    management_locks               = var.management_locks
     monitor_action_groups          = var.monitor_action_groups
     monitor_autoscale_settings     = var.monitor_autoscale_settings
     monitoring                     = var.monitoring
@@ -462,6 +466,7 @@ module "example" {
   maintenance = {
     maintenance_configuration              = var.maintenance_configuration
     maintenance_assignment_virtual_machine = var.maintenance_assignment_virtual_machine
+    maintenance_assignment_dynamic_scope   = var.maintenance_assignment_dynamic_scope
   }
   search_services = {
     search_services = var.search_services

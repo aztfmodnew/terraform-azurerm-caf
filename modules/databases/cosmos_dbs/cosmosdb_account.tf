@@ -27,6 +27,14 @@ resource "azurerm_cosmosdb_account" "cosmos_account" {
   access_key_metadata_writes_enabled = try(var.settings.access_key_metadata_writes_enabled, null)
   local_authentication_disabled      = try(var.settings.local_authentication_disabled, null)
 
+  dynamic "identity" {
+    for_each = can(var.settings.identity) ? [var.settings.identity] : []
+    content {
+      type         = identity.value.type
+      identity_ids = local.managed_identities
+    }
+  }
+
   dynamic "consistency_policy" {
     for_each = lookup(var.settings, "consistency_policy", {}) == {} ? [] : [1]
 
@@ -56,6 +64,14 @@ resource "azurerm_cosmosdb_account" "cosmos_account" {
       name = capabilities.value
     }
   }
+  dynamic "virtual_network_rule" {
+    for_each = try(var.settings.network_rules, {})
+    content {
+      id                                   = can(virtual_network_rule.value.id) ? virtual_network_rule.value.id : var.vnets[try(virtual_network_rule.value.lz_key, var.client_config.landingzone_key)][virtual_network_rule.value.vnet_key].subnets[virtual_network_rule.value.subnet_key].id
+      ignore_missing_vnet_service_endpoint = try(virtual_network_rule.value.ignore_missing_vnet_service_endpoint, null)
+    }
+  }
+
   dynamic "restore" {
     for_each = try(var.settings.restore, null) != null ? [var.settings.restore] : []
     content {

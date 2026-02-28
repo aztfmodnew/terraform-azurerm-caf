@@ -791,3 +791,7 @@ variable "load_test" {
   description = "Configuration object - Load Test resources"
   default     = {}
 }
+variable "invoice_sections" {
+  description = "Configuration object - Billing Invoice Section resources"
+  default     = {}
+}

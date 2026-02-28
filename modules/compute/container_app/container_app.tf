@@ -286,9 +286,9 @@ resource "azurerm_container_app" "ca" {
         for_each = try(ingress.value.traffic_weight, {})
 
         content {
-          label           = traffic_weight.value.label
-          latest_revision = traffic_weight.value.latest_revision
-          revision_suffix = traffic_weight.value.revision_suffix
+          label           = try(traffic_weight.value.label, null)
+          latest_revision = try(traffic_weight.value.latest_revision, null)
+          revision_suffix = try(traffic_weight.value.revision_suffix, null)
           percentage      = traffic_weight.value.percentage
         }
       }

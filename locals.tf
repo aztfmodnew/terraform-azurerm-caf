@@ -323,6 +323,7 @@ locals {
     eventgrid_system_event_subscription = try(var.messaging.eventgrid_system_event_subscription, {})
     web_pubsubs                         = try(var.messaging.web_pubsubs, {})
     web_pubsub_hubs                     = try(var.messaging.web_pubsub_hubs, {})
+    notification_hub_namespaces         = try(var.messaging.notification_hub_namespaces, {})
   }
 
   networking = {
@@ -423,37 +424,40 @@ locals {
   object_id = coalesce(var.logged_user_objectId, var.logged_aad_app_objectId, try(data.azuread_client_config.current.object_id, null), try(data.azuread_service_principal.logged_in_app[0].object_id, null))
 
   security = {
-    disk_encryption_sets                = try(var.security.disk_encryption_sets, {})
-    dynamic_keyvault_secrets            = try(var.security.dynamic_keyvault_secrets, {})
-    keyvault_certificate_issuers        = try(var.security.keyvault_certificate_issuers, {})
-    keyvault_certificate_requests       = try(var.security.keyvault_certificate_requests, {})
-    keyvault_certificates               = try(var.security.keyvault_certificates, {})
-    keyvault_keys                       = try(var.security.keyvault_keys, {})
-    lighthouse_definitions              = try(var.security.lighthouse_definitions, {})
-    sentinel_automation_rules           = try(var.security.sentinel_automation_rules, {})
-    sentinel_watchlists                 = try(var.security.sentinel_watchlists, {})
-    sentinel_watchlist_items            = try(var.security.sentinel_watchlist_items, {})
-    sentinel_ar_fusions                 = try(var.security.sentinel_ar_fusions, {})
-    sentinel_ar_ml_behavior_analytics   = try(var.security.sentinel_ar_ml_behavior_analytics, {})
-    sentinel_ar_ms_security_incidents   = try(var.security.sentinel_ar_ms_security_incidents, {})
-    sentinel_ar_scheduled               = try(var.security.sentinel_ar_scheduled, {})
-    sentinel_dc_aad                     = try(var.security.sentinel_dc_aad, {})
-    sentinel_dc_app_security            = try(var.security.sentinel_dc_app_security, {})
-    sentinel_dc_aws                     = try(var.security.sentinel_dc_aws, {})
-    sentinel_dc_azure_threat_protection = try(var.security.sentinel_dc_azure_threat_protection, {})
-    sentinel_dc_ms_threat_protection    = try(var.security.sentinel_dc_ms_threat_protection, {})
-    sentinel_dc_office_365              = try(var.security.sentinel_dc_office_365, {})
-    sentinel_dc_security_center         = try(var.security.sentinel_dc_security_center, {})
-    sentinel_dc_threat_intelligence     = try(var.security.sentinel_dc_threat_intelligence, {})
+    disk_encryption_sets                  = try(var.security.disk_encryption_sets, {})
+    dynamic_keyvault_secrets              = try(var.security.dynamic_keyvault_secrets, {})
+    keyvault_certificate_issuers          = try(var.security.keyvault_certificate_issuers, {})
+    keyvault_certificate_requests         = try(var.security.keyvault_certificate_requests, {})
+    keyvault_certificates                 = try(var.security.keyvault_certificates, {})
+    keyvault_keys                         = try(var.security.keyvault_keys, {})
+    lighthouse_definitions                = try(var.security.lighthouse_definitions, {})
+    security_center_subscription_pricings = try(var.security.security_center_subscription_pricings, {})
+    sentinel_automation_rules             = try(var.security.sentinel_automation_rules, {})
+    sentinel_watchlists                   = try(var.security.sentinel_watchlists, {})
+    sentinel_watchlist_items              = try(var.security.sentinel_watchlist_items, {})
+    sentinel_ar_fusions                   = try(var.security.sentinel_ar_fusions, {})
+    sentinel_ar_ml_behavior_analytics     = try(var.security.sentinel_ar_ml_behavior_analytics, {})
+    sentinel_ar_ms_security_incidents     = try(var.security.sentinel_ar_ms_security_incidents, {})
+    sentinel_ar_scheduled                 = try(var.security.sentinel_ar_scheduled, {})
+    sentinel_dc_aad                       = try(var.security.sentinel_dc_aad, {})
+    sentinel_dc_app_security              = try(var.security.sentinel_dc_app_security, {})
+    sentinel_dc_aws                       = try(var.security.sentinel_dc_aws, {})
+    sentinel_dc_azure_threat_protection   = try(var.security.sentinel_dc_azure_threat_protection, {})
+    sentinel_dc_ms_threat_protection      = try(var.security.sentinel_dc_ms_threat_protection, {})
+    sentinel_dc_office_365                = try(var.security.sentinel_dc_office_365, {})
+    sentinel_dc_security_center           = try(var.security.sentinel_dc_security_center, {})
+    sentinel_dc_threat_intelligence       = try(var.security.sentinel_dc_threat_intelligence, {})
   }
 
   shared_services = {
     automations                               = try(var.shared_services.automations, {})
+    automation_powershell72_module            = try(var.shared_services.automation_powershell72_module, {})
     automation_schedules                      = try(var.shared_services.automation_schedules, {})
     automation_runbooks                       = try(var.shared_services.automation_runbooks, {})
     automation_log_analytics_links            = try(var.shared_services.automation_log_analytics_links, {})
     automation_software_update_configurations = try(var.shared_services.automation_software_update_configurations, {})
     consumption_budgets                       = try(var.shared_services.consumption_budgets, {})
+    cost_anomaly_alerts                       = try(var.shared_services.cost_anomaly_alerts, {})
     image_definitions                         = try(var.shared_services.image_definitions, {})
     log_analytics_storage_insights            = try(var.shared_services.log_analytics_storage_insights, {})
     monitor_autoscale_settings                = try(var.shared_services.monitor_autoscale_settings, {})
@@ -464,6 +468,7 @@ locals {
     packer_service_principal                  = try(var.shared_services.packer_service_principal, {})
     packer_build                              = try(var.shared_services.packer_build, {})
     recovery_vaults                           = try(var.shared_services.recovery_vaults, {})
+    management_locks                          = try(var.shared_services.management_locks, {})
     shared_image_galleries                    = try(var.shared_services.shared_image_galleries, {})
   }
 
@@ -545,6 +550,7 @@ locals {
   maintenance = {
     maintenance_configuration              = try(var.maintenance.maintenance_configuration, {})
     maintenance_assignment_virtual_machine = try(var.maintenance.maintenance_assignment_virtual_machine, {})
+    maintenance_assignment_dynamic_scope   = try(var.maintenance.maintenance_assignment_dynamic_scope, {})
   }
 
   dashboards = {

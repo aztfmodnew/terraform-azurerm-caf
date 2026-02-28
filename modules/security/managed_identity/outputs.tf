@@ -18,3 +18,7 @@ output "rbac_id" {
 output "name" {
   value = azurerm_user_assigned_identity.msi.name
 }
+
+output "resource_group_name" {
+  value = azurerm_user_assigned_identity.msi.resource_group_name
+}

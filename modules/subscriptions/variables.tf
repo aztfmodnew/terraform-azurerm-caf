@@ -24,3 +24,8 @@ variable "tags" {
   description = "(Required) Map of tags to be applied to the resource"
   type        = map(any)
 }
+
+variable "billing_scope_id" {
+  description = "The billing scope ID for the subscription, resolved from a managed invoice section."
+  default     = null
+}

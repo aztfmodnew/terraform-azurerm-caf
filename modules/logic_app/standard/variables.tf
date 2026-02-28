@@ -48,3 +48,6 @@ variable "virtual_subnets" {
 variable "vnet_integration" {
   default = {}
 }
+variable "managed_identities" {
+  default = {}
+}

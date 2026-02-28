@@ -60,3 +60,21 @@ variable "remote_objects" {
   default     = {}
   type        = any
 }
+
+variable "managed_identities" {
+  description = "Managed identities to be used in the module."
+  default     = {}
+  type        = any
+}
+
+variable "resource_groups" {
+  description = "Resource groups to be used for mi federated credentials."
+  default     = {}
+  type        = any
+}
+
+variable "azuread_applications" {
+  description = "Azure AD applications to be used in the module."
+  default     = {}
+  type        = any
+}

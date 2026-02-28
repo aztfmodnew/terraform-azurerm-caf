@@ -26,6 +26,8 @@ module "mssql_servers" {
 
   keyvault_id = can(each.value.administrator_login_password) ? each.value.administrator_login_password : local.combined_objects_keyvaults[try(each.value.keyvault.lz_key, local.client_config.landingzone_key)][try(each.value.keyvault.key, each.value.keyvault_key)].id
 
+  managed_identities = local.combined_objects_managed_identities
+
   remote_objects = {
     keyvault_keys = local.combined_objects_keyvault_keys
   }
