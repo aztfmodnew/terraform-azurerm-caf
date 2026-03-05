@@ -116,3 +116,27 @@ variable "diagnostics" {
   type        = any
   default     = {}
 }
+
+variable "private_endpoints" {
+  description = "Private endpoints configuration for managed redis."
+  type        = any
+  default     = {}
+}
+
+variable "private_dns" {
+  description = "Private DNS zones map used by private endpoints."
+  type        = any
+  default     = {}
+}
+
+variable "vnets" {
+  description = "Virtual networks map used to resolve subnet references for private endpoints."
+  type        = any
+  default     = {}
+}
+
+variable "virtual_subnets" {
+  description = "Virtual subnets map used to resolve subnet references for private endpoints."
+  type        = any
+  default     = {}
+}
