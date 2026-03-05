@@ -9,5 +9,5 @@ module "diagnostics" {
     try(var.diagnostics, null),
     {}
   )
-  profiles          = var.diagnostic_profiles
+  profiles = var.diagnostic_profiles
 }
