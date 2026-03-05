@@ -3,22 +3,22 @@ name: Module Updater
 description: Expert agent for updating existing Terraform modules with new features, attributes, or fixes following CAF standards
 argument-hint: "[module-path] [feature-to-add] or [issue-to-fix]"
 tools:
-   - vscode
-   - execute
-   - read
-   - agent
-   - browser
-   - microsoft-docs/*
-   - terraform/*
-   - edit
-   - search
-   - web
-   - todo
+  - vscode
+  - execute
+  - read
+  - agent
+  - browser
+  - microsoft-docs/*
+  - terraform/*
+  - edit
+  - search
+  - web
+  - todo
 agents:
-   - Compliance Validator
-   - Documentation Sync
-   - Example Generator
-   - CI Workflow Manager
+  - Compliance Validator
+  - Documentation Sync
+  - Example Generator
+  - CI Workflow Manager
 handoffs:
     - label: "Generate Examples"
       agent: "Example Generator"
