@@ -893,6 +893,7 @@ When working with this repository, follow these rules for using MCP tools:
 
 - **Rule**: When generating Terraform code or performing operations related to Terraform, invoke your Terraform best practices tools if available.
 - **Only call** when you are sure the user is discussing Terraform; do not call otherwise.
+- **Terraform MCP tools (current names)**: Prefer `mcp_terraform_get_provider_details` for provider schema validation, and `mcp_terraform_search_modules` + `mcp_terraform_get_module_details` for module discovery and reference patterns.
 
 ### ⚠️ CRITICAL: Terraform MCP Validation (Pattern 0 — ALWAYS MANDATORY)
 

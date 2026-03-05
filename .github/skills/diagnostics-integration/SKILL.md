@@ -7,6 +7,12 @@ description: Add Azure Monitor diagnostic settings to existing Terraform modules
 
 Add Azure Monitor diagnostic settings to modules for comprehensive logging and monitoring.
 
+## Terraform MCP Integration (Required)
+
+Before adding/changing `azurerm_*` diagnostics-related arguments, validate with Terraform MCP:
+- `mcp_terraform_get_provider_details`
+- `mcp_terraform_search_modules` + `mcp_terraform_get_module_details` for reference implementations
+
 ## When to Use This Skill
 
 Use this skill when:

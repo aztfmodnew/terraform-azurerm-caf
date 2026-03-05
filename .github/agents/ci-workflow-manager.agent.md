@@ -1,14 +1,18 @@
 ---
 name: CI Workflow Manager
 description: Manages GitHub Actions workflows for automated testing, ensuring every example is tested in CI/CD pipelines
+argument-hint: "workflow-file or example-path to add to CI"
 tools:
-  - read_file
-  - grep_search
-  - file_search
-  - replace_string_in_file
-  - multi_replace_string_in_file
-  - list_dir
-model: Claude Sonnet 4.5
+  - vscode
+  - execute
+  - read
+  - agent
+  - browser
+  - terraform/*
+  - edit
+  - search
+  - web
+  - todo
 ---
 
 # CI Workflow Manager - GitHub Actions Workflow Agent

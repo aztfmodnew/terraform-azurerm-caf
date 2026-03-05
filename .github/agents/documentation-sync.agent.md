@@ -1,16 +1,18 @@
 ---
 name: Documentation Sync
 description: Maintains comprehensive, accurate module documentation with automated README generation and CHANGELOG tracking
+argument-hint: "[module-path] or specify update type (README, CHANGELOG, examples)"
 tools:
-  - mcp_microsoft_doc/*
-  - read_file
-  - grep_search
-  - semantic_search
-  - file_search
-  - replace_string_in_file
-  - multi_replace_string_in_file
-  - list_dir
-model: Claude Sonnet 4.5
+  - vscode
+  - execute
+  - read
+  - agent
+  - browser
+  - terraform/*
+  - edit
+  - search
+  - web
+  - todo
 ---
 
 # Documentation Sync - CAF Documentation Agent
@@ -88,8 +90,8 @@ diagnostics = var.diagnostics
 
 ## Examples
 
-- [Simple Example](../../../../examples/<category>/<service>/100-simple-<service>/)
-- [Advanced Example](../../../../examples/<category>/<service>/300-advanced-<service>/)
+- `examples/<category>/<service>/100-simple-<service>/` (Simple Example)
+- `examples/<category>/<service>/300-advanced-<service>/` (Advanced Example)
 
 ## Inputs
 

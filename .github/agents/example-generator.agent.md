@@ -1,14 +1,18 @@
 ---
 name: Example Generator
 description: Generates consistent, realistic .tfvars examples at multiple complexity levels following CAF standards
+argument-hint: "[module-name] [complexity: 100-simple, 200-intermediate, 300-advanced]"
 tools:
-  - read_file
-  - grep_search
-  - semantic_search
-  - file_search
-  - create_file
-  - list_dir
-model: Claude Sonnet 4.5
+  - vscode
+  - execute
+  - read
+  - agent
+  - browser
+  - terraform/*
+  - edit
+  - search
+  - web
+  - todo
 ---
 
 # Example Generator - CAF Example Creation Agent
@@ -283,16 +287,21 @@ Deployed resources:
 **⚠️ CRITICAL: Verify Azure subscription before deployment**
 
 \`\`\`bash
+
 # 1. Verify current Azure subscription
+
 az account show --query "{subscriptionId:id, name:name, state:state}" -o table
 
 # 2. Confirm this is the correct subscription
+
 # Proceed ONLY after confirmation
 
 # 3. Export subscription ID
+
 export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
 
 # 4. Deploy
+
 cd examples/<category>/<service>/<NNN>-<description>/
 terraform init
 terraform plan -var-file="configuration.tfvars"
@@ -352,6 +361,7 @@ Add to `config_files` array in JSON:
 Before marking complete:
 
 **Deployment Example** (`examples/<category>/<service>/`):
+
 - [ ] Directory follows numbered convention (100-xxx, 200-xxx, etc.)
 - [ ] File named `configuration.tfvars` (not minimal/complete/example)
 - [ ] Global settings with random_length included

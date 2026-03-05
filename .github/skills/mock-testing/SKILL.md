@@ -7,6 +7,15 @@ description: Execute and debug Terraform mock tests for Azure CAF modules. Use t
 
 Mock tests validate that your Terraform module can successfully generate a plan without requiring actual Azure resources.
 
+## Terraform MCP Integration
+
+When test failures indicate possible schema drift (missing/renamed attributes), confirm provider schema with:
+- `mcp_terraform_get_provider_details`
+
+When comparing expected module interfaces, use:
+- `mcp_terraform_search_modules`
+- `mcp_terraform_get_module_details`
+
 ## Why Mock Testing is MANDATORY
 
 Mock tests ensure:

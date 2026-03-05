@@ -1,16 +1,32 @@
 ---
 name: Migration Assistant
 description: Assists with migrating modules to new patterns, refactoring code, and updating deprecated features while maintaining backward compatibility
+argument-hint: "module-path old-pattern to new-pattern"
 tools:
-  - read_file
-  - grep_search
-  - semantic_search
-  - file_search
-  - replace_string_in_file
-  - multi_replace_string_in_file
-  - list_dir
-  - list_code_usages
-model: Claude Sonnet 4.5
+  - vscode
+  - execute
+  - read
+  - agent
+  - browser
+  - terraform/*
+  - edit
+  - search
+  - web
+  - todo
+agents:
+  - Module Updater
+  - Compliance Validator
+  - Documentation Sync
+  - Remote State Orchestrator
+handoffs:
+  - label: "Validate Migration"
+    agent: "Compliance Validator"
+    prompt: "Validate that the migrated code follows current CAF standards and maintains backward compatibility"
+    send: false
+  - label: "Update Docs"
+    agent: "Documentation Sync"
+    prompt: "Update documentation to reflect the migration changes and provide migration guide"
+    send: false
 ---
 
 # Migration Assistant - Code Migration and Refactoring Agent

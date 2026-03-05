@@ -7,6 +7,15 @@ description: Complete 8-step workflow for integrating a new module into the Azur
 
 After creating a module, follow this 8-step process to integrate it into the root framework.
 
+## Terraform MCP Integration
+
+If integration requires updating `azurerm_*` arguments or dependency attributes, validate schema first via:
+- `mcp_terraform_get_provider_details`
+
+For upstream module pattern checks, use:
+- `mcp_terraform_search_modules`
+- `mcp_terraform_get_module_details`
+
 ## Overview
 
 Integration connects your module to the framework's dependency resolution system, making it:
