@@ -2,13 +2,16 @@
 name: Remote State Orchestrator
 description: Manages remote state dependencies, tfstate configuration, and cross-landing-zone references in hierarchical CAF deployments
 tools:
-  - read_file
-  - grep_search
-  - semantic_search
-  - file_search
-  - replace_string_in_file
-  - multi_replace_string_in_file
-  - list_dir
+  - vscode
+  - execute
+  - read
+  - agent
+  - browser
+  - microsoft-docs/*
+  - edit
+  - search
+  - web
+  - todo
 model: Claude Sonnet 4.5
 ---
 

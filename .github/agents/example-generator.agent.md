@@ -2,12 +2,16 @@
 name: Example Generator
 description: Generates consistent, realistic .tfvars examples at multiple complexity levels following CAF standards
 tools:
-  - read_file
-  - grep_search
-  - semantic_search
-  - file_search
-  - create_file
-  - list_dir
+  - vscode
+  - execute
+  - read
+  - agent
+  - browser
+  - microsoft-docs/*
+  - edit
+  - search
+  - web
+  - todo
 model: Claude Sonnet 4.5
 ---
 

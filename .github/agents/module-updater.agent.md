@@ -2,16 +2,16 @@
 name: Module Updater
 description: Expert agent for updating existing Terraform modules with new features, attributes, or fixes following CAF standards
 tools:
-  - mcp_terraform/*
-  - mcp_microsoft_doc/*
-  - read_file
-  - grep_search
-  - semantic_search
-  - file_search
-  - list_code_usages
-  - multi_replace_string_in_file
-  - get_changed_files
-  - replace_string_in_file
+   - vscode
+   - execute
+   - read
+   - agent
+   - browser
+   - microsoft-docs/*
+   - edit
+   - search
+   - web
+   - todo
 model: Claude Sonnet 4.5
 ---
 
@@ -52,12 +52,12 @@ You are an expert at updating existing Terraform modules following Azure Cloud A
 **CRITICAL**: NEVER skip validation. Always check provider documentation first.
 
 1. Identify the resource type from module code
-2. Call `mcp_terraform_resolveProviderDocID`:
+2. Use the provider documentation search/resolve tool to identify the exact provider doc ID:
    - providerName: "azurerm" (or "azapi")
    - providerNamespace: "hashicorp"
    - serviceSlug: <resource_name_without_prefix>
    - providerVersion: "latest"
-3. Call `mcp_terraform_getProviderDocs` with providerDocID
+3. Fetch provider documentation with the resolved providerDocID using the provider docs tool
 4. Compare current module implementation with complete schema:
    - What attributes are missing?
    - What new attributes were added to provider?

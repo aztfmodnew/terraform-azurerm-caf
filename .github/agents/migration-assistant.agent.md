@@ -2,14 +2,16 @@
 name: Migration Assistant
 description: Assists with migrating modules to new patterns, refactoring code, and updating deprecated features while maintaining backward compatibility
 tools:
-  - read_file
-  - grep_search
-  - semantic_search
-  - file_search
-  - replace_string_in_file
-  - multi_replace_string_in_file
-  - list_dir
-  - list_code_usages
+  - vscode
+  - execute
+  - read
+  - agent
+  - browser
+  - microsoft-docs/*
+  - edit
+  - search
+  - web
+  - todo
 model: Claude Sonnet 4.5
 ---
 
