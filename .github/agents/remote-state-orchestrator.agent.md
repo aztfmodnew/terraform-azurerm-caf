@@ -1,6 +1,7 @@
 ---
 name: Remote State Orchestrator
 description: Manages remote state dependencies, tfstate configuration, and cross-landing-zone references in hierarchical CAF deployments
+argument-hint: "landing-zone-level state-key or describe remote state scenario"
 tools:
   - vscode
   - execute
@@ -8,11 +9,11 @@ tools:
   - agent
   - browser
   - microsoft-docs/*
+  - terraform/*
   - edit
   - search
   - web
   - todo
-model: Claude Sonnet 4.5
 ---
 
 # Remote State Orchestrator - State Management Agent

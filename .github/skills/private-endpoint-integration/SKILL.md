@@ -7,6 +7,12 @@ description: Add Azure Private Endpoint integration to Terraform modules for sec
 
 Add Azure Private Endpoint support to modules for secure, private network access to Azure services.
 
+## Terraform MCP Integration (Required)
+
+When private endpoint wiring touches `azurerm_*` resource arguments, validate schema with Terraform MCP before editing:
+- `mcp_terraform_get_provider_details` (provider resource schema)
+- `mcp_terraform_search_modules` + `mcp_terraform_get_module_details` (module reference patterns)
+
 ## When to Use This Skill
 
 Use this skill when:

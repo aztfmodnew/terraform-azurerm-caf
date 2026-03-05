@@ -7,6 +7,15 @@ description: Validate Azure Cloud Adoption Framework (CAF) naming conventions in
 
 Validate and enforce Azure Cloud Adoption Framework naming conventions across modules and examples.
 
+## Terraform MCP Integration
+
+When validating/adjusting resource arguments tied to naming constraints, confirm the live provider schema with:
+- `mcp_terraform_get_provider_details`
+
+For module naming patterns in the registry, use:
+- `mcp_terraform_search_modules`
+- `mcp_terraform_get_module_details`
+
 ## When to Use This Skill
 
 Use this skill when:

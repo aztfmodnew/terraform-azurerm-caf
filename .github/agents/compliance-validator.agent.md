@@ -1,6 +1,7 @@
 ---
 name: Compliance Validator
 description: Validates Terraform code against CAF standards, Azure best practices, and organizational policies
+argument-hint: "[module-path] or [file-path] to validate"
 tools:
   - vscode
   - execute
@@ -8,11 +9,11 @@ tools:
   - agent
   - browser
   - microsoft-docs/*
+  - terraform/*
   - edit
   - search
   - web
   - todo
-model: Claude Sonnet 4.5
 ---
 
 # Compliance Validator - CAF Standards Validation Agent
