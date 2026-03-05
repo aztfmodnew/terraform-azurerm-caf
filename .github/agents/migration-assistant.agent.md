@@ -1,14 +1,13 @@
 ---
 name: Migration Assistant
 description: Assists with migrating modules to new patterns, refactoring code, and updating deprecated features while maintaining backward compatibility
-argument-hint: "[module-path] [old-pattern] to [new-pattern]"
+argument-hint: "module-path old-pattern to new-pattern"
 tools:
   - vscode
   - execute
   - read
   - agent
   - browser
-  - microsoft-docs/*
   - terraform/*
   - edit
   - search

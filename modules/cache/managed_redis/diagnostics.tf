@@ -4,6 +4,10 @@ module "diagnostics" {
 
   resource_id       = azurerm_managed_redis.managed_redis.id
   resource_location = azurerm_managed_redis.managed_redis.location
-  diagnostics       = var.remote_objects.diagnostics
+  diagnostics = coalesce(
+    try(var.remote_objects.diagnostics, null),
+    try(var.diagnostics, null),
+    {}
+  )
   profiles          = var.diagnostic_profiles
 }

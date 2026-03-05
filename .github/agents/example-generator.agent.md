@@ -8,7 +8,6 @@ tools:
   - read
   - agent
   - browser
-  - microsoft-docs/*
   - terraform/*
   - edit
   - search
