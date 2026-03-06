@@ -1,6 +1,6 @@
 module "aadb2c_directory" {
   source   = "./modules/aadb2c/aadb2c_directory"
-  for_each = local.aadb2c.aadb2c_directory
+  for_each = try(local.aadb2c.aadb2c_directory, {})
 
   global_settings     = local.global_settings
   settings            = each.value

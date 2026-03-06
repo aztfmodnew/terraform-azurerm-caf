@@ -15,6 +15,7 @@ variable "settings" {
             "name",
             "short_term_retention_days",
             "version",
+            "use_legacy_slug",
             "mi_server_key"
           ], k
         )
@@ -29,6 +30,7 @@ variable "settings" {
           "name",
           "short_term_retention_days",
           "version",
+          "use_legacy_slug",
           "mi_server_key"
         ]
       )

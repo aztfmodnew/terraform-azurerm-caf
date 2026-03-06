@@ -266,7 +266,7 @@ locals {
     suffix             = try(var.global_settings.suffix, null)
     prefix_with_hyphen = try(var.global_settings.prefix_with_hyphen, format("%s-", try(var.global_settings.prefix, try(var.global_settings.prefixes[0], random_string.prefix[0].result))))
     prefixes           = try(var.global_settings.prefix, null) == "" ? null : try([var.global_settings.prefix], try(var.global_settings.prefixes, [random_string.prefix[0].result]))
-    suffixes           = try(var.global_settings.suffixes, null) == "" ? null : try([var.global_settings.suffix], try(var.global_settings.suffixes, [random_string.prefix[0].result]))
+    suffixes           = try(var.global_settings.suffixes, null) == "" ? null : try([var.global_settings.suffix], try(var.global_settings.suffixes, try([random_string.prefix[0].result], null)))
     random_length      = try(var.global_settings.random_length, 0)
     random_seed        = try(var.global_settings.random_seed, null)
     resource_types     = try(var.global_settings.resource_types, [])

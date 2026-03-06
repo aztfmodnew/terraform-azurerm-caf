@@ -31,7 +31,8 @@ variable "settings" {
             "properties",
             "short_term_retention_days",
             "tags",
-            "version"
+            "version",
+            "use_legacy_slug"
           ], k
         )
       ]
@@ -50,7 +51,8 @@ variable "settings" {
           "properties",
           "short_term_retention_days",
           "tags",
-          "version"
+          "version",
+          "use_legacy_slug"
         ]
       )
       )

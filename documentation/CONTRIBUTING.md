@@ -136,7 +136,7 @@ terraform {
       version = "~> 4.0"
     }
     azurecaf = {
-      source  = "aztfmod/azurecaf"
+      source  = "aztfmodnew/azurecaf"
       version = "~> 2.0"
     }
   }
@@ -761,7 +761,7 @@ Any other relevant information
 - [Copilot Instructions](../../.github/copilot-instructions.md) - Comprehensive AI coding guide
 - [Terraform Documentation](https://www.terraform.io/docs)
 - [Azure Provider Documentation](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs)
-- [AzureCAF Provider](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs)
+- [AzureCAF Provider](https://registry.terraform.io/providers/aztfmodnew/azurecaf/latest/docs)
 
 ---
 

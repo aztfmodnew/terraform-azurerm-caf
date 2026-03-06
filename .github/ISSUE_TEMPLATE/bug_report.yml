@@ -10,8 +10,8 @@ body:
 
         Please note the following repo might need to updated also:
 
-        * [Missing naming convention provider](https://github.com/aztfmod/terraform-provider-azurecaf)
-        * [Rover and state management](https://github.com/aztfmod/rover)
+        * [Missing naming convention provider](https://github.com/aztfmodnew/terraform-provider-azurecaf)
+        * [Rover and state management](https://github.com/aztfmodnew/rover)
         * [Landing zones logic](https://github.com/Azure/caf-terraform-landingzones)
 
   - type: checkboxes
@@ -49,7 +49,7 @@ body:
     attributes:
       label: Rover Version
       description: Which rover version are you using?
-      placeholder: 'aztfmod/rover:1.1.7-2203.2311'
+      placeholder: 'aztfmodnew/rover:1.1.7-2203.2311'
     validations:
       required: false
   - type: input

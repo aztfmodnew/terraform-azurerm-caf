@@ -128,7 +128,7 @@ terraform {
       version = "~> 4.0"
     }
     azurecaf = {
-      source  = "aztfmod/azurecaf"
+      source  = "aztfmodnew/azurecaf"
       version = "~> 2.0"
     }
   }

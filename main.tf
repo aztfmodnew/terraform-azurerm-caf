@@ -13,8 +13,8 @@ terraform {
       version = "~> 2.8.0"
     }
     azurecaf = {
-      source  = "aztfmod/azurecaf"
-      version = "~> 1.2.0"
+      source  = "aztfmodnew/azurecaf"
+      version = ">= 3.1.0"
     }
     null = {
       source  = "hashicorp/null"
@@ -23,6 +23,10 @@ terraform {
     random = {
       version = "~> 3.8.1"
       source  = "hashicorp/random"
+    }
+    time = {
+      source  = "hashicorp/time"
+      version = ">= 0.8.2"
     }
   }
   required_version = ">= 1.8.0"
