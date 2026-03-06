@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurecaf = {
       source  = "aztfmodnew/azurecaf"
-      version = ">= 1.0.0"
+      version = ">= 3.1.0"
     }
     time = {
       source  = "hashicorp/time"
