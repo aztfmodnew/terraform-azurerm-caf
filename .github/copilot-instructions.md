@@ -1,6 +1,6 @@
 ---
 module_context: terraform-azurerm-caf
-expertise: [terraform-modules, azure-services, infrastructure-patterns, caaf-frameworks]
+expertise: [terraform-modules, azure-services, infrastructure-patterns, caf-frameworks]
 related_agents:
   - Module Builder
   - Module Updater
@@ -16,7 +16,7 @@ related_skills:
   - mock-testing
 related_docs:
   - .github/AGENTS.md (Agent reference)
-  - ../../WORKSPACE.md (Multi-repo navigation)
+  - ../README.md (Repository overview)
   - .github/instructions/ (Path-scoped rules)
 quick_start: "Read .github/skills/module-creation/SKILL.md to create a new module"
 ---

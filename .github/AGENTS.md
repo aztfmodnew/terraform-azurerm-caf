@@ -27,7 +27,7 @@ This document lists all AI agents available for **module creation, updates, test
 "Create a module for azurerm_api_management with diagnostics and private endpoint support"
 ```
 
-**Related skill:** [module-creation/SKILL.md](.github/skills/module-creation/SKILL.md)
+**Related skill:** [module-creation/SKILL.md](./skills/module-creation/SKILL.md)
 
 ---
 
@@ -54,9 +54,9 @@ This document lists all AI agents available for **module creation, updates, test
 ```
 
 **Related skills:**
-- [azure-schema-validation/SKILL.md](.github/skills/azure-schema-validation/SKILL.md)
-- [diagnostics-integration/SKILL.md](.github/skills/diagnostics-integration/SKILL.md)
-- [private-endpoint-integration/SKILL.md](.github/skills/private-endpoint-integration/SKILL.md)
+- [azure-schema-validation/SKILL.md](./skills/azure-schema-validation/SKILL.md)
+- [diagnostics-integration/SKILL.md](./skills/diagnostics-integration/SKILL.md)
+- [private-endpoint-integration/SKILL.md](./skills/private-endpoint-integration/SKILL.md)
 
 ---
 
@@ -106,7 +106,7 @@ This document lists all AI agents available for **module creation, updates, test
 "Create a 200-advanced example for cache/managed_redis showing private endpoint, diagnostics, and managed identities"
 ```
 
-**Related skill:** [mock-testing/SKILL.md](.github/skills/mock-testing/SKILL.md)
+**Related skill:** [mock-testing/SKILL.md](./skills/mock-testing/SKILL.md)
 
 ---
 
@@ -192,7 +192,7 @@ This document lists all AI agents available for **module creation, updates, test
 "Integrate the cognitive_services/ai_services module into the root framework"
 ```
 
-**Related skill:** [root-module-integration/SKILL.md](.github/skills/root-module-integration/SKILL.md)
+**Related skill:** [root-module-integration/SKILL.md](./skills/root-module-integration/SKILL.md)
 
 ---
 
@@ -218,7 +218,7 @@ This document lists all AI agents available for **module creation, updates, test
 "Add private endpoint support to the app_service module with DNS and network ACL integration"
 ```
 
-**Related skill:** [private-endpoint-integration/SKILL.md](.github/skills/private-endpoint-integration/SKILL.md)
+**Related skill:** [private-endpoint-integration/SKILL.md](./skills/private-endpoint-integration/SKILL.md)
 
 ---
 
@@ -241,7 +241,7 @@ This document lists all AI agents available for **module creation, updates, test
 "Add comprehensive diagnostics support to the cache/managed_redis module"
 ```
 
-**Related skill:** [diagnostics-integration/SKILL.md](.github/skills/diagnostics-integration/SKILL.md)
+**Related skill:** [diagnostics-integration/SKILL.md](./skills/diagnostics-integration/SKILL.md)
 
 ---
 
@@ -265,7 +265,7 @@ This document lists all AI agents available for **module creation, updates, test
 "Validate that the networking/virtual_network module implements all attributes from the azurerm_virtual_network resource"
 ```
 
-**Related skill:** [azure-schema-validation/SKILL.md](.github/skills/azure-schema-validation/SKILL.md)
+**Related skill:** [azure-schema-validation/SKILL.md](./skills/azure-schema-validation/SKILL.md)
 
 ---
 
@@ -392,8 +392,8 @@ Builder     Updater      Generator       Integration
 
 ## 📚 Related Documentation
 
-- [Module Creation Skill](.github/skills/module-creation/SKILL.md)
-- [Root Integration Skill](.github/skills/root-module-integration/SKILL.md)
+- [Module Creation Skill](./skills/module-creation/SKILL.md)
+- [Root Integration Skill](./skills/root-module-integration/SKILL.md)
 - [Copilot Instructions](.github/copilot-instructions.md)
 - [Module Structure Instructions](.github/instructions/terraform-modules.instructions.md)
 - [Example Standards](.github/instructions/terraform-examples.instructions.md)
