@@ -757,8 +757,8 @@ variable "aadb2c" {
   sensitive = false
   validation {
     # Check if aadb2c_directory is null, empty OR if all keys within each directory object are valid.
-    condition = var.aadb2c.aadb2c_directory == null || var.aadb2c.aadb2c_directory == {} || alltrue([
-      for dir_key, dir_value in try(var.aadb2c.aadb2c_directory, {}) :
+    condition = alltrue([
+      for dir_key, dir_value in(var.aadb2c.aadb2c_directory != null ? var.aadb2c.aadb2c_directory : {}) :
       length(setsubtract(keys(dir_value), [
         "country_code",
         "data_residency_location",
