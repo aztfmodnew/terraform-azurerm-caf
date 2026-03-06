@@ -24,6 +24,10 @@ terraform {
       version = "~> 3.8.1"
       source  = "hashicorp/random"
     }
+    time = {
+      source  = "hashicorp/time"
+      version = ">= 0.8.2"
+    }
   }
   required_version = ">= 1.8.0"
 }
