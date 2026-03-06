@@ -4,7 +4,7 @@
 [![Monthly Integration tests](https://github.com/aztfmodnew/terraform-azurerm-caf/actions/workflows/weekly_workflow.yaml/badge.svg)](https://github.com/aztfmodnew/terraform-azurerm-caf/actions/workflows/monthly_workflow.yaml)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/aztfmodnew/terraform-azurerm-caf)
 
-> 🏗️ **New to this workspace?** Start with [WORKSPACE.md](../../WORKSPACE.md) for navigation and [.github/AGENTS.md](.github/AGENTS.md) for AI agents.
+> 🏗️ **New to this workspace?** Start with [WORKSPACE.md](../WORKSPACE.md) for navigation and [.github/AGENTS.md](.github/AGENTS.md) for AI agents.
 
 > :warning: This is a community-maintained continuation of the Azure CAF modules. This solution is offered by the Open-Source community and is not supported by Microsoft. It's a community effort to keep the project alive and up to date. If you want to support the project, please consider contributing with code, documentation or any other way you can.
 

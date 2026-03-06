@@ -13,7 +13,7 @@ locals {
 resource "azurecaf_name" "elasticpool" {
 
   name          = var.settings.name
-  resource_type = "azurerm_mssql_database" //elastic pool naming restriction identical to db
+  resource_type = "azurerm_mssql_elasticpool"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
   clean_input   = true
