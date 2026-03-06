@@ -4,7 +4,7 @@ terraform {
       source = "azure/azapi"
     }
     azurecaf = {
-      source = "aztfmod/azurecaf"
+      source = "aztfmodnew/azurecaf"
     }
   }
 }
