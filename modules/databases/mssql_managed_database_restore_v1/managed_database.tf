@@ -1,9 +1,20 @@
 
-
 # moved {
 #   from = mssql_managed_database_v2.sqlmanageddatabase
 #   to   = mssql_managed_database_restore_v1.sqlmanageddatabase
 # }
+
+locals {
+  # Determine use_legacy_slug with precedence:
+  # 1. Per-resource override (settings.use_legacy_slug)
+  # 2. Global slug_version map (global_settings.slug_version["azurerm_mssql_database"] == "legacy")
+  # 3. Default to false (modern slug behavior)
+  use_legacy_slug = try(
+    var.settings.use_legacy_slug,
+    try(var.global_settings.slug_version["azurerm_mssql_database"] == "legacy", false),
+    false
+  )
+}
 
 resource "azurecaf_name" "manageddb" {
 
@@ -13,6 +24,7 @@ resource "azurecaf_name" "manageddb" {
   random_length = var.global_settings.random_length
   clean_input   = true
   passthrough   = var.global_settings.passthrough
+  use_legacy_slug = local.use_legacy_slug
 
 }
 

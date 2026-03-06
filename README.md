@@ -4,6 +4,8 @@
 [![Monthly Integration tests](https://github.com/aztfmodnew/terraform-azurerm-caf/actions/workflows/weekly_workflow.yaml/badge.svg)](https://github.com/aztfmodnew/terraform-azurerm-caf/actions/workflows/monthly_workflow.yaml)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/aztfmodnew/terraform-azurerm-caf)
 
+> 🏗️ **New to this workspace?** Start with [WORKSPACE.md](../../WORKSPACE.md) for navigation and [.github/AGENTS.md](.github/AGENTS.md) for AI agents.
+
 > :warning: This solution, offered by the Open-Source community, it's based on [https://github.com/aztfmod](https://github.com/aztfmod) and is not supported by Microsoft. It's a community effort to keep the project alive and up to date. If you want to support the project, please consider contributing with code, documentation or any other way you can.
 
 This module allows you to create resources on Microsoft Azure, is used by the Azure Terraform SRE to provision resources in an Azure subscription and can deploy resources being directly invoked from the Terraform registry.

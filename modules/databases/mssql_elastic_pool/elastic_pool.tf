@@ -1,3 +1,15 @@
+locals {
+  # Determine use_legacy_slug with precedence:
+  # 1. Per-resource override (settings.use_legacy_slug)
+  # 2. Global slug_version map (global_settings.slug_version["azurerm_mssql_elasticpool"] == "legacy")
+  # 3. Default to false (modern slug behavior)
+  use_legacy_slug = try(
+    var.settings.use_legacy_slug,
+    try(var.global_settings.slug_version["azurerm_mssql_elasticpool"] == "legacy", false),
+    false
+  )
+}
+
 resource "azurecaf_name" "elasticpool" {
 
   name          = var.settings.name
@@ -7,6 +19,7 @@ resource "azurecaf_name" "elasticpool" {
   clean_input   = true
   passthrough   = var.global_settings.passthrough
   use_slug      = var.global_settings.use_slug
+  use_legacy_slug = local.use_legacy_slug
 }
 
 resource "azurerm_mssql_elasticpool" "elasticpool" {
