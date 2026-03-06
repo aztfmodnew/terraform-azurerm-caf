@@ -59,4 +59,3 @@ variable "settings" {
     )
   }
 }
-
