@@ -9,14 +9,14 @@ tools:
   - terraform/*
   - todo
 agents:
-  - Module Builder
-  - Module Updater
-  - Migration Assistant
-  - Example Generator
-  - Compliance Validator
-  - Documentation Sync
-  - CI Workflow Manager
-  - Remote State Orchestrator
+  - Module Builder CAF
+  - Module Updater CAF
+  - Example Generator CAF
+  - Compliance Validator CAF
+  - Root Module Integration CAF
+  - Diagnostics Integration CAF
+  - Private Endpoint Integration CAF
+  - Schema Validator CAF
 model:
   - "GPT-5.3-Codex (copilot)"
   - "Claude Sonnet 4.6 (copilot)"
