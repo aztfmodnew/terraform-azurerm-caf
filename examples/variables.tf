@@ -1766,3 +1766,8 @@ variable "cdn_frontdoor_profiles" {
   default     = {}
   type        = any
 }
+variable "pim" {
+  description = "Configuration object - Azure PIM (Privileged Identity Management) resources."
+  default     = {}
+  type        = any
+}

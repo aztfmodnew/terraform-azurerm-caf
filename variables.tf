@@ -795,3 +795,7 @@ variable "invoice_sections" {
   description = "Configuration object - Billing Invoice Section resources"
   default     = {}
 }
+variable "pim" {
+  description = "Configuration object - Azure PIM (Privileged Identity Management) resources"
+  default     = {}
+}
