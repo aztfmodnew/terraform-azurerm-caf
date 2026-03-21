@@ -3,7 +3,7 @@ variable "settings" {
   Settings object for the PIM active role assignment. Configuration attributes:
     - name - (Optional) Logical name/key for this PIM active role assignment instance.
     - enabled - (Optional) Whether to enable the assignment. If omitted, the module may default this to true.
-    - scope_id - (Required) The scope at which the role should be assigned (e.g., subscription, resource group, or resource ID).
+    - scope - (Required) The scope at which the role should be assigned (e.g., subscription, resource group, or resource ID).
     - principal_id - (Required) The object ID of the principal (user, group, or service principal) to which the role is assigned.
     - role_definition_id - (Optional) The ID of the role definition to assign. Either role_definition_id or role_definition_name is typically required.
     - role_definition_name - (Optional) The display name of the role definition to assign. Either role_definition_id or role_definition_name is typically required.
@@ -26,7 +26,7 @@ variable "settings" {
   type = object({
     name                 = optional(string)
     enabled              = optional(bool)
-    scope_id             = string
+    scope                = string
     principal_id         = string
     role_definition_id   = optional(string)
     role_definition_name = optional(string)
@@ -58,7 +58,7 @@ variable "settings" {
       [
         "name",
         "enabled",
-        "scope_id",
+        "scope",
         "principal_id",
         "role_definition_id",
         "role_definition_name",
@@ -69,7 +69,7 @@ variable "settings" {
       ]
     )) == 0
 
-    error_message = "Unsupported attributes in settings. Allowed attributes: name, enabled, scope_id, principal_id, role_definition_id, role_definition_name, justification, ticket, schedule, timeouts."
+    error_message = "Unsupported attributes in settings. Allowed attributes: name, enabled, scope, principal_id, role_definition_id, role_definition_name, justification, ticket, schedule, timeouts."
   }
 }
 

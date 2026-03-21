@@ -27,6 +27,7 @@ variable "settings" {
     role_definition_name       = optional(string)
     ticketing                  = optional(any)
     schedule                   = optional(any)
+    justification              = optional(string)
     justification_required     = optional(bool)
     mfa_on_activation_required = optional(bool)
     approval_required          = optional(bool)
@@ -47,6 +48,7 @@ variable "settings" {
         "role_definition_name",
         "ticketing",
         "schedule",
+        "justification",
         "justification_required",
         "mfa_on_activation_required",
         "approval_required",
@@ -55,7 +57,7 @@ variable "settings" {
       ]
     )) == 0
 
-    error_message = "Unsupported attributes in settings. Allowed: name, description, scope, principal_id, principal_type, role_definition_id, role_definition_name, ticketing, schedule, justification_required, mfa_on_activation_required, approval_required, tags, diagnostic_profiles."
+    error_message = "Unsupported attributes in settings. Allowed: name, description, scope, principal_id, principal_type, role_definition_id, role_definition_name, ticketing, schedule, justification, justification_required, mfa_on_activation_required, approval_required, tags, diagnostic_profiles."
   }
 }
 
