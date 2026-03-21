@@ -795,7 +795,6 @@ variable "invoice_sections" {
   description = "Configuration object - Billing Invoice Section resources"
   default     = {}
 }
-
 variable "pim" {
   description = "Configuration object for PIM (Privileged Identity Management) resources."
   type        = any

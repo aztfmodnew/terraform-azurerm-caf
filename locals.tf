@@ -560,7 +560,8 @@ locals {
   load_test = try(var.load_test, {})
 
   pim = {
-    pim_active_role_assignments   = try(var.pim.pim_active_role_assignments, {})
-    pim_eligible_role_assignments = try(var.pim.pim_eligible_role_assignments, {})
+    pim_active_role_assignments       = try(var.pim.pim_active_role_assignments, {})
+    pim_eligible_role_assignments     = try(var.pim.pim_eligible_role_assignments, {})
+    pim_eligible_assignment_schedules = try(var.pim.pim_eligible_assignment_schedules, {})
   }
 }
