@@ -12,10 +12,11 @@ variable "settings" {
         - number - (Required) Ticket number or identifier in the external system.
         - system - (Required) Name or key of the external ticketing system (e.g., ServiceNow).
     - schedule - (Optional) Schedule configuration for the active assignment. Attributes:
-        - start_time - (Optional) The ISO 8601 timestamp when the assignment becomes active.
-        - end_time - (Optional) The ISO 8601 timestamp when the assignment ends.
-        - expiration_duration - (Optional) Duration (ISO 8601 duration format) for which the assignment is active.
-        - permanent - (Optional) Whether the assignment is permanent. If true, expiration-related fields are typically not used.
+        - start_date_time - (Optional) The ISO 8601 timestamp when the assignment becomes active.
+        - expiration - (Optional) Expiration configuration for the assignment. Attributes:
+            - duration_days  - (Optional) Number of days the assignment is active.
+            - duration_hours - (Optional) Number of hours the assignment is active.
+            - end_date_time  - (Optional) The ISO 8601 timestamp when the assignment expires.
     - timeouts - (Optional) Terraform operation timeouts for the underlying resource. Attributes:
         - create - (Optional) Timeout for create operations (e.g., "30m").
         - read   - (Optional) Timeout for read operations.
@@ -38,10 +39,12 @@ variable "settings" {
     }))
 
     schedule = optional(object({
-      start_time          = optional(string)
-      end_time            = optional(string)
-      expiration_duration = optional(string)
-      permanent           = optional(bool)
+      start_date_time = optional(string)
+      expiration = optional(object({
+        duration_days  = optional(number)
+        duration_hours = optional(number)
+        end_date_time  = optional(string)
+      }))
     }))
 
     timeouts = optional(object({
