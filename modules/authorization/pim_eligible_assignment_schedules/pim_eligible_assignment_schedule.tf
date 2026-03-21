@@ -8,29 +8,62 @@ resource "azurerm_pim_eligible_role_assignment" "this" {
   justification      = try(var.settings.justification, null)
 
   dynamic "schedule" {
-    for_each = try(var.settings.schedule, null) == null ? [] : [var.settings.schedule]
+    # Emit a schedule block if either a nested schedule object is provided
+    # or if flat schedule fields (e.g. start_date, end_date) are set.
+    for_each = (
+      try(var.settings.schedule.start_date_time, null) != null ||
+      try(var.settings.schedule.expiration, null) != null ||
+      try(var.settings.start_date_time, null) != null ||
+      try(var.settings.start_date, null) != null ||
+      try(var.settings.end_date_time, null) != null ||
+      try(var.settings.end_date, null) != null
+    ) ? [1] : []
 
     content {
-      start_date_time = try(schedule.value.start_date_time, null)
+      # Prefer nested schedule.start_date_time; fall back to documented flat fields.
+      start_date_time = try(
+        var.settings.schedule.start_date_time,
+        var.settings.start_date_time,
+        var.settings.start_date,
+        null
+      )
 
       dynamic "expiration" {
-        for_each = try(schedule.value.expiration, null) == null ? [] : [schedule.value.expiration]
+        # Emit expiration if nested expiration is provided or flat duration/end_date fields exist.
+        for_each = (
+          try(var.settings.schedule.expiration, null) != null ||
+          try(var.settings.duration_days, null) != null ||
+          try(var.settings.duration_hours, null) != null ||
+          try(var.settings.end_date_time, null) != null ||
+          try(var.settings.end_date, null) != null
+        ) ? [1] : []
 
         content {
-          duration_days  = try(expiration.value.duration_days, null)
-          duration_hours = try(expiration.value.duration_hours, null)
-          end_date_time  = try(expiration.value.end_date_time, null)
+          duration_days  = try(var.settings.schedule.expiration.duration_days, var.settings.duration_days, null)
+          duration_hours = try(var.settings.schedule.expiration.duration_hours, var.settings.duration_hours, null)
+          end_date_time  = try(
+            var.settings.schedule.expiration.end_date_time,
+            var.settings.end_date_time,
+            var.settings.end_date,
+            null
+          )
         }
       }
     }
   }
 
   dynamic "ticket" {
-    for_each = try(var.settings.ticket, null) == null ? [] : [var.settings.ticket]
+    # Emit a ticket block if either a nested ticket object is provided
+    # or if flat ticket fields (e.g. ticket_number, ticket_system) are set.
+    for_each = (
+      try(var.settings.ticket, null) != null ||
+      try(var.settings.ticket_number, null) != null ||
+      try(var.settings.ticket_system, null) != null
+    ) ? [1] : []
 
     content {
-      number = try(ticket.value.number, null)
-      system = try(ticket.value.system, null)
+      number = try(var.settings.ticket.number, var.settings.ticket_number, null)
+      system = try(var.settings.ticket.system, var.settings.ticket_system, null)
     }
   }
 
