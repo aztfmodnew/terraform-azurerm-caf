@@ -51,8 +51,9 @@ mock_data "azurerm_role_definition" {
 
 mock_resource "azurerm_user_assigned_identity" {
   defaults = {
-    id        = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/mock-mi"
-    client_id = "00000000-0000-0000-0000-000000000000"
+    id           = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/mock-mi"
+    client_id    = "00000000-0000-0000-0000-000000000000"
+    principal_id = "00000000-0000-0000-0000-000000000000"
   }
 }
 
