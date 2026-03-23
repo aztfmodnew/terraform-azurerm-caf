@@ -4,11 +4,11 @@ variable "settings" {
     - name - (Optional) Logical name/key for this PIM active role assignment instance.
     - enabled - (Optional) Whether to enable the assignment. If omitted, the module may default this to true.
     - scope - (Required) The scope at which the role should be assigned (e.g., subscription, resource group, or resource ID).
-    - principal_id - (Optional) The object ID of the principal. Required if managed_identity and azuread_group are not specified.
-    - managed_identity - (Optional) Key-based reference to a managed identity whose principal_id will be used. Attributes:
+    - principal_id - (Optional) The object ID of the principal. Exactly one of principal_id, managed_identity, or azuread_group must be provided. Resolution order: principal_id → managed_identity → azuread_group.
+    - managed_identity - (Optional) Key-based reference to a managed identity whose principal_id will be used. Mutually exclusive with principal_id and azuread_group.
         - key    - (Required) Key of the managed identity in the combined_objects map.
         - lz_key - (Optional) Landing zone key for cross-LZ references.
-    - azuread_group - (Optional) Key-based reference to an Azure AD group whose object_id will be used. Attributes:
+    - azuread_group - (Optional) Key-based reference to an Azure AD group whose object_id will be used. Mutually exclusive with principal_id and managed_identity.
         - key    - (Required) Key of the Azure AD group in the combined_objects map.
         - lz_key - (Optional) Landing zone key for cross-LZ references.
     - role_definition_id - (Optional) The ID of the role definition to assign. Either role_definition_id or role_definition_name is typically required.
@@ -19,7 +19,7 @@ variable "settings" {
         - system - (Required) Name or key of the external ticketing system (e.g., ServiceNow).
     - schedule - (Optional) Schedule configuration for the active assignment. Attributes:
         - start_date_time - (Optional) The ISO 8601 timestamp when the assignment becomes active.
-        - expiration - (Optional) Expiration configuration for the assignment. Attributes:
+        - expiration - (Optional) Expiration configuration for the assignment. Specify only one of duration_days, duration_hours, or end_date_time. Attributes:
             - duration_days  - (Optional) Number of days the assignment is active.
             - duration_hours - (Optional) Number of hours the assignment is active.
             - end_date_time  - (Optional) The ISO 8601 timestamp when the assignment expires.
@@ -91,6 +91,15 @@ variable "settings" {
     )) == 0
 
     error_message = "Unsupported attributes in settings. Allowed attributes: name, enabled, scope, principal_id, managed_identity, azuread_group, role_definition_id, role_definition_name, justification, ticket, schedule, timeouts."
+  }
+
+  validation {
+    condition = (
+      var.settings.principal_id != null ||
+      try(var.settings.managed_identity.key, null) != null ||
+      try(var.settings.azuread_group.key, null) != null
+    )
+    error_message = "One of principal_id, managed_identity, or azuread_group must be provided."
   }
 }
 
