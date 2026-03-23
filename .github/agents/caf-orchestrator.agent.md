@@ -4,8 +4,7 @@ description: Coordinates multi-step Azure CAF workflows by delegating to special
 argument-hint: "[goal] [module-or-path] [constraints]"
 user-invocable: true
 disable-model-invocation: true
-tools:
-[vscode, execute, read, agent, edit, search, 'hashicorp/terraform-mcp-server/*', todo]
+tools: ['vscode', 'execute', 'read', 'agent', 'edit', 'search', 'hashicorp/terraform-mcp-server/*', 'todo']
 agents:
   - Module Builder
   - Module Updater
