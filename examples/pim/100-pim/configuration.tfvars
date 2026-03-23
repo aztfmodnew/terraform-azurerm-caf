@@ -6,6 +6,8 @@ global_settings = {
   random_length = 5
 }
 
+resource_groups = {}
+
 pim = {
   pim_active_role_assignments = {
     example_active = {

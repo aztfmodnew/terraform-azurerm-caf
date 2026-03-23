@@ -1,31 +1,90 @@
 variable "settings" {
   description = <<DESCRIPTION
   Settings object for the PIM eligible assignment schedule. Configuration attributes:
-    - name                  - (Required) Logical name/key for this schedule instance within the module.
-    - scope                 - (Required) Scope at which the role is eligible (e.g., subscription, resource group, or resource ID).
-    - role_definition_id   - (Required) The full resource ID of the role definition to assign eligibility for (e.g., "/subscriptions/.../providers/Microsoft.Authorization/roleDefinitions/...").
-    - principal_id         - (Required) Object ID of the principal (user, group, or service principal) to make eligible.
-    - justification         - (Optional) Justification for the eligible assignment.
-    - start_date            - (Optional) Start date/time for the eligibility in ISO 8601 format. If omitted, eligibility starts immediately.
-    - end_date              - (Optional) End date/time for the eligibility in ISO 8601 format. If omitted, eligibility does not expire unless expiration is defined separately.
-    - ticket_number         - (Optional) External ticket number related to this assignment (for example, an incident or change ticket ID).
-    - ticket_system         - (Optional) Name of the external ticketing system.
-    - permanent             - (Optional) Whether the assignment is permanent. Defaults to false when not specified.
-    - tags                  - (Optional) Tags to associate with this schedule instance for tracking and governance.
+    - name              - (Required) Logical name/key for this schedule instance within the module.
+    - scope             - (Required) Scope at which the role is eligible (e.g., subscription, resource group, or resource ID).
+    - role_definition_id - (Required) The full resource ID of the role definition to assign eligibility for.
+    - principal_id      - (Optional) Object ID of the principal. Required if managed_identity and azuread_group are not specified.
+    - managed_identity  - (Optional) Key-based reference to a managed identity whose principal_id will be used. Attributes:
+        - key    - (Required) Key of the managed identity in the combined_objects map.
+        - lz_key - (Optional) Landing zone key for cross-LZ references.
+    - azuread_group     - (Optional) Key-based reference to an Azure AD group whose object_id will be used. Attributes:
+        - key    - (Required) Key of the Azure AD group in the combined_objects map.
+        - lz_key - (Optional) Landing zone key for cross-LZ references.
+    - justification     - (Optional) Justification for the eligible assignment.
+    - start_date        - (Optional) Start date/time for the eligibility in ISO 8601 format (flat field; prefer schedule.start_date_time).
+    - end_date          - (Optional) End date/time for the eligibility in ISO 8601 format (flat field; prefer schedule.expiration.end_date_time).
+    - start_date_time   - (Optional) Alias for start_date in ISO 8601 format.
+    - end_date_time     - (Optional) Alias for end_date in ISO 8601 format.
+    - duration_days     - (Optional) Number of days the assignment is eligible (flat field; prefer schedule.expiration.duration_days).
+    - duration_hours    - (Optional) Number of hours the assignment is eligible (flat field; prefer schedule.expiration.duration_hours).
+    - ticket_number     - (Optional) External ticket number (flat field; prefer ticket.number).
+    - ticket_system     - (Optional) External ticketing system name (flat field; prefer ticket.system).
+    - schedule          - (Optional) Nested schedule configuration. Attributes:
+        - start_date_time  - (Optional) The ISO 8601 timestamp when the assignment becomes eligible.
+        - expiration       - (Optional) Expiration configuration. Attributes:
+            - duration_days  - (Optional) Number of days the assignment is eligible.
+            - duration_hours - (Optional) Number of hours the assignment is eligible.
+            - end_date_time  - (Optional) The ISO 8601 timestamp when the assignment expires.
+    - ticket            - (Optional) Nested ticketing configuration. Attributes:
+        - number - (Optional) Ticket number or identifier.
+        - system - (Optional) Name of the external ticketing system.
+    - timeouts          - (Optional) Terraform operation timeouts. Attributes:
+        - create - (Optional) Timeout for create operations (e.g., "30m").
+        - read   - (Optional) Timeout for read operations.
+        - delete - (Optional) Timeout for delete operations.
   DESCRIPTION
 
   type = object({
-    name                 = string
-    scope                = string
-    role_definition_id   = string
-    principal_id         = string
-    justification        = optional(string)
-    start_date           = optional(string)
-    end_date             = optional(string)
-    ticket_number        = optional(string)
-    ticket_system        = optional(string)
-    permanent            = optional(bool)
-    tags                 = optional(map(string))
+    name               = string
+    scope              = string
+    role_definition_id = string
+    principal_id       = optional(string)
+    justification      = optional(string)
+
+    managed_identity = optional(object({
+      key    = string
+      lz_key = optional(string)
+    }))
+
+    azuread_group = optional(object({
+      key    = string
+      lz_key = optional(string)
+    }))
+
+    # Flat date/duration fields (legacy; prefer nested schedule block)
+    start_date     = optional(string)
+    end_date       = optional(string)
+    start_date_time = optional(string)
+    end_date_time  = optional(string)
+    duration_days  = optional(number)
+    duration_hours = optional(number)
+
+    # Flat ticket fields (legacy; prefer nested ticket block)
+    ticket_number = optional(string)
+    ticket_system = optional(string)
+
+    # Nested schedule block (preferred)
+    schedule = optional(object({
+      start_date_time = optional(string)
+      expiration = optional(object({
+        duration_days  = optional(number)
+        duration_hours = optional(number)
+        end_date_time  = optional(string)
+      }))
+    }))
+
+    # Nested ticket block (preferred)
+    ticket = optional(object({
+      number = optional(string)
+      system = optional(string)
+    }))
+
+    timeouts = optional(object({
+      create = optional(string)
+      read   = optional(string)
+      delete = optional(string)
+    }))
   })
 
   validation {
@@ -36,16 +95,23 @@ variable "settings" {
         "scope",
         "role_definition_id",
         "principal_id",
+        "managed_identity",
+        "azuread_group",
         "justification",
         "start_date",
         "end_date",
+        "start_date_time",
+        "end_date_time",
+        "duration_days",
+        "duration_hours",
         "ticket_number",
         "ticket_system",
-        "permanent",
-        "tags"
+        "schedule",
+        "ticket",
+        "timeouts",
       ]
     )) == 0
-    error_message = "Unsupported attributes in settings. Allowed attributes are: name, scope, role_definition_id, principal_id, justification, start_date, end_date, ticket_number, ticket_system, permanent, tags."
+    error_message = "Unsupported attributes in settings. Allowed: name, scope, role_definition_id, principal_id, managed_identity, azuread_group, justification, start_date, end_date, start_date_time, end_date_time, duration_days, duration_hours, ticket_number, ticket_system, schedule, ticket, timeouts."
   }
 }
 

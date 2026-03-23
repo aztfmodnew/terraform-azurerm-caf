@@ -4,7 +4,13 @@ variable "settings" {
     - name - (Optional) Logical name/key for this PIM active role assignment instance.
     - enabled - (Optional) Whether to enable the assignment. If omitted, the module may default this to true.
     - scope - (Required) The scope at which the role should be assigned (e.g., subscription, resource group, or resource ID).
-    - principal_id - (Required) The object ID of the principal (user, group, or service principal) to which the role is assigned.
+    - principal_id - (Optional) The object ID of the principal. Required if managed_identity and azuread_group are not specified.
+    - managed_identity - (Optional) Key-based reference to a managed identity whose principal_id will be used. Attributes:
+        - key    - (Required) Key of the managed identity in the combined_objects map.
+        - lz_key - (Optional) Landing zone key for cross-LZ references.
+    - azuread_group - (Optional) Key-based reference to an Azure AD group whose object_id will be used. Attributes:
+        - key    - (Required) Key of the Azure AD group in the combined_objects map.
+        - lz_key - (Optional) Landing zone key for cross-LZ references.
     - role_definition_id - (Optional) The ID of the role definition to assign. Either role_definition_id or role_definition_name is typically required.
     - role_definition_name - (Optional) The display name of the role definition to assign. Either role_definition_id or role_definition_name is typically required.
     - justification - (Optional) Justification text associated with the PIM active assignment request.
@@ -28,10 +34,20 @@ variable "settings" {
     name                 = optional(string)
     enabled              = optional(bool)
     scope                = string
-    principal_id         = string
+    principal_id         = optional(string)
     role_definition_id   = optional(string)
     role_definition_name = optional(string)
     justification        = optional(string)
+
+    managed_identity = optional(object({
+      key    = string
+      lz_key = optional(string)
+    }))
+
+    azuread_group = optional(object({
+      key    = string
+      lz_key = optional(string)
+    }))
 
     ticket = optional(object({
       number = string
@@ -63,6 +79,8 @@ variable "settings" {
         "enabled",
         "scope",
         "principal_id",
+        "managed_identity",
+        "azuread_group",
         "role_definition_id",
         "role_definition_name",
         "justification",
@@ -72,7 +90,7 @@ variable "settings" {
       ]
     )) == 0
 
-    error_message = "Unsupported attributes in settings. Allowed attributes: name, enabled, scope, principal_id, role_definition_id, role_definition_name, justification, ticket, schedule, timeouts."
+    error_message = "Unsupported attributes in settings. Allowed attributes: name, enabled, scope, principal_id, managed_identity, azuread_group, role_definition_id, role_definition_name, justification, ticket, schedule, timeouts."
   }
 }
 
