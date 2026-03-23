@@ -11,8 +11,7 @@ variable "settings" {
     - azuread_group - (Optional) Key-based reference to an Azure AD group whose object_id will be used. Mutually exclusive with principal_id and managed_identity.
         - key    - (Required) Key of the Azure AD group in the combined_objects map.
         - lz_key - (Optional) Landing zone key for cross-LZ references.
-    - role_definition_id - (Optional) The ID of the role definition to assign. Either role_definition_id or role_definition_name is typically required.
-    - role_definition_name - (Optional) The display name of the role definition to assign. Either role_definition_id or role_definition_name is typically required.
+    - role_definition_id - (Required) The full resource ID of the role definition to assign.
     - justification - (Optional) Justification text associated with the PIM active assignment request.
     - ticket - (Optional) Ticketing information associated with the PIM request. Attributes:
         - number - (Required) Ticket number or identifier in the external system.
@@ -26,18 +25,16 @@ variable "settings" {
     - timeouts - (Optional) Terraform operation timeouts for the underlying resource. Attributes:
         - create - (Optional) Timeout for create operations (e.g., "30m").
         - read   - (Optional) Timeout for read operations.
-        - update - (Optional) Timeout for update operations.
         - delete - (Optional) Timeout for delete operations.
   DESCRIPTION
 
   type = object({
-    name                 = optional(string)
-    enabled              = optional(bool)
-    scope                = string
-    principal_id         = optional(string)
-    role_definition_id   = optional(string)
-    role_definition_name = optional(string)
-    justification        = optional(string)
+    name               = optional(string)
+    enabled            = optional(bool)
+    scope              = string
+    principal_id       = optional(string)
+    role_definition_id = string
+    justification      = optional(string)
 
     managed_identity = optional(object({
       key    = string
@@ -66,7 +63,6 @@ variable "settings" {
     timeouts = optional(object({
       create = optional(string)
       read   = optional(string)
-      update = optional(string)
       delete = optional(string)
     }))
   })
@@ -82,7 +78,6 @@ variable "settings" {
         "managed_identity",
         "azuread_group",
         "role_definition_id",
-        "role_definition_name",
         "justification",
         "ticket",
         "schedule",
@@ -90,7 +85,7 @@ variable "settings" {
       ]
     )) == 0
 
-    error_message = "Unsupported attributes in settings. Allowed attributes: name, enabled, scope, principal_id, managed_identity, azuread_group, role_definition_id, role_definition_name, justification, ticket, schedule, timeouts."
+    error_message = "Unsupported attributes in settings. Allowed attributes: name, enabled, scope, principal_id, managed_identity, azuread_group, role_definition_id, justification, ticket, schedule, timeouts."
   }
 
   validation {

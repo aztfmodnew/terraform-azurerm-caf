@@ -129,7 +129,6 @@ locals {
     networking                                     = try(local.combined_objects_networking, null)
     palo_alto_cloudngfws                           = try(local.combined_objects_palo_alto_cloudngfws, null)
     pim_active_role_assignments                    = try(local.combined_objects_pim_active_role_assignments, null)
-    pim_eligible_assignment_schedules              = try(local.combined_objects_pim_eligible_assignment_schedules, null)
     pim_eligible_role_assignments                  = try(local.combined_objects_pim_eligible_role_assignments, null)
     postgresql_flexible_servers                    = try(local.combined_objects_postgresql_flexible_servers, null)
     private_dns                                    = try(local.combined_objects_private_dns, null)

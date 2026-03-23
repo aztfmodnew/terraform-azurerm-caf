@@ -2,17 +2,9 @@
 name: Module Builder
 description: Creates complete, production-ready Terraform modules following CAF standards from scratch
 argument-hint: "[azurerm_resource_type] or describe the Azure service"
+user-invocable: false
 tools:
-  - vscode
-  - execute
-  - read
-  - agent
-  - browser
-  - terraform/*
-  - edit
-  - search
-  - web
-  - todo
+[vscode, execute, read, agent, browser, edit, search, web, 'hashicorp/terraform-mcp-server/*', todo]
 agents:
   - Example Generator
   - Compliance Validator

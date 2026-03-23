@@ -5,6 +5,8 @@ resource "azurerm_pim_eligible_role_assignment" "this" {
   role_definition_id = var.settings.role_definition_id
   principal_id       = local.principal_id
   justification      = try(var.settings.justification, null)
+  condition          = try(var.settings.condition, null)
+  condition_version  = try(var.settings.condition_version, null)
 
   dynamic "schedule" {
     for_each = try(var.settings.schedule, null) == null ? [] : [var.settings.schedule]

@@ -12,6 +12,8 @@ variable "settings" {
         - lz_key - (Optional) Landing zone key for cross-LZ references.
     - role_definition_id   - (Required) The full resource ID of the role definition to use.
     - justification        - (Optional) Justification text associated with the PIM eligible assignment.
+    - condition            - (Optional) An ABAC condition expression applied to the role assignment. Requires condition_version.
+    - condition_version    - (Optional) Version of the condition expression syntax. Currently only "2.0" is supported.
     - ticket               - (Optional) Ticketing information associated with the PIM request. Attributes:
         - number - (Optional) Ticket number or identifier in the external system.
         - system - (Optional) Name or key of the external ticketing system (e.g., ServiceNow).
@@ -33,6 +35,8 @@ variable "settings" {
     principal_id       = optional(string)
     role_definition_id = string
     justification      = optional(string)
+    condition          = optional(string)
+    condition_version  = optional(string)
 
     managed_identity = optional(object({
       key    = string
@@ -76,13 +80,15 @@ variable "settings" {
         "azuread_group",
         "role_definition_id",
         "justification",
+        "condition",
+        "condition_version",
         "ticket",
         "schedule",
         "timeouts",
       ]
     )) == 0
 
-    error_message = "Unsupported attributes in settings. Allowed: name, scope, principal_id, managed_identity, azuread_group, role_definition_id, justification, ticket, schedule, timeouts."
+    error_message = "Unsupported attributes in settings. Allowed: name, scope, principal_id, managed_identity, azuread_group, role_definition_id, justification, condition, condition_version, ticket, schedule, timeouts."
   }
 
   validation {
