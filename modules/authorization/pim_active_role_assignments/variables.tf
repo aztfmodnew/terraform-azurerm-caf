@@ -47,8 +47,8 @@ variable "settings" {
     }))
 
     ticket = optional(object({
-      number = string
-      system = string
+      number = optional(string)
+      system = optional(string)
     }))
 
     schedule = optional(object({

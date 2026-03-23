@@ -57,6 +57,13 @@ mock_resource "azurerm_user_assigned_identity" {
   }
 }
 
+mock_resource "azuread_group" {
+  defaults = {
+    id        = "00000000-0000-0000-0000-000000000000"
+    object_id = "00000000-0000-0000-0000-000000000000"
+  }
+}
+
 mock_resource "azurerm_kubernetes_cluster" {
   defaults = {
     oidc_issuer_url = "https://mock-oidc-issuer.example.com/"

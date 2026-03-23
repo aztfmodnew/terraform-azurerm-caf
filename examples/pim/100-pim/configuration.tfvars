@@ -12,6 +12,13 @@ resource_groups = {
   }
 }
 
+
+azuread_groups = {
+  pim_grp = {
+    name = "pim-test-group-1"
+  }
+}
+
 managed_identities = {
   pim_mi = {
     name               = "pim-identity-1"
@@ -51,6 +58,17 @@ pim = {
       principal_id       = "00000000-0000-0000-0000-000000000000"
       justification      = "Required for production access (direct)"
     }
+
+    # Example 3: active assignment resolved via Azure AD group key
+    example_active_group = {
+      scope              = "/subscriptions/00000000-0000-0000-0000-000000000000"
+      role_definition_id = "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+      justification      = "Required for group production access"
+
+      azuread_group = {
+        key = "pim_grp"
+      }
+    }
   }
 
   pim_eligible_role_assignments = {
@@ -89,6 +107,23 @@ pim = {
       schedule = {
         expiration = {
           duration_hours = 8
+        }
+      }
+    }
+
+    # Example 5: eligible assignment resolved via Azure AD group key
+    example_eligible_group = {
+      scope              = "/subscriptions/00000000-0000-0000-0000-000000000000"
+      role_definition_id = "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+      justification      = "Eligible via group assignment"
+
+      azuread_group = {
+        key = "pim_grp"
+      }
+
+      schedule = {
+        expiration = {
+          duration_days = 30
         }
       }
     }
