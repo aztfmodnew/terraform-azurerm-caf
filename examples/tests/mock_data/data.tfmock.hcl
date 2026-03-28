@@ -69,5 +69,3 @@ mock_resource "azurerm_kubernetes_cluster" {
     oidc_issuer_url = "https://mock-oidc-issuer.example.com/"
   }
 }
-
-
