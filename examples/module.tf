@@ -461,6 +461,8 @@ module "example" {
 
   load_test = var.load_test
 
+  pim = var.pim
+
   preview_features = var.preview_features
 
   maintenance = {

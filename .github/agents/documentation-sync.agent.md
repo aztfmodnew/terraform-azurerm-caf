@@ -2,17 +2,9 @@
 name: Documentation Sync
 description: Maintains comprehensive, accurate module documentation with automated README generation and CHANGELOG tracking
 argument-hint: "[module-path] or specify update type (README, CHANGELOG, examples)"
+user-invocable: false
 tools:
-  - vscode
-  - execute
-  - read
-  - agent
-  - browser
-  - terraform/*
-  - edit
-  - search
-  - web
-  - todo
+[vscode, execute, read, agent, browser, edit, search, web, 'hashicorp/terraform-mcp-server/*', todo]
 ---
 
 # Documentation Sync - CAF Documentation Agent
