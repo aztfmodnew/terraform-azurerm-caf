@@ -12,6 +12,6 @@ mock_provider "azuread" {
 }
 
 run "test_plan" {
-  // E2E plan test the examples
   command = plan
+
 }

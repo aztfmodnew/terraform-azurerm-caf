@@ -1753,6 +1753,11 @@ variable "load_test" {
   default = {}
   type    = any
 }
+variable "pim" {
+  description = "Configuration object for PIM (Privileged Identity Management) resources."
+  type        = any
+  default     = {}
+}
 variable "subscriptions" {
   description = "Configuration object - Subscriptions resources."
   default     = {}
