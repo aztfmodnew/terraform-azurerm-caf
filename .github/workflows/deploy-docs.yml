@@ -1,36 +1,34 @@
-name: Deploy MkDocs Documentation
+name: Publish MkDocs
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+
+permissions:
+  contents: write
 
 jobs:
   deploy:
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: 3.x
+
       - name: Install dependencies
         run: |
           pip install mkdocs-material mkdocs-mermaid2-plugin python-hcl2
+
       - name: Generate documentation
         run: |
           python scripts/deepwiki/generate_mkdocs_auto.py --no-force-nav
-      - name: Build documentation
-        run: mkdocs build
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v2
-        with:
-          path: site
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v3
+
+      - name: Deploy with mkdocs gh-deploy
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: mkdocs gh-deploy --force
