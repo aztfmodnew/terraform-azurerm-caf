@@ -2,9 +2,17 @@
 name: Module Updater
 description: Expert agent for updating existing Terraform modules with new features, attributes, or fixes following CAF standards
 argument-hint: "module-path feature-to-add or issue-to-fix"
-user-invocable: false
 tools:
-[vscode, execute, read, agent, browser, edit, search, web, 'hashicorp/terraform-mcp-server/*', todo]
+   - vscode
+   - execute
+   - read
+   - agent
+   - browser
+   - terraform/*
+   - edit
+   - azure-mcp/search
+   - web
+   - todo
 agents:
   - Compliance Validator
   - Documentation Sync

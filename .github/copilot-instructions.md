@@ -1,5 +1,24 @@
 ---
-description: "Azure CAF Terraform Framework instructions. Agents: Module Builder, Module Updater, Example Generator, CAF Orchestrator, Compliance Validator. Skills: module-creation, azure-schema-validation, diagnostics-integration, private-endpoint-integration, root-module-integration, mock-testing."
+module_context: terraform-azurerm-caf
+expertise: [terraform-modules, azure-services, infrastructure-patterns, caf-frameworks]
+related_agents:
+  - Module Builder
+  - Module Updater
+  - Example Generator
+  - CAF Orchestrator
+  - Compliance Validator
+related_skills:
+  - module-creation
+  - azure-schema-validation
+  - diagnostics-integration
+  - private-endpoint-integration
+  - root-module-integration
+  - mock-testing
+related_docs:
+  - .github/AGENTS.md (Agent reference)
+  - ../README.md (Repository overview)
+  - .github/instructions/ (Path-scoped rules)
+quick_start: "Read .github/skills/module-creation/SKILL.md to create a new module"
 ---
 
 # Azure CAF Terraform Framework - AI Coding Agent Guide

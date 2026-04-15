@@ -2,9 +2,17 @@
 name: Migration Assistant
 description: Assists with migrating modules to new patterns, refactoring code, and updating deprecated features while maintaining backward compatibility
 argument-hint: "module-path old-pattern to new-pattern"
-user-invocable: false
 tools:
-[vscode, execute, read, agent, browser, edit, search, web, 'hashicorp/terraform-mcp-server/*', todo]
+  - vscode
+  - execute
+  - read
+  - agent
+  - browser
+  - terraform/*
+  - edit
+  - search
+  - web
+  - todo
 agents:
   - Module Updater
   - Compliance Validator

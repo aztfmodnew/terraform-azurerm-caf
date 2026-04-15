@@ -2,9 +2,17 @@
 name: Remote State Orchestrator
 description: Manages remote state dependencies, tfstate configuration, and cross-landing-zone references in hierarchical CAF deployments
 argument-hint: "landing-zone-level state-key or describe remote state scenario"
-user-invocable: false
 tools:
-[vscode, execute, read, agent, browser, edit, search, web, 'hashicorp/terraform-mcp-server/*', todo]
+  - vscode
+  - execute
+  - read
+  - agent
+  - browser
+  - terraform/*
+  - edit
+  - search
+  - web
+  - todo
 ---
 
 # Remote State Orchestrator - State Management Agent

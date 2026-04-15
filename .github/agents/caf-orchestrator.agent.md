@@ -2,19 +2,24 @@
 name: CAF Orchestrator
 description: Coordinates multi-step Azure CAF workflows by delegating to specialized agents and leveraging skills when relevant
 argument-hint: "[goal] [module-or-path] [constraints]"
-user-invocable: true
-disable-model-invocation: true
-tools: ['vscode', 'execute', 'read', 'agent', 'edit', 'search', 'hashicorp/terraform-mcp-server/*', 'todo']
+tools:
+  - agent
+  - read
+  - search
+  - terraform/*
+  - todo
 agents:
-  - Module Builder
-  - Module Updater
-  - Example Generator
-  - Compliance Validator
-  - Documentation Sync
-  - CI Workflow Manager
-  - Migration Assistant
-  - Remote State Orchestrator
-model: "Auto (copilot)"
+  - Module Builder CAF
+  - Module Updater CAF
+  - Example Generator CAF
+  - Compliance Validator CAF
+  - Root Module Integration CAF
+  - Diagnostics Integration CAF
+  - Private Endpoint Integration CAF
+  - Schema Validator CAF
+model:
+  - "GPT-5.3-Codex (copilot)"
+  - "Claude Sonnet 4.6 (copilot)"
 ---
 
 # CAF Orchestrator - Coordinator Agent

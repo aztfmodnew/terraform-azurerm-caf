@@ -2,9 +2,17 @@
 name: Compliance Validator
 description: Validates Terraform code against CAF standards, Azure best practices, and organizational policies
 argument-hint: "[module-path] or [file-path] to validate"
-user-invocable: false
 tools:
-[vscode, execute, read, agent, browser, edit, search, web, 'hashicorp/terraform-mcp-server/*', todo]
+  - vscode
+  - execute
+  - read
+  - agent
+  - browser
+  - terraform/*
+  - edit
+  - search
+  - web
+  - todo
 ---
 
 # Compliance Validator - CAF Standards Validation Agent

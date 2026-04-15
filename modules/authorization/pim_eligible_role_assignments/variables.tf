@@ -99,6 +99,14 @@ variable "settings" {
     )
     error_message = "One of principal_id, managed_identity, or azuread_group must be provided."
   }
+
+  validation {
+    condition = (
+      (var.settings.condition == null && var.settings.condition_version == null) ||
+      (var.settings.condition != null && var.settings.condition_version != null)
+    )
+    error_message = "condition and condition_version must be provided together."
+  }
 }
 
 variable "global_settings" {
