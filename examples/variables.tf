@@ -1757,8 +1757,8 @@ Recommendation:
 - Keep example keys stable (`existing_keyvault`, `vnet_existing`, etc.) because those
   keys are used by resource references in the same example.
 DESCRIPTION
-  type    = any
-  default = {}
+  type        = any
+  default     = {}
 }
 variable "maintenance_configuration" {
   type    = any
