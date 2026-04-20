@@ -27,6 +27,11 @@ When editing Terraform at the repo root (aggregators), wire modules consistently
 - Combined objects (locals.combined_objects.tf)
   - Create `combined_objects_<module_name_plural> = merge(tomap({ (local.client_config.landingzone_key) = module.<module_name_plural> }), lookup(var.remote_objects, "<module_name>", {}), lookup(var.data_sources, "<module_name>", {}))`
   - Use pluralized names; follow existing naming patterns.
+  - For name-based data lookup, resolve entries centrally in `data_sources_lookup.tf` and merge:
+    - managed resources (`module.<module_name_plural>`)
+    - resolved lookup locals (e.g., `local.<module_name_plural>_data_sources_resolved`)
+    - static `data_sources` entries filtered to explicit IDs only
+  - Never merge unresolved name-only `data_sources` entries directly into `combined_objects`.
 
 - Outputs
   - `output "<module_name_plural>" { value = module.<module_name_plural> }`

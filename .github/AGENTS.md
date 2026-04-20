@@ -44,6 +44,7 @@ This document lists all AI agents available for **module creation, updates, test
 - Analyzes module structure and current attributes
 - Validates new attributes with Azure provider schema (MCP Terraform)
 - Maintains backward compatibility
+- Implements hybrid data source lookup patterns via centralized root lookups (`data_sources_lookup.tf`) when resources must be referenced by name while preserving direct-id support
 - Updates examples with new features
 - Runs mock tests to confirm changes work
 - Updates documentation
