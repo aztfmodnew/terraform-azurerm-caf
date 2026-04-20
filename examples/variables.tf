@@ -1730,6 +1730,33 @@ variable "cosmosdb_role_definitions" {
   default = {}
 }
 variable "data_sources" {
+  description = <<DESCRIPTION
+Configuration object for existing resources used by examples.
+
+`data_sources` allows examples to consume resources that are not created in the same
+example execution. The object is merged into root `combined_objects` so dependencies
+can be referenced by key.
+
+Supported modes:
+
+1) Explicit ID mode (legacy, always supported)
+   - Provide `id` in `data_sources.<object_type>.<key>`.
+
+2) Name-based lookup mode (for centralized lookups)
+   - Provide lookup attributes and allow `data_sources_lookup.tf` to resolve IDs.
+   - Centralized lookup currently supports:
+     - `resource_groups` by `name`
+     - `subscriptions` by `subscription_id`
+     - `azuread_groups` by `display_name`
+     - `keyvaults` by `name` + `resource_group_name`
+     - `storage_accounts` by `name` + `resource_group_name`
+     - `recovery_vaults` by `name` + `resource_group_name`
+     - `vnets` by `name` + `resource_group_name` (with optional subnet lookup by subnet `name`)
+
+Recommendation:
+- Keep example keys stable (`existing_keyvault`, `vnet_existing`, etc.) because those
+  keys are used by resource references in the same example.
+DESCRIPTION
   type    = any
   default = {}
 }

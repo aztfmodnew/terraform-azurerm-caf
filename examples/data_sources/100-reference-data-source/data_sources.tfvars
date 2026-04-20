@@ -1,7 +1,14 @@
 ###############################################################################
-# data_sources uses the same structure as remote_objects
-# It is going to be merged into the local.combined_obects_<OBJECT_TYPE>
-# using the `client_config.landingzone_key` as lz_key
+# data_sources uses the same structure as remote_objects.
+#
+# Hybrid behavior:
+# - Legacy mode: explicit `id` entries remain supported.
+# - Lookup mode: selected object types are resolved by name in
+#   root `data_sources_lookup.tf` (resource_groups, subscriptions,
+#   azuread_groups, keyvaults, storage_accounts, recovery_vaults, vnets/subnets).
+#
+# Resolved and explicit-id entries are merged into local.combined_objects_<OBJECT_TYPE>
+# under `client_config.landingzone_key`.
 ###############################################################################
 data_sources = {
   resource_groups = {
