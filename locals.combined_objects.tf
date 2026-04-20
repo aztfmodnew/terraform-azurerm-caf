@@ -30,7 +30,7 @@ locals {
   combined_objects_azuread_administrative_units                   = merge(tomap({ (local.client_config.landingzone_key) = module.azuread_administrative_unit }), lookup(var.remote_objects, "administrative_units", {}))
   combined_objects_azuread_applications                           = merge(tomap({ (local.client_config.landingzone_key) = module.azuread_applications_v1 }), lookup(var.remote_objects, "azuread_applications", {}))
   combined_objects_azuread_apps                                   = merge(tomap({ (local.client_config.landingzone_key) = module.azuread_applications }), lookup(var.remote_objects, "azuread_apps", {}))
-  combined_objects_azuread_groups                                 = merge(tomap({ (local.client_config.landingzone_key) = merge(module.azuread_groups, lookup(var.data_sources, "azuread_groups", {})) }), lookup(var.remote_objects, "azuread_groups", {}))
+  combined_objects_azuread_groups                                 = merge(tomap({ (local.client_config.landingzone_key) = merge(module.azuread_groups, local.azuread_groups_data_sources_resolved) }), lookup(var.remote_objects, "azuread_groups", {}))
   combined_objects_azuread_service_principal_passwords            = merge(tomap({ (local.client_config.landingzone_key) = module.azuread_service_principal_passwords }), lookup(var.remote_objects, "azuread_service_principal_passwords", {}))
   combined_objects_azuread_service_principals                     = merge(tomap({ (local.client_config.landingzone_key) = module.azuread_service_principals }), lookup(var.remote_objects, "azuread_service_principals", {}), lookup(var.data_sources, "azuread_service_principals", {}))
   combined_objects_azuread_service_principal_names                = merge(tomap({ (local.client_config.landingzone_key) = local.azuread_service_principal_names_resolved }), lookup(var.remote_objects, "azuread_service_principal_names", {}), lookup(var.data_sources, "azuread_service_principal_names", {}))
@@ -174,7 +174,7 @@ locals {
   combined_objects_redis_caches                                  = merge(tomap({ (local.client_config.landingzone_key) = module.redis_caches }), lookup(var.remote_objects, "redis_caches", {}), lookup(var.data_sources, "redis_caches", {}))
   combined_objects_relay_hybrid_connection                       = merge(tomap({ (local.client_config.landingzone_key) = module.relay_hybrid_connection }), lookup(var.remote_objects, "relay_hybrid_connection", {}))
   combined_objects_relay_namespace                               = merge(tomap({ (local.client_config.landingzone_key) = module.relay_namespace }), lookup(var.remote_objects, "relay_namespace", {}))
-  combined_objects_resource_groups                               = merge(tomap({ (local.client_config.landingzone_key) = merge(local.resource_groups, lookup(var.data_sources, "resource_groups", {})) }), lookup(var.remote_objects, "resource_groups", {}))
+  combined_objects_resource_groups                               = merge(tomap({ (local.client_config.landingzone_key) = merge(local.resource_groups, local.resource_groups_data_sources_resolved, { for key, value in lookup(var.data_sources, "resource_groups", {}) : key => value if try(value.id, null) != null }) }), lookup(var.remote_objects, "resource_groups", {}))
   combined_objects_route_tables                                  = merge(tomap({ (local.client_config.landingzone_key) = module.route_tables }), lookup(var.remote_objects, "route_tables", {}))
   combined_objects_subnet_service_endpoint_storage_policies      = merge(tomap({ (local.client_config.landingzone_key) = module.subnet_service_endpoint_storage_policies }), lookup(var.remote_objects, "subnet_service_endpoint_storage_policies", {}), lookup(var.data_sources, "subnet_service_endpoint_storage_policies", {}))
   combined_objects_search_services                               = merge(tomap({ (local.client_config.landingzone_key) = module.search_service }), lookup(var.remote_objects, "search_services", {}), lookup(var.data_sources, "search_services", {}))
@@ -227,7 +227,8 @@ locals {
         (local.client_config.landingzone_key) = merge(
           module.subscriptions,
           { ("logged_in_subscription") = { id = data.azurerm_subscription.primary.id } },
-          lookup(var.data_sources, "subscriptions", {})
+          local.subscriptions_data_sources_resolved,
+          { for key, value in lookup(var.data_sources, "subscriptions", {}) : key => value if try(value.id, null) != null }
         )
       }
     ),

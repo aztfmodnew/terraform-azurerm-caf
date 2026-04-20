@@ -8,6 +8,26 @@
 ###############################################################################
 
 locals {
+  resource_groups_data_sources_name_lookup = {
+    for key, value in try(var.data_sources.resource_groups, {}) : key => value
+    if try(value.id, null) == null && try(value.name, null) != null
+  }
+
+  subscriptions_data_sources_lookup = {
+    for key, value in try(var.data_sources.subscriptions, {}) : key => value
+    if try(value.id, null) == null && try(value.subscription_id, null) != null
+  }
+
+  azuread_groups_data_sources_static_lookup = {
+    for key, value in try(var.data_sources.azuread_groups, {}) : key => value
+    if coalesce(try(value.object_id, null), try(value.id, null), try(value.rbac_id, null)) != null
+  }
+
+  azuread_groups_data_sources_name_lookup = {
+    for key, value in try(var.data_sources.azuread_groups, {}) : key => value
+    if coalesce(try(value.object_id, null), try(value.id, null), try(value.rbac_id, null)) == null && try(value.display_name, null) != null
+  }
+
   keyvaults_data_sources_name_lookup = {
     for key, value in try(var.data_sources.keyvaults, {}) : key => value
     if try(value.id, null) == null && try(value.name, null) != null && try(value.resource_group_name, null) != null
@@ -40,6 +60,24 @@ locals {
       if try(subnet.id, null) == null && try(subnet.name, null) != null
     }
   ]...)
+}
+
+data "azurerm_resource_group" "data_sources_lookup" {
+  for_each = local.resource_groups_data_sources_name_lookup
+
+  name = each.value.name
+}
+
+data "azurerm_subscription" "data_sources_lookup" {
+  for_each = local.subscriptions_data_sources_lookup
+
+  subscription_id = each.value.subscription_id
+}
+
+data "azuread_group" "data_sources_lookup" {
+  for_each = local.azuread_groups_data_sources_name_lookup
+
+  display_name = each.value.display_name
 }
 
 data "azurerm_key_vault" "data_sources_lookup" {
@@ -79,6 +117,60 @@ data "azurerm_subnet" "data_sources_lookup" {
 }
 
 locals {
+  resource_groups_data_sources_resolved = {
+    for key, value in local.resource_groups_data_sources_name_lookup : key => merge(
+      value,
+      {
+        id       = data.azurerm_resource_group.data_sources_lookup[key].id
+        name     = data.azurerm_resource_group.data_sources_lookup[key].name
+        location = data.azurerm_resource_group.data_sources_lookup[key].location
+        tags     = try(data.azurerm_resource_group.data_sources_lookup[key].tags, null)
+      }
+    )
+  }
+
+  subscriptions_data_sources_resolved = {
+    for key, value in local.subscriptions_data_sources_lookup : key => merge(
+      value,
+      {
+        id              = data.azurerm_subscription.data_sources_lookup[key].id
+        subscription_id = data.azurerm_subscription.data_sources_lookup[key].subscription_id
+        display_name    = try(data.azurerm_subscription.data_sources_lookup[key].display_name, null)
+        state           = try(data.azurerm_subscription.data_sources_lookup[key].state, null)
+        tenant_id       = try(data.azurerm_subscription.data_sources_lookup[key].tenant_id, null)
+      }
+    )
+  }
+
+  azuread_groups_data_sources_static_resolved = {
+    for key, value in local.azuread_groups_data_sources_static_lookup : key => merge(
+      value,
+      {
+        id          = coalesce(try(value.id, null), try(value.object_id, null), try(value.rbac_id, null))
+        object_id   = coalesce(try(value.object_id, null), try(value.id, null), try(value.rbac_id, null))
+        rbac_id     = coalesce(try(value.rbac_id, null), try(value.object_id, null), try(value.id, null))
+        display_name = try(value.display_name, null)
+      }
+    )
+  }
+
+  azuread_groups_data_sources_name_resolved = {
+    for key, value in local.azuread_groups_data_sources_name_lookup : key => merge(
+      value,
+      {
+        id          = data.azuread_group.data_sources_lookup[key].object_id
+        object_id   = data.azuread_group.data_sources_lookup[key].object_id
+        rbac_id     = data.azuread_group.data_sources_lookup[key].object_id
+        display_name = data.azuread_group.data_sources_lookup[key].display_name
+      }
+    )
+  }
+
+  azuread_groups_data_sources_resolved = merge(
+    local.azuread_groups_data_sources_static_resolved,
+    local.azuread_groups_data_sources_name_resolved
+  )
+
   keyvaults_data_sources_resolved = {
     for key, value in local.keyvaults_data_sources_name_lookup : key => merge(
       value,
