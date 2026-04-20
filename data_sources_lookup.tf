@@ -146,9 +146,9 @@ locals {
     for key, value in local.azuread_groups_data_sources_static_lookup : key => merge(
       value,
       {
-        id          = coalesce(try(value.id, null), try(value.object_id, null), try(value.rbac_id, null))
-        object_id   = coalesce(try(value.object_id, null), try(value.id, null), try(value.rbac_id, null))
-        rbac_id     = coalesce(try(value.rbac_id, null), try(value.object_id, null), try(value.id, null))
+        id           = coalesce(try(value.id, null), try(value.object_id, null), try(value.rbac_id, null))
+        object_id    = coalesce(try(value.object_id, null), try(value.id, null), try(value.rbac_id, null))
+        rbac_id      = coalesce(try(value.rbac_id, null), try(value.object_id, null), try(value.id, null))
         display_name = try(value.display_name, null)
       }
     )
@@ -158,9 +158,9 @@ locals {
     for key, value in local.azuread_groups_data_sources_name_lookup : key => merge(
       value,
       {
-        id          = data.azuread_group.data_sources_lookup[key].object_id
-        object_id   = data.azuread_group.data_sources_lookup[key].object_id
-        rbac_id     = data.azuread_group.data_sources_lookup[key].object_id
+        id           = data.azuread_group.data_sources_lookup[key].object_id
+        object_id    = data.azuread_group.data_sources_lookup[key].object_id
+        rbac_id      = data.azuread_group.data_sources_lookup[key].object_id
         display_name = data.azuread_group.data_sources_lookup[key].display_name
       }
     )
