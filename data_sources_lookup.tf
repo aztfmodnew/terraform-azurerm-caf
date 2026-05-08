@@ -600,3 +600,221 @@ locals {
     )
   }
 }
+
+# =============================================================================
+# Batch 3: event_hub_namespaces, servicebus_namespaces, container_registry,
+#          virtual_hubs, mysql_flexible_servers, aks_clusters, dns_zones,
+#          disk_encryption_sets
+# =============================================================================
+
+locals {
+  event_hub_namespaces_data_sources_name_lookup = {
+    for key, value in try(var.data_sources.event_hub_namespaces, {}) : key => value
+    if try(value.id, null) == null && try(value.name, null) != null && try(value.resource_group_name, null) != null
+  }
+
+  servicebus_namespaces_data_sources_name_lookup = {
+    for key, value in try(var.data_sources.servicebus_namespaces, {}) : key => value
+    if try(value.id, null) == null && try(value.name, null) != null && try(value.resource_group_name, null) != null
+  }
+
+  container_registry_data_sources_name_lookup = {
+    for key, value in try(var.data_sources.container_registry, {}) : key => value
+    if try(value.id, null) == null && try(value.name, null) != null && try(value.resource_group_name, null) != null
+  }
+
+  virtual_hubs_data_sources_name_lookup = {
+    for key, value in try(var.data_sources.virtual_hubs, {}) : key => value
+    if try(value.id, null) == null && try(value.name, null) != null && try(value.resource_group_name, null) != null
+  }
+
+  mysql_flexible_servers_data_sources_name_lookup = {
+    for key, value in try(var.data_sources.mysql_flexible_servers, {}) : key => value
+    if try(value.id, null) == null && try(value.name, null) != null && try(value.resource_group_name, null) != null
+  }
+
+  aks_clusters_data_sources_name_lookup = {
+    for key, value in try(var.data_sources.aks_clusters, {}) : key => value
+    if try(value.id, null) == null && try(value.name, null) != null && try(value.resource_group_name, null) != null
+  }
+
+  dns_zones_data_sources_name_lookup = {
+    for key, value in try(var.data_sources.dns_zones, {}) : key => value
+    if try(value.id, null) == null && try(value.name, null) != null && try(value.resource_group_name, null) != null
+  }
+
+  disk_encryption_sets_data_sources_name_lookup = {
+    for key, value in try(var.data_sources.disk_encryption_sets, {}) : key => value
+    if try(value.id, null) == null && try(value.name, null) != null && try(value.resource_group_name, null) != null
+  }
+}
+
+data "azurerm_eventhub_namespace" "data_sources_lookup" {
+  for_each = local.event_hub_namespaces_data_sources_name_lookup
+
+  name                = each.value.name
+  resource_group_name = each.value.resource_group_name
+}
+
+data "azurerm_servicebus_namespace" "data_sources_lookup" {
+  for_each = local.servicebus_namespaces_data_sources_name_lookup
+
+  name                = each.value.name
+  resource_group_name = each.value.resource_group_name
+}
+
+data "azurerm_container_registry" "data_sources_lookup" {
+  for_each = local.container_registry_data_sources_name_lookup
+
+  name                = each.value.name
+  resource_group_name = each.value.resource_group_name
+}
+
+data "azurerm_virtual_hub" "data_sources_lookup" {
+  for_each = local.virtual_hubs_data_sources_name_lookup
+
+  name                = each.value.name
+  resource_group_name = each.value.resource_group_name
+}
+
+data "azurerm_mysql_flexible_server" "data_sources_lookup" {
+  for_each = local.mysql_flexible_servers_data_sources_name_lookup
+
+  name                = each.value.name
+  resource_group_name = each.value.resource_group_name
+}
+
+data "azurerm_kubernetes_cluster" "data_sources_lookup" {
+  for_each = local.aks_clusters_data_sources_name_lookup
+
+  name                = each.value.name
+  resource_group_name = each.value.resource_group_name
+}
+
+data "azurerm_dns_zone" "data_sources_lookup" {
+  for_each = local.dns_zones_data_sources_name_lookup
+
+  name                = each.value.name
+  resource_group_name = each.value.resource_group_name
+}
+
+data "azurerm_disk_encryption_set" "data_sources_lookup" {
+  for_each = local.disk_encryption_sets_data_sources_name_lookup
+
+  name                = each.value.name
+  resource_group_name = each.value.resource_group_name
+}
+
+locals {
+  event_hub_namespaces_data_sources_resolved = {
+    for key, value in local.event_hub_namespaces_data_sources_name_lookup : key => merge(
+      value,
+      {
+        id                  = data.azurerm_eventhub_namespace.data_sources_lookup[key].id
+        name                = data.azurerm_eventhub_namespace.data_sources_lookup[key].name
+        location            = data.azurerm_eventhub_namespace.data_sources_lookup[key].location
+        resource_group_name = data.azurerm_eventhub_namespace.data_sources_lookup[key].resource_group_name
+        rbac_id             = data.azurerm_eventhub_namespace.data_sources_lookup[key].id
+      }
+    )
+  }
+
+  servicebus_namespaces_data_sources_resolved = {
+    for key, value in local.servicebus_namespaces_data_sources_name_lookup : key => merge(
+      value,
+      {
+        id                  = data.azurerm_servicebus_namespace.data_sources_lookup[key].id
+        name                = data.azurerm_servicebus_namespace.data_sources_lookup[key].name
+        location            = data.azurerm_servicebus_namespace.data_sources_lookup[key].location
+        resource_group_name = data.azurerm_servicebus_namespace.data_sources_lookup[key].resource_group_name
+        endpoint            = try(data.azurerm_servicebus_namespace.data_sources_lookup[key].endpoint, null)
+        rbac_id             = data.azurerm_servicebus_namespace.data_sources_lookup[key].id
+      }
+    )
+  }
+
+  container_registry_data_sources_resolved = {
+    for key, value in local.container_registry_data_sources_name_lookup : key => merge(
+      value,
+      {
+        id                  = data.azurerm_container_registry.data_sources_lookup[key].id
+        name                = data.azurerm_container_registry.data_sources_lookup[key].name
+        location            = data.azurerm_container_registry.data_sources_lookup[key].location
+        resource_group_name = data.azurerm_container_registry.data_sources_lookup[key].resource_group_name
+        login_server        = try(data.azurerm_container_registry.data_sources_lookup[key].login_server, null)
+        admin_username      = try(data.azurerm_container_registry.data_sources_lookup[key].admin_username, null)
+        rbac_id             = data.azurerm_container_registry.data_sources_lookup[key].id
+      }
+    )
+  }
+
+  virtual_hubs_data_sources_resolved = {
+    for key, value in local.virtual_hubs_data_sources_name_lookup : key => merge(
+      value,
+      {
+        id                  = data.azurerm_virtual_hub.data_sources_lookup[key].id
+        name                = data.azurerm_virtual_hub.data_sources_lookup[key].name
+        location            = data.azurerm_virtual_hub.data_sources_lookup[key].location
+        resource_group_name = data.azurerm_virtual_hub.data_sources_lookup[key].resource_group_name
+        address_prefix      = try(data.azurerm_virtual_hub.data_sources_lookup[key].address_prefix, null)
+        rbac_id             = data.azurerm_virtual_hub.data_sources_lookup[key].id
+      }
+    )
+  }
+
+  mysql_flexible_servers_data_sources_resolved = {
+    for key, value in local.mysql_flexible_servers_data_sources_name_lookup : key => merge(
+      value,
+      {
+        id                  = data.azurerm_mysql_flexible_server.data_sources_lookup[key].id
+        name                = data.azurerm_mysql_flexible_server.data_sources_lookup[key].name
+        location            = data.azurerm_mysql_flexible_server.data_sources_lookup[key].location
+        resource_group_name = data.azurerm_mysql_flexible_server.data_sources_lookup[key].resource_group_name
+        fqdn                = try(data.azurerm_mysql_flexible_server.data_sources_lookup[key].fqdn, null)
+        rbac_id             = data.azurerm_mysql_flexible_server.data_sources_lookup[key].id
+      }
+    )
+  }
+
+  aks_clusters_data_sources_resolved = {
+    for key, value in local.aks_clusters_data_sources_name_lookup : key => merge(
+      value,
+      {
+        id                  = data.azurerm_kubernetes_cluster.data_sources_lookup[key].id
+        name                = data.azurerm_kubernetes_cluster.data_sources_lookup[key].name
+        location            = data.azurerm_kubernetes_cluster.data_sources_lookup[key].location
+        resource_group_name = data.azurerm_kubernetes_cluster.data_sources_lookup[key].resource_group_name
+        fqdn                = try(data.azurerm_kubernetes_cluster.data_sources_lookup[key].fqdn, null)
+        kubelet_identity    = try(data.azurerm_kubernetes_cluster.data_sources_lookup[key].kubelet_identity, null)
+        identity            = try(data.azurerm_kubernetes_cluster.data_sources_lookup[key].identity, null)
+        rbac_id             = try(data.azurerm_kubernetes_cluster.data_sources_lookup[key].kubelet_identity[0].object_id, data.azurerm_kubernetes_cluster.data_sources_lookup[key].id)
+      }
+    )
+  }
+
+  dns_zones_data_sources_resolved = {
+    for key, value in local.dns_zones_data_sources_name_lookup : key => merge(
+      value,
+      {
+        id                  = data.azurerm_dns_zone.data_sources_lookup[key].id
+        name                = data.azurerm_dns_zone.data_sources_lookup[key].name
+        resource_group_name = data.azurerm_dns_zone.data_sources_lookup[key].resource_group_name
+        name_servers        = try(data.azurerm_dns_zone.data_sources_lookup[key].name_servers, null)
+        rbac_id             = data.azurerm_dns_zone.data_sources_lookup[key].id
+      }
+    )
+  }
+
+  disk_encryption_sets_data_sources_resolved = {
+    for key, value in local.disk_encryption_sets_data_sources_name_lookup : key => merge(
+      value,
+      {
+        id                  = data.azurerm_disk_encryption_set.data_sources_lookup[key].id
+        name                = data.azurerm_disk_encryption_set.data_sources_lookup[key].name
+        location            = data.azurerm_disk_encryption_set.data_sources_lookup[key].location
+        resource_group_name = data.azurerm_disk_encryption_set.data_sources_lookup[key].resource_group_name
+        rbac_id             = try(data.azurerm_disk_encryption_set.data_sources_lookup[key].identity[0].principal_id, data.azurerm_disk_encryption_set.data_sources_lookup[key].id)
+      }
+    )
+  }
+}
