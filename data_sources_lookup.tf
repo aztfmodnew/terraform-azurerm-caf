@@ -49,6 +49,21 @@ locals {
     if try(value.id, null) == null && try(value.name, null) != null && try(value.resource_group_name, null) != null
   }
 
+  managed_identities_data_sources_name_lookup = {
+    for key, value in try(var.data_sources.managed_identities, {}) : key => value
+    if try(value.id, null) == null && try(value.name, null) != null && try(value.resource_group_name, null) != null
+  }
+
+  private_dns_data_sources_name_lookup = {
+    for key, value in try(var.data_sources.private_dns, {}) : key => value
+    if try(value.id, null) == null && try(value.name, null) != null
+  }
+
+  public_ip_addresses_data_sources_name_lookup = {
+    for key, value in try(var.data_sources.public_ip_addresses, {}) : key => value
+    if try(value.id, null) == null && try(value.name, null) != null && try(value.resource_group_name, null) != null
+  }
+
   storage_accounts_data_sources_name_lookup = {
     for key, value in try(var.data_sources.storage_accounts, {}) : key => value
     if try(value.id, null) == null && try(value.name, null) != null && try(value.resource_group_name, null) != null
@@ -76,6 +91,11 @@ locals {
       if try(subnet.id, null) == null && try(subnet.name, null) != null
     }
   ]...)
+
+  virtual_subnets_data_sources_name_lookup = {
+    for key, value in try(var.data_sources.virtual_subnets, {}) : key => value
+    if try(value.id, null) == null && try(value.name, null) != null && try(value.virtual_network_name, null) != null && try(value.resource_group_name, null) != null
+  }
 }
 
 data "azurerm_resource_group" "data_sources_lookup" {
@@ -118,6 +138,27 @@ data "azurerm_key_vault" "data_sources_lookup" {
   resource_group_name = each.value.resource_group_name
 }
 
+data "azurerm_user_assigned_identity" "data_sources_lookup" {
+  for_each = local.managed_identities_data_sources_name_lookup
+
+  name                = each.value.name
+  resource_group_name = each.value.resource_group_name
+}
+
+data "azurerm_private_dns_zone" "data_sources_lookup" {
+  for_each = local.private_dns_data_sources_name_lookup
+
+  name                = each.value.name
+  resource_group_name = try(each.value.resource_group_name, null)
+}
+
+data "azurerm_public_ip" "data_sources_lookup" {
+  for_each = local.public_ip_addresses_data_sources_name_lookup
+
+  name                = each.value.name
+  resource_group_name = each.value.resource_group_name
+}
+
 data "azurerm_storage_account" "data_sources_lookup" {
   for_each = local.storage_accounts_data_sources_name_lookup
 
@@ -143,6 +184,14 @@ data "azurerm_subnet" "data_sources_lookup" {
   for_each = local.vnet_subnets_data_sources_name_lookup
 
   name                 = each.value.subnet_name
+  resource_group_name  = each.value.resource_group_name
+  virtual_network_name = each.value.virtual_network_name
+}
+
+data "azurerm_subnet" "virtual_subnets_data_sources_lookup" {
+  for_each = local.virtual_subnets_data_sources_name_lookup
+
+  name                 = each.value.name
   resource_group_name  = each.value.resource_group_name
   virtual_network_name = each.value.virtual_network_name
 }
@@ -253,6 +302,60 @@ locals {
     )
   }
 
+  managed_identities_data_sources_resolved = {
+    for key, value in local.managed_identities_data_sources_name_lookup : key => merge(
+      value,
+      {
+        id                  = data.azurerm_user_assigned_identity.data_sources_lookup[key].id
+        name                = data.azurerm_user_assigned_identity.data_sources_lookup[key].name
+        resource_group_name = value.resource_group_name
+        location            = data.azurerm_user_assigned_identity.data_sources_lookup[key].location
+        principal_id        = try(data.azurerm_user_assigned_identity.data_sources_lookup[key].principal_id, null)
+        client_id           = try(data.azurerm_user_assigned_identity.data_sources_lookup[key].client_id, null)
+        tenant_id           = try(data.azurerm_user_assigned_identity.data_sources_lookup[key].tenant_id, null)
+        tags                = try(data.azurerm_user_assigned_identity.data_sources_lookup[key].tags, null)
+        rbac_id             = data.azurerm_user_assigned_identity.data_sources_lookup[key].id
+      }
+    )
+  }
+
+  private_dns_data_sources_resolved = {
+    for key, value in local.private_dns_data_sources_name_lookup : key => merge(
+      value,
+      {
+        id                                                  = data.azurerm_private_dns_zone.data_sources_lookup[key].id
+        name                                                = data.azurerm_private_dns_zone.data_sources_lookup[key].name
+        resource_group_name                                 = try(value.resource_group_name, null)
+        max_number_of_record_sets                           = try(data.azurerm_private_dns_zone.data_sources_lookup[key].max_number_of_record_sets, null)
+        max_number_of_virtual_network_links                 = try(data.azurerm_private_dns_zone.data_sources_lookup[key].max_number_of_virtual_network_links, null)
+        max_number_of_virtual_network_links_with_registration = try(data.azurerm_private_dns_zone.data_sources_lookup[key].max_number_of_virtual_network_links_with_registration, null)
+        number_of_record_sets                               = try(data.azurerm_private_dns_zone.data_sources_lookup[key].number_of_record_sets, null)
+        tags                                                = try(data.azurerm_private_dns_zone.data_sources_lookup[key].tags, null)
+        rbac_id                                             = data.azurerm_private_dns_zone.data_sources_lookup[key].id
+      }
+    )
+  }
+
+  public_ip_addresses_data_sources_resolved = {
+    for key, value in local.public_ip_addresses_data_sources_name_lookup : key => merge(
+      value,
+      {
+        id                  = data.azurerm_public_ip.data_sources_lookup[key].id
+        name                = data.azurerm_public_ip.data_sources_lookup[key].name
+        resource_group_name = value.resource_group_name
+        location            = try(data.azurerm_public_ip.data_sources_lookup[key].location, null)
+        ip_address          = try(data.azurerm_public_ip.data_sources_lookup[key].ip_address, null)
+        fqdn                = try(data.azurerm_public_ip.data_sources_lookup[key].fqdn, null)
+        domain_name_label   = try(data.azurerm_public_ip.data_sources_lookup[key].domain_name_label, null)
+        allocation_method   = try(data.azurerm_public_ip.data_sources_lookup[key].allocation_method, null)
+        sku                 = try(data.azurerm_public_ip.data_sources_lookup[key].sku, null)
+        zones               = try(data.azurerm_public_ip.data_sources_lookup[key].zones, null)
+        tags                = try(data.azurerm_public_ip.data_sources_lookup[key].tags, null)
+        rbac_id             = data.azurerm_public_ip.data_sources_lookup[key].id
+      }
+    )
+  }
+
   storage_accounts_data_sources_resolved = {
     for key, value in local.storage_accounts_data_sources_name_lookup : key => merge(
       value,
@@ -316,6 +419,25 @@ locals {
             if subnet_meta.vnet_key == key
           }
         )
+      }
+    )
+  }
+
+  virtual_subnets_data_sources_resolved = {
+    for key, value in local.virtual_subnets_data_sources_name_lookup : key => merge(
+      value,
+      {
+        id                                     = data.azurerm_subnet.virtual_subnets_data_sources_lookup[key].id
+        name                                   = data.azurerm_subnet.virtual_subnets_data_sources_lookup[key].name
+        resource_group_name                    = data.azurerm_subnet.virtual_subnets_data_sources_lookup[key].resource_group_name
+        virtual_network_name                   = data.azurerm_subnet.virtual_subnets_data_sources_lookup[key].virtual_network_name
+        address_prefixes                       = try(data.azurerm_subnet.virtual_subnets_data_sources_lookup[key].address_prefixes, null)
+        network_security_group_id              = try(data.azurerm_subnet.virtual_subnets_data_sources_lookup[key].network_security_group_id, null)
+        route_table_id                         = try(data.azurerm_subnet.virtual_subnets_data_sources_lookup[key].route_table_id, null)
+        service_endpoints                      = try(data.azurerm_subnet.virtual_subnets_data_sources_lookup[key].service_endpoints, null)
+        default_outbound_access_enabled        = try(data.azurerm_subnet.virtual_subnets_data_sources_lookup[key].default_outbound_access_enabled, null)
+        private_endpoint_network_policies      = try(data.azurerm_subnet.virtual_subnets_data_sources_lookup[key].private_endpoint_network_policies, null)
+        private_link_service_network_policies_enabled = try(data.azurerm_subnet.virtual_subnets_data_sources_lookup[key].private_link_service_network_policies_enabled, null)
       }
     )
   }

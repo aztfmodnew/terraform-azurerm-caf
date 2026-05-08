@@ -544,10 +544,6 @@ variable "batch_applications" {
   type    = any
   default = {}
 }
-variable "batch_certificates" {
-  type    = any
-  default = {}
-}
 variable "batch_jobs" {
   type    = any
   default = {}
@@ -1751,6 +1747,10 @@ Supported modes:
      - `role_definitions` by `name` or `role_definition_id` (optional `scope`)
      - `azuread_groups` by `display_name`
      - `keyvaults` by `name` + `resource_group_name`
+    - `managed_identities` by `name` + `resource_group_name`
+    - `private_dns` by `name` (optional `resource_group_name`)
+    - `public_ip_addresses` by `name` + `resource_group_name`
+    - `virtual_subnets` by `name` + `virtual_network_name` + `resource_group_name`
      - `storage_accounts` by `name` + `resource_group_name`
      - `recovery_vaults` by `name` + `resource_group_name`
      - `vnets` by `name` + `resource_group_name` (with optional subnet lookup by subnet `name`)

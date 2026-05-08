@@ -9,6 +9,7 @@ tools:
   - 'todo'
   - 'azure-mcp/*'
   - 'hashicorp/terraform-mcp-server/*'
+  - 'execute'
 user-invocable: true
 disable-model-invocation: true
 agents:
@@ -73,6 +74,13 @@ Skills to enforce during flow:
 3. `Example Generator` - add/update examples for new behavior
 4. `Documentation Sync` - sync documentation
 5. `CI Workflow Manager` - ensure CI coverage
+
+### Data Sources Expansion Flow
+
+1. `Module Updater` (root lookup implementation)
+2. `Compliance Validator` (schema + backward compatibility)
+3. `Documentation Sync` (variables docs)
+4. `Example Generator` (lookup usage examples)
 
 ### Migration / Refactor Flow
 

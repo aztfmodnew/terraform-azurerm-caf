@@ -120,7 +120,6 @@ locals {
     bastion_hosts                          = try(var.compute.bastion_hosts, {})
     batch_accounts                         = try(var.compute.batch_accounts, {})
     batch_applications                     = try(var.compute.batch_applications, {})
-    batch_certificates                     = try(var.compute.batch_certificates, {})
     batch_jobs                             = try(var.compute.batch_jobs, {})
     batch_pools                            = try(var.compute.batch_pools, {})
     container_apps                         = try(var.compute.container_apps, {})

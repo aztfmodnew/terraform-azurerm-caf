@@ -42,7 +42,6 @@ locals {
   combined_objects_backup_vaults                                  = merge(tomap({ (local.client_config.landingzone_key) = module.backup_vaults }), lookup(var.remote_objects, "backup_vaults", {}))
   combined_objects_batch_accounts                                 = merge(tomap({ (local.client_config.landingzone_key) = module.batch_accounts }), lookup(var.remote_objects, "batch_accounts", {}))
   combined_objects_batch_applications                             = merge(tomap({ (local.client_config.landingzone_key) = module.batch_applications }), lookup(var.remote_objects, "batch_applications", {}))
-  combined_objects_batch_certificates                             = merge(tomap({ (local.client_config.landingzone_key) = module.batch_certificates }), lookup(var.remote_objects, "batch_certificates", {}))
   combined_objects_batch_jobs                                     = merge(tomap({ (local.client_config.landingzone_key) = module.batch_jobs }), lookup(var.remote_objects, "batch_jobs", {}))
   combined_objects_batch_pools                                    = merge(tomap({ (local.client_config.landingzone_key) = module.batch_pools }), lookup(var.remote_objects, "batch_pools", {}))
   combined_objects_cdn_frontdoor_profiles                         = merge(tomap({ (local.client_config.landingzone_key) = module.cdn_frontdoor_profiles }), lookup(var.remote_objects, "cdn_frontdoor_profiles", {}), lookup(var.data_sources, "cdn_frontdoor_profiles", {}))
@@ -128,7 +127,16 @@ locals {
   combined_objects_maintenance_configuration                     = merge(tomap({ (local.client_config.landingzone_key) = module.maintenance_configuration }), lookup(var.remote_objects, "maintenance_configuration", {}))
   combined_objects_maintenance_assignment_dynamic_scope          = merge(tomap({ (local.client_config.landingzone_key) = module.maintenance_assignment_dynamic_scope }), lookup(var.remote_objects, "maintenance_assignment_dynamic_scope", {}))
   combined_objects_maintenance_assignment_virtual_machine        = merge(tomap({ (local.client_config.landingzone_key) = module.maintenance_assignment_virtual_machine }), lookup(var.remote_objects, "maintenance_assignment_virtual_machine", {}))
-  combined_objects_managed_identities                            = merge(tomap({ (local.client_config.landingzone_key) = module.managed_identities }), lookup(var.remote_objects, "managed_identities", {}), lookup(var.data_sources, "managed_identities", {}))
+  combined_objects_managed_identities = merge(
+    tomap({
+      (local.client_config.landingzone_key) = merge(
+        module.managed_identities,
+        local.managed_identities_data_sources_resolved,
+        { for key, value in lookup(var.data_sources, "managed_identities", {}) : key => value if try(value.id, null) != null }
+      )
+    }),
+    lookup(var.remote_objects, "managed_identities", {})
+  )
   combined_objects_management_locks                              = merge(tomap({ (local.client_config.landingzone_key) = module.management_locks }), lookup(var.remote_objects, "management_locks", {}))
   combined_objects_maps_accounts                                 = merge(tomap({ (local.client_config.landingzone_key) = module.maps_accounts }), lookup(var.remote_objects, "maps_accounts", {}))
   combined_objects_monitor_action_groups                         = merge(tomap({ (local.client_config.landingzone_key) = module.monitor_action_groups }), lookup(var.remote_objects, "monitor_action_groups", {}), lookup(var.data_sources, "monitor_action_groups", {}))
@@ -160,14 +168,32 @@ locals {
   combined_objects_pim_active_role_assignments                   = merge(tomap({ (local.client_config.landingzone_key) = module.pim_active_role_assignments }), lookup(var.remote_objects, "pim_active_role_assignments", {}))
   combined_objects_pim_eligible_role_assignments                 = merge(tomap({ (local.client_config.landingzone_key) = module.pim_eligible_role_assignments }), lookup(var.remote_objects, "pim_eligible_role_assignments", {}))
   combined_objects_postgresql_flexible_servers                   = merge(tomap({ (local.client_config.landingzone_key) = module.postgresql_flexible_servers }), lookup(var.remote_objects, "postgresql_flexible_servers", {}))
-  combined_objects_private_dns                                   = merge(tomap({ (local.client_config.landingzone_key) = module.private_dns }), lookup(var.remote_objects, "private_dns", {}), lookup(var.data_sources, "private_dns", {}))
+  combined_objects_private_dns = merge(
+    tomap({
+      (local.client_config.landingzone_key) = merge(
+        module.private_dns,
+        local.private_dns_data_sources_resolved,
+        { for key, value in lookup(var.data_sources, "private_dns", {}) : key => value if try(value.id, null) != null }
+      )
+    }),
+    lookup(var.remote_objects, "private_dns", {})
+  )
   combined_objects_private_dns_resolver_dns_forwarding_rulesets  = merge(tomap({ (local.client_config.landingzone_key) = module.private_dns_resolver_dns_forwarding_rulesets }), lookup(var.remote_objects, "private_dns_resolver_dns_forwarding_rulesets", {}))
   combined_objects_private_dns_resolver_inbound_endpoints        = merge(tomap({ (local.client_config.landingzone_key) = module.private_dns_resolver_inbound_endpoints }), lookup(var.remote_objects, "private_dns_resolver_inbound_endpoints", {}))
   combined_objects_private_dns_resolver_outbound_endpoints       = merge(tomap({ (local.client_config.landingzone_key) = module.private_dns_resolver_outbound_endpoints }), lookup(var.remote_objects, "private_dns_resolver_outbound_endpoints", {}))
   combined_objects_private_dns_resolvers                         = merge(tomap({ (local.client_config.landingzone_key) = module.private_dns_resolvers }), lookup(var.remote_objects, "private_dns_resolvers", {}))
   combined_objects_private_endpoints                             = merge(tomap({ (local.client_config.landingzone_key) = module.private_endpoints }), lookup(var.remote_objects, "private_endpoints", {}))
   combined_objects_proximity_placement_groups                    = merge(tomap({ (local.client_config.landingzone_key) = module.proximity_placement_groups }), lookup(var.remote_objects, "proximity_placement_groups", {}), lookup(var.data_sources, "proximity_placement_groups", {}))
-  combined_objects_public_ip_addresses                           = merge(tomap({ (local.client_config.landingzone_key) = module.public_ip_addresses }), lookup(var.remote_objects, "public_ip_addresses", {}), lookup(var.data_sources, "public_ip_addresses", {}))
+  combined_objects_public_ip_addresses = merge(
+    tomap({
+      (local.client_config.landingzone_key) = merge(
+        module.public_ip_addresses,
+        local.public_ip_addresses_data_sources_resolved,
+        { for key, value in lookup(var.data_sources, "public_ip_addresses", {}) : key => value if try(value.id, null) != null }
+      )
+    }),
+    lookup(var.remote_objects, "public_ip_addresses", {})
+  )
   combined_objects_public_ip_prefixes                            = merge(tomap({ (local.client_config.landingzone_key) = module.public_ip_prefixes }), lookup(var.remote_objects, "public_ip_prefixes", {}))
   combined_objects_purview_accounts                              = merge(tomap({ (local.client_config.landingzone_key) = module.purview_accounts }), lookup(var.remote_objects, "purview_accounts", {}))
   combined_objects_recovery_vaults                               = merge(tomap({ (local.client_config.landingzone_key) = merge(module.recovery_vaults, local.recovery_vaults_data_sources_resolved, { for key, value in lookup(var.data_sources, "recovery_vaults", {}) : key => value if try(value.id, null) != null }) }), lookup(var.remote_objects, "recovery_vaults", {}))
@@ -201,7 +227,16 @@ locals {
   combined_objects_virtual_machine_scale_sets                    = merge(tomap({ (local.client_config.landingzone_key) = module.virtual_machine_scale_sets }), lookup(var.remote_objects, "virtual_machine_scale_sets", {}), lookup(var.data_sources, "virtual_machine_scale_sets", {}))
   combined_objects_virtual_machines                              = merge(tomap({ (local.client_config.landingzone_key) = module.virtual_machines }), lookup(var.remote_objects, "virtual_machines", {}), lookup(var.data_sources, "virtual_machines", {}))
   combined_objects_virtual_network_gateways                      = merge(tomap({ (local.client_config.landingzone_key) = module.virtual_network_gateways }), lookup(var.remote_objects, "virtual_network_gateways", {}), lookup(var.data_sources, "virtual_network_gateways", {}))
-  combined_objects_virtual_subnets                               = merge(tomap({ (local.client_config.landingzone_key) = merge(module.virtual_subnets, lookup(var.data_sources, "virtual_subnets", {})) }), lookup(var.remote_objects, "virtual_subnets", {}))
+  combined_objects_virtual_subnets = merge(
+    tomap({
+      (local.client_config.landingzone_key) = merge(
+        module.virtual_subnets,
+        local.virtual_subnets_data_sources_resolved,
+        { for key, value in lookup(var.data_sources, "virtual_subnets", {}) : key => value if try(value.id, null) != null }
+      )
+    }),
+    lookup(var.remote_objects, "virtual_subnets", {})
+  )
   combined_objects_vnets                                         = merge(tomap({ (local.client_config.landingzone_key) = merge(module.networking, local.vnets_data_sources_resolved, { for key, value in lookup(var.data_sources, "vnets", {}) : key => value if try(value.id, null) != null }) }), lookup(var.remote_objects, "vnets", {}))
   combined_objects_route_servers                                 = merge(tomap({ (local.client_config.landingzone_key) = module.route_servers }), lookup(var.remote_objects, "route_servers", {}), lookup(var.data_sources, "route_servers", {}))
   combined_objects_vmware_clusters                               = merge(tomap({ (local.client_config.landingzone_key) = module.vmware_clusters }), lookup(var.remote_objects, "vmware_clusters", {}))

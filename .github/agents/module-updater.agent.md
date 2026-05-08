@@ -45,6 +45,13 @@ When relevant, explicitly invoke these skill procedures in the workflow:
 - `caf-naming-validation` for naming compliance checks
 - `mock-testing` before finalizing changes
 
+### Centralized data_sources expansion workflow
+
+- inventory keys used in combined_objects
+- implement root lookups in data_sources_lookup.tf
+- merge resolved + explicit-id in combined_objects
+- update variables docs + examples docs
+
 ## Your Process
 
 ### Phase 1: Search and Validation (MANDATORY)

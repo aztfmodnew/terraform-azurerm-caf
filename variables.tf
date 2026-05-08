@@ -346,6 +346,10 @@ Supported input modes:
      - `role_definitions` (`name` or `role_definition_id`, optional `scope`)
      - `azuread_groups` (`display_name`)
      - `keyvaults` (`name`, `resource_group_name`)
+      - `managed_identities` (`name`, `resource_group_name`)
+      - `private_dns` (`name`, optional `resource_group_name`)
+      - `public_ip_addresses` (`name`, `resource_group_name`)
+      - `virtual_subnets` (`name`, `virtual_network_name`, `resource_group_name`)
      - `storage_accounts` (`name`, `resource_group_name`)
      - `recovery_vaults` (`name`, `resource_group_name`)
      - `vnets` (`name`, `resource_group_name`) and optional nested subnet lookups by `name`

@@ -37,7 +37,6 @@ locals {
     firewalls                                      = try(local.combined_objects_azurerm_firewalls, null)
     batch_accounts                                 = try(local.combined_objects_batch_accounts, null)
     batch_applications                             = try(local.combined_objects_batch_applications, null)
-    batch_certificates                             = try(local.combined_objects_batch_certificates, null)
     batch_jobs                                     = try(local.combined_objects_batch_jobs, null)
     batch_pools                                    = try(local.combined_objects_batch_pools, null)
     cognitive_services_accounts                    = try(local.combined_objects_cognitive_services_accounts, null)

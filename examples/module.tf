@@ -115,7 +115,6 @@ module "example" {
     azure_container_registries             = var.azure_container_registries
     batch_accounts                         = var.batch_accounts
     batch_applications                     = var.batch_applications
-    batch_certificates                     = var.batch_certificates
     batch_jobs                             = var.batch_jobs
     batch_pools                            = var.batch_pools
     bastion_hosts                          = var.bastion_hosts
