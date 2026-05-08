@@ -1746,7 +1746,9 @@ Supported modes:
    - Provide lookup attributes and allow `data_sources_lookup.tf` to resolve IDs.
    - Centralized lookup currently supports:
      - `resource_groups` by `name`
+     - `management_groups` by `name` or `display_name`
      - `subscriptions` by `subscription_id`
+     - `role_definitions` by `name` or `role_definition_id` (optional `scope`)
      - `azuread_groups` by `display_name`
      - `keyvaults` by `name` + `resource_group_name`
      - `storage_accounts` by `name` + `resource_group_name`

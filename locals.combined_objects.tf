@@ -221,6 +221,30 @@ locals {
   combined_objects_palo_alto_cloudngfws                          = merge(tomap({ (local.client_config.landingzone_key) = module.palo_alto_cloudngfws }), lookup(var.remote_objects, "palo_alto_cloudngfws", {}), lookup(var.data_sources, "palo_alto_cloudngfws", {}))
   combined_objects_grafana                                       = merge(tomap({ (local.client_config.landingzone_key) = module.grafana }), lookup(var.remote_objects, "grafana", {}), lookup(var.data_sources, "grafana", {}))
 
+  combined_objects_management_groups = merge(
+    tomap(
+      {
+        (local.client_config.landingzone_key) = merge(
+          local.management_groups_data_sources_resolved,
+          { for key, value in lookup(var.data_sources, "management_groups", {}) : key => value if try(value.id, null) != null }
+        )
+      }
+    ),
+    lookup(var.remote_objects, "management_groups", {})
+  )
+
+  combined_objects_role_definitions = merge(
+    tomap(
+      {
+        (local.client_config.landingzone_key) = merge(
+          local.role_definitions_data_sources_resolved,
+          { for key, value in lookup(var.data_sources, "role_definitions", {}) : key => value if try(value.id, null) != null }
+        )
+      }
+    ),
+    lookup(var.remote_objects, "role_definitions", {})
+  )
+
   combined_objects_subscriptions = merge(
     tomap(
       {

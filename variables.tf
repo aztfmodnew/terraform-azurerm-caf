@@ -341,7 +341,9 @@ Supported input modes:
      `data_sources_lookup.tf` resolve IDs via provider data sources.
    - Currently centralized lookup is implemented for:
      - `resource_groups` (`name`)
+     - `management_groups` (`name` or `display_name`)
      - `subscriptions` (`subscription_id`)
+     - `role_definitions` (`name` or `role_definition_id`, optional `scope`)
      - `azuread_groups` (`display_name`)
      - `keyvaults` (`name`, `resource_group_name`)
      - `storage_accounts` (`name`, `resource_group_name`)

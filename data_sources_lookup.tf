@@ -13,9 +13,25 @@ locals {
     if try(value.id, null) == null && try(value.name, null) != null
   }
 
+  management_groups_data_sources_name_lookup = {
+    for key, value in try(var.data_sources.management_groups, {}) : key => value
+    if try(value.id, null) == null && (
+      try(value.name, null) != null ||
+      try(value.display_name, null) != null
+    )
+  }
+
   subscriptions_data_sources_lookup = {
     for key, value in try(var.data_sources.subscriptions, {}) : key => value
     if try(value.id, null) == null && try(value.subscription_id, null) != null
+  }
+
+  role_definitions_data_sources_lookup = {
+    for key, value in try(var.data_sources.role_definitions, {}) : key => value
+    if try(value.id, null) == null && (
+      try(value.name, null) != null ||
+      try(value.role_definition_id, null) != null
+    )
   }
 
   azuread_groups_data_sources_static_lookup = {
@@ -68,10 +84,25 @@ data "azurerm_resource_group" "data_sources_lookup" {
   name = each.value.name
 }
 
+data "azurerm_management_group" "data_sources_lookup" {
+  for_each = local.management_groups_data_sources_name_lookup
+
+  name         = try(each.value.name, null)
+  display_name = try(each.value.display_name, null)
+}
+
 data "azurerm_subscription" "data_sources_lookup" {
   for_each = local.subscriptions_data_sources_lookup
 
   subscription_id = each.value.subscription_id
+}
+
+data "azurerm_role_definition" "data_sources_lookup" {
+  for_each = local.role_definitions_data_sources_lookup
+
+  name               = try(each.value.name, null)
+  role_definition_id = try(each.value.role_definition_id, null)
+  scope              = try(each.value.scope, null)
 }
 
 data "azuread_group" "data_sources_lookup" {
@@ -129,6 +160,22 @@ locals {
     )
   }
 
+  management_groups_data_sources_resolved = {
+    for key, value in local.management_groups_data_sources_name_lookup : key => merge(
+      value,
+      {
+        id                         = data.azurerm_management_group.data_sources_lookup[key].id
+        display_name               = try(data.azurerm_management_group.data_sources_lookup[key].display_name, null)
+        tenant_scoped_id           = try(data.azurerm_management_group.data_sources_lookup[key].tenant_scoped_id, null)
+        parent_management_group_id = try(data.azurerm_management_group.data_sources_lookup[key].parent_management_group_id, null)
+        management_group_ids       = try(data.azurerm_management_group.data_sources_lookup[key].management_group_ids, null)
+        subscription_ids           = try(data.azurerm_management_group.data_sources_lookup[key].subscription_ids, null)
+        all_management_group_ids   = try(data.azurerm_management_group.data_sources_lookup[key].all_management_group_ids, null)
+        all_subscription_ids       = try(data.azurerm_management_group.data_sources_lookup[key].all_subscription_ids, null)
+      }
+    )
+  }
+
   subscriptions_data_sources_resolved = {
     for key, value in local.subscriptions_data_sources_lookup : key => merge(
       value,
@@ -138,6 +185,29 @@ locals {
         display_name    = try(data.azurerm_subscription.data_sources_lookup[key].display_name, null)
         state           = try(data.azurerm_subscription.data_sources_lookup[key].state, null)
         tenant_id       = try(data.azurerm_subscription.data_sources_lookup[key].tenant_id, null)
+      }
+    )
+  }
+
+  role_definitions_data_sources_resolved = {
+    for key, value in local.role_definitions_data_sources_lookup : key => merge(
+      value,
+      {
+        id                = data.azurerm_role_definition.data_sources_lookup[key].id
+        name              = try(data.azurerm_role_definition.data_sources_lookup[key].name, try(value.name, null))
+        role_definition_id = coalesce(
+          try(value.role_definition_id, null),
+          try(
+            element(
+              regexall("[0-9a-fA-F-]{36}", data.azurerm_role_definition.data_sources_lookup[key].id),
+              length(regexall("[0-9a-fA-F-]{36}", data.azurerm_role_definition.data_sources_lookup[key].id)) - 1
+            ),
+            null
+          )
+        )
+        description       = try(data.azurerm_role_definition.data_sources_lookup[key].description, null)
+        assignable_scopes = try(data.azurerm_role_definition.data_sources_lookup[key].assignable_scopes, null)
+        scope             = try(value.scope, null)
       }
     )
   }

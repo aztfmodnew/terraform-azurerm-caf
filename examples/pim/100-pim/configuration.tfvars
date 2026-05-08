@@ -26,6 +26,29 @@ managed_identities = {
   }
 }
 
+# Example for the new lookup-based mode. Leave commented unless you want Terraform
+# to resolve real existing objects through provider data sources.
+#
+# data_sources = {
+#   management_groups = {
+#     platform_mg = {
+#       display_name = "Platform"
+#     }
+#   }
+#
+#   subscriptions = {
+#     current_subscription = {
+#       subscription_id = "00000000-0000-0000-0000-000000000000"
+#     }
+#   }
+#
+#   role_definitions = {
+#     reader_builtin = {
+#       name = "Reader"
+#     }
+#   }
+# }
+
 pim = {
   pim_active_role_assignments = {
     # Example 1: active assignment resolved via managed identity key
@@ -69,6 +92,24 @@ pim = {
         key = "pim_grp"
       }
     }
+
+    # Example 4: lookup-based assignment using management group + role definition keys
+    # Uncomment together with the data_sources block above.
+    # example_active_lookup = {
+    #   scope_management_group = {
+    #     key = "platform_mg"
+    #   }
+    #
+    #   role_definition = {
+    #     key = "reader_builtin"
+    #   }
+    #
+    #   azuread_group = {
+    #     key = "pim_grp"
+    #   }
+    #
+    #   justification = "Lookup-based management group access"
+    # }
   }
 
   pim_eligible_role_assignments = {
@@ -127,5 +168,23 @@ pim = {
         }
       }
     }
+
+    # Example 6: lookup-based eligible assignment using subscription + role definition keys
+    # Uncomment together with the data_sources block above.
+    # example_eligible_lookup = {
+    #   scope_subscription = {
+    #     key = "current_subscription"
+    #   }
+    #
+    #   role_definition = {
+    #     key = "reader_builtin"
+    #   }
+    #
+    #   managed_identity = {
+    #     key = "pim_mi"
+    #   }
+    #
+    #   justification = "Lookup-based subscription eligibility"
+    # }
   }
 }

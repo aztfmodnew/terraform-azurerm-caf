@@ -8,6 +8,9 @@ module "pim_active_role_assignments" {
 
   remote_objects = {
     managed_identities = local.combined_objects_managed_identities
+    management_groups  = local.combined_objects_management_groups
+    role_definitions   = local.combined_objects_role_definitions
+    subscriptions      = local.combined_objects_subscriptions
     azuread_groups     = local.combined_objects_azuread_groups
   }
 }
@@ -22,6 +25,9 @@ module "pim_eligible_role_assignments" {
 
   remote_objects = {
     managed_identities = local.combined_objects_managed_identities
+    management_groups  = local.combined_objects_management_groups
+    role_definitions   = local.combined_objects_role_definitions
+    subscriptions      = local.combined_objects_subscriptions
     azuread_groups     = local.combined_objects_azuread_groups
   }
 }
