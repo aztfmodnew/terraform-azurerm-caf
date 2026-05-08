@@ -242,8 +242,8 @@ locals {
     for key, value in local.role_definitions_data_sources_lookup : key => merge(
       value,
       {
-        id                = data.azurerm_role_definition.data_sources_lookup[key].id
-        name              = try(data.azurerm_role_definition.data_sources_lookup[key].name, try(value.name, null))
+        id   = data.azurerm_role_definition.data_sources_lookup[key].id
+        name = try(data.azurerm_role_definition.data_sources_lookup[key].name, try(value.name, null))
         role_definition_id = coalesce(
           try(value.role_definition_id, null),
           try(
@@ -323,15 +323,15 @@ locals {
     for key, value in local.private_dns_data_sources_name_lookup : key => merge(
       value,
       {
-        id                                                  = data.azurerm_private_dns_zone.data_sources_lookup[key].id
-        name                                                = data.azurerm_private_dns_zone.data_sources_lookup[key].name
-        resource_group_name                                 = try(value.resource_group_name, null)
-        max_number_of_record_sets                           = try(data.azurerm_private_dns_zone.data_sources_lookup[key].max_number_of_record_sets, null)
-        max_number_of_virtual_network_links                 = try(data.azurerm_private_dns_zone.data_sources_lookup[key].max_number_of_virtual_network_links, null)
+        id                                                    = data.azurerm_private_dns_zone.data_sources_lookup[key].id
+        name                                                  = data.azurerm_private_dns_zone.data_sources_lookup[key].name
+        resource_group_name                                   = try(value.resource_group_name, null)
+        max_number_of_record_sets                             = try(data.azurerm_private_dns_zone.data_sources_lookup[key].max_number_of_record_sets, null)
+        max_number_of_virtual_network_links                   = try(data.azurerm_private_dns_zone.data_sources_lookup[key].max_number_of_virtual_network_links, null)
         max_number_of_virtual_network_links_with_registration = try(data.azurerm_private_dns_zone.data_sources_lookup[key].max_number_of_virtual_network_links_with_registration, null)
-        number_of_record_sets                               = try(data.azurerm_private_dns_zone.data_sources_lookup[key].number_of_record_sets, null)
-        tags                                                = try(data.azurerm_private_dns_zone.data_sources_lookup[key].tags, null)
-        rbac_id                                             = data.azurerm_private_dns_zone.data_sources_lookup[key].id
+        number_of_record_sets                                 = try(data.azurerm_private_dns_zone.data_sources_lookup[key].number_of_record_sets, null)
+        tags                                                  = try(data.azurerm_private_dns_zone.data_sources_lookup[key].tags, null)
+        rbac_id                                               = data.azurerm_private_dns_zone.data_sources_lookup[key].id
       }
     )
   }
@@ -427,16 +427,16 @@ locals {
     for key, value in local.virtual_subnets_data_sources_name_lookup : key => merge(
       value,
       {
-        id                                     = data.azurerm_subnet.virtual_subnets_data_sources_lookup[key].id
-        name                                   = data.azurerm_subnet.virtual_subnets_data_sources_lookup[key].name
-        resource_group_name                    = data.azurerm_subnet.virtual_subnets_data_sources_lookup[key].resource_group_name
-        virtual_network_name                   = data.azurerm_subnet.virtual_subnets_data_sources_lookup[key].virtual_network_name
-        address_prefixes                       = try(data.azurerm_subnet.virtual_subnets_data_sources_lookup[key].address_prefixes, null)
-        network_security_group_id              = try(data.azurerm_subnet.virtual_subnets_data_sources_lookup[key].network_security_group_id, null)
-        route_table_id                         = try(data.azurerm_subnet.virtual_subnets_data_sources_lookup[key].route_table_id, null)
-        service_endpoints                      = try(data.azurerm_subnet.virtual_subnets_data_sources_lookup[key].service_endpoints, null)
-        default_outbound_access_enabled        = try(data.azurerm_subnet.virtual_subnets_data_sources_lookup[key].default_outbound_access_enabled, null)
-        private_endpoint_network_policies      = try(data.azurerm_subnet.virtual_subnets_data_sources_lookup[key].private_endpoint_network_policies, null)
+        id                                            = data.azurerm_subnet.virtual_subnets_data_sources_lookup[key].id
+        name                                          = data.azurerm_subnet.virtual_subnets_data_sources_lookup[key].name
+        resource_group_name                           = data.azurerm_subnet.virtual_subnets_data_sources_lookup[key].resource_group_name
+        virtual_network_name                          = data.azurerm_subnet.virtual_subnets_data_sources_lookup[key].virtual_network_name
+        address_prefixes                              = try(data.azurerm_subnet.virtual_subnets_data_sources_lookup[key].address_prefixes, null)
+        network_security_group_id                     = try(data.azurerm_subnet.virtual_subnets_data_sources_lookup[key].network_security_group_id, null)
+        route_table_id                                = try(data.azurerm_subnet.virtual_subnets_data_sources_lookup[key].route_table_id, null)
+        service_endpoints                             = try(data.azurerm_subnet.virtual_subnets_data_sources_lookup[key].service_endpoints, null)
+        default_outbound_access_enabled               = try(data.azurerm_subnet.virtual_subnets_data_sources_lookup[key].default_outbound_access_enabled, null)
+        private_endpoint_network_policies             = try(data.azurerm_subnet.virtual_subnets_data_sources_lookup[key].private_endpoint_network_policies, null)
         private_link_service_network_policies_enabled = try(data.azurerm_subnet.virtual_subnets_data_sources_lookup[key].private_link_service_network_policies_enabled, null)
       }
     )
