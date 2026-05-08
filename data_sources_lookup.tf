@@ -442,3 +442,161 @@ locals {
     )
   }
 }
+
+# =============================================================================
+# Batch 2: log_analytics, application_insights, service_plans, cosmos_dbs,
+#          mssql_servers
+# =============================================================================
+
+locals {
+  # ---------------------------------------------------------------------------
+  # log_analytics
+  # ---------------------------------------------------------------------------
+  log_analytics_data_sources_name_lookup = {
+    for key, value in try(var.data_sources.log_analytics, {}) : key => value
+    if try(value.id, null) == null && try(value.name, null) != null && try(value.resource_group_name, null) != null
+  }
+
+  # ---------------------------------------------------------------------------
+  # application_insights  (key in var.data_sources: "azurerm_application_insights")
+  # ---------------------------------------------------------------------------
+  application_insights_data_sources_name_lookup = {
+    for key, value in try(var.data_sources.azurerm_application_insights, {}) : key => value
+    if try(value.id, null) == null && try(value.name, null) != null && try(value.resource_group_name, null) != null
+  }
+
+  # ---------------------------------------------------------------------------
+  # service_plans
+  # ---------------------------------------------------------------------------
+  service_plans_data_sources_name_lookup = {
+    for key, value in try(var.data_sources.service_plans, {}) : key => value
+    if try(value.id, null) == null && try(value.name, null) != null && try(value.resource_group_name, null) != null
+  }
+
+  # ---------------------------------------------------------------------------
+  # cosmos_dbs
+  # ---------------------------------------------------------------------------
+  cosmos_dbs_data_sources_name_lookup = {
+    for key, value in try(var.data_sources.cosmos_dbs, {}) : key => value
+    if try(value.id, null) == null && try(value.name, null) != null && try(value.resource_group_name, null) != null
+  }
+
+  # ---------------------------------------------------------------------------
+  # mssql_servers
+  # ---------------------------------------------------------------------------
+  mssql_servers_data_sources_name_lookup = {
+    for key, value in try(var.data_sources.mssql_servers, {}) : key => value
+    if try(value.id, null) == null && try(value.name, null) != null && try(value.resource_group_name, null) != null
+  }
+}
+
+data "azurerm_log_analytics_workspace" "data_sources_lookup" {
+  for_each = local.log_analytics_data_sources_name_lookup
+
+  name                = each.value.name
+  resource_group_name = each.value.resource_group_name
+}
+
+data "azurerm_application_insights" "data_sources_lookup" {
+  for_each = local.application_insights_data_sources_name_lookup
+
+  name                = each.value.name
+  resource_group_name = each.value.resource_group_name
+}
+
+data "azurerm_service_plan" "data_sources_lookup" {
+  for_each = local.service_plans_data_sources_name_lookup
+
+  name                = each.value.name
+  resource_group_name = each.value.resource_group_name
+}
+
+data "azurerm_cosmosdb_account" "data_sources_lookup" {
+  for_each = local.cosmos_dbs_data_sources_name_lookup
+
+  name                = each.value.name
+  resource_group_name = each.value.resource_group_name
+}
+
+data "azurerm_mssql_server" "data_sources_lookup" {
+  for_each = local.mssql_servers_data_sources_name_lookup
+
+  name                = each.value.name
+  resource_group_name = each.value.resource_group_name
+}
+
+locals {
+  log_analytics_data_sources_resolved = {
+    for key, value in local.log_analytics_data_sources_name_lookup : key => merge(
+      value,
+      {
+        id                  = data.azurerm_log_analytics_workspace.data_sources_lookup[key].id
+        name                = data.azurerm_log_analytics_workspace.data_sources_lookup[key].name
+        location            = data.azurerm_log_analytics_workspace.data_sources_lookup[key].location
+        resource_group_name = data.azurerm_log_analytics_workspace.data_sources_lookup[key].resource_group_name
+        workspace_id        = try(data.azurerm_log_analytics_workspace.data_sources_lookup[key].workspace_id, null)
+        primary_shared_key  = try(data.azurerm_log_analytics_workspace.data_sources_lookup[key].primary_shared_key, null)
+        rbac_id             = data.azurerm_log_analytics_workspace.data_sources_lookup[key].id
+      }
+    )
+  }
+
+  application_insights_data_sources_resolved = {
+    for key, value in local.application_insights_data_sources_name_lookup : key => merge(
+      value,
+      {
+        id                  = data.azurerm_application_insights.data_sources_lookup[key].id
+        name                = data.azurerm_application_insights.data_sources_lookup[key].name
+        resource_group_name = try(data.azurerm_application_insights.data_sources_lookup[key].resource_group_name, null)
+        app_id              = try(data.azurerm_application_insights.data_sources_lookup[key].app_id, null)
+        instrumentation_key = try(data.azurerm_application_insights.data_sources_lookup[key].instrumentation_key, null)
+        connection_string   = try(data.azurerm_application_insights.data_sources_lookup[key].connection_string, null)
+        rbac_id             = data.azurerm_application_insights.data_sources_lookup[key].id
+      }
+    )
+  }
+
+  service_plans_data_sources_resolved = {
+    for key, value in local.service_plans_data_sources_name_lookup : key => merge(
+      value,
+      {
+        id                  = data.azurerm_service_plan.data_sources_lookup[key].id
+        name                = data.azurerm_service_plan.data_sources_lookup[key].name
+        location            = data.azurerm_service_plan.data_sources_lookup[key].location
+        resource_group_name = data.azurerm_service_plan.data_sources_lookup[key].resource_group_name
+        kind                = try(data.azurerm_service_plan.data_sources_lookup[key].kind, null)
+        reserved            = try(data.azurerm_service_plan.data_sources_lookup[key].reserved, null)
+        rbac_id             = data.azurerm_service_plan.data_sources_lookup[key].id
+      }
+    )
+  }
+
+  cosmos_dbs_data_sources_resolved = {
+    for key, value in local.cosmos_dbs_data_sources_name_lookup : key => merge(
+      value,
+      {
+        id                  = data.azurerm_cosmosdb_account.data_sources_lookup[key].id
+        name                = data.azurerm_cosmosdb_account.data_sources_lookup[key].name
+        location            = data.azurerm_cosmosdb_account.data_sources_lookup[key].location
+        resource_group_name = data.azurerm_cosmosdb_account.data_sources_lookup[key].resource_group_name
+        endpoint            = try(data.azurerm_cosmosdb_account.data_sources_lookup[key].endpoint, null)
+        primary_key         = try(data.azurerm_cosmosdb_account.data_sources_lookup[key].primary_key, null)
+        rbac_id             = data.azurerm_cosmosdb_account.data_sources_lookup[key].id
+      }
+    )
+  }
+
+  mssql_servers_data_sources_resolved = {
+    for key, value in local.mssql_servers_data_sources_name_lookup : key => merge(
+      value,
+      {
+        id                          = data.azurerm_mssql_server.data_sources_lookup[key].id
+        name                        = data.azurerm_mssql_server.data_sources_lookup[key].name
+        location                    = data.azurerm_mssql_server.data_sources_lookup[key].location
+        resource_group_name         = data.azurerm_mssql_server.data_sources_lookup[key].resource_group_name
+        fully_qualified_domain_name = try(data.azurerm_mssql_server.data_sources_lookup[key].fully_qualified_domain_name, null)
+        rbac_id                     = data.azurerm_mssql_server.data_sources_lookup[key].id
+      }
+    )
+  }
+}
