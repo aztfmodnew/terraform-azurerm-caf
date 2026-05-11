@@ -324,7 +324,49 @@ variable "remote_objects" {
 }
 
 variable "data_sources" {
-  description = "Data gathering for resources not managed by CAF Module"
+  description = <<DESCRIPTION
+Configuration object for existing resources not created by this CAF stack.
+
+`data_sources` is merged into `local.combined_objects_*` so other modules can reference
+pre-existing resources by key, using the same dependency patterns as CAF-managed resources.
+
+Supported input modes:
+
+1) Explicit ID mode (legacy, backward compatible)
+   - Provide `id` directly in `var.data_sources.<object_type>.<key>`.
+   - This remains supported and is preferred when the resource identity is already known.
+
+2) Name-based lookup mode (centralized)
+   - For selected object types, provide lookup attributes and let root-level
+     `data_sources_lookup.tf` resolve IDs via provider data sources.
+   - Currently centralized lookup is implemented for:
+     - `resource_groups` (`name`)
+     - `management_groups` (`name` or `display_name`)
+    - `subscriptions` (`subscription_id` or `display_name` with exact-match ambiguity guard)
+     - `role_definitions` (`name` or `role_definition_id`, optional `scope`)
+     - `azuread_groups` (`display_name`)
+     - `keyvaults` (`name`, `resource_group_name`)
+      - `managed_identities` (`name`, `resource_group_name`)
+      - `private_dns` (`name`, optional `resource_group_name`)
+      - `public_ip_addresses` (`name`, `resource_group_name`)
+      - `virtual_subnets` (`name`, `virtual_network_name`, `resource_group_name`)
+     - `storage_accounts` (`name`, `resource_group_name`)
+     - `recovery_vaults` (`name`, `resource_group_name`)
+     - `vnets` (`name`, `resource_group_name`) and optional nested subnet lookups by `name`
+
+Merge behavior:
+- For centralized lookup object types, combined objects include:
+  - CAF-managed objects,
+  - resolved lookup entries,
+  - explicit-ID entries (filtered from `data_sources`).
+- For other object types, behavior remains unchanged and depends on each
+  `combined_objects_*` merge implementation.
+
+Notes:
+- Keys under each object type become the reference keys used by downstream modules.
+- For role mappings and identity-related flows, keep required compatibility fields
+  (for example `id`, `object_id`, `rbac_id`) when applicable.
+DESCRIPTION
   default     = {}
 }
 

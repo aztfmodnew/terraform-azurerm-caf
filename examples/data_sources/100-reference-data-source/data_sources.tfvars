@@ -1,7 +1,14 @@
 ###############################################################################
-# data_sources uses the same structure as remote_objects
-# It is going to be merged into the local.combined_obects_<OBJECT_TYPE>
-# using the `client_config.landingzone_key` as lz_key
+# data_sources uses the same structure as remote_objects.
+#
+# Hybrid behavior:
+# - Legacy mode: explicit `id` entries remain supported.
+# - Lookup mode: selected object types are resolved by name in
+#   root `data_sources_lookup.tf` (resource_groups, subscriptions,
+#   azuread_groups, keyvaults, storage_accounts, recovery_vaults, vnets/subnets).
+#
+# Resolved and explicit-id entries are merged into local.combined_objects_<OBJECT_TYPE>
+# under `client_config.landingzone_key`.
 ###############################################################################
 data_sources = {
   resource_groups = {
@@ -27,14 +34,22 @@ data_sources = {
     }
   }
   keyvaults = {
+    # Legacy mode (still supported): explicit id
     existing_keyvault = {
       # must be in the default subscription set by ARM_SUBSCRIPTION_ID to avoid an error
       # https://github.com/hashicorp/terraform-provider-azurerm/issues/22064
       id   = "/subscriptions/xxxxxxxx-b8a5-407a-9e69-1ed0ff53d8b0/resourceGroups/j20-rg-launchpad-level4/providers/Microsoft.KeyVault/vaults/j20-kv-level4"
       name = "j20-kv-level4"
     }
+
+    # Lookup mode: resolve existing Key Vault by name + resource_group_name
+    existing_keyvault_lookup = {
+      name                = "j20-kv-level4"
+      resource_group_name = "j20-rg-launchpad-level4"
+    }
   }
   vnets = {
+    # Legacy mode (still supported): explicit id + optional explicit subnet ids
     vnet_existing = {
       id = "/subscriptions/xxxxxxxx-aba1-47ff-b620-1d01350e2dd5/resourceGroups/mlyt-rg-launchpad-level4/providers/Microsoft.Network/virtualNetworks/vnet-existing"
       subnets = {
@@ -46,6 +61,18 @@ data_sources = {
         }
         private_endpoints = {
           id = "/subscriptions/xxxxxxxx-aba1-47ff-b620-1d01350e2dd5/resourceGroups/mlyt-rg-launchpad-level4/providers/Microsoft.Network/virtualNetworks/vnet-existing/subnets/private-endpoints"
+        }
+      }
+    }
+
+    # Lookup mode: resolve existing VNet by name/resource_group_name
+    # Optional: subnets can be resolved by name (or injected by id per subnet)
+    vnet_existing_lookup = {
+      name                = "vnet-existing"
+      resource_group_name = "mlyt-rg-launchpad-level4"
+      subnets = {
+        apps = {
+          name = "apps"
         }
       }
     }

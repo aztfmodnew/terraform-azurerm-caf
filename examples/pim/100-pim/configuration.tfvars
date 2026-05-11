@@ -26,6 +26,31 @@ managed_identities = {
   }
 }
 
+# Example for the new lookup-based mode. Leave commented unless you want Terraform
+# to resolve real existing objects through provider data sources.
+#
+# data_sources = {
+#   management_groups = {
+#     platform_mg = {
+#       display_name = "Platform"
+#     }
+#   }
+#
+#   subscriptions = {
+#     current_subscription = {
+#       subscription_id = "00000000-0000-0000-0000-000000000000"
+#       # Alternative:
+#       # display_name = "My Production Subscription"
+#     }
+#   }
+#
+#   role_definitions = {
+#     reader_builtin = {
+#       name = "Reader"
+#     }
+#   }
+# }
+
 pim = {
   pim_active_role_assignments = {
     # Example 1: active assignment resolved via managed identity key
@@ -69,6 +94,24 @@ pim = {
         key = "pim_grp"
       }
     }
+
+    # Example 4: lookup-based assignment using management group + role definition keys
+    # Uncomment together with the data_sources block above.
+    # example_active_lookup = {
+    #   scope_management_group = {
+    #     key = "platform_mg"
+    #   }
+    #
+    #   role_definition = {
+    #     key = "reader_builtin"
+    #   }
+    #
+    #   azuread_group = {
+    #     key = "pim_grp"
+    #   }
+    #
+    #   justification = "Lookup-based management group access"
+    # }
   }
 
   pim_eligible_role_assignments = {
@@ -127,5 +170,41 @@ pim = {
         }
       }
     }
+
+    # Example 6: lookup-based eligible assignment using subscription + role definition keys
+    # Uncomment together with the data_sources block above.
+    # example_eligible_lookup = {
+    #   scope_subscription = {
+    #     key = "current_subscription"
+    #   }
+    #
+    #   role_definition = {
+    #     key = "reader_builtin"
+    #   }
+    #
+    #   managed_identity = {
+    #     key = "pim_mi"
+    #   }
+    #
+    #   justification = "Lookup-based subscription eligibility"
+    # }
   }
+
+
+  pim_role_management_policies = {
+    # Example: allow permanent assignments (subject to tenant/scope policy permissions)
+    example_policy_allow_permanent = {
+      scope              = "/subscriptions/00000000-0000-0000-0000-000000000000"
+      role_definition_id = "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+
+      active_assignment_rules = {
+        expiration_required = false
+      }
+
+      eligible_assignment_rules = {
+        expiration_required = false
+      }
+    }
+  }
+
 }

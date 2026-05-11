@@ -299,14 +299,22 @@ When creating or updating skills:
 
 Skills that perform schema validation require the **HashiCorp Terraform MCP Server**.
 
-### Configuration (`.mcp.json` in project root)
+### Configuration (`.vscode/mcp.json` in workspace)
 
 ```json
 {
-  "mcpServers": {
-    "terraform": {
+  "servers": {
+    "hashicorp/terraform-mcp-server": {
+      "type": "stdio",
       "command": "docker",
-      "args": ["run", "-i", "--rm", "hashicorp/terraform-mcp-server"]
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "hashicorp/terraform-mcp-server"
+      ],
+      "gallery": "https://api.mcp.github.com/v0/servers/34cd3839-461a-404a-a290-3d3bc9d8bee3",
+      "version": "1.0.0"
     }
   }
 }
