@@ -187,4 +187,22 @@ pim = {
     #   justification = "Lookup-based subscription eligibility"
     # }
   }
+
+
+  pim_role_management_policies = {
+    # Example: allow permanent assignments (subject to tenant/scope policy permissions)
+    example_policy_allow_permanent = {
+      scope              = "/subscriptions/00000000-0000-0000-0000-000000000000"
+      role_definition_id = "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+
+      active_assignment_rules = {
+        expiration_required = false
+      }
+
+      eligible_assignment_rules = {
+        expiration_required = false
+      }
+    }
+  }
+
 }

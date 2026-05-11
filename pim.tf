@@ -32,10 +32,32 @@ module "pim_eligible_role_assignments" {
   }
 }
 
+
+
+module "pim_role_management_policies" {
+  source   = "./modules/authorization/pim_role_management_policies"
+  for_each = local.pim.pim_role_management_policies
+
+  settings        = each.value
+  global_settings = local.global_settings
+  client_config   = local.client_config
+
+  remote_objects = {
+    management_groups = local.combined_objects_management_groups
+    role_definitions  = local.combined_objects_role_definitions
+    subscriptions     = local.combined_objects_subscriptions
+  }
+}
+
 output "pim_active_role_assignments" {
   value = module.pim_active_role_assignments
 }
 
 output "pim_eligible_role_assignments" {
   value = module.pim_eligible_role_assignments
+}
+
+
+output "pim_role_management_policies" {
+  value = module.pim_role_management_policies
 }

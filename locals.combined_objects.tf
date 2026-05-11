@@ -167,6 +167,7 @@ locals {
   combined_objects_notification_hub_namespaces                   = merge(tomap({ (local.client_config.landingzone_key) = module.notification_hub_namespaces }), lookup(var.remote_objects, "notification_hub_namespaces", {}))
   combined_objects_pim_active_role_assignments                   = merge(tomap({ (local.client_config.landingzone_key) = module.pim_active_role_assignments }), lookup(var.remote_objects, "pim_active_role_assignments", {}))
   combined_objects_pim_eligible_role_assignments                 = merge(tomap({ (local.client_config.landingzone_key) = module.pim_eligible_role_assignments }), lookup(var.remote_objects, "pim_eligible_role_assignments", {}))
+  combined_objects_pim_role_management_policies                  = merge(tomap({ (local.client_config.landingzone_key) = module.pim_role_management_policies }), lookup(var.remote_objects, "pim_role_management_policies", {}))
   combined_objects_postgresql_flexible_servers                   = merge(tomap({ (local.client_config.landingzone_key) = module.postgresql_flexible_servers }), lookup(var.remote_objects, "postgresql_flexible_servers", {}))
   combined_objects_private_dns = merge(
     tomap({
