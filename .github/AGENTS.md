@@ -123,7 +123,7 @@ This document lists all AI agents available for **module creation, updates, test
 
 **What it does:**
 - Sequences tasks: create → integrate root → add diagnostics → add examples → wire CI/CD → test
-- Invokes specialized agents (Module Builder, Example Generator, etc.)
+- Invokes specialized agents (Module Builder, Module Updater, Diagnostics Integrator, Private Endpoint Integrator, Example Generator, etc.)
 - Tracks progress across steps
 - Validates each step before proceeding
 - Provides consolidated summary
@@ -199,15 +199,15 @@ This document lists all AI agents available for **module creation, updates, test
 
 ## 🛠️ Specialized Feature Agents
 
-### **Private Endpoint Integration Specialist**
-**Purpose:** Adds Azure Private Endpoint integration to modules for secure, private network connectivity.
+### **Private Endpoint Integrator**
+**Purpose:** Adds or updates Azure Private Endpoint integration in CAF Terraform modules for secure, private network connectivity.
 
 **When to use:**
 - "Add private endpoint support to the Application Gateway module"
 - "Create a private_endpoint.tf file for the SQL Database module"
 
 **What it does:**
-- Creates `modules/networking/private_endpoint/` submodule (if needed)
+- Executes the `private-endpoint-integration` skill workflow in orchestrated flows
 - Implements dynamic private endpoint block
 - Handles DNS zone integration
 - Configures network ACLs
@@ -223,14 +223,15 @@ This document lists all AI agents available for **module creation, updates, test
 
 ---
 
-### **Diagnostics Integration Specialist**
-**Purpose:** Adds Azure Monitor diagnostic settings to modules for monitoring and logging.
+### **Diagnostics Integrator**
+**Purpose:** Adds or updates Azure Monitor diagnostic settings integration in CAF Terraform modules for monitoring and logging.
 
 **When to use:**
 - "Add diagnostic settings support to the API Management module"
 - "Implement diagnostics for the Virtual Network module"
 
 **What it does:**
+- Executes the `diagnostics-integration` skill workflow in orchestrated flows
 - Creates `diagnostics.tf` file with standard patterns
 - Implements dynamic diagnostic blocks
 - Handles Log Analytics workspace references
@@ -279,8 +280,8 @@ User: "Create a module for azurerm_app_configuration with all enterprise feature
 
 Workflow:
 1. Module Builder creates structure and resources
-2. Private Endpoint Integration adds PE support
-3. Diagnostics Integration adds monitoring
+2. Private Endpoint Integrator adds PE support
+3. Diagnostics Integrator adds monitoring
 4. Example Generator creates 100, 200, 300 examples
 5. CI Workflow Manager registers examples
 6. Root Module Integration wires into framework
@@ -401,6 +402,6 @@ Builder     Updater      Generator       Integration
 
 ---
 
-**Last Updated:** March 2026  
+**Last Updated:** May 2026  
 **Namespace:** aztfmodnew/terraform-azurerm-caf  
-**Active Agents:** 10 (with 7 specialized subagents via skills)
+**Active Agents:** 11 (including Diagnostics Integrator and Private Endpoint Integrator)
