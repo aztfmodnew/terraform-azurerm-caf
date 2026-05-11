@@ -342,7 +342,7 @@ Supported input modes:
    - Currently centralized lookup is implemented for:
      - `resource_groups` (`name`)
      - `management_groups` (`name` or `display_name`)
-     - `subscriptions` (`subscription_id`)
+    - `subscriptions` (`subscription_id` or `display_name` with exact-match ambiguity guard)
      - `role_definitions` (`name` or `role_definition_id`, optional `scope`)
      - `azuread_groups` (`display_name`)
      - `keyvaults` (`name`, `resource_group_name`)

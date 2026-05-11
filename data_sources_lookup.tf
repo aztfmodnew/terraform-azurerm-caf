@@ -22,8 +22,40 @@ locals {
   }
 
   subscriptions_data_sources_lookup = {
+    for key, value in local.subscriptions_data_sources_lookup_with_id : key => value
+    if try(value.subscription_id, null) != null
+  }
+
+  subscriptions_data_sources_lookup_with_id = merge(
+    local.subscriptions_data_sources_subscription_id_lookup,
+    local.subscriptions_data_sources_display_name_lookup_with_id
+  )
+
+  subscriptions_data_sources_subscription_id_lookup = {
     for key, value in try(var.data_sources.subscriptions, {}) : key => value
     if try(value.id, null) == null && try(value.subscription_id, null) != null
+  }
+
+  subscriptions_data_sources_display_name_lookup = {
+    for key, value in try(var.data_sources.subscriptions, {}) : key => value
+    if try(value.id, null) == null && try(value.subscription_id, null) == null && try(value.display_name, null) != null
+  }
+
+  subscriptions_data_sources_display_name_exact_matches = {
+    for key, value in local.subscriptions_data_sources_display_name_lookup : key => [
+      for subscription in try(data.azurerm_subscriptions.data_sources_lookup[key].subscriptions, []) : subscription
+      if lower(trimspace(try(subscription.display_name, ""))) == lower(trimspace(value.display_name))
+    ]
+  }
+
+  subscriptions_data_sources_display_name_lookup_with_id = {
+    for key, value in local.subscriptions_data_sources_display_name_lookup : key => merge(
+      value,
+      {
+        subscription_id = local.subscriptions_data_sources_display_name_exact_matches[key][0].subscription_id
+      }
+    )
+    if length(local.subscriptions_data_sources_display_name_exact_matches[key]) == 1
   }
 
   role_definitions_data_sources_lookup = {
@@ -115,6 +147,33 @@ data "azurerm_subscription" "data_sources_lookup" {
   for_each = local.subscriptions_data_sources_lookup
 
   subscription_id = each.value.subscription_id
+}
+
+data "azurerm_subscriptions" "data_sources_lookup" {
+  for_each = local.subscriptions_data_sources_display_name_lookup
+
+  display_name_contains = each.value.display_name
+}
+
+resource "terraform_data" "subscriptions_data_sources_display_name_guard" {
+  for_each = local.subscriptions_data_sources_display_name_lookup
+
+  input = {
+    key          = each.key
+    display_name = each.value.display_name
+  }
+
+  lifecycle {
+    precondition {
+      condition = length(local.subscriptions_data_sources_display_name_exact_matches[each.key]) == 1
+      error_message = format(
+        "data_sources.subscriptions[%q] with display_name %q resolved %d exact matches; expected exactly 1. Use subscription_id for deterministic resolution when names are not unique.",
+        each.key,
+        each.value.display_name,
+        length(local.subscriptions_data_sources_display_name_exact_matches[each.key])
+      )
+    }
+  }
 }
 
 data "azurerm_role_definition" "data_sources_lookup" {

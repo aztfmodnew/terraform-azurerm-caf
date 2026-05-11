@@ -1743,7 +1743,7 @@ Supported modes:
    - Centralized lookup currently supports:
      - `resource_groups` by `name`
      - `management_groups` by `name` or `display_name`
-     - `subscriptions` by `subscription_id`
+    - `subscriptions` by `subscription_id` or `display_name` (exact match required)
      - `role_definitions` by `name` or `role_definition_id` (optional `scope`)
      - `azuread_groups` by `display_name`
      - `keyvaults` by `name` + `resource_group_name`

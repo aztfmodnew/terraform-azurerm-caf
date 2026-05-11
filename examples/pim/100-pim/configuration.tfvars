@@ -39,6 +39,8 @@ managed_identities = {
 #   subscriptions = {
 #     current_subscription = {
 #       subscription_id = "00000000-0000-0000-0000-000000000000"
+#       # Alternative:
+#       # display_name = "My Production Subscription"
 #     }
 #   }
 #
