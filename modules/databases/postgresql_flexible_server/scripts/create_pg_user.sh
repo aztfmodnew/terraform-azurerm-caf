@@ -4,10 +4,15 @@ set -e
 export PGPASSWORD="${DBADMINPWD}"
 export PGSSLMODE="require"
 
+echo "Creating PostgreSQL user: ${DBUSERNAMES}"
+
 # Create login on postgres database (server level)
-psql -h "${PGHOST}" -p "${PGPORT}" -U "${DBADMINUSER}" -d "postgres" -v DBUSERNAMES="${DBUSERNAMES}" -v DBUSERPASSWORDS="${DBUSERPASSWORDS}" -f "${SQLLOGINFILEPATH}"
+# Use -c to execute commands directly with proper escaping
+psql -h "${PGHOST}" -p "${PGPORT}" -U "${DBADMINUSER}" -d "postgres" \
+  -c "CREATE ROLE \"${DBUSERNAMES}\" WITH LOGIN PASSWORD '$( echo "${DBUSERPASSWORDS}" | sed "s/'/''/g" )'"
 
 # Create user and assign role on target database
-psql -h "${PGHOST}" -p "${PGPORT}" -U "${DBADMINUSER}" -d "${PGDATABASE}" -v DBUSERNAMES="${DBUSERNAMES}" -v DBROLES="${DBROLES}" -f "${SQLUSERFILEPATH}"
+psql -h "${PGHOST}" -p "${PGPORT}" -U "${DBADMINUSER}" -d "${PGDATABASE}" \
+  -c "GRANT \"${DBROLES}\" TO \"${DBUSERNAMES}\""
 
-echo "PostgreSQL user(s) created successfully"
+echo "PostgreSQL user created successfully"
