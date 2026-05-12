@@ -15,7 +15,7 @@ resource "random_password" "pg_user" {
 
 resource "azurerm_key_vault_secret" "pg_user_password" {
   for_each     = try(var.settings.postgresql_users, {})
-  name         = format("%s-%s-%s-password", azurecaf_name.postgresql_flexible_server.result, each.value.database, each.key)
+  name         = replace(format("%s-%s-%s-password", azurecaf_name.postgresql_flexible_server.result, each.value.database, each.key), "_", "-")
   value        = random_password.pg_user[each.key].result
   key_vault_id = try(var.remote_objects.keyvault_id, null)
   lifecycle {
