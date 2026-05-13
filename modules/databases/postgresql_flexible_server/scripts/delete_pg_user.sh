@@ -6,23 +6,16 @@ export PGSSLMODE="require"
 
 echo "Deleting PostgreSQL user: ${DBUSERNAMES}"
 
-# Revoke privileges on target database
-psql -h "${PGHOST}" -p "${PGPORT}" -U "${DBADMINUSER}" -d "${PGDATABASE}" \
-  -c "REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA public FROM \"${DBUSERNAMES}\""
+PSQL_POSTGRES="psql -h ${PGHOST} -p ${PGPORT} -U ${DBADMINUSER} -d postgres"
+PSQL_DBNAME="psql -h ${PGHOST} -p ${PGPORT} -U ${DBADMINUSER} -d ${PGDATABASE}"
 
-# Revoke default privileges on target database
-psql -h "${PGHOST}" -p "${PGPORT}" -U "${DBADMINUSER}" -d "${PGDATABASE}" \
-  -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE ALL ON TABLES FROM \"${DBUSERNAMES}\""
+# Drop owned objects in the target database (handles grants, default privileges, etc.)
+${PSQL_DBNAME} -c "DROP OWNED BY \"${DBUSERNAMES}\";" || true
 
-# Reassign and drop owned objects on postgres database (server level)
-psql -h "${PGHOST}" -p "${PGPORT}" -U "${DBADMINUSER}" -d "postgres" \
-  -c "REASSIGN OWNED BY \"${DBUSERNAMES}\" TO current_user"
+# Drop owned objects in postgres database (server-level)
+${PSQL_POSTGRES} -c "DROP OWNED BY \"${DBUSERNAMES}\";" || true
 
-psql -h "${PGHOST}" -p "${PGPORT}" -U "${DBADMINUSER}" -d "postgres" \
-  -c "DROP OWNED BY \"${DBUSERNAMES}\""
-
-# Drop the login/role
-psql -h "${PGHOST}" -p "${PGPORT}" -U "${DBADMINUSER}" -d "postgres" \
-  -c "DROP ROLE IF EXISTS \"${DBUSERNAMES}\""
+# Drop the role
+${PSQL_POSTGRES} -c "DROP ROLE IF EXISTS \"${DBUSERNAMES}\";"
 
 echo "PostgreSQL user deleted successfully"
