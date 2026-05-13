@@ -5,9 +5,6 @@ resource "null_resource" "set_db_permissions" {
     db_usernames = join(",", each.value.db_usernames)
     db_roles     = join(",", each.value.db_roles)
     database     = each.value.database
-    server_fqdn  = local.server_fqdn
-    admin_user   = try(var.settings.administrator_username, "pgadmin")
-    admin_pwd    = try(azurerm_postgresql_flexible_server.postgresql.administrator_password, data.azurerm_key_vault_secret.postgresql_admin_password[0].value)
   }
 
   provisioner "local-exec" {
@@ -32,11 +29,11 @@ resource "null_resource" "set_db_permissions" {
     interpreter = ["/bin/bash"]
     on_failure  = continue
     environment = {
-      PGHOST      = self.triggers.server_fqdn
+      PGHOST      = azurerm_postgresql_flexible_server.postgresql.fqdn
       PGPORT      = "5432"
       PGDATABASE  = self.triggers.database
-      DBADMINUSER = self.triggers.admin_user
-      DBADMINPWD  = self.triggers.admin_pwd
+      DBADMINUSER = try(var.settings.administrator_username, "pgadmin")
+      DBADMINPWD  = try(azurerm_postgresql_flexible_server.postgresql.administrator_password, data.azurerm_key_vault_secret.postgresql_admin_password[0].value)
       DBUSERNAMES = self.triggers.db_usernames
     }
   }
