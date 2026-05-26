@@ -544,10 +544,6 @@ variable "batch_applications" {
   type    = any
   default = {}
 }
-variable "batch_certificates" {
-  type    = any
-  default = {}
-}
 variable "batch_jobs" {
   type    = any
   default = {}
@@ -1730,8 +1726,41 @@ variable "cosmosdb_role_definitions" {
   default = {}
 }
 variable "data_sources" {
-  type    = any
-  default = {}
+  description = <<DESCRIPTION
+Configuration object for existing resources used by examples.
+
+`data_sources` allows examples to consume resources that are not created in the same
+example execution. The object is merged into root `combined_objects` so dependencies
+can be referenced by key.
+
+Supported modes:
+
+1) Explicit ID mode (legacy, always supported)
+   - Provide `id` in `data_sources.<object_type>.<key>`.
+
+2) Name-based lookup mode (for centralized lookups)
+   - Provide lookup attributes and allow `data_sources_lookup.tf` to resolve IDs.
+   - Centralized lookup currently supports:
+     - `resource_groups` by `name`
+     - `management_groups` by `name` or `display_name`
+    - `subscriptions` by `subscription_id` or `display_name` (exact match required)
+     - `role_definitions` by `name` or `role_definition_id` (optional `scope`)
+     - `azuread_groups` by `display_name`
+     - `keyvaults` by `name` + `resource_group_name`
+    - `managed_identities` by `name` + `resource_group_name`
+    - `private_dns` by `name` (optional `resource_group_name`)
+    - `public_ip_addresses` by `name` + `resource_group_name`
+    - `virtual_subnets` by `name` + `virtual_network_name` + `resource_group_name`
+     - `storage_accounts` by `name` + `resource_group_name`
+     - `recovery_vaults` by `name` + `resource_group_name`
+     - `vnets` by `name` + `resource_group_name` (with optional subnet lookup by subnet `name`)
+
+Recommendation:
+- Keep example keys stable (`existing_keyvault`, `vnet_existing`, etc.) because those
+  keys are used by resource references in the same example.
+DESCRIPTION
+  type        = any
+  default     = {}
 }
 variable "maintenance_configuration" {
   type    = any

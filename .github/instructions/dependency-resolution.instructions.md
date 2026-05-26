@@ -432,6 +432,60 @@ target_id = try(local.combined_objects_storage_accounts[lz][key].id, null)
 settings = merge(each.value, { target_resource_id = target_id })
 ```
 
+### ✅ Do: Use hybrid `data_sources` patterns for existing resources
+
+When supporting existing (non-CAF-managed) resources, prefer a hybrid model:
+
+1. Keep direct-ID entries supported (backward compatibility)
+2. Resolve name-based entries centrally in root through `data_sources_lookup.tf`
+3. Merge only **resolved** lookup locals and **explicit-id** static entries into `combined_objects`
+
+Example (vnets):
+
+```hcl
+# data_sources_lookup.tf
+locals {
+  vnets_data_sources_name_lookup = {
+    for key, value in try(var.data_sources.vnets, {}) : key => value
+    if try(value.id, null) == null && try(value.name, null) != null && try(value.resource_group_name, null) != null
+  }
+}
+
+data "azurerm_virtual_network" "data_sources_lookup" {
+  for_each = local.vnets_data_sources_name_lookup
+
+  name                = each.value.name
+  resource_group_name = each.value.resource_group_name
+}
+
+locals {
+  vnets_data_sources_resolved = {
+    for key, value in local.vnets_data_sources_name_lookup : key => merge(
+      value,
+      { id = data.azurerm_virtual_network.data_sources_lookup[key].id }
+    )
+  }
+}
+
+# locals.combined_objects.tf
+combined_objects_vnets = merge(
+  tomap({
+    (local.client_config.landingzone_key) = merge(
+      module.networking,
+      local.vnets_data_sources_resolved,
+      {
+        for key, value in lookup(var.data_sources, "vnets", {}) :
+        key => value
+        if try(value.id, null) != null
+      }
+    )
+  }),
+  lookup(var.remote_objects, "vnets", {})
+)
+```
+
+This avoids mixing unresolved name-only data source entries into `combined_objects` while preserving legacy ID-based behavior.
+
 ### ✅ Do: Document complex resolution
 
 ```hcl

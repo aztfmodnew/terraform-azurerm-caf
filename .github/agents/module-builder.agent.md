@@ -1,37 +1,24 @@
 ---
 name: Module Builder
 description: Creates complete, production-ready Terraform modules following CAF standards from scratch
-argument-hint: "[azurerm_resource_type] or describe the Azure service"
+argument-hint: "azurerm_resource_type or describe the Azure service"
 tools:
-  - vscode
-  - execute
-  - read
-  - agent
-  - browser
-  - terraform/*
-  - edit
-  - search
-  - web
-  - todo
+  - 'agent'
+  - 'read'
+  - 'search'
+  - 'edit'
+  - 'execute'
+  - 'todo'
+  - 'azure-mcp/*'
+  - 'hashicorp/terraform-mcp-server/*'
+user-invocable: false
 agents:
   - Example Generator
   - Compliance Validator
   - Documentation Sync
   - CI Workflow Manager
   - Remote State Orchestrator
-handoffs:
-  - label: "Generate Examples"
-    agent: "Example Generator"
-    prompt: "Create 100-level and 200-level examples for the module we just built"
-    send: false
-  - label: "Document Module"
-    agent: "Documentation Sync"
-    prompt: "Generate comprehensive README documentation for the module we just created"
-    send: false
-  - label: "Validate Compliance"
-    agent: "Compliance Validator"
-    prompt: "Validate that the created module follows CAF standards and best practices"
-    send: false
+model: Auto (copilot)
 ---
 
 # Module Builder - Azure CAF Terraform Module Creation Agent

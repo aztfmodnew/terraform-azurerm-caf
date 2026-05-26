@@ -1,18 +1,15 @@
 ---
 name: Example Generator
 description: Generates consistent, realistic .tfvars examples at multiple complexity levels following CAF standards
-argument-hint: "[module-name] [complexity: 100-simple, 200-intermediate, 300-advanced]"
+argument-hint: "module-name complexity: 100-simple, 200-intermediate, 300-advanced"
 tools:
-  - vscode
-  - execute
-  - read
-  - agent
-  - browser
-  - terraform/*
-  - edit
-  - search
-  - web
-  - todo
+  - 'read'
+  - 'search'
+  - 'edit'
+  - 'execute'
+  - 'todo'
+user-invocable: false
+model: Auto (copilot)
 ---
 
 # Example Generator - CAF Example Creation Agent

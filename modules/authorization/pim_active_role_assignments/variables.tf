@@ -3,7 +3,13 @@ variable "settings" {
   Settings object for the PIM active role assignment. Configuration attributes:
     - name - (Optional) Logical name/key for this PIM active role assignment instance.
     - enabled - (Optional) Whether to enable the assignment. If omitted, the module may default this to true.
-    - scope - (Required) The scope at which the role should be assigned (e.g., subscription, resource group, or resource ID).
+    - scope - (Optional) The scope at which the role should be assigned (e.g., subscription, resource group, or resource ID).
+    - scope_management_group - (Optional) Key-based reference to a management group whose ID will be used as scope. Mutually exclusive with scope and scope_subscription.
+      - key    - (Required) Key of the management group in the combined_objects map.
+      - lz_key - (Optional) Landing zone key for cross-LZ references.
+    - scope_subscription - (Optional) Key-based reference to a subscription whose ID will be used as scope. Mutually exclusive with scope and scope_management_group.
+      - key    - (Required) Key of the subscription in the combined_objects map.
+      - lz_key - (Optional) Landing zone key for cross-LZ references.
     - principal_id - (Optional) The object ID of the principal. Exactly one of principal_id, managed_identity, or azuread_group must be provided. Resolution order: principal_id → managed_identity → azuread_group.
     - managed_identity - (Optional) Key-based reference to a managed identity whose principal_id will be used. Mutually exclusive with principal_id and azuread_group.
         - key    - (Required) Key of the managed identity in the combined_objects map.
@@ -11,7 +17,10 @@ variable "settings" {
     - azuread_group - (Optional) Key-based reference to an Azure AD group whose object_id will be used. Mutually exclusive with principal_id and managed_identity.
         - key    - (Required) Key of the Azure AD group in the combined_objects map.
         - lz_key - (Optional) Landing zone key for cross-LZ references.
-    - role_definition_id - (Required) The full resource ID of the role definition to assign.
+    - role_definition_id - (Optional) The full resource ID of the role definition to assign.
+    - role_definition - (Optional) Key-based reference to a role definition entry whose ID will be used. Mutually exclusive with role_definition_id.
+      - key    - (Required) Key of the role definition in the combined_objects map.
+      - lz_key - (Optional) Landing zone key for cross-LZ references.
     - justification - (Optional) Justification text associated with the PIM active assignment request.
     - ticket - (Optional) Ticketing information associated with the PIM request. Attributes:
         - number - (Required) Ticket number or identifier in the external system.
@@ -31,19 +40,58 @@ variable "settings" {
   type = object({
     name               = optional(string)
     enabled            = optional(bool)
-    scope              = string
+    scope              = optional(string)
     principal_id       = optional(string)
-    role_definition_id = string
+    role_definition_id = optional(string)
     justification      = optional(string)
 
+    scope_management_group = optional(object({
+      key          = optional(string)
+      name         = optional(string)
+      display_name = optional(string)
+      lz_key       = optional(string)
+    }))
+
+    management_group = optional(object({
+      key          = optional(string)
+      name         = optional(string)
+      display_name = optional(string)
+      lz_key       = optional(string)
+    }))
+
+    scope_subscription = optional(object({
+      key             = optional(string)
+      subscription_id = optional(string)
+      display_name    = optional(string)
+      lz_key          = optional(string)
+    }))
+
+    subscription = optional(object({
+      key             = optional(string)
+      subscription_id = optional(string)
+      display_name    = optional(string)
+      lz_key          = optional(string)
+    }))
+
+    role_definition = optional(object({
+      key                = optional(string)
+      name               = optional(string)
+      role_definition_id = optional(string)
+      scope              = optional(string)
+      lz_key             = optional(string)
+    }))
+
     managed_identity = optional(object({
-      key    = string
-      lz_key = optional(string)
+      key                 = optional(string)
+      name                = optional(string)
+      resource_group_name = optional(string)
+      lz_key              = optional(string)
     }))
 
     azuread_group = optional(object({
-      key    = string
-      lz_key = optional(string)
+      key          = optional(string)
+      display_name = optional(string)
+      lz_key       = optional(string)
     }))
 
     ticket = optional(object({
@@ -74,10 +122,15 @@ variable "settings" {
         "name",
         "enabled",
         "scope",
+        "scope_management_group",
+        "management_group",
+        "scope_subscription",
+        "subscription",
         "principal_id",
         "managed_identity",
         "azuread_group",
         "role_definition_id",
+        "role_definition",
         "justification",
         "ticket",
         "schedule",
@@ -85,14 +138,48 @@ variable "settings" {
       ]
     )) == 0
 
-    error_message = "Unsupported attributes in settings. Allowed attributes: name, enabled, scope, principal_id, managed_identity, azuread_group, role_definition_id, justification, ticket, schedule, timeouts."
+    error_message = "Unsupported attributes in settings. Allowed attributes: name, enabled, scope, scope_management_group, management_group, scope_subscription, subscription, principal_id, managed_identity, azuread_group, role_definition_id, role_definition, justification, ticket, schedule, timeouts."
+  }
+
+  validation {
+    condition = (
+      var.settings.scope != null ||
+      try(var.settings.scope_management_group.key, null) != null ||
+      try(var.settings.scope_management_group.name, null) != null ||
+      try(var.settings.scope_management_group.display_name, null) != null ||
+      try(var.settings.management_group.key, null) != null ||
+      try(var.settings.management_group.name, null) != null ||
+      try(var.settings.management_group.display_name, null) != null ||
+      try(var.settings.scope_subscription.key, null) != null ||
+      try(var.settings.scope_subscription.subscription_id, null) != null ||
+      try(var.settings.scope_subscription.display_name, null) != null ||
+      try(var.settings.subscription.key, null) != null ||
+      try(var.settings.subscription.subscription_id, null) != null ||
+      try(var.settings.subscription.display_name, null) != null
+    )
+    error_message = "One of scope, scope_management_group/management_group, or scope_subscription/subscription must be provided."
+  }
+
+  validation {
+    condition = (
+      var.settings.role_definition_id != null ||
+      try(var.settings.role_definition.key, null) != null ||
+      try(var.settings.role_definition.name, null) != null ||
+      try(var.settings.role_definition.role_definition_id, null) != null
+    )
+    error_message = "One of role_definition_id or role_definition must be provided."
   }
 
   validation {
     condition = (
       var.settings.principal_id != null ||
       try(var.settings.managed_identity.key, null) != null ||
-      try(var.settings.azuread_group.key, null) != null
+      (
+        try(var.settings.managed_identity.name, null) != null &&
+        try(var.settings.managed_identity.resource_group_name, null) != null
+      ) ||
+      try(var.settings.azuread_group.key, null) != null ||
+      try(var.settings.azuread_group.display_name, null) != null
     )
     error_message = "One of principal_id, managed_identity, or azuread_group must be provided."
   }

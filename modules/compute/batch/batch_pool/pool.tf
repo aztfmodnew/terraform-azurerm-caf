@@ -90,17 +90,6 @@ resource "azurerm_batch_pool" "pool" {
     }
   }
 
-  dynamic "certificate" {
-    for_each = try(var.settings.certificates, {})
-
-    content {
-      id             = var.batch_certificates[try(certificate.value.lz_key, var.client_config.landingzone_key)][certificate.value.certificate_key].id
-      store_location = certificate.value.store_location
-      store_name     = try(certificate.value.store_name, null)
-      visibility     = try(certificate.value.visibility, null)
-    }
-  }
-
   dynamic "container_configuration" {
     for_each = try(var.settings.container_configuration, null) != null ? [var.settings.container_configuration] : []
 

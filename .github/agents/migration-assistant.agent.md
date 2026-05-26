@@ -3,30 +3,20 @@ name: Migration Assistant
 description: Assists with migrating modules to new patterns, refactoring code, and updating deprecated features while maintaining backward compatibility
 argument-hint: "module-path old-pattern to new-pattern"
 tools:
-  - vscode
-  - execute
-  - read
-  - agent
-  - browser
-  - terraform/*
-  - edit
-  - search
-  - web
-  - todo
+  - 'agent'
+  - 'read'
+  - 'search'
+  - 'edit'
+  - 'execute'
+  - 'todo'
+  - 'hashicorp/terraform-mcp-server/*'
+user-invocable: false
 agents:
   - Module Updater
   - Compliance Validator
   - Documentation Sync
   - Remote State Orchestrator
-handoffs:
-  - label: "Validate Migration"
-    agent: "Compliance Validator"
-    prompt: "Validate that the migrated code follows current CAF standards and maintains backward compatibility"
-    send: false
-  - label: "Update Docs"
-    agent: "Documentation Sync"
-    prompt: "Update documentation to reflect the migration changes and provide migration guide"
-    send: false
+model: Auto (copilot)
 ---
 
 # Migration Assistant - Code Migration and Refactoring Agent

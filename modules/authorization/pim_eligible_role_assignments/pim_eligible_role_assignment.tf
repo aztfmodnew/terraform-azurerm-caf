@@ -1,8 +1,8 @@
 # Terraform azurerm resource: https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/pim_eligible_role_assignment
 
 resource "azurerm_pim_eligible_role_assignment" "this" {
-  scope              = var.settings.scope
-  role_definition_id = var.settings.role_definition_id
+  scope              = local.scope
+  role_definition_id = local.role_definition_id
   principal_id       = local.principal_id
   justification      = try(var.settings.justification, null)
   condition          = try(var.settings.condition, null)

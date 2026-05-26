@@ -3,16 +3,13 @@ name: CI Workflow Manager
 description: Manages GitHub Actions workflows for automated testing, ensuring every example is tested in CI/CD pipelines
 argument-hint: "workflow-file or example-path to add to CI"
 tools:
-  - vscode
-  - execute
-  - read
-  - agent
-  - browser
-  - terraform/*
-  - edit
-  - search
-  - web
-  - todo
+  - 'read'
+  - 'search'
+  - 'edit'
+  - 'execute'
+  - 'todo'
+user-invocable: false
+model: Auto (copilot)
 ---
 
 # CI Workflow Manager - GitHub Actions Workflow Agent

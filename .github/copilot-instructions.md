@@ -390,6 +390,43 @@ The coalesce pattern enables:
 
 All while maintaining the same module interface.
 
+### Principle 3.1: Hybrid Data Sources for Existing Resources
+
+When integrating existing resources not created by CAF, use a hybrid approach:
+
+- Keep direct-ID `data_sources` entries supported for backward compatibility.
+- Resolve name-based resources centrally in root via `data_sources_lookup.tf` using stable business keys (typically `name` + `resource_group_name`).
+- Merge only resolved lookup locals and explicit-id entries into `combined_objects`.
+- Do not merge unresolved name-only `data_sources` entries directly.
+
+Example (VNet pattern):
+
+```hcl
+# data_sources_lookup.tf
+locals {
+  vnets_data_sources_name_lookup = {
+    for key, value in try(var.data_sources.vnets, {}) : key => value
+    if try(value.id, null) == null && try(value.name, null) != null && try(value.resource_group_name, null) != null
+  }
+}
+
+data "azurerm_virtual_network" "data_sources_lookup" {
+  for_each = local.vnets_data_sources_name_lookup
+
+  name                = each.value.name
+  resource_group_name = each.value.resource_group_name
+}
+
+locals {
+  vnets_data_sources_resolved = {
+    for key, value in local.vnets_data_sources_name_lookup : key => merge(
+      value,
+      { id = data.azurerm_virtual_network.data_sources_lookup[key].id }
+    )
+  }
+}
+```
+
 ### Principle 4: Examples as Documentation
 
 **Why**: Working code is better than written instructions.
