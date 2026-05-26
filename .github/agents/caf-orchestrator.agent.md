@@ -7,7 +7,7 @@ tools:
   - 'read'
   - 'search'
   - 'todo'
-  - 'azure-mcp/*'
+  - 'microsoftdocs/mcp/*'
   - 'hashicorp/terraform-mcp-server/*'
   - 'execute'
 user-invocable: true
