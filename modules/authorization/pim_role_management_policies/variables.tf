@@ -45,18 +45,39 @@ variable "settings" {
     role_definition_id = optional(string)
 
     scope_management_group = optional(object({
-      key    = string
-      lz_key = optional(string)
+      key          = optional(string)
+      name         = optional(string)
+      display_name = optional(string)
+      lz_key       = optional(string)
+    }))
+
+    management_group = optional(object({
+      key          = optional(string)
+      name         = optional(string)
+      display_name = optional(string)
+      lz_key       = optional(string)
     }))
 
     scope_subscription = optional(object({
-      key    = string
-      lz_key = optional(string)
+      key             = optional(string)
+      subscription_id = optional(string)
+      display_name    = optional(string)
+      lz_key          = optional(string)
+    }))
+
+    subscription = optional(object({
+      key             = optional(string)
+      subscription_id = optional(string)
+      display_name    = optional(string)
+      lz_key          = optional(string)
     }))
 
     role_definition = optional(object({
-      key    = string
-      lz_key = optional(string)
+      key                = optional(string)
+      name               = optional(string)
+      role_definition_id = optional(string)
+      scope              = optional(string)
+      lz_key             = optional(string)
     }))
 
     activation_rules = optional(object({
@@ -155,7 +176,9 @@ variable "settings" {
       [
         "scope",
         "scope_management_group",
+        "management_group",
         "scope_subscription",
+        "subscription",
         "role_definition_id",
         "role_definition",
         "activation_rules",
@@ -166,22 +189,34 @@ variable "settings" {
       ]
     )) == 0
 
-    error_message = "Unsupported attributes in settings. Allowed: scope, scope_management_group, scope_subscription, role_definition_id, role_definition, activation_rules, active_assignment_rules, eligible_assignment_rules, notification_rules, timeouts."
+    error_message = "Unsupported attributes in settings. Allowed: scope, scope_management_group, management_group, scope_subscription, subscription, role_definition_id, role_definition, activation_rules, active_assignment_rules, eligible_assignment_rules, notification_rules, timeouts."
   }
 
   validation {
     condition = (
       var.settings.scope != null ||
       try(var.settings.scope_management_group.key, null) != null ||
-      try(var.settings.scope_subscription.key, null) != null
+      try(var.settings.scope_management_group.name, null) != null ||
+      try(var.settings.scope_management_group.display_name, null) != null ||
+      try(var.settings.management_group.key, null) != null ||
+      try(var.settings.management_group.name, null) != null ||
+      try(var.settings.management_group.display_name, null) != null ||
+      try(var.settings.scope_subscription.key, null) != null ||
+      try(var.settings.scope_subscription.subscription_id, null) != null ||
+      try(var.settings.scope_subscription.display_name, null) != null ||
+      try(var.settings.subscription.key, null) != null ||
+      try(var.settings.subscription.subscription_id, null) != null ||
+      try(var.settings.subscription.display_name, null) != null
     )
-    error_message = "One of scope, scope_management_group, or scope_subscription must be provided."
+    error_message = "One of scope, scope_management_group/management_group, or scope_subscription/subscription must be provided."
   }
 
   validation {
     condition = (
       var.settings.role_definition_id != null ||
-      try(var.settings.role_definition.key, null) != null
+      try(var.settings.role_definition.key, null) != null ||
+      try(var.settings.role_definition.name, null) != null ||
+      try(var.settings.role_definition.role_definition_id, null) != null
     )
     error_message = "One of role_definition_id or role_definition must be provided."
   }

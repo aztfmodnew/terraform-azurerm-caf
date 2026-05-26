@@ -33,6 +33,8 @@ managed_identities = {
 #   management_groups = {
 #     platform_mg = {
 #       display_name = "Platform"
+#       # Alternative:
+#       # name = "platform"
 #     }
 #   }
 #
@@ -47,6 +49,22 @@ managed_identities = {
 #   role_definitions = {
 #     reader_builtin = {
 #       name = "Reader"
+#       # Alternative:
+#       # role_definition_id = "b24988ac-6180-42a0-ab88-20f7382dd24c"
+#       # scope              = "/subscriptions/00000000-0000-0000-0000-000000000000"
+#     }
+#   }
+#
+#   azuread_groups = {
+#     pim_group_by_display_name = {
+#       display_name = "pim-test-group-1"
+#     }
+#   }
+#
+#   managed_identities = {
+#     pim_identity_by_name = {
+#       name                = "pim-identity-1"
+#       resource_group_name = "rg-example-placeholder"
 #     }
 #   }
 # }
@@ -98,7 +116,7 @@ pim = {
     # Example 4: lookup-based assignment using management group + role definition keys
     # Uncomment together with the data_sources block above.
     # example_active_lookup = {
-    #   scope_management_group = {
+    #   management_group = {
     #     key = "platform_mg"
     #   }
     #
@@ -107,7 +125,16 @@ pim = {
     #   }
     #
     #   azuread_group = {
+    #     # Key-based remote/local object resolution
     #     key = "pim_grp"
+    #     # Standalone local lookup alternative
+    #     # display_name = "pim-test-group-1"
+    #   }
+    #
+    #   # Standalone local lookup alternative for principal
+    #   # managed_identity = {
+    #   #   name                = "pim-identity-1"
+    #   #   resource_group_name = "rg-example-placeholder"
     #   }
     #
     #   justification = "Lookup-based management group access"
@@ -174,7 +201,7 @@ pim = {
     # Example 6: lookup-based eligible assignment using subscription + role definition keys
     # Uncomment together with the data_sources block above.
     # example_eligible_lookup = {
-    #   scope_subscription = {
+    #   subscription = {
     #     key = "current_subscription"
     #   }
     #
@@ -183,7 +210,11 @@ pim = {
     #   }
     #
     #   managed_identity = {
+    #     # Key-based remote/local object resolution
     #     key = "pim_mi"
+    #     # Standalone local lookup alternative
+    #     # name                = "pim-identity-1"
+    #     # resource_group_name = "rg-example-placeholder"
     #   }
     #
     #   justification = "Lookup-based subscription eligibility"
@@ -205,6 +236,17 @@ pim = {
         expiration_required = false
       }
     }
+
+    # Example: policy lookup aliases (commented, sanitized)
+    # example_policy_lookup_aliases = {
+    #   management_group = {
+    #     display_name = "Platform"
+    #   }
+    #
+    #   role_definition = {
+    #     name = "Reader"
+    #   }
+    # }
   }
 
 }

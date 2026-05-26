@@ -46,28 +46,52 @@ variable "settings" {
     justification      = optional(string)
 
     scope_management_group = optional(object({
-      key    = string
-      lz_key = optional(string)
+      key          = optional(string)
+      name         = optional(string)
+      display_name = optional(string)
+      lz_key       = optional(string)
+    }))
+
+    management_group = optional(object({
+      key          = optional(string)
+      name         = optional(string)
+      display_name = optional(string)
+      lz_key       = optional(string)
     }))
 
     scope_subscription = optional(object({
-      key    = string
-      lz_key = optional(string)
+      key             = optional(string)
+      subscription_id = optional(string)
+      display_name    = optional(string)
+      lz_key          = optional(string)
+    }))
+
+    subscription = optional(object({
+      key             = optional(string)
+      subscription_id = optional(string)
+      display_name    = optional(string)
+      lz_key          = optional(string)
     }))
 
     role_definition = optional(object({
-      key    = string
-      lz_key = optional(string)
+      key                = optional(string)
+      name               = optional(string)
+      role_definition_id = optional(string)
+      scope              = optional(string)
+      lz_key             = optional(string)
     }))
 
     managed_identity = optional(object({
-      key    = string
-      lz_key = optional(string)
+      key                 = optional(string)
+      name                = optional(string)
+      resource_group_name = optional(string)
+      lz_key              = optional(string)
     }))
 
     azuread_group = optional(object({
-      key    = string
-      lz_key = optional(string)
+      key          = optional(string)
+      display_name = optional(string)
+      lz_key       = optional(string)
     }))
 
     ticket = optional(object({
@@ -99,7 +123,9 @@ variable "settings" {
         "enabled",
         "scope",
         "scope_management_group",
+        "management_group",
         "scope_subscription",
+        "subscription",
         "principal_id",
         "managed_identity",
         "azuread_group",
@@ -112,22 +138,34 @@ variable "settings" {
       ]
     )) == 0
 
-    error_message = "Unsupported attributes in settings. Allowed attributes: name, enabled, scope, scope_management_group, scope_subscription, principal_id, managed_identity, azuread_group, role_definition_id, role_definition, justification, ticket, schedule, timeouts."
+    error_message = "Unsupported attributes in settings. Allowed attributes: name, enabled, scope, scope_management_group, management_group, scope_subscription, subscription, principal_id, managed_identity, azuread_group, role_definition_id, role_definition, justification, ticket, schedule, timeouts."
   }
 
   validation {
     condition = (
       var.settings.scope != null ||
       try(var.settings.scope_management_group.key, null) != null ||
-      try(var.settings.scope_subscription.key, null) != null
+      try(var.settings.scope_management_group.name, null) != null ||
+      try(var.settings.scope_management_group.display_name, null) != null ||
+      try(var.settings.management_group.key, null) != null ||
+      try(var.settings.management_group.name, null) != null ||
+      try(var.settings.management_group.display_name, null) != null ||
+      try(var.settings.scope_subscription.key, null) != null ||
+      try(var.settings.scope_subscription.subscription_id, null) != null ||
+      try(var.settings.scope_subscription.display_name, null) != null ||
+      try(var.settings.subscription.key, null) != null ||
+      try(var.settings.subscription.subscription_id, null) != null ||
+      try(var.settings.subscription.display_name, null) != null
     )
-    error_message = "One of scope, scope_management_group, or scope_subscription must be provided."
+    error_message = "One of scope, scope_management_group/management_group, or scope_subscription/subscription must be provided."
   }
 
   validation {
     condition = (
       var.settings.role_definition_id != null ||
-      try(var.settings.role_definition.key, null) != null
+      try(var.settings.role_definition.key, null) != null ||
+      try(var.settings.role_definition.name, null) != null ||
+      try(var.settings.role_definition.role_definition_id, null) != null
     )
     error_message = "One of role_definition_id or role_definition must be provided."
   }
@@ -136,7 +174,12 @@ variable "settings" {
     condition = (
       var.settings.principal_id != null ||
       try(var.settings.managed_identity.key, null) != null ||
-      try(var.settings.azuread_group.key, null) != null
+      (
+        try(var.settings.managed_identity.name, null) != null &&
+        try(var.settings.managed_identity.resource_group_name, null) != null
+      ) ||
+      try(var.settings.azuread_group.key, null) != null ||
+      try(var.settings.azuread_group.display_name, null) != null
     )
     error_message = "One of principal_id, managed_identity, or azuread_group must be provided."
   }
