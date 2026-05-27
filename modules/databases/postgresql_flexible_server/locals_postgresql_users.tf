@@ -3,8 +3,8 @@ locals {
 
   db_permissions = {
     for group_key, group in try(var.settings.db_permissions, {}) : group_key => {
-      database   = group.database
-      db_roles   = group.db_roles
+      database = group.database
+      db_roles = group.db_roles
 
       db_usernames = distinct(compact(flatten(concat(
         [
