@@ -1,7 +1,7 @@
 global_settings = {
   default_region = "region1"
   regions = {
-    region1 = "northeurope"
+    region1 = "westeurope"
   }
 }
 
@@ -46,6 +46,7 @@ azurerm_firewalls = {
     resource_group_key = "test"
     vnet_key           = "vnet1"
     sku_tier           = "Premium"
+    zones              = ["1", "2", "3"]
     public_ips = {
       ip1 = {
         name          = "pip1"
