@@ -50,13 +50,13 @@ resource "null_resource" "delete_pg_user" {
   depends_on = [azurerm_postgresql_flexible_server.postgresql]
   for_each   = try(var.settings.postgresql_users, {})
   triggers = {
-    pg_server_fqdn     = local.server_fqdn
-    pg_server_db_name  = each.value.database
-    db_admin_user      = try(var.settings.administrator_username, "pgadmin")
-    db_admin_password  = try(azurerm_postgresql_flexible_server.postgresql.administrator_password, data.azurerm_key_vault_secret.postgresql_admin_password[0].value)
-    db_user_name       = each.value.name
-    pg_login_filepath  = format("%s/scripts/delete_pg_login.sql", path.module)
-    pg_user_filepath   = format("%s/scripts/delete_pg_user.sql", path.module)
+    pg_server_fqdn    = local.server_fqdn
+    pg_server_db_name = each.value.database
+    db_admin_user     = try(var.settings.administrator_username, "pgadmin")
+    db_admin_password = try(azurerm_postgresql_flexible_server.postgresql.administrator_password, data.azurerm_key_vault_secret.postgresql_admin_password[0].value)
+    db_user_name      = each.value.name
+    pg_login_filepath = format("%s/scripts/delete_pg_login.sql", path.module)
+    pg_user_filepath  = format("%s/scripts/delete_pg_user.sql", path.module)
   }
   provisioner "local-exec" {
     interpreter = ["/bin/bash"]
