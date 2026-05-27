@@ -25,7 +25,7 @@ databricks_workspaces = {
   sales_workspaces = {
     name               = "sales_workspace"
     resource_group_key = "databricks_re1"
-    sku                = "standard"
+    sku                = "premium"
     custom_parameters = {
       no_public_ip = false
     }

@@ -32,10 +32,8 @@ public_ip_addresses = {
   vngw_pip = {
     name               = "vngw_pip1"
     resource_group_key = "vpngw"
-    sku                = "Basic"
-    # Note: For UltraPerformance ExpressRoute Virtual Network gateway, the associated Public IP needs to be sku "Basic" not "Standard"
-    allocation_method = "Dynamic"
-    # allocation method needs to be Dynamic
+    sku                = "Standard"
+    allocation_method = "Static"
     ip_version              = "IPv4"
     idle_timeout_in_minutes = "4"
   }

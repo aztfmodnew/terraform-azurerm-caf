@@ -50,5 +50,5 @@ output "site_credential" {
 }
 
 output "rbac_id" {
-  value = azurerm_linux_function_app.linux_function_app.id
+  value = try(azurerm_linux_function_app.linux_function_app.identity[0].principal_id, null)
 }

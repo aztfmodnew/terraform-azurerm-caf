@@ -41,8 +41,8 @@ public_ip_addresses = {
   pip1 = {
     name                    = "pip1"
     resource_group_key      = "rg1"
-    sku                     = "Basic"
-    allocation_method       = "Dynamic"
+    sku                     = "Standard"
+    allocation_method       = "Static"
     ip_version              = "IPv4"
     idle_timeout_in_minutes = "4"
   }

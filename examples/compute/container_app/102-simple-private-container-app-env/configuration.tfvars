@@ -34,6 +34,10 @@ vnets = {
         name    = "container-app-snet"
         cidr    = ["100.64.0.0/21"]
         nsg_key = "empty_nsg"
+        delegation = {
+          name               = "container-app-env"
+          service_delegation = "Microsoft.App/environments"
+        }
       }
     }
 

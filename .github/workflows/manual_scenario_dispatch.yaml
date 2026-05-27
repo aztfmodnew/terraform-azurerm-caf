@@ -20,6 +20,7 @@ on:
           - standalone-compute.json
           - standalone-compute-premium.json
           - standalone-networking.json
+          - standalone-networking-pip.json
           - standalone-dataplat.json
           - all
       delay_between_runs:
@@ -60,6 +61,7 @@ jobs:
           - standalone-compute.json
           - standalone-compute-premium.json
           - standalone-networking.json
+          - standalone-networking-pip.json
           - standalone-dataplat.json
     steps:
       - name: Repository Dispatch - ${{ matrix.scenario }}

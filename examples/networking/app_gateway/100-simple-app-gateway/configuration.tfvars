@@ -25,6 +25,9 @@ application_gateways = {
     subnet_key         = "app-gateway-subnet"
     sku_name           = "WAF_v2"
     sku_tier           = "WAF_v2"
+    waf_policy = {
+      key = "waf1"
+    }
     capacity = {
       autoscale = {
         minimum_scale_unit = 0
@@ -69,42 +72,6 @@ application_gateways = {
       }
     }
 
-    waf_configuration = {
-      enabled                  = true
-      firewall_mode            = "Prevention" # or Detection
-      rule_set_type            = "OWASP"      # OWASP
-      rule_set_version         = "3.1"        # OWASP(2.2.9, 3.0, 3.1, 3.2)
-      file_upload_limit_mb     = 100
-      request_body_check       = true
-      max_request_body_size_kb = 128
-
-      # Optional
-      disabled_rule_groups = {
-        general = {
-          rule_group_name = "General"
-          rules           = ["200004"]
-        }
-        # Disable a spacific rule in the rule group
-        REQUEST-913-SCANNER-DETECTION = {
-          rule_group_name = "REQUEST-913-SCANNER-DETECTION"
-          rules           = ["913102"]
-        }
-        # Disable all rule in the rule group
-        REQUEST-930-APPLICATION-ATTACK-LFI = {
-          rule_group_name = "REQUEST-930-APPLICATION-ATTACK-LFI"
-        }
-      }
-
-      # Optional
-      exclusions = {
-        exc1 = {
-          match_variable          = "RequestHeaderNames"
-          selector_match_operator = "Equals" # StartsWith, EndsWith, Contains
-          selector                = "SomeHeader"
-        }
-      }
-    }
-
   }
 }
 
@@ -137,5 +104,64 @@ public_ip_addresses = {
     zones                   = ["1"]
     idle_timeout_in_minutes = "4"
 
+  }
+}
+
+application_gateway_waf_policies = {
+  waf1 = {
+    name               = "example-waf-policy"
+    resource_group_key = "agw_region1"
+
+    tags = {
+      project = "demo"
+    }
+
+    policy_settings = {
+      enabled                     = true
+      mode                        = "Prevention"
+      request_body_check          = true
+      file_upload_limit_in_mb     = 100
+      max_request_body_size_in_kb = 128
+    }
+
+    managed_rules = {
+      exclusions = {
+        exc1 = {
+          match_variable          = "RequestHeaderNames"
+          selector_match_operator = "Equals"
+          selector                = "SomeHeader"
+        }
+      }
+
+      managed_rule_set = {
+        owasp = {
+          type    = "OWASP"
+          version = "3.2"
+          rule_group_override = {
+            general = {
+              rule_group_name = "General"
+              rules = {
+                r200004 = {
+                  id      = "200004"
+                  enabled = false
+                }
+              }
+            }
+            scanner_detection = {
+              rule_group_name = "REQUEST-913-SCANNER-DETECTION"
+              rules = {
+                r913102 = {
+                  id      = "913102"
+                  enabled = false
+                }
+              }
+            }
+            lfi = {
+              rule_group_name = "REQUEST-930-APPLICATION-ATTACK-LFI"
+            }
+          }
+        }
+      }
+    }
   }
 }

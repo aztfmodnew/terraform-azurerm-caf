@@ -82,9 +82,7 @@ public_ip_addresses = {
     name               = "lb_pip1"
     resource_group_key = "rg1"
     sku                = "Standard"
-    # Note: For UltraPerformance ExpressRoute Virtual Network gateway, the associated Public IP needs to be sku "Basic" not "Standard"
     allocation_method = "Static"
-    # allocation method needs to be Dynamic
     ip_version              = "IPv4"
     idle_timeout_in_minutes = "4"
   }
@@ -92,9 +90,7 @@ public_ip_addresses = {
     name               = "lb_pip12"
     resource_group_key = "rg1"
     sku                = "Standard"
-    # Note: For UltraPerformance ExpressRoute Virtual Network gateway, the associated Public IP needs to be sku "Basic" not "Standard"
     allocation_method = "Static"
-    # allocation method needs to be Dynamic
     ip_version              = "IPv4"
     idle_timeout_in_minutes = "4"
   }
@@ -115,7 +111,7 @@ lb = {
         key = "lb_pip1"
       }
     }
-    sku = "standard"
+    sku = "Standard"
   }
   lb2 = {
     name   = "TestLoadBalancer2"

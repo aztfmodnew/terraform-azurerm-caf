@@ -31,7 +31,7 @@ databricks_workspaces = {
   dtbwsp1 = {
     name               = "dtbwsp1"
     resource_group_key = "rg1"
-    sku                = "standard"
+    sku                = "premium"
   }
 }
 
