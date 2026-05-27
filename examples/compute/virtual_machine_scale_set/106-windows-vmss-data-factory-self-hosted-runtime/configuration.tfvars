@@ -111,10 +111,10 @@ storage_account_blobs = {
 
 public_ip_addresses = {
   lb_pip1 = {
-    name               = "lb_pip1"
-    resource_group_key = "integration"
-    sku                = "Standard"
-    allocation_method = "Static"
+    name                    = "lb_pip1"
+    resource_group_key      = "integration"
+    sku                     = "Standard"
+    allocation_method       = "Static"
     ip_version              = "IPv4"
     idle_timeout_in_minutes = "4"
   }
