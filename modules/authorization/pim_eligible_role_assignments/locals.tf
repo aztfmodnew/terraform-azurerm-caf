@@ -28,7 +28,7 @@ locals {
     try(local.eligible_role_definition_from_data, null)
   )
 
-  role_definition_id = try(startswith(local.role_definition_id_resolved, "/providers/"), false) ? "${local.scope}${local.role_definition_id_resolved}" : local.role_definition_id_resolved
+  role_definition_id = local.role_definition_id_resolved
 
   principal_id = coalesce(
     try(var.settings.principal_id, null),
