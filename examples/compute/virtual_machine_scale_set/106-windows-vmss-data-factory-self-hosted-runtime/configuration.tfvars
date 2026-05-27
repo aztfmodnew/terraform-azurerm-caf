@@ -113,9 +113,9 @@ public_ip_addresses = {
   lb_pip1 = {
     name               = "lb_pip1"
     resource_group_key = "integration"
-    sku                = "Basic"
+    sku                = "Standard"
     # Note: For UltraPerformance ExpressRoute Virtual Network gateway, the associated Public IP needs to be sku "Basic" not "Standard"
-    allocation_method = "Dynamic"
+    allocation_method = "Static"
     # allocation method needs to be Dynamic
     ip_version              = "IPv4"
     idle_timeout_in_minutes = "4"
@@ -135,7 +135,7 @@ application_security_groups = {
 load_balancers = {
   lb-vmss = {
     name                      = "lb-vmss"
-    sku                       = "Basic"
+    sku                       = "Standard"
     resource_group_key        = "integration"
     backend_address_pool_name = "vmss1"
     frontend_ip_configurations = {

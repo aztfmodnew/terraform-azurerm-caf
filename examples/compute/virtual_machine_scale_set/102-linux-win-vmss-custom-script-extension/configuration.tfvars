@@ -158,20 +158,20 @@ public_ip_addresses = {
   lb_pip1 = {
     name               = "lb_pip1"
     resource_group_key = "example_vmss_rg1"
-    sku                = "Basic"
-    # Note: For UltraPerformance ExpressRoute Virtual Network gateway, the associated Public IP needs to be sku "Basic" not "Standard"
-    allocation_method = "Dynamic"
-    # allocation method needs to be Dynamic
+    sku                = "Standard"
+    # Standard SKU is required (Basic Public IP was deprecated in Azure since March 2025)
+    allocation_method = "Static"
+    # Standard SKU requires Static allocation
     ip_version              = "IPv4"
     idle_timeout_in_minutes = "4"
   }
   lb_pip2 = {
     name               = "lb_pip2"
     resource_group_key = "example_vmss_rg1"
-    sku                = "Basic"
-    # Note: For UltraPerformance ExpressRoute Virtual Network gateway, the associated Public IP needs to be sku "Basic" not "Standard"
-    allocation_method = "Dynamic"
-    # allocation method needs to be Dynamic
+    sku                = "Standard"
+    # Standard SKU is required (Basic Public IP was deprecated in Azure since March 2025)
+    allocation_method = "Static"
+    # Standard SKU requires Static allocation
     ip_version              = "IPv4"
     idle_timeout_in_minutes = "4"
   }
@@ -181,7 +181,7 @@ public_ip_addresses = {
 load_balancers = {
   lb1 = {
     name                      = "lb-vmss1"
-    sku                       = "Basic"
+    sku                       = "Standard"
     resource_group_key        = "example_vmss_rg1"
     backend_address_pool_name = "vmss1"
     frontend_ip_configurations = {
@@ -220,7 +220,7 @@ load_balancers = {
   }
   lb2 = {
     name                      = "lb-vmss2"
-    sku                       = "Basic"
+    sku                       = "Standard"
     resource_group_key        = "example_vmss_rg1"
     backend_address_pool_name = "vmss2"
     frontend_ip_configurations = {
