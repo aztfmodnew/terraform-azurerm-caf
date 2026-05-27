@@ -59,8 +59,8 @@ public_ip_addresses = {
   gw_pip0 = {
     name                    = "pip0"
     resource_group_key      = "bootstrap"
-    sku                     = "Basic"
-    allocation_method       = "Dynamic"
+    sku                     = "Standard"
+    allocation_method       = "Static"
     ip_version              = "IPv4"
     idle_timeout_in_minutes = "4"
   }
