@@ -7,9 +7,9 @@ variable "name" {
   type        = string
 }
 variable "sku" {
-  description = "(Optional) The SKU of the Public IP. Accepted values are Basic and Standard. Defaults to Basic."
+  description = "(Optional) The SKU of the Public IP. Accepted values are Basic and Standard. Defaults to Standard."
   type        = string
-  default     = "Basic"
+  default     = "Standard"
   validation {
     condition     = contains(["Basic", "Standard"], var.sku)
     error_message = "Provide an allowed value as defined in https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/public_ip#sku."
@@ -26,9 +26,9 @@ variable "sku_tier" {
 }
 
 variable "allocation_method" {
-  description = "(Required) Defines the allocation method for this IP address. Possible values are Static or Dynamic."
+  description = "(Optional) Defines the allocation method for this IP address. Possible values are Static or Dynamic. Defaults to Static."
   type        = string
-  default     = "Dynamic"
+  default     = "Static"
 
   validation {
     condition     = contains(["Dynamic", "Static"], var.allocation_method)

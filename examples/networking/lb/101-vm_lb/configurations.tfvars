@@ -39,7 +39,7 @@ public_ip_addresses = {
   pip = {
     name                    = "lb_pip1"
     resource_group_key      = "lb"
-    sku                     = "Basic" #SKU must match with the SKU of the LB
+    sku                     = "Standard" #SKU must match with the SKU of the LB
     allocation_method       = "Static"
     ip_version              = "IPv4"
     idle_timeout_in_minutes = "4"
@@ -118,7 +118,7 @@ lb = {
       }
       private_ip_address_allocation = "Dynamic"
     }
-    sku = "Basic" #SKU must match with the SKU of the PIP
+    sku = "Standard" #SKU must match with the SKU of the PIP
   }
 }
 lb_backend_address_pool = {

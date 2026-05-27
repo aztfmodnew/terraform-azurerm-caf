@@ -46,7 +46,6 @@ azurerm_firewalls = {
     resource_group_key = "test"
     vnet_key           = "vnet1"
     sku_tier           = "Premium"
-    zones              = [1, 2, 3]
     public_ips = {
       ip1 = {
         name          = "pip1"
