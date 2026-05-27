@@ -114,7 +114,6 @@ public_ip_addresses = {
     name               = "lb_pip1"
     resource_group_key = "integration"
     sku                = "Standard"
-    # Note: For UltraPerformance ExpressRoute Virtual Network gateway, the associated Public IP needs to be sku "Basic" not "Standard"
     allocation_method = "Static"
     ip_version              = "IPv4"
     idle_timeout_in_minutes = "4"
