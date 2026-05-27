@@ -61,6 +61,20 @@ output "postgresql_flexible_server_firewall_rule_id" {
   }
 }
 
+output "postgresql_flexible_server_users" {
+  description = "IDs of the PostgreSQL flexible server users"
+  value = {
+    for k, v in try(null_resource.create_pg_user, {}) : k => v.id
+  }
+}
+
+output "postgresql_flexible_server_user_secret_ids" {
+  description = "IDs of the PostgreSQL user password secrets in Key Vault"
+  value = {
+    for k, v in azurerm_key_vault_secret.pg_user_password : k => v.id
+  }
+}
+
 output "resource_group_name" {
   description = "Name of the Resource Group where the resource exists."
   value       = local.resource_group_name
