@@ -9,8 +9,8 @@ output "id" {
 }
 
 output "rbac_id" {
-  value       = azurerm_windows_function_app.windows_function_app.id
-  description = "The ID of the Windows Function App"
+  value       = try(azurerm_windows_function_app.windows_function_app.identity[0].principal_id, null)
+  description = "The Principal ID of the Windows Function App managed identity, used for RBAC role assignments."
 }
 
 output "custom_domain_verification_id" {
