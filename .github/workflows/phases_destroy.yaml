@@ -42,7 +42,7 @@ jobs:
     needs: [setup_destroy]
 
     strategy:
-      max-parallel: 20
+      max-parallel: 999
       fail-fast: false
       matrix:
         phase: ${{ fromJSON(needs.setup_destroy.outputs.phase3) }}
@@ -60,7 +60,7 @@ jobs:
     needs: [setup_destroy, phase3_destroy]
 
     strategy:
-      max-parallel: 20
+      max-parallel: 999
       fail-fast: false
       matrix:
         phase: ${{ fromJSON(needs.setup_destroy.outputs.phase2) }}
@@ -78,7 +78,7 @@ jobs:
     needs: [setup_destroy, phase2_destroy]
 
     strategy:
-      max-parallel: 20
+      max-parallel: 999
       fail-fast: false
       matrix:
         phase: ${{ fromJSON(needs.setup_destroy.outputs.phase1) }}

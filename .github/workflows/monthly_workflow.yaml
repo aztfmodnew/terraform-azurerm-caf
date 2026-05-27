@@ -128,7 +128,7 @@ jobs:
 
     strategy:
       fail-fast: false
-      max-parallel: 5 # Allows up to 5 different groups in parallel
+      max-parallel: 999 # Effectively unrestricted; bounded by GitHub runner/org concurrency
       matrix: ${{fromJSON(needs.load_scenarios.outputs.matrix)}}
 
     environment:
@@ -208,8 +208,8 @@ jobs:
           # Get Resource Group IDs from Terraform state
           RG_IDS=$(terraform -chdir=${GITHUB_WORKSPACE}/examples \
             show \
-            -state=${{ env.STATE_FILE }} \
-            -json | jq -r '.values.root_module.resources[]? | select(.type == "azurerm_resource_group") | .values.id' | tr '\n' ' ')
+            -json \
+            ${STATE_FILE} | jq -r '.values.root_module.resources[]? | select(.type == "azurerm_resource_group") | .values.id' | tr '\n' ' ')
 
           if [ -n "$RG_IDS" ]; then
             echo "RESOURCE_GROUP_IDS=$RG_IDS" >> $GITHUB_ENV
@@ -238,6 +238,13 @@ jobs:
           path: ${{ env.CURRENT_FOLDER }}/azure-infrastructure.drawio
           retention-days: 30
 
+      - name: Refresh Azure Login Before Destroy
+        uses: azure/login@v3
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
       - name: Terraform Destroy Plan
         id: tf_destroy_plan
         run: |
@@ -262,13 +269,20 @@ jobs:
             -state=${{ env.STATE_FILE }} \
             ${{ env.PLAN_FILE }}-destroy
 
+      - name: Refresh Azure Login Before Cleanup
+        uses: azure/login@v3
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
       - name: Cleanup Databricks Managed Resource Groups
         if: always()
         continue-on-error: true
         run: |
           # Databricks managed resource groups are not automatically deleted by Terraform
           # Find and delete them based on the testing_job_id tag from the Databricks workspace state
-          for workspace_rg in `terraform -chdir=${GITHUB_WORKSPACE}/examples show -state=${{ env.STATE_FILE }} -json 2>/dev/null | jq -r '.values.root_module.resources[]? | select(.type == "azurerm_databricks_workspace") | .values.resource_group_name' 2>/dev/null`; do
+          for workspace_rg in `terraform -chdir=${GITHUB_WORKSPACE}/examples show -json ${STATE_FILE} 2>/dev/null | jq -r '.values.root_module.resources[]? | select(.type == "azurerm_databricks_workspace") | .values.resource_group_name' 2>/dev/null`; do
             for managed_rg in `az group list --query "[?contains(name, 'databricks-rg-') && tags.testing_job_id=='${{ github.run_id }}'].name" -o tsv 2>/dev/null`; do
               echo "Cleaning up Databricks managed resource group: $managed_rg"
               az group delete -n $managed_rg -y --no-wait || true
@@ -305,6 +319,13 @@ jobs:
 
     steps:
       - name: Azure Login
+        uses: azure/login@v3
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Refresh Azure Login Before Purge
         uses: azure/login@v3
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
