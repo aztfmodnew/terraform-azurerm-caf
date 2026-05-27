@@ -40,7 +40,9 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
 
-      # Generate changelog (no commit/tag/push — will be opened as a PR)
+      # Generate changelog (no commit/tag/push — will be opened as a PR).
+      # To regenerate CHANGELOG.md from scratch locally run:
+      #   npx conventional-changelog-cli -p angular -i CHANGELOG.md -s -r 0
       - name: Generate Changelog
         id: changelog
         uses: TriPSs/conventional-changelog-action@v6
