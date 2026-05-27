@@ -115,7 +115,7 @@ lb = {
         key = "lb_pip1"
       }
     }
-    sku = "standard"
+    sku = "Standard"
   }
   lb2 = {
     name   = "TestLoadBalancer2"
