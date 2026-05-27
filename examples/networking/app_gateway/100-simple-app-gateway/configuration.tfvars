@@ -25,6 +25,9 @@ application_gateways = {
     subnet_key         = "app-gateway-subnet"
     sku_name           = "WAF_v2"
     sku_tier           = "WAF_v2"
+    waf_policy = {
+      key = "waf1"
+    }
     capacity = {
       autoscale = {
         minimum_scale_unit = 0
@@ -101,5 +104,64 @@ public_ip_addresses = {
     zones                   = ["1"]
     idle_timeout_in_minutes = "4"
 
+  }
+}
+
+application_gateway_waf_policies = {
+  waf1 = {
+    name               = "example-waf-policy"
+    resource_group_key = "agw_region1"
+
+    tags = {
+      project = "demo"
+    }
+
+    policy_settings = {
+      enabled                     = true
+      mode                        = "Prevention"
+      request_body_check          = true
+      file_upload_limit_in_mb     = 100
+      max_request_body_size_in_kb = 128
+    }
+
+    managed_rules = {
+      exclusions = {
+        exc1 = {
+          match_variable          = "RequestHeaderNames"
+          selector_match_operator = "Equals"
+          selector                = "SomeHeader"
+        }
+      }
+
+      managed_rule_set = {
+        owasp = {
+          type    = "OWASP"
+          version = "3.2"
+          rule_group_override = {
+            general = {
+              rule_group_name = "General"
+              rules = {
+                r200004 = {
+                  id      = "200004"
+                  enabled = false
+                }
+              }
+            }
+            scanner_detection = {
+              rule_group_name = "REQUEST-913-SCANNER-DETECTION"
+              rules = {
+                r913102 = {
+                  id      = "913102"
+                  enabled = false
+                }
+              }
+            }
+            lfi = {
+              rule_group_name = "REQUEST-930-APPLICATION-ATTACK-LFI"
+            }
+          }
+        }
+      }
+    }
   }
 }
