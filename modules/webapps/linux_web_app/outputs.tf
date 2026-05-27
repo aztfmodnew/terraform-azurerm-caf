@@ -4,7 +4,7 @@ output "name" {
 }
 
 output "id" {
-  value = azurerm_linux_web_app.linux_web_app.id
+  value = try(azurerm_linux_web_app.linux_web_app.identity[0].principal_id, null)
 }
 
 output "custom_domain_verification_id" {
@@ -53,5 +53,5 @@ output "slots" {
 }
 
 output "rbac_id" {
-  value = azurerm_linux_web_app.linux_web_app.id
+  value = try(azurerm_linux_web_app.linux_web_app.identity[0].principal_id, null)
 }
