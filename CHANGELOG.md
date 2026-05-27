@@ -1,9 +1,9 @@
-#  (2026-05-27)
+## [4.52.2](https://github.com/aztfmodnew/terraform-azurerm-caf/compare/4.52.1...4.52.2) (2026-05-27)
 
 
 ### Bug Fixes
 
-* **ci:** run release automation on push to main ([1708e17](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/1708e17487fd61840788cd3273d6eba9f1c5d24d))
+* **ci:** fix Release Automation workflow — changelog via PR + populate CHANGELOG.md ([#161](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/161)) ([40922e4](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/40922e4c1ff8043b7cf1245eab06dbc7b2268e7a))
 * **pim:** use resolved role_definition_id without scope prefix ([d1d31a4](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/d1d31a458d2f2976245986c54501a18080a307ea))
 * replace underscores with dashes in PostgreSQL user password secret names ([b1eb20f](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/b1eb20f3d78b9fca53a27dfe1ec0a83516a69331))
 
@@ -21,13 +21,17 @@
 * **pim:** add role management policy module for permanent assignment governance ([82e45ee](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/82e45ee42ecf20e164226cb7591abe206f8eaed3))
 * **pim:** add standalone selector resolution and examples ([447f65a](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/447f65af5125f80da046274d6fb447e95ae1a46d))
 
+
+
 ## [4.51.3](https://github.com/aztfmodnew/terraform-azurerm-caf/compare/4.51.2...4.51.3) (2026-04-15)
 
 
 ### Bug Fixes
 
-* **ci:** align mkdocs deploy workflow with legacy gh-pages publishing ([#149](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/149)) ([8f5483b](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/8f5483b18c1bef5890d9464d7d561cce57664f95)), closes [#pages](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/pages)
+* **ci:** align mkdocs deploy workflow with legacy gh-pages publishing ([#149](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/149)) ([8f5483b](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/8f5483b18c1bef5890d9464d7d561cce57664f95))
 * **ci:** correct mkdocs deployment workflow with proper GitHub Pages authentication ([fefa955](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/fefa95581f9b424b6da90199747b6aefce712662))
+
+
 
 ## [4.51.2](https://github.com/aztfmodnew/terraform-azurerm-caf/compare/4.51.1...4.51.2) (2026-03-20)
 
@@ -36,6 +40,8 @@
 
 * **azuread:** v3 compat - use object_id and fix appRoleAssignments endpoint ([6ef6096](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/6ef6096c24cc9c5378926355713812ebc5cbdf2f))
 * **subnet:** convert enforce_private_link_endpoint_network_policies bool to string for azurerm v4 ([ab353f6](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/ab353f6cef957e0c58e5fb1d2794849e09c4f033))
+
+
 
 ## [4.51.1](https://github.com/aztfmodnew/terraform-azurerm-caf/compare/4.51.0...4.51.1) (2026-03-12)
 
@@ -57,12 +63,16 @@
 
 * add use_legacy_slug support to mssql modules ([f0b7ffe](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/f0b7ffe961593c8ac89e36970a5dd4c080c75351))
 
+
+
 # [4.50.0](https://github.com/aztfmodnew/terraform-azurerm-caf/compare/4.49.1...4.50.0) (2026-03-06)
 
 
 ### Features
 
 * add use_legacy_slug support to mssql modules ([#131](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/131)) ([de0df81](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/de0df814eedd93ba3eb5e94b7545caca3726ac3f))
+
+
 
 ## [4.49.1](https://github.com/aztfmodnew/terraform-azurerm-caf/compare/4.49.0...4.49.1) (2026-02-28)
 
@@ -148,7 +158,7 @@
 * **powerbi:** add extended timeouts for PowerBI Embedded resource provisioning ([1a40c0f](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/1a40c0fb8d6cb149b8c68c6aac078ccec384b6e3))
 * **recovery_service:** handle null values for VM backup protection variables ([091e5d1](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/091e5d13e3969662322f58160b09583456b0d021))
 * remove unsupported 'update' timeout from azurerm_chaos_studio_target ([5f51edb](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/5f51edb2e2ee78512020daac5c93ebb6a73e2c4e))
-* resolve federated identity credential plan-time failures ([68a7796](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/68a779646a0a03762a7097c40691b12302868bcc)), closes [#2120](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2120) [#2110](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2110) [#2055](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2055) [#2118](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2118) [#2100](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2100) [#2104](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2104) [#2089](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2089) [#1863](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/1863) [#2071](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2071) [#2079](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2079) [#1867](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/1867) [#1951](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/1951) [#2113](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2113) [#2066](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2066) [#2036](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2036) [#2064](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2064) [#2105](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2105) [#1974](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/1974) [#2119](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2119) [#1868](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/1868) [#1876](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/1876) [#1875](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/1875) [#2025](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2025) [#1915](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/1915) [#1978](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/1978) [#2106](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2106) [#2117](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2117) [#2110](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2110) [#2117](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2117) [#1954](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/1954) [#2072](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2072) [#1919](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/1919) [#1892](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/1892) [#1898](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/1898) [#2016](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2016) [#2104](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2104) [#124](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/124)
+* resolve federated identity credential plan-time failures ([68a7796](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/68a779646a0a03762a7097c40691b12302868bcc)), closes [#2120](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2120) [#2110](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2110) [#2055](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2055) [#2118](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2118) [#2100](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2100) [#2104](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2104) [#2089](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2089) [#1863](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/1863) [#2071](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2071) [#2079](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2079) [#1867](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/1867) [#1951](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/1951) [#2113](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2113) [#2066](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2066) [#2036](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2036) [#2064](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2064) [#2105](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2105) [#1974](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/1974) [#2119](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2119) [#1868](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/1868) [#1876](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/1876) [#1875](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/1875) [#2025](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2025) [#1915](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/1915) [#1978](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/1978) [#2106](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2106) [#2117](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2117) [#2110](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2110) [#2117](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2117) [#1954](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/1954) [#2072](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2072) [#1919](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/1919) [#1892](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/1892) [#1898](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/1898) [#1892](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/1892) [#1898](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/1898) [#2016](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2016) [#2104](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/2104) [#124](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/124)
 * **scripts:** change shell interpreter from sh to bash ([9e00cd1](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/9e00cd16a2062edddab333f8ac442d35afcbbf52))
 * **storage:** correct animation delay syntax in static website configuration ([640ac15](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/640ac15e7ba540ee15f970faec2c777ebbbd205d))
 * terraform fmt ([98d8778](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/98d87786a583c0a84cbef43a2d7f68c006ee5080))
@@ -362,3 +372,6 @@
 ### Reverts
 
 * **ci:** remove example 114 from standalone-compute.json ([47555f5](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/47555f5abfa6fb04f87e15033cec322ab5a1cb76))
+
+
+
