@@ -57,7 +57,7 @@ jobs:
     needs: load_scenarios
 
     strategy:
-      max-parallel: 20
+      max-parallel: 999
       matrix: ${{ fromJSON(needs.load_scenarios.outputs.jobs) }}
 
     uses: ./.github/workflows/phases.yaml
@@ -70,7 +70,7 @@ jobs:
     needs: [load_scenarios, deploy]
 
     strategy:
-      max-parallel: 20
+      max-parallel: 999
       matrix: ${{ fromJSON(needs.load_scenarios.outputs.jobs) }}
 
     uses: ./.github/workflows/phases_destroy.yaml
