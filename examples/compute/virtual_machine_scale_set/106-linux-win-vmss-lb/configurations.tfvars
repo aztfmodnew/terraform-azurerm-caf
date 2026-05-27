@@ -84,7 +84,6 @@ public_ip_addresses = {
     sku                = "Standard"
     # Note: For UltraPerformance ExpressRoute Virtual Network gateway, the associated Public IP needs to be sku "Basic" not "Standard"
     allocation_method = "Static"
-    # allocation method needs to be Dynamic
     ip_version              = "IPv4"
     idle_timeout_in_minutes = "4"
   }
@@ -94,7 +93,6 @@ public_ip_addresses = {
     sku                = "Standard"
     # Note: For UltraPerformance ExpressRoute Virtual Network gateway, the associated Public IP needs to be sku "Basic" not "Standard"
     allocation_method = "Static"
-    # allocation method needs to be Dynamic
     ip_version              = "IPv4"
     idle_timeout_in_minutes = "4"
   }
