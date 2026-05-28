@@ -561,6 +561,7 @@ locals {
   pim = {
     pim_active_role_assignments   = try(var.pim.pim_active_role_assignments, {})
     pim_eligible_role_assignments = try(var.pim.pim_eligible_role_assignments, {})
+    pim_group_assignments         = try(var.pim.pim_group_assignments, {})
     pim_role_management_policies  = try(var.pim.pim_role_management_policies, {})
   }
 }

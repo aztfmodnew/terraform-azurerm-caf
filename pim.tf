@@ -32,6 +32,20 @@ module "pim_eligible_role_assignments" {
   }
 }
 
+module "pim_group_assignments" {
+  source   = "./modules/authorization/pim_group_assignments"
+  for_each = local.pim.pim_group_assignments
+
+  settings        = each.value
+  global_settings = local.global_settings
+  client_config   = local.client_config
+
+  remote_objects = {
+    azuread_groups = local.combined_objects_azuread_groups
+    azuread_users  = local.combined_objects_azuread_users
+  }
+}
+
 
 
 module "pim_role_management_policies" {
@@ -55,6 +69,10 @@ output "pim_active_role_assignments" {
 
 output "pim_eligible_role_assignments" {
   value = module.pim_eligible_role_assignments
+}
+
+output "pim_group_assignments" {
+  value = module.pim_group_assignments
 }
 
 
