@@ -44,6 +44,14 @@ Orchestrate complex tasks by delegating to specialized agents in sequence (or pa
 4. Synthesize outcomes and decide next step until convergence.
 5. Prefer root-cause fixes over manual workarounds.
 
+## Mandatory Delegation-First Policy
+
+- The orchestrator MUST delegate implementation work to specialized agents listed in frontmatter `agents:`; do not implement module/resource/file changes directly in the orchestrator, except for tiny orchestration-only updates (for example, this orchestrator file itself).
+- For module updates, always delegate first to `Module Updater` and require schema-backed variable documentation updates where relevant.
+- For quality gates, delegate validation to `Compliance Validator` after implementation agent output.
+- If delegation fails due to tooling/runtime issues, report the blocker and retry delegation with a narrower prompt before considering direct execution.
+- Every response from the orchestrator must explicitly state which agent(s) were invoked and why.
+
 ## Strict Delegation Contract (Reliability)
 
 - Delegate only to agents listed in frontmatter `agents:`. Do not invent agent names.
