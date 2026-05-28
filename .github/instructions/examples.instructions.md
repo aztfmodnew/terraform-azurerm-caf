@@ -72,7 +72,7 @@ storage_accounts = {
 
 ### 2. Understand Variable Validation Context
 
-When AI encounters Terraform validation errors, check `/examples/variables.tf` to understand available variables. Common mistakes:
+When AI encounters Terraform validation errors, check the example variable declarations under `/examples/variables*.tf` to understand available variables. Common mistakes:
 
 ```hcl
 # ❌ These variables DON'T exist:
@@ -84,9 +84,9 @@ private_dns = { ... }
 private_dns_vnet_links = { ... }
 ```
 
-**AI Rule**: Before generating configurations with new variable names, verify the variable exists in `/examples/variables.tf`. If unsure, follow existing example patterns.
+**AI Rule**: Before generating configurations with new variable names, verify the variable exists in the example variable declarations under `/examples/variables*.tf`. If unsure, follow existing example patterns.
 
-Note: verifying the variable exists is only the first step. Once you see a variable (for example `storage_accounts` in `/examples/variables.tf`), follow where it is consumed — open the module or the `.tf` file that implements it (for example `storage_accounts.tf` or the module under `/modules/...`) and inspect the supported attributes, nested blocks and expected types. This tells you what keys and sub-keys are valid in examples/tests (network_rules, identity, private_endpoints, etc.).
+Note: verifying the variable exists is only the first step. Once you see a variable (for example `storage_accounts` in the declarations under `/examples/variables*.tf`), follow where it is consumed — open the module or the `.tf` file that implements it (for example `storage_accounts.tf` or the module under `/modules/...`) and inspect the supported attributes, nested blocks and expected types. This tells you what keys and sub-keys are valid in examples/tests (network_rules, identity, private_endpoints, etc.).
 
 If you trace down to actual provider resources (resource blocks), use the Terraform MCP tools to fetch provider/resource documentation or to resolve provider doc IDs so you can confirm required and optional arguments and identify any missing parameters to add to the example. This ensures examples remain accurate and the `terraform test` validation will pass. Prefer `_key` references for portability, but verify all resource-level required arguments are present using provider docs when needed.
 
@@ -166,7 +166,7 @@ subnets = {
 
 ### When Encountering Terraform Errors:
 
-1. **First**: Check if the variable exists in `/examples/variables.tf`
+1. **First**: Check if the variable exists in the declarations under `/examples/variables*.tf`
 2. **Second**: Look for similar patterns in other example files
 3. **Third**: Verify the module source code structure in `/modules/`
 
