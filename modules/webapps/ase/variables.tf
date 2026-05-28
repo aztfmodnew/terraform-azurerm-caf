@@ -36,12 +36,12 @@ variable "internalLoadBalancingMode" {
 
 variable "diagnostics" {
   description = "(Optional) Diagnostics object consumed by module diagnostics integration when diagnostic profiles are configured."
-  default = null
+  default     = null
 }
 
 variable "diagnostic_profiles" {
   description = "(Optional) Map of diagnostic profile definitions to configure monitoring and logging for this deployment."
-  default = {}
+  default     = {}
 }
 
 variable "front_end_size" {
@@ -66,7 +66,7 @@ variable "global_settings" {
 
 variable "private_dns" {
   description = "(Optional) Private DNS zones map used to create ASE private DNS A records when `settings.private_dns_records` is configured."
-  default = {}
+  default     = {}
 }
 
 variable "settings" {
