@@ -17,34 +17,38 @@ variable "settings" {
   description = <<DESCRIPTION
   Configuration object for `azurerm_windows_web_app`.
 
-  Supported top-level attributes include (non-exhaustive):
-  - service_plan_id / service_plan(.lz_key, .key)
-  - app_settings
-  - client_affinity_enabled
-  - client_certificate_enabled
-  - client_certificate_mode
-  - client_certificate_exclusion_paths
-  - enabled
-  - ftp_publish_basic_authentication_enabled
-  - https_only
-  - public_network_access_enabled
-  - key_vault_reference_identity_id / key_vault_reference_identity(.lz_key, .key)
-  - virtual_network_subnet_id / virtual_network_subnet(.lz_key, .vnet_key, .subnet_key)
-  - webdeploy_publish_basic_authentication_enabled
-  - zip_deploy_file
-  - tags
-
-  Nested blocks implemented by this module include:
-  - site_config (application_stack, auto_heal_setting, cors, ip_restriction, scm_ip_restriction)
-  - auth_settings
-  - auth_settings_v2
-  - backup
-  - connection_string
-  - identity
-  - logs
-  - sticky_settings
-  - storage_account
-  - timeouts
+  Top-level attributes supported by this module:
+  - service_plan_id - (Optional) Direct App Service Plan ID.
+  - service_plan - (Optional) Object reference to plan by `lz_key` and `key`.
+  - service_plan_key - (Optional) Backward-compatible key alias used with `service_plan` resolution.
+  - site_config - (Optional) Site runtime/config block (application stack, restrictions, TLS, worker, etc.).
+  - app_settings - (Optional) Application settings map.
+  - connection_string - (Optional) Connection string collection.
+  - client_affinity_enabled - (Optional) Enables ARR affinity.
+  - client_certificate_enabled - (Optional) Enables client certificates.
+  - client_certificate_mode - (Optional) Client certificate mode.
+  - client_certificate_exclusion_paths - (Optional) Exclusion paths for certificate validation.
+  - enabled - (Optional) Enables/disables the web app.
+  - ftp_publish_basic_authentication_enabled - (Optional) Enables FTP publishing basic auth.
+  - https_only - (Optional) Enforces HTTPS-only traffic.
+  - public_network_access_enabled - (Optional) Enables/disables public network access.
+  - key_vault_reference_identity_id - (Optional) Direct managed identity ID for Key Vault references.
+  - key_vault_reference_identity - (Optional) Object reference to managed identity by `lz_key` and `key`.
+  - key_vault_reference_identity_key - (Optional) Backward-compatible key alias for identity resolution.
+  - virtual_network_subnet_id - (Optional) Direct subnet ID for VNet integration.
+  - virtual_network_subnet - (Optional) Object reference to subnet using `lz_key`, `vnet_key`, and `subnet_key`.
+  - identity - (Optional) Managed identity configuration.
+  - auth_settings - (Optional) Authentication/authorization v1 block.
+  - auth_settings_v2 - (Optional) Authentication/authorization v2 block.
+  - backup - (Optional) Backup configuration block.
+  - logs - (Optional) App and HTTP logs configuration.
+  - sticky_settings - (Optional) Slot-sticky app settings/connection strings.
+  - storage_account - (Optional) External storage mounts and related settings.
+  - storage_account_key - (Optional) Backward-compatible storage lookup key.
+  - webdeploy_publish_basic_authentication_enabled - (Optional) Enables WebDeploy publishing basic auth.
+  - zip_deploy_file - (Optional) Local ZIP file path for deployment.
+  - timeouts - (Optional) Resource operation timeouts.
+  - tags - (Optional) Resource tags merged with CAF base tags.
 
   Provider reference used for this module:
   - hashicorp/azurerm `windows_web_app` (v4.74.0 docs)
