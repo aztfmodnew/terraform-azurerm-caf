@@ -1,70 +1,102 @@
 variable "global_settings" {
   description = <<DESCRIPTION
-  The global_settings object is a map of settings that can be used to configure the naming convention for Azure resources. It allows you to specify a default region, environment, and other settings that will be used when generating names for resources.
-  Any non-compliant characters will be removed from the name, suffix, or prefix. The generated name will be compliant with the set of allowed characters for each Azure resource type.
-  
-  These are the key naming settings:
-  - prefixes - (Optional) A list of prefixes to append as the first characters of the generated name.
-  - suffixes - (Optional) A list of suffixes to append after the basename of the resource.
-  - use_slug - (Optional) A boolean value that indicates whether a slug should be added to the name. Defaults to true.
-  - separator - (Optional) The separator character to use between prefixes, resource type, name, suffixes, and random characters. Defaults to "-".
-  - clean_input - (Optional) A boolean value that indicates whether to remove non-compliant characters from the name. Defaults to true.
+  Global CAF settings used by this module for naming and inherited tags.
+
+  Typical values consumed by this module:
+  - prefixes / suffixes
+  - random_length
+  - use_slug
+  - tags
   DESCRIPTION
   type        = any
 }
 
 variable "client_config" {
   description = <<DESCRIPTION
-    Client configuration object primarily used for specifying the Azure client context in non-interactive environments,
-    such as CI/CD pipelines running under a Service Principal.
+  Client context for the current deployment.
 
-    If this variable is left as an empty map (the default), the module will attempt to derive the client configuration
-    (like client_id, tenant_id, subscription_id, object_id) from the current Azure provider context
-    (e.g., credentials from Azure CLI, VS Code Azure login, or environment variables).
-
-    If you provide a map, it should contain the necessary authentication and context details. The structure used
-    when the default is derived includes keys like:
-    - client_id
-    - landingzone_key
-    - logged_aad_app_objectId
-    - logged_user_objectId
-    - object_id
-    - subscription_id
-    - tenant_id
-    DESCRIPTION
+  Used to resolve cross-object references through `remote_objects`, especially
+  when a setting points to another landing zone using `lz_key`. When omitted,
+  the root module normally derives values from the active provider context.
+  DESCRIPTION
   type        = any
 }
 
 variable "location" {
-  description = "(Required) Specifies the supported Azure location where to create the resource. Changing this forces a new resource to be created."
+  description = "Azure region where the Linux Web App is created. If null at call-site, callers typically coalesce with resource group location."
   type        = string
 }
 
 variable "settings" {
   description = <<DESCRIPTION
-  Settings of the Linux Web App module:
-  
+  Configuration object for the Linux Web App resource (`azurerm_linux_web_app`).
+
+  This module follows CAF patterns and resolves dependencies from `settings` and
+  `remote_objects`. Supported top-level attributes include (non-exhaustive):
+  - service_plan_id / service_plan(.lz_key, .key)
+  - app_settings
+  - client_affinity_enabled
+  - client_certificate_enabled
+  - client_certificate_mode
+  - client_certificate_exclusion_paths
+  - enabled
+  - ftp_publish_basic_authentication_enabled
+  - https_only
+  - public_network_access_enabled
+  - key_vault_reference_identity_id / key_vault_reference_identity(.lz_key, .key)
+  - virtual_network_subnet_id / virtual_network_subnet(.lz_key, .vnet_key, .subnet_key)
+  - webdeploy_publish_basic_authentication_enabled
+  - zip_deploy_file
+  - tags
+
+  Nested blocks supported by this module mirror provider capabilities, including:
+  - site_config (application_stack, auto_heal_setting, cors, ip_restriction, scm_ip_restriction)
+  - auth_settings
+  - auth_settings_v2
+  - backup
+  - connection_string
+  - identity
+  - logs
+  - storage_account
+  - sticky_settings
+  - timeouts
+
+  Provider reference used for this module:
+  - hashicorp/azurerm `linux_web_app` (v4.74.0 docs)
   DESCRIPTION
   type        = any
 }
 
 variable "resource_group" {
-  description = "Resource group object"
+  description = "Resolved resource group object used by this module. Expected keys include at least `name`, and typically `location` and optional `tags`."
   type        = any
 }
 
 variable "base_tags" {
+  description = "When true, merge global/resource-group tags into module tags; when false, only module and explicit settings tags are used."
   type        = bool
-  description = "Flag to determine if tags should be inherited"
 }
 
 variable "remote_objects" {
+  description = <<DESCRIPTION
+  Dependency objects resolved outside this module and injected by the root layer.
+
+  This module can consume, when applicable:
+  - service_plans
+  - vnets (and subnets)
+  - managed_identities
+  - storage_accounts
+  - diagnostics
+  - private_dns
+
+  Keys are usually looked up with `client_config.landingzone_key` unless a
+  specific `settings.*.lz_key` override is provided.
+  DESCRIPTION
   type        = any
-  description = "Remote objects"
 }
 
 variable "private_endpoints" {
+  description = "Private endpoint definitions for this web app. Entries are processed by the module's private endpoint integration logic."
   type        = any
-  description = "Private endpoints configuration"
   default     = {}
 }
