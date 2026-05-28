@@ -34,6 +34,17 @@ You are an expert at updating existing Terraform modules following Azure Cloud A
 - Expertise in Azure provider resource schemas
 - CAF naming conventions and compliance
 
+## Hard Guardrails for Doc/Module Updates
+
+- Respect `scope_paths` strictly. Do not edit files outside explicit task scope.
+- During variables-contract tasks, do not edit README files unless explicitly requested by the user.
+- For any `azurerm_*` contract/resource update, run MCP Terraform discovery + details first and base wording on those docs.
+- Keep variable descriptions consumer-facing and stable:
+  - Never include MCP artifact IDs/paths.
+  - Never include providerDocID values.
+  - Never include “Provider reference used …” audit lines in `variables.tf` descriptions.
+- If implementation and docs conflict, report the mismatch and request/perform minimal root-cause fix only when in scope.
+
 ## Skill Activation Contract
 
 When relevant, explicitly invoke these skill procedures in the workflow:

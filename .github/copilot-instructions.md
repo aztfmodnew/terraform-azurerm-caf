@@ -289,7 +289,7 @@ modules/
     └── grafana/          # Module at depth 2 ✓
         ##
 - [ ] `/category_new_module_names.tf` - Main aggregator file (created)
-- [ ] `/variables.tf` - Added variable for category
+- [ ] Root variable definitions updated (preferred in `/variables.tf`; split files like `/variables.<category>.tf` are also valid)
 - [ ] `/locals.tf` - Added module to category locals
 - [ ] `/locals.combined_objects.tf` - Added combined_objects entry
 - [ ] `/examples/category/service_name/minimal.tfvars` - Created example
@@ -312,7 +312,7 @@ terraform_with_var_files --dir /category/service_name/minimal/ --action plan --a
 | Issue                                        | Solution                                                               |
 | -------------------------------------------- | ---------------------------------------------------------------------- |
 | "No module call named..."                    | Check Step 1: aggregator file exists and module source path is correct |
-| "Unknown variable..."                        | Check Step 2: variable added to variables.tf                           |
+| "Unknown variable..."                        | Check Step 2: variable added to the root variable definitions           |
 | "The given key does not identify an element" | Check Step 3: locals.tf has correct path (var.category.module_name)    |
 | "Output not found"                           | Check Step 1: output block exists in aggregator file                   |
 | "Combined objects not found"                 | Check Step 4: locals.combined_objects.tf has correct entry             |
@@ -328,7 +328,7 @@ terraform_with_var_files --dir /category/service_name/minimal/ --action plan --a
 └─────────────────────────────────────────────────────────────┘
                           ↓
 ┌─────────────────────────────────────────────────────────────┐
-│ 2. Add variable to /variables.tf                           │
+│ 2. Add variable to root variable definitions                │
 │    → Define category variable                               │
 └─────────────────────────────────────────────────────────────┘
                           ↓
@@ -1224,7 +1224,7 @@ terraform test -test-directory=./tests/mock -var-file="./grafana/**/configuratio
 
 | Error                    | Cause                                 | Solution                                                         |
 | ------------------------ | ------------------------------------- | ---------------------------------------------------------------- |
-| "Unknown variable"       | Variable not in examples/variables.tf | Check variable name matches root variables.tf                    |
+| "Unknown variable"       | Variable not in examples variable definitions | Check variable name matches root variable definitions        |
 | "Invalid reference"      | Using wrong key format                | Use `resource_group = { key = "rg_key" }`                        |
 | "Resource name too long" | Included azurecaf prefix in name      | Remove prefix, let azurecaf add it                               |
 | "Network config invalid" | Using wrong variable names            | Use `vnets` and `virtual_subnets`, not `networking` or `subnets` |

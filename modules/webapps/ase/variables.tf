@@ -1,5 +1,5 @@
 variable "tags" {
-  description = "(Required) map of tags for the deployment"
+  description = "(Required) Map of tags to apply to App Service Environment resources."
 }
 
 variable "name" {
@@ -26,15 +26,21 @@ variable "subnet_id" {
   description = "(Required) Name of the Virtual Network for the ASE"
 }
 
-variable "subnet_name" {}
+variable "subnet_name" {
+  description = "(Optional) Name of the subnet for template-based scenarios where subnet name is referenced in addition to subnet ID."
+}
 
-variable "internalLoadBalancingMode" {}
+variable "internalLoadBalancingMode" {
+  description = "(Optional) Internal load balancing mode for the App Service Environment (for example, internal publishing and/or internal web access modes)."
+}
 
 variable "diagnostics" {
+  description = "(Optional) Diagnostics object consumed by module diagnostics integration when diagnostic profiles are configured."
   default = null
 }
 
 variable "diagnostic_profiles" {
+  description = "(Optional) Map of diagnostic profile definitions to configure monitoring and logging for this deployment."
   default = {}
 }
 
@@ -44,7 +50,7 @@ variable "front_end_size" {
 
   validation {
     condition     = contains(["Medium", "Large", "ExtraLarge", "Standard_D2", "Standard_D3", "Standard_D4", "Standard_D1_V2", "Standard_D2_V2", "Standard_D3_V2", "Standard_D4_V2"], var.front_end_size)
-    error_message = "Only Medium, Large or ExtraLarge is supported."
+    error_message = "front_end_size must be one of: Medium, Large, ExtraLarge, Standard_D2, Standard_D3, Standard_D4, Standard_D1_V2, Standard_D2_V2, Standard_D3_V2, Standard_D4_V2."
   }
 }
 
@@ -59,6 +65,7 @@ variable "global_settings" {
 }
 
 variable "private_dns" {
+  description = "(Optional) Private DNS zones map used to create ASE private DNS A records when `settings.private_dns_records` is configured."
   default = {}
 }
 

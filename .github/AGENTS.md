@@ -171,7 +171,7 @@ This document lists all AI agents available for **module creation, updates, test
 
 **What it does:**
 - Creates root aggregator file (`category_services.tf`)
-- Adds variable to `/variables.tf`
+- Adds variable to the root variable definitions (preferred in `/variables.tf`; split files like `/variables.<category>.tf` are also valid)
 - Updates `/locals.tf` with module extraction
 - Updates `/locals.combined_objects.tf` for cross-module references
 - Creates minimal and complete examples
@@ -180,7 +180,7 @@ This document lists all AI agents available for **module creation, updates, test
 
 **The 8 Steps:**
 1. Create root aggregator file
-2. Add variable definition
+2. Add variable definition in the root variable definitions
 3. Add module to locals.tf
 4. Add to combined_objects
 5. Create minimal example

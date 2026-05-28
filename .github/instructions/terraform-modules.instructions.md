@@ -26,6 +26,10 @@ Use these rules when editing files under `modules/**`. Focus on correctness, CAF
         - Whether each attribute is required or optional
         - Constraints and valid values from the Azure provider documentation
       - Validation block that checks no unsupported attributes are provided (see example below)
+      - Descriptions must be user-facing and implementation-focused:
+        - Do NOT include MCP artifact references in variable descriptions
+        - Do NOT include providerDocID values in variable descriptions
+        - Do NOT include audit-trace lines like “Provider reference used for this contract …”
       - **Example**:
         ```hcl
         variable "settings" {
