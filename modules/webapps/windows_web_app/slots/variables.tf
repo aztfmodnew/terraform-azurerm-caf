@@ -1,56 +1,84 @@
 variable "global_settings" {
-  description = "Global settings object"
+  description = "Global CAF settings used by the Windows Web App slot module for naming and tag inheritance."
   type        = any
 }
 
 variable "client_config" {
-  description = "Client configuration object"
+  description = "Client context used for landing-zone-aware resolution in slot settings."
   type        = any
 }
 
 variable "location" {
-  description = "(Required) Specifies the supported Azure location where to create the resource. Changing this forces a new resource to be created."
+  description = "Azure location context used by locals/tagging in the slot module."
   type        = string
 }
 
 
 variable "settings" {
-  description = "Settings of the module"
+  description = <<DESCRIPTION
+  Configuration object for `azurerm_windows_web_app_slot`.
+
+  Supported top-level attributes include (non-exhaustive):
+  - app_settings
+  - client_affinity_enabled
+  - client_certificate_enabled
+  - client_certificate_mode
+  - client_certificate_exclusion_paths
+  - enabled
+  - ftp_publish_basic_authentication_enabled
+  - https_only
+  - public_network_access_enabled
+  - key_vault_reference_identity_id / key_vault_reference_identity(.lz_key, .key)
+  - virtual_network_subnet_id / virtual_network_subnet(.lz_key, .vnet_key, .subnet_key)
+  - webdeploy_publish_basic_authentication_enabled
+  - zip_deploy_file
+  - tags
+
+  Nested blocks implemented by this module include:
+  - site_config
+  - auth_settings
+  - auth_settings_v2
+  - backup
+  - connection_string
+  - identity
+  - logs
+  - sticky_settings
+  - storage_account
+  - timeouts
+
+  Provider reference used for this submodule:
+  - hashicorp/azurerm `windows_web_app_slot` (v4.74.0 docs)
+  DESCRIPTION
   type        = any
 }
 
 variable "resource_group" {
-  description = "Resource group object"
+  description = "Resolved resource group object used by slot locals/tags composition."
   type        = any
 }
 
 variable "base_tags" {
   type        = bool
-  description = "Flag to determine if tags should be inherited"
+  description = "When true, inherit base tags in addition to module and settings tags."
 }
 
 variable "remote_objects" {
   type        = any
   description = <<DESCRIPTION
-    A map of objects representing the remote objects to be used in the module.
-    This is used to pass the remote objects to the module.
-    The keys of the map are the names of the remote objects.
-    The values of the map are the objects themselves.
+  Dependency objects for slot provisioning.
+
+  Commonly used entries include:
+  - app_service_id (parent Windows Web App ID)
+  - managed_identities
+  - vnets (and subnets)
+  - storage_accounts
+  - private_dns
   DESCRIPTION
 }
 
 
 variable "private_endpoints" {
-  description = "A map of objects representing the private endpoints to create."
+  description = "Private endpoint definitions for the Windows Web App slot."
   type        = any
-  # For the future
-  #type        = map(object({
-  #  name          = string
-  #  lz_key        = string
-  #  resource_group_key = string
-  #  subnet_id     = optional(string)
-  #  vnet_key      = string
-  #  subnet_key    = string
-  #}))
-  default = {}
+  default     = {}
 }
