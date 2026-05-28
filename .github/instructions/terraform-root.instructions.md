@@ -7,7 +7,8 @@ applyTo: "/*.tf"
 When editing Terraform at the repo root (aggregators), wire modules consistently and expose outputs for consumption by other stacks.
 
 - Variables and locals
-  - Add a category variable in `variables.tf` (e.g., `variable "cognitive_services" { default = {} }`).
+  - Add a category variable in root variable definitions (preferred in `variables.tf`; split files like `variables.<category>.tf` are also allowed if the interface remains unchanged).
+  - When splitting variables across files, preserve public variable names, types, defaults, and validations to avoid breaking consumers.
   - Extend the category map in `locals.tf` to expose each submodule config: `new_module = try(var.category.new_module, {})`.
 
 - Module call (aggregator file)
