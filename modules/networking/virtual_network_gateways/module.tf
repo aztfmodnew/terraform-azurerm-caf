@@ -22,7 +22,7 @@ resource "azurerm_virtual_network_gateway" "vngw" {
   # The following options may change depending upon SKU type. Check product documentation
   sku           = var.settings.sku
   active_active = try(var.settings.active_active, null)
-  bgp_enabled   = try(var.settings.bgp_enabled, try(var.settings.enable_bgp, null))
+  bgp_enabled = try(var.settings.bgp_enabled, try(var.settings.enable_bgp, null))
   #vpn_type defaults to 'RouteBased'. Type 'PolicyBased' supported only by Basic SKU
   vpn_type = try(var.settings.vpn_type, null)
   tags     = local.tags
