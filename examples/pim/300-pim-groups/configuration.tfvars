@@ -35,8 +35,8 @@ pim = {
     }
 
     active_owner_assignment = {
-      assignment_mode      = "active"
-      assignment_type      = "owner"
+      assignment_mode = "active"
+      assignment_type = "owner"
       group = {
         key = "pim_target_group"
       }
