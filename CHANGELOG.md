@@ -1,10 +1,11 @@
-# [4.53.0](https://github.com/aztfmodnew/terraform-azurerm-caf/compare/4.52.4...4.53.0) (2026-05-28)
+# [4.53.0](https://github.com/aztfmodnew/terraform-azurerm-caf/compare/4.52.4...4.53.0) (2026-06-12)
 
 
 ### Bug Fixes
 
 * **ai_services:** change sku_name S1 to S0 for AIServices kind ([d56d4a8](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/d56d4a8e181b9763e8bd25c07657cd34e85580c6))
 * **app_gateway:** migrate waf_configuration to application_gateway_waf_policies in example 100 ([a8b687b](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/a8b687bfa13091254792a228b9695d585f20f8cc))
+* **authorization:** update role_definition_id logic to ensure correct resolution ([46623dd](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/46623dd74c79da3a36d418603473afaf29b58181))
 * **ci:** fix Release Automation workflow — changelog via PR + populate CHANGELOG.md ([#161](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/161)) ([40922e4](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/40922e4c1ff8043b7cf1245eab06dbc7b2268e7a))
 * **container_app:** add subnet delegation for Microsoft.App/environments ([3e4213e](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/3e4213ee416c1f92464af42cd42227ec279ceef2))
 * correct monthly CI failures - Basic PIP, firewall zones, waf_configuration, rbac_id, networking-pip scenario ([b96a7cb](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/b96a7cb3ed00d06f50eed6c8906d16854a7570ba))
