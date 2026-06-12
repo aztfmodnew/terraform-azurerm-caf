@@ -35,6 +35,46 @@ jobs:
             echo "changed=false" >> $GITHUB_OUTPUT
           fi
 
+      - name: Close stale terraform fmt PRs when no changes
+        if: steps.verify-changed-files.outputs.changed == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const prs = await github.paginate(github.rest.pulls.list, {
+              owner,
+              repo,
+              state: 'open',
+              per_page: 100
+            });
+
+            const staleFmtPrs = prs.filter((pr) =>
+              pr.title === 'Auto-format Terraform files' &&
+              pr.head?.ref?.startsWith('terraform-fmt-')
+            );
+
+            for (const pr of staleFmtPrs) {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: pr.number,
+                body: 'Closing automatically: `terraform fmt -recursive` no longer produces changes on `main`.'
+              });
+
+              await github.rest.pulls.update({
+                owner,
+                repo,
+                pull_number: pr.number,
+                state: 'closed'
+              });
+
+              core.info(`Closed stale terraform fmt PR #${pr.number}`);
+            }
+
+            if (staleFmtPrs.length === 0) {
+              core.info('No stale terraform fmt PRs found.');
+            }
+
       - name: Create Pull Request
         if: steps.verify-changed-files.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@v8
@@ -47,5 +87,5 @@ jobs:
 
             Changes made:
             - Applied Terraform formatting to ensure consistent code style
-          branch: terraform-fmt-${{ github.run_number }}
+          branch: terraform-fmt-auto
           delete-branch: true
