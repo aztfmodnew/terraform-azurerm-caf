@@ -1,10 +1,11 @@
-# [4.53.0](https://github.com/aztfmodnew/terraform-azurerm-caf/compare/4.52.4...4.53.0) (2026-05-28)
+# [4.53.0](https://github.com/aztfmodnew/terraform-azurerm-caf/compare/4.52.5...4.53.0) (2026-06-23)
 
 
 ### Bug Fixes
 
 * **ai_services:** change sku_name S1 to S0 for AIServices kind ([d56d4a8](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/d56d4a8e181b9763e8bd25c07657cd34e85580c6))
 * **app_gateway:** migrate waf_configuration to application_gateway_waf_policies in example 100 ([a8b687b](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/a8b687bfa13091254792a228b9695d585f20f8cc))
+* **authorization:** update role_definition_id logic to ensure correct resolution ([46623dd](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/46623dd74c79da3a36d418603473afaf29b58181))
 * **ci:** fix Release Automation workflow — changelog via PR + populate CHANGELOG.md ([#161](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/161)) ([40922e4](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/40922e4c1ff8043b7cf1245eab06dbc7b2268e7a))
 * **container_app:** add subnet delegation for Microsoft.App/environments ([3e4213e](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/3e4213ee416c1f92464af42cd42227ec279ceef2))
 * correct monthly CI failures - Basic PIP, firewall zones, waf_configuration, rbac_id, networking-pip scenario ([b96a7cb](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/b96a7cb3ed00d06f50eed6c8906d16854a7570ba))
@@ -32,6 +33,7 @@
 * centralized data_sources lookup Batch 3 (event_hub_namespaces, servicebus_namespaces, container_registry, virtual_hubs, mysql_flexible_servers, aks_clusters, dns_zones, disk_encryption_sets) ([66aa94c](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/66aa94c7587308385abf779fc08f2cfa9816dbe4))
 * **data-sources:** support subscription lookup by display_name with ambiguity guard ([a33afe8](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/a33afe8ba13e42c621a4a04caa90dcf342efd0e4))
 * extend centralized data_sources lookup for rg, subscriptions and azuread groups ([cd05733](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/cd05733759a09131eabb598a85c30d15e3a95a75))
+* **iot:** complete Digital Twins modules with endpoint implementations ([#175](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/175)) ([35c5e56](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/35c5e56e1beb903786c40a46214fa52646766b9e))
 * **pim:** add centralized lookup-based scope and role resolution ([47fb6f4](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/47fb6f441e340695e636ead0fd2851bf1e6da17a))
 * **pim:** add pim group assignments module and safe key-based groups example ([#171](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/171)) ([0484c05](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/0484c05007a2396fb30f4c5b33219394dde465c6))
 * **pim:** add role management policy module for permanent assignment governance ([82e45ee](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/82e45ee42ecf20e164226cb7591abe206f8eaed3))
