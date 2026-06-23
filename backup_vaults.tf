@@ -67,7 +67,7 @@ module "backup_vault_instances_blob_storage" {
 
 module "backup_vault_instances_disk" {
   source     = "./modules/backup_vault/backup_vault_instance_disk"
-  depends_on = [azurerm_role_assignment.for]
+  depends_on = [azurerm_role_assignment.for, module.storage_containers]
   for_each = {
     for key, value in local.data_protection.backup_vault_instances : key => value
     if value.type == "disk"
