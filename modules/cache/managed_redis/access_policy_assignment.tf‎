@@ -1,0 +1,8 @@
+resource "azurerm_managed_redis_access_policy_assignment" "role_assignments" {
+  for_each = length(local.redis_role_assignments_merged) > 0 ? {
+    for idx, assignment in local.redis_role_assignments_merged : idx => assignment
+  } : {}
+
+  managed_redis_id   = azurerm_managed_redis.managed_redis.id
+  object_id          = each.value.principal_id
+}
