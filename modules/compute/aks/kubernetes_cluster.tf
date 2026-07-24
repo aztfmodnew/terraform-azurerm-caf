@@ -437,7 +437,8 @@ node_os_upgrade_channel must be set to NodeImage if automatic_upgrade_channel ha
   dynamic "workload_autoscaler_profile" {
     for_each = try(var.settings.workload_autoscaler_profile[*], {})
     content {
-      keda_enabled = try(workload_autoscaler_profile.value.keda_enabled, null)
+      keda_enabled                    = try(workload_autoscaler_profile.value.keda_enabled, null)
+      vertical_pod_autoscaler_enabled = try(workload_autoscaler_profile.value.vertical_pod_autoscaler_enabled, null)
     }
   }
 
