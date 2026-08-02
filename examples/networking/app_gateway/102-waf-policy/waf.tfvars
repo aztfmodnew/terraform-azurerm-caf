@@ -63,6 +63,39 @@ application_gateway_waf_policies = {
       request_body_check          = true
       file_upload_limit_in_mb     = 100
       max_request_body_size_in_kb = 128
+
+      log_scrubbing = {
+        enabled = true
+
+        rules = {
+          r1 = {
+            enabled                 = true
+            match_variable          = "RequestHeaderNames"
+            selector_match_operator = "Equals"
+            selector                = "Authorization"
+          }
+
+          r2 = {
+            enabled                 = true
+            match_variable          = "RequestCookieNames"
+            selector_match_operator = "Equals"
+            selector                = "sessionid"
+          }
+
+          r3 = {
+            enabled                 = true
+            match_variable          = "RequestArgNames"
+            selector_match_operator = "Equals"
+            selector                = "password"
+          }
+
+          r4 = {
+            enabled                 = true
+            match_variable          = "RequestIPAddress"
+            selector_match_operator = "EqualsAny"
+          }
+        }
+      }
     }
 
     managed_rules = {
