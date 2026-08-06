@@ -13,7 +13,8 @@ module "security_policies" {
     cdn_frontdoor_profile           = azurerm_cdn_frontdoor_profile.cdn_frontdoor_profile
     cdn_frontdoor_firewall_policies = module.firewall_policies
     cdn_frontdoor_endpoints         = module.endpoints
+    cdn_frontdoor_custom_domains    = { (var.client_config.landingzone_key) = module.frontdoor_custom_domains }
   })
 
-  depends_on = [module.firewall_policies, module.endpoints]
+  depends_on = [module.firewall_policies, module.endpoints, module.frontdoor_custom_domains]
 }
