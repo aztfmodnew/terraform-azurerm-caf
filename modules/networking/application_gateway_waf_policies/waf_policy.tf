@@ -42,11 +42,32 @@ resource "azurerm_web_application_firewall_policy" "wafpolicy" {
   dynamic "policy_settings" {
     for_each = try(var.settings.policy_settings, {}) != {} ? [1] : []
     content {
-      enabled                     = try(var.settings.policy_settings.enabled, null)
-      mode                        = try(var.settings.policy_settings.mode, null)
-      file_upload_limit_in_mb     = try(var.settings.policy_settings.file_upload_limit_in_mb, null)
-      request_body_check          = try(var.settings.policy_settings.request_body_check, null)
-      max_request_body_size_in_kb = try(var.settings.policy_settings.max_request_body_size_in_kb, null)
+      enabled                                   = try(var.settings.policy_settings.enabled, null)
+      mode                                      = try(var.settings.policy_settings.mode, null)
+      file_upload_limit_in_mb                   = try(var.settings.policy_settings.file_upload_limit_in_mb, null)
+      request_body_check                        = try(var.settings.policy_settings.request_body_check, null)
+      max_request_body_size_in_kb               = try(var.settings.policy_settings.max_request_body_size_in_kb, null)
+      request_body_enforcement                  = try(var.settings.policy_settings.request_body_enforcement, true)
+      request_body_inspect_limit_in_kb          = try(var.settings.policy_settings.request_body_inspect_limit_in_kb, null)
+      js_challenge_cookie_expiration_in_minutes = try(var.settings.policy_settings.js_challenge_cookie_expiration_in_minutes, 30)
+      file_upload_enforcement                   = try(var.settings.policy_settings.file_upload_enforcement, true)
+
+      dynamic "log_scrubbing" {
+        for_each = try(var.settings.policy_settings.log_scrubbing, {}) != {} ? [1] : []
+        content {
+          enabled = try(var.settings.policy_settings.log_scrubbing.enabled, true)
+
+          dynamic "rule" {
+            for_each = try(var.settings.policy_settings.log_scrubbing.rules, {})
+            content {
+              enabled                 = try(rule.value.enabled, true)
+              match_variable          = rule.value.match_variable
+              selector_match_operator = try(rule.value.selector_match_operator, "Equals")
+              selector                = try(rule.value.selector, null)
+            }
+          }
+        }
+      }
     }
   }
 
