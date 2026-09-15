@@ -1,4 +1,4 @@
-# [4.53.0](https://github.com/aztfmodnew/terraform-azurerm-caf/compare/4.52.5...4.53.0) (2026-08-02)
+# [4.53.0](https://github.com/aztfmodnew/terraform-azurerm-caf/compare/4.52.5...4.53.0) (2026-09-15)
 
 
 ### Bug Fixes
@@ -18,6 +18,7 @@
 * **region:** replace retired australiacentral with australiaeast ([89c50bf](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/89c50bf1cab4b3d117fdd7ad3ad91f28ddc905f6))
 * replace underscores with dashes in PostgreSQL user password secret names ([b1eb20f](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/b1eb20f3d78b9fca53a27dfe1ec0a83516a69331))
 * **review:** address Copilot PR review comments ([edd3fc4](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/edd3fc4080417932c9882696dcb25d0e67f29402))
+* **security_policy:** add frontdoor_custom_domains to dependencies ([cc40c6f](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/cc40c6f86bc18b51f98e6b3783def4913d3622d3))
 * **service_plan:** align timeouts implementation with documented settings keys ([26355b9](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/26355b945e4539b48197cf665cca4c11932eef2e))
 * **vmss:** update Basic PIP to Standard + allocation Static in VMSS examples ([8c09bf4](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/8c09bf482686cfb28b555286d437316e2740b226))
 * **vng:** replace deprecated enable_bgp with bgp_enabled (backward compatible) ([3b520ef](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/3b520ef1f51bf731e4473660ae6f4a83963de4ba))
@@ -39,6 +40,7 @@
 * **pim:** add pim group assignments module and safe key-based groups example ([#171](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/171)) ([0484c05](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/0484c05007a2396fb30f4c5b33219394dde465c6))
 * **pim:** add role management policy module for permanent assignment governance ([82e45ee](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/82e45ee42ecf20e164226cb7591abe206f8eaed3))
 * **pim:** add standalone selector resolution and examples ([447f65a](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/447f65af5125f80da046274d6fb447e95ae1a46d))
+* **waf:** enhance log scrubbing settings for waf policy ([c2cac70](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/c2cac70aa888cfaccde134034535e7f23e8bbc42))
 
 
 
