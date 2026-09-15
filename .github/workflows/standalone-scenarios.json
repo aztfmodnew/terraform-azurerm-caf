@@ -109,6 +109,7 @@
     "redis_cache/101-redis-diagnostics",
     "redis_cache/102-redis-private",
     "redis_cache/103-redis-private-endpoints",
+    "cache/managed_redis/101-managed-redis-access-policy",
     "cache/managed_redis/200-managed-redis-private-endpoint",
     "pim/100-pim",
     "pim/200-pim-standalone-selectors",

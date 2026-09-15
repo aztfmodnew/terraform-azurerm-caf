@@ -15,11 +15,11 @@ resource_groups = {
 cache = {
   managed_redis = {
     redis1 = {
-      name               = "redis-instance-1"
+      name               = "instance-1"
       resource_group_key = "test_rg"
 
       # Required: SKU for managed Redis
-      sku_name = "Standard"
+      sku_name = "Balanced_B3"
 
       # Optional: Enable high availability
       high_availability_enabled = true

@@ -5,6 +5,11 @@ variable "subscription_billing_role_assignments" {
   default = {}
 }
 
+variable "cache" {
+  type    = any
+  default = {}
+}
+
 variable "ai_services" {
   type    = any
   default = {}
