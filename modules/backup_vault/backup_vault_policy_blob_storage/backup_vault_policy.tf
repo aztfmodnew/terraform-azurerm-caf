@@ -16,9 +16,9 @@ resource "azurerm_data_protection_backup_policy_blob_storage" "backup_vault_poli
   operational_default_retention_duration = lookup(var.settings, "operational_default_retention_duration", null)
 
   # VaultStore: vault_default_retention_duration requiere backup_repeating_time_intervals.
-  vault_default_retention_duration    = lookup(var.settings, "vault_default_retention_duration", null)
-  backup_repeating_time_intervals     = lookup(var.settings, "backup_repeating_time_intervals", null)
-  time_zone                           = lookup(var.settings, "time_zone", null)
+  vault_default_retention_duration = lookup(var.settings, "vault_default_retention_duration", null)
+  backup_repeating_time_intervals  = lookup(var.settings, "backup_repeating_time_intervals", null)
+  time_zone                        = lookup(var.settings, "time_zone", null)
 
   dynamic "retention_rule" {
     for_each = lookup(var.settings, "retention_rules", [])
