@@ -42,6 +42,17 @@ cache = {
         # }
       }
 
+      # Optional: Role assignment configuration
+      # Supports both local (same landing zone) and remote (cross-landing-zone) managed identities
+      # redis_role_assignment = {
+      #   "Data Owner" = {
+      #     managed_identities = {
+      #       lz_key = ""
+      #       keys = ["key1"]
+      #     }
+      #   }
+      # }
+
       # Optional: Default database configuration
       default_database = {
         access_keys_authentication_enabled = true
