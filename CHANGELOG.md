@@ -1,4 +1,4 @@
-# [4.53.0](https://github.com/aztfmodnew/terraform-azurerm-caf/compare/4.52.5...4.53.0) (2026-08-02)
+# [4.53.0](https://github.com/aztfmodnew/terraform-azurerm-caf/compare/4.52.5...4.53.0) (2026-09-23)
 
 
 ### Bug Fixes
@@ -13,11 +13,13 @@
 * **databricks:** update sku from standard to premium ([81920b8](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/81920b82d5d9e1f1ac2252201eee30fd182a756a))
 * **examples:** apply same fixes to non-CI examples ([f3ea76b](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/f3ea76b6e131a58db3ac13786630a0590909f02f))
 * **examples:** update stale PIP comments and fix remaining Basic PIPs ([4295526](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/4295526a9a6f7c87b9b9ca7600b52479c7b983bd))
+* finalize managed redis access policy integration ([a6a97e3](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/a6a97e38e6ba4894b1deb77d39dc4dc23a4f5e04)), closes [#189](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/189)
 * **firewall:** restore zones and change region northeurope->westeurope in examples 101-104 ([e88f614](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/e88f6146b2a8bad877cb0d91232bdb53e2ff1e28))
 * **pim:** use resolved role_definition_id without scope prefix ([d1d31a4](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/d1d31a458d2f2976245986c54501a18080a307ea))
 * **region:** replace retired australiacentral with australiaeast ([89c50bf](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/89c50bf1cab4b3d117fdd7ad3ad91f28ddc905f6))
 * replace underscores with dashes in PostgreSQL user password secret names ([b1eb20f](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/b1eb20f3d78b9fca53a27dfe1ec0a83516a69331))
 * **review:** address Copilot PR review comments ([edd3fc4](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/edd3fc4080417932c9882696dcb25d0e67f29402))
+* **security_policy:** add frontdoor_custom_domains to dependencies ([cc40c6f](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/cc40c6f86bc18b51f98e6b3783def4913d3622d3))
 * **service_plan:** align timeouts implementation with documented settings keys ([26355b9](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/26355b945e4539b48197cf665cca4c11932eef2e))
 * **vmss:** update Basic PIP to Standard + allocation Static in VMSS examples ([8c09bf4](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/8c09bf482686cfb28b555286d437316e2740b226))
 * **vng:** replace deprecated enable_bgp with bgp_enabled (backward compatible) ([3b520ef](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/3b520ef1f51bf731e4473660ae6f4a83963de4ba))
@@ -39,6 +41,7 @@
 * **pim:** add pim group assignments module and safe key-based groups example ([#171](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/171)) ([0484c05](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/0484c05007a2396fb30f4c5b33219394dde465c6))
 * **pim:** add role management policy module for permanent assignment governance ([82e45ee](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/82e45ee42ecf20e164226cb7591abe206f8eaed3))
 * **pim:** add standalone selector resolution and examples ([447f65a](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/447f65af5125f80da046274d6fb447e95ae1a46d))
+* **waf:** enhance log scrubbing settings for waf policy ([c2cac70](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/c2cac70aa888cfaccde134034535e7f23e8bbc42))
 
 
 
