@@ -13,6 +13,7 @@ variable "settings" {
     Settings object for the Managed Redis instance. This object defines the configuration for Azure Managed Redis deployment.
     The settings object supports the following attributes:
       - name - (Required) The name which should be used for this Managed Redis instance. Changing this forces a new Managed Redis instance to be created.
+      - name_override - (Optional) An exact physical Azure name to use for this Managed Redis instance. When set, CAF prefixes, suffixes, cleaning, and global passthrough settings are not applied. The value must be a valid Azure Managed Redis name. Use this to preserve an existing physical name during migration.
       - resource_group_key - (Optional) The key of the resource group to deploy the resource in.
       - sku_name - (Required) The SKU name for the Managed Redis instance. Possible values are Balanced_B0 through Balanced_B1000, ComputeOptimized_X3 through ComputeOptimized_X700, FlashOptimized_A250 through FlashOptimized_A4500, MemoryOptimized_M10 through MemoryOptimized_M700.
       - high_availability_enabled - (Optional) Whether to enable high availability for the Managed Redis instance. Defaults to true. Changing this forces a new Managed Redis instance to be created.
@@ -26,6 +27,7 @@ variable "settings" {
     DESCRIPTION
   type = object({
     name                      = string
+    name_override             = optional(string)
     resource_group_key        = optional(string)
     sku_name                  = string
     high_availability_enabled = optional(bool)
@@ -74,6 +76,7 @@ variable "settings" {
       keys(var.settings),
       [
         "name",
+        "name_override",
         "resource_group_key",
         "sku_name",
         "high_availability_enabled",
@@ -87,12 +90,13 @@ variable "settings" {
         "azurecaf_resource_type"
       ]
     )) == 0
-    error_message = format("The following attributes are not supported within settings: %s. Allowed attributes are: name, resource_group_key, sku_name, high_availability_enabled, public_network_access, identity, customer_managed_key, default_database, redis_role_assignment, tags, timeouts, azurecaf_resource_type.",
+    error_message = format("The following attributes are not supported within settings: %s. Allowed attributes are: name, name_override, resource_group_key, sku_name, high_availability_enabled, public_network_access, identity, customer_managed_key, default_database, redis_role_assignment, tags, timeouts, azurecaf_resource_type.",
       join(", ",
         setsubtract(
           keys(var.settings),
           [
             "name",
+            "name_override",
             "resource_group_key",
             "sku_name",
             "high_availability_enabled",
@@ -108,6 +112,10 @@ variable "settings" {
         )
       )
     )
+  }
+  validation {
+    condition     = try(var.settings.name_override, null) == null || can(regex("^[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?$", var.settings.name_override))
+    error_message = "settings.name_override must be 1 to 63 characters, begin and end with a letter or number, and contain only letters, numbers, or hyphens."
   }
 }
 

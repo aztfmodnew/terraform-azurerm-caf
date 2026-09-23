@@ -89,6 +89,20 @@ managed_redis_settings = {
 }
 ```
 
+To preserve an existing Managed Redis physical name, set `name_override` to that exact Azure name:
+
+```hcl
+managed_redis_settings = {
+  name          = "redis-instance-1"
+  name_override = "existing-managed-redis-name"
+  sku_name      = "Balanced_B3"
+}
+```
+
+When `name_override` is set, the module passes the value through azurecaf unchanged. CAF prefixes, random suffixes, input cleaning, and `global_settings.passthrough` do not alter it. The override must already satisfy Azure Managed Redis naming rules; it does not rename an existing resource by itself. To migrate an existing deployment without replacement, set `name_override` to the resource's current physical name before planning, and ensure the rest of the configuration matches the existing resource.
+
+If `name_override` is omitted, naming behaves exactly as before: `settings.name` is processed using the existing Managed Redis CAF naming configuration, prefixes, random length, cleaning, and global passthrough settings.
+
 `sku_name` is required. Use a supported Managed Redis SKU such as `Balanced_B3`; do not use the legacy Standard or Premium SKU names. `high_availability_enabled` defaults to `true`, and `public_network_access` defaults to `Enabled`.
 
 The optional `default_database` block supports database settings and a `modules` list. Each module entry has a required `name` and an optional `args` value.
