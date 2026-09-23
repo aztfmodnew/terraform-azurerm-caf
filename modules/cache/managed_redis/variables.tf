@@ -13,34 +13,70 @@ variable "settings" {
     Settings object for the Managed Redis instance. This object defines the configuration for Azure Managed Redis deployment.
     The settings object supports the following attributes:
       - name - (Required) The name which should be used for this Managed Redis instance. Changing this forces a new Managed Redis instance to be created.
+      - name_override - (Optional) An exact physical Azure name to use for this Managed Redis instance. When set, CAF prefixes, suffixes, cleaning, and global passthrough settings are not applied. The value must be a valid Azure Managed Redis name. Use this to preserve an existing physical name during migration.
       - resource_group_key - (Optional) The key of the resource group to deploy the resource in.
       - sku_name - (Required) The SKU name for the Managed Redis instance. Possible values are Balanced_B0 through Balanced_B1000, ComputeOptimized_X3 through ComputeOptimized_X700, FlashOptimized_A250 through FlashOptimized_A4500, MemoryOptimized_M10 through MemoryOptimized_M700.
       - high_availability_enabled - (Optional) Whether to enable high availability for the Managed Redis instance. Defaults to true. Changing this forces a new Managed Redis instance to be created.
       - public_network_access - (Optional) The public network access setting for the Managed Redis instance. Possible values are Enabled and Disabled. Defaults to Enabled.
-      - identity - (Optional) An identity block that specifies the identity configuration for system-assigned or user-assigned managed identities. Supports type and managed_identity_keys for local references or remote for cross-landing-zone references.
+      - identity - (Optional) An identity block that specifies the configuration for system-assigned or user-assigned managed identities. Supports type, managed_identity_keys for local references, and remote landing-zone identity references.
       - customer_managed_key - (Optional) A customer_managed_key block for encryption with customer-managed keys. Requires key_vault_key_id and user_assigned_identity_id.
-      - default_database - (Optional) A default_database block that defines the default Redis database configuration. Supports access_keys_authentication_enabled, client_protocol, clustering_policy, eviction_policy, geo_replication_group_name, persistence settings, and modules.
+      - default_database - (Optional) A default_database block that defines the default Redis database configuration. Supports access_keys_authentication_enabled, client_protocol (Encrypted or Plaintext), clustering_policy (EnterpriseCluster, OSSCluster, or NoCluster), eviction_policy, geo_replication_group_name, persistence settings, and modules.
+      - redis_role_assignment - (Optional) A map of role names to role assignment configurations. Each role assignment must include a managed_identities object with keys, a list of managed identity keys to assign the role to. The managed_identities object may also include lz_key, the landing zone key containing those managed identities; when omitted, the current landing zone is used.
       - tags - (Optional) A mapping of tags which should be assigned to the Managed Redis instance.
       - timeouts - (Optional) A timeouts block that defines create, read, update, and delete timeout values.
     DESCRIPTION
   type = object({
     name                      = string
+    name_override             = optional(string)
     resource_group_key        = optional(string)
     sku_name                  = string
     high_availability_enabled = optional(bool)
     public_network_access     = optional(string)
-    identity                  = optional(any)
-    customer_managed_key      = optional(any)
-    default_database          = optional(any)
-    tags                      = optional(map(string))
-    timeouts                  = optional(any)
-    azurecaf_resource_type    = optional(string)
+    identity = optional(object({
+      type                  = string
+      managed_identity_keys = optional(list(string))
+      remote = optional(map(object({
+        managed_identity_keys = list(string)
+      })))
+    }))
+    customer_managed_key = optional(object({
+      key_vault_key_id          = string
+      user_assigned_identity_id = string
+    }))
+    default_database = optional(object({
+      access_keys_authentication_enabled            = optional(bool)
+      client_protocol                               = optional(string)
+      clustering_policy                             = optional(string)
+      eviction_policy                               = optional(string)
+      geo_replication_group_name                    = optional(string)
+      persistence_append_only_file_backup_frequency = optional(string)
+      persistence_redis_database_backup_frequency   = optional(string)
+      modules = optional(list(object({
+        name = string
+        args = optional(string)
+      })))
+    }))
+    redis_role_assignment = optional(map(object({
+      managed_identities = object({
+        keys   = list(string)
+        lz_key = optional(string)
+      })
+    })), {})
+    tags = optional(map(string))
+    timeouts = optional(object({
+      create = optional(string)
+      read   = optional(string)
+      update = optional(string)
+      delete = optional(string)
+    }))
+    azurecaf_resource_type = optional(string)
   })
   validation {
     condition = length(setsubtract(
       keys(var.settings),
       [
         "name",
+        "name_override",
         "resource_group_key",
         "sku_name",
         "high_availability_enabled",
@@ -48,17 +84,19 @@ variable "settings" {
         "identity",
         "customer_managed_key",
         "default_database",
+        "redis_role_assignment",
         "tags",
         "timeouts",
         "azurecaf_resource_type"
       ]
     )) == 0
-    error_message = format("The following attributes are not supported within settings: %s. Allowed attributes are: name, resource_group_key, sku_name, high_availability_enabled, public_network_access, identity, customer_managed_key, default_database, tags, timeouts, azurecaf_resource_type.",
+    error_message = format("The following attributes are not supported within settings: %s. Allowed attributes are: name, name_override, resource_group_key, sku_name, high_availability_enabled, public_network_access, identity, customer_managed_key, default_database, redis_role_assignment, tags, timeouts, azurecaf_resource_type.",
       join(", ",
         setsubtract(
           keys(var.settings),
           [
             "name",
+            "name_override",
             "resource_group_key",
             "sku_name",
             "high_availability_enabled",
@@ -66,6 +104,7 @@ variable "settings" {
             "identity",
             "customer_managed_key",
             "default_database",
+            "redis_role_assignment",
             "tags",
             "timeouts",
             "azurecaf_resource_type"
@@ -73,6 +112,10 @@ variable "settings" {
         )
       )
     )
+  }
+  validation {
+    condition     = try(var.settings.name_override, null) == null || can(regex("^[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?$", var.settings.name_override))
+    error_message = "settings.name_override must be 1 to 63 characters, begin and end with a letter or number, and contain only letters, numbers, or hyphens."
   }
 }
 
@@ -101,7 +144,7 @@ variable "base_tags" {
 
 variable "remote_objects" {
   description = "Remote objects map (diagnostics, keyvaults, etc.)."
-  type        = map(any)
+  type        = any
   default     = {}
 }
 

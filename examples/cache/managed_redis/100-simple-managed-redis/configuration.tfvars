@@ -15,11 +15,11 @@ resource_groups = {
 cache = {
   managed_redis = {
     redis1 = {
-      name               = "redis-instance-1"
+      name               = "instance-1"
       resource_group_key = "test_rg"
 
       # Required: SKU for managed Redis
-      sku_name = "Standard"
+      sku_name = "Balanced_B3"
 
       # Optional: Enable high availability
       high_availability_enabled = true
@@ -41,6 +41,17 @@ cache = {
         #   }
         # }
       }
+
+      # Optional: Role assignment configuration
+      # Supports both local (same landing zone) and remote (cross-landing-zone) managed identities
+      # redis_role_assignment = {
+      #   "Data Owner" = {
+      #     managed_identities = {
+      #       lz_key = ""
+      #       keys = ["key1"]
+      #     }
+      #   }
+      # }
 
       # Optional: Default database configuration
       default_database = {

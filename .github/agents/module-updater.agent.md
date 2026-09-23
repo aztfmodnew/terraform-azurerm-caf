@@ -174,6 +174,10 @@ Update module files following CAF patterns:
 - Maintain backward compatibility
 - Follow standard file organization
 
+#### Managed Identity Guidance
+
+For managed identity patterns, follow the established repository implementations in `modules/cache/managed_redis/managed_identities.tf` and `modules/cognitive_services/ai_services/managed_identities.tf`: use `try(var.settings.identity.managed_identity_keys, [])` for optional identity key lists. Do not add `try(coalesce(...), [])` unless a proven provider or module contract requires normalization of an explicitly nullable value. `coalesce` remains appropriate for actual dependency fallbacks, such as an optional `lz_key` falling back to the current landing zone.
+
 ### Phase 4: Examples Update
 
 - Update existing examples to use new features (when appropriate)

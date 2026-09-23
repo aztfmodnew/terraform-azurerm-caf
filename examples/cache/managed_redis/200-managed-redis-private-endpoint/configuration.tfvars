@@ -15,7 +15,7 @@ resource_groups = {
 cache = {
   managed_redis = {
     redis_pe_1 = {
-      name               = "managed-redis-pe-1"
+      name               = "managed-pe-1"
       resource_group_key = "redis_region1"
 
       sku_name                  = "Balanced_B3"

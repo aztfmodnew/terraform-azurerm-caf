@@ -56,9 +56,9 @@
     "editor.quickSuggestionsDelay": 1
   },
   "terraform.indexing": {
-    "enabled": true,
+    "enabled": false,
     "maxNumberOfProblems": 100,
-    "liveIndexing": true,
+    "liveIndexing": false,
     "delay": 500,
     "exclude": [".terraform/**/*", "**/.terraform/**/*"]
   },

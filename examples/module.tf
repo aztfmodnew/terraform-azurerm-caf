@@ -28,6 +28,7 @@ module "example" {
   var_folder_path                       = var.var_folder_path
   tags                                  = local.tags
   environment                           = var.environment
+  cache                                 = var.cache
 
   aadb2c = {
     aadb2c_directory = var.aadb2c_directory
