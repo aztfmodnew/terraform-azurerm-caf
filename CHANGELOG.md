@@ -1,4 +1,4 @@
-# [4.53.0](https://github.com/aztfmodnew/terraform-azurerm-caf/compare/4.52.5...4.53.0) (2026-09-23)
+# [4.52.7](https://github.com/aztfmodnew/terraform-azurerm-caf/compare/4.52.6...4.52.7) (2026-09-23)
 
 
 ### Bug Fixes
