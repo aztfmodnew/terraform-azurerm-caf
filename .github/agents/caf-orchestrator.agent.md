@@ -118,6 +118,36 @@ Skills to enforce during flow:
 3. `Compliance Validator` - enforce standards after migration
 4. `Documentation Sync` - produce migration notes
 
+#### Migration Assistant Handoff and Ownership
+
+The `Migration Assistant` is the delegated owner of Terraform MCP provider-schema validation, migration impact analysis, and Terraform state-address analysis (including the `moved`-versus-import decision). The Orchestrator coordinates the work, checks that the delegated report covers its acceptance criteria, and sequences follow-up agents; it must not duplicate provider-schema research, guess schema details, or independently make the delegated state-address decision.
+
+Before any migration edit, the Migration Assistant must use Terraform MCP to discover each affected AzureRM resource's provider documentation and retrieve its full details. The handoff must require provider details for the exact version resolved by the repository's provider constraint/lock file, and the assistant must report the constraint and resolved version. When the repository constraint is `~> 5.6.0`, target the corresponding resolved AzureRM 5.6.x version; do not validate against an unspecified or merely latest version. If MCP discovery or provider details are unavailable or cannot resolve an affected resource, the assistant must stop and report the blocker rather than guess or edit.
+
+Every migration handoff to `Migration Assistant` must include all of these fields, using explicit paths and task-specific values:
+
+```text
+task_id:
+agent_name: Migration Assistant
+objective:
+scope_paths:
+constraints:
+required_skill_workflows:
+acceptance_criteria:
+validation_commands:
+artifacts_expected:
+non_goals:
+```
+
+The acceptance criteria must require the Migration Assistant to return:
+
+- MCP search/discovery evidence and the exact provider version constraint, resolved version, and provider documentation used for every affected resource; do not copy MCP artifact IDs into user-facing documentation.
+- An affected-resource and address inventory, covering relevant root aggregators, modules/submodules, examples, and CI/workflow references.
+- The state migration decision for each affected address (`moved` block versus import), with address mappings and rationale; identify explicit `count`/`for_each` instance mappings where needed and flag any mapping requiring a plan to verify.
+- Changed files, validation commands and results, and residual risks or blockers.
+
+The Orchestrator must not claim that MCP validation or state-address analysis was completed unless the Migration Assistant's report explicitly provides the required evidence and decision. If the report is incomplete, request a narrowed follow-up handoff for the missing evidence; do not fill gaps with schema assumptions or duplicate MCP lookups. Delegate cross-landing-zone dependency review to `Remote State Orchestrator` only after the Migration Assistant identifies the relevant state dependencies.
+
 ## Skills Usage Policy
 
 Use both agents and skills:
