@@ -1,3 +1,8 @@
+---
+name: new-module
+description: new-module
+disable-model-invocation: true
+---
 # New Terraform Module (Azure CAF) — scaffold and wire
 
 Goal: Create a production-ready module under `modules/<category>/<module_name>/`, wire it at the root, and ship runnable examples that follow CAF and repo standards.

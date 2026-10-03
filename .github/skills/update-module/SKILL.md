@@ -1,3 +1,8 @@
+---
+name: update-module
+description: update-module
+disable-model-invocation: true
+---
 # Update Terraform Module (Azure CAF) — safe extension
 
 Goal: Extend an existing module without breaking users; align with provider schema; update examples and docs.
