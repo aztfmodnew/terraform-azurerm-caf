@@ -18,9 +18,9 @@ resource "azurerm_lb_rule" "lb" {
   backend_port                   = var.settings.backend_port
   backend_address_pool_ids       = var.backend_address_pool_ids
   probe_id                       = var.probe_id
-  enable_floating_ip             = try(var.settings.enable_floating_ip, null)
+  floating_ip_enabled            = try(var.settings.floating_ip_enabled, var.settings.enable_floating_ip, null)
   idle_timeout_in_minutes        = try(var.settings.idle_timeout_in_minutes, null)
   load_distribution              = try(var.settings.load_distribution, null)
   disable_outbound_snat          = try(var.settings.disable_outbound_snat, null)
-  enable_tcp_reset               = try(var.settings.enable_tcp_reset, null)
+  tcp_reset_enabled              = try(var.settings.tcp_reset_enabled, var.settings.enable_tcp_reset, null)
 }
