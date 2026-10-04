@@ -41,6 +41,7 @@ resource_to_be_created = {
 |connection_string| The connection string. Conflicts with `sas_uri` and `service_endpoint`.||False|
 |sas_uri| The SAS URI. Conflicts with `connection_string` and `service_endpoint`.||False|
 |key_vault_sas_token| A `key_vault_sas_token` block as defined below. Use this argument to store SAS Token in an existing Key Vault. It needs an existing Key Vault Data Factory Linked Service. A `sas_uri` is required.| Block |False|
+|sas_token_linked_key_vault_key| Current AzureRM 5.8 name for the Key Vault SAS token block. Takes precedence over the legacy `key_vault_sas_token` input.| Block |False|
 
 ## Blocks
 | Block | Argument | Description | Required |
