@@ -9,15 +9,40 @@ resource "azurecaf_name" "eges" {
   use_slug      = var.global_settings.use_slug
 }
 resource "azurerm_eventgrid_system_topic_event_subscription" "eges" {
-  name                          = azurecaf_name.eges.result
-  resource_group_name           = can(var.settings.resource_group.name) ? var.settings.resource_group.name : var.remote_objects.resource_groups[try(var.settings.resource_group.lz_key, var.client_config.landingzone_key)][var.settings.resource_group.key].name
-  system_topic                  = var.remote_objects.eventgrid_system_topics[try(var.settings.eventgrid_system_topic.lz_key, var.client_config.landingzone_key)][var.settings.eventgrid_system_topic.key].name
-  eventhub_endpoint_id          = can(var.settings.eventhub.id) ? var.settings.eventhub.id : can(var.remote_objects.eventhubs[try(var.settings.eventhub.lz_key, var.client_config.landingzone_key)][var.settings.eventhub.key].id) ? var.remote_objects.eventhubs[try(var.settings.eventhub.lz_key, var.client_config.landingzone_key)][var.settings.eventhub.key].id : null
-  hybrid_connection_endpoint_id = can(var.settings.hybrid_connection.id) ? var.settings.hybrid_connection.id : can(var.remote_objects.hybrid_connections[try(var.settings.hybrid_connection.lz_key, var.client_config.landingzone_key)][var.settings.hybrid_connection.key].id) ? var.remote_objects.hybrid_connections[try(var.settings.hybrid_connection.lz_key, var.client_config.landingzone_key)][var.settings.hybrid_connection.key].id : null
-  service_bus_queue_endpoint_id = can(var.settings.servicebus_queues.id) ? var.settings.servicebus_queues.id : can(var.remote_objects.servicebus_queues[try(var.settings.servicebus_queues.lz_key, var.client_config.landingzone_key)][var.settings.servicebus_queues.key].id) ? var.remote_objects.servicebus_queues[try(var.settings.servicebus_queues.lz_key, var.client_config.landingzone_key)][var.settings.servicebus_queues.key].id : null
-  service_bus_topic_endpoint_id = can(var.settings.servicebus_topic.id) ? var.settings.servicebus_topic.id : can(var.remote_objects.servicebus_topic[try(var.settings.servicebus_topic.lz_key, var.client_config.landingzone_key)][var.settings.servicebus_topic.key].id) ? var.remote_objects.servicebus_topic[try(var.settings.servicebus_topic.lz_key, var.client_config.landingzone_key)][var.settings.servicebus_topic.key].id : null
-  expiration_time_utc           = try(var.settings.expiration_time_utc, null)
-  event_delivery_schema         = try(var.settings.event_delivery_schema, null)
+  name                = azurecaf_name.eges.result
+  resource_group_name = can(var.settings.resource_group.name) ? var.settings.resource_group.name : var.remote_objects.resource_groups[try(var.settings.resource_group.lz_key, var.client_config.landingzone_key)][var.settings.resource_group.key].name
+  system_topic        = var.remote_objects.eventgrid_system_topics[try(var.settings.eventgrid_system_topic.lz_key, var.client_config.landingzone_key)][var.settings.eventgrid_system_topic.key].name
+  eventhub_id = try(coalesce(
+    try(var.settings.eventhub_id, var.settings.eventhub_endpoint_id, null),
+    try(var.settings.eventhub.id, null),
+    try(var.remote_objects.eventhubs[try(var.settings.eventhub.lz_key, var.client_config.landingzone_key)][var.settings.eventhub.key].id, null)
+  ), null)
+  hybrid_connection_id = try(coalesce(
+    try(var.settings.hybrid_connection_id, var.settings.hybrid_connection_endpoint_id, null),
+    try(var.settings.hybrid_connection.id, null),
+    try(var.remote_objects.hybrid_connections[try(var.settings.hybrid_connection.lz_key, var.client_config.landingzone_key)][var.settings.hybrid_connection.key].id, null)
+  ), null)
+  service_bus_queue_id = try(coalesce(
+    try(var.settings.service_bus_queue_id, var.settings.service_bus_queue_endpoint_id, null),
+    try(var.settings.servicebus_queues.id, null),
+    try(var.remote_objects.servicebus_queues[try(var.settings.servicebus_queues.lz_key, var.client_config.landingzone_key)][var.settings.servicebus_queues.key].id, null)
+  ), null)
+  service_bus_topic_id = try(coalesce(
+    try(var.settings.service_bus_topic_id, var.settings.service_bus_topic_endpoint_id, null),
+    try(var.settings.servicebus_topic.id, null),
+    try(var.remote_objects.servicebus_topic[try(var.settings.servicebus_topic.lz_key, var.client_config.landingzone_key)][var.settings.servicebus_topic.key].id, null)
+  ), null)
+  expiration_time_utc   = try(var.settings.expiration_time_utc, null)
+  event_delivery_schema = try(var.settings.event_delivery_schema, null)
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
+    }
+  }
 
   dynamic "azure_function_endpoint" {
     for_each = try(var.settings.azure_function_endpoint, null) != null ? [var.settings.azure_function_endpoint] : []

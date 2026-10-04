@@ -1,5 +1,6 @@
 global_settings = {
   default_region = "region1"
+  random_length  = 5
   regions = {
     region1 = "southeastasia"
   }
@@ -50,5 +51,47 @@ eventgrid_event_subscription = {
         key = "samplequeue"
       }
     }
+  }
+  eventhub = {
+    name = "eventhub-delivery"
+    scope = {
+      resource_type = "resource_groups"
+      key           = "rg1"
+    }
+    eventhub = { key = "delivery" }
+  }
+}
+event_hub_namespaces = {
+  delivery = {
+    name               = "delivery"
+    resource_group_key = "rg1"
+    region             = "region1"
+    sku                = "Standard"
+  }
+}
+event_hubs = {
+  delivery = {
+    name                    = "delivery"
+    event_hub_namespace_key = "delivery"
+    resource_group_key      = "rg1"
+    partition_count         = 2
+    message_retention       = 1
+  }
+}
+eventgrid_system_topic = {
+  storage = {
+    name            = "storage-events"
+    region          = "region1"
+    resource_group  = { key = "rg1" }
+    topic_type      = "Microsoft.Storage.StorageAccounts"
+    source_resource = { type = "storage_accounts", key = "sa1" }
+  }
+}
+eventgrid_system_event_subscription = {
+  delivery = {
+    name                   = "system-eventhub-delivery"
+    resource_group         = { key = "rg1" }
+    eventgrid_system_topic = { key = "storage" }
+    eventhub               = { key = "delivery" }
   }
 }

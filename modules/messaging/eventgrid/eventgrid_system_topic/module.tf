@@ -13,7 +13,7 @@ resource "azurerm_eventgrid_system_topic" "egt" {
   resource_group_name = can(var.settings.resource_group.name) ? var.settings.resource_group.name : var.remote_objects.resource_groups[try(var.settings.resource_group.lz_key, var.client_config.landingzone_key)][var.settings.resource_group.key].name
   location            = var.location
 
-  source_arm_resource_id = try(
+  source_resource_id = try(
     var.settings.source_resource_id,
     var.remote_objects[var.settings.source_resource.type][try(var.settings.source_resource.lz_key, var.client_config.landingzone_key)][var.settings.source_resource.key].id,
     null
@@ -49,4 +49,13 @@ resource "azurerm_eventgrid_system_topic" "egt" {
   }
 
   tags = local.tags
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
+    }
+  }
 }
