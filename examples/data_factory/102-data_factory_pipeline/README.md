@@ -37,7 +37,8 @@ resource_to_be_created = {
 |annotations| List of tags that can be used for describing the Data Factory Pipeline.||False|
 |concurrency| The max number of concurrent runs for the Data Factory Pipeline. Must be between `1` and `50`.||False|
 |folder| The folder that this Pipeline is in. If not specified, the Pipeline will appear at the root level.||False|
-|moniter_metrics_after_duration| The TimeSpan value after which an Azure Monitoring Metric is fired.||False|
+|monitor_metrics_after_duration| The TimeSpan value after which an Azure Monitoring Metric is fired. Takes precedence over the legacy spelling.||False|
+|moniter_metrics_after_duration| Backward-compatible alias for `monitor_metrics_after_duration`.||False|
 |parameters| A map of parameters to associate with the Data Factory Pipeline.||False|
 |variables| A map of variables to associate with the Data Factory Pipeline.||False|
 |activities_json| A JSON object that contains the activities that will be associated with the Data Factory Pipeline.||False|
@@ -56,3 +57,6 @@ resource_to_be_created = {
 | Name | Description |
 |------|-------------|
 |id|The ID of the Data Factory Pipeline.|||
+
+The example exercises both the legacy spelling and current-name precedence.
+Validated against the [AzureRM 5.8 pipeline schema](https://registry.terraform.io/providers/hashicorp/azurerm/5.8.0/docs/resources/data_factory_pipeline).

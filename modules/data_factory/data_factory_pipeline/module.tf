@@ -14,7 +14,7 @@ resource "azurerm_data_factory_pipeline" "pipeline" {
   annotations                    = try(var.settings.annotations, null)
   concurrency                    = try(var.settings.concurrency, null)
   folder                         = try(var.settings.folder, null)
-  moniter_metrics_after_duration = try(var.settings.moniter_metrics_after_duration, null)
+  monitor_metrics_after_duration = try(var.settings.monitor_metrics_after_duration, var.settings.moniter_metrics_after_duration, null)
   parameters                     = try(var.settings.parameters, null)
   variables                      = try(var.settings.variables, null)
   activities_json                = try(var.settings.activities_json, null)

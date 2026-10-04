@@ -22,7 +22,8 @@ data_factory = {
 }
 data_factory_pipeline = {
   dfp1 = {
-    name = "example"
+    name                           = "example"
+    moniter_metrics_after_duration = "00:05:00"
     resource_group = {
       key = "rg1"
       #lz_key = ""
@@ -33,5 +34,12 @@ data_factory_pipeline = {
       #lz_key = ""
       #name = ""
     }
+  }
+  current = {
+    name                           = "current-metrics"
+    resource_group                 = { key = "rg1" }
+    data_factory                   = { key = "df1" }
+    monitor_metrics_after_duration = "00:10:00"
+    moniter_metrics_after_duration = "00:01:00"
   }
 }
