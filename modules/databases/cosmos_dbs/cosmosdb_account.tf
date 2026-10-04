@@ -25,7 +25,7 @@ resource "azurerm_cosmosdb_account" "cosmos_account" {
   create_mode                        = try(var.settings.create_mode, null)
   public_network_access_enabled      = try(var.settings.public_network_access_enabled, true)
   access_key_metadata_writes_enabled = try(var.settings.access_key_metadata_writes_enabled, null)
-  local_authentication_disabled      = try(var.settings.local_authentication_disabled, null)
+  local_authentication_enabled       = try(var.settings.local_authentication_enabled, var.settings.local_authentication_disabled == null ? null : !var.settings.local_authentication_disabled, null)
 
   dynamic "identity" {
     for_each = can(var.settings.identity) ? [var.settings.identity] : []
@@ -87,5 +87,4 @@ resource "azurerm_cosmosdb_account" "cosmos_account" {
     }
   }
 }
-
 

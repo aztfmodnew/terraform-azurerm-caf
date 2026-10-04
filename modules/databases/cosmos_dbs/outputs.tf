@@ -3,7 +3,8 @@ output "cosmos_account" {
 }
 
 output "primary_key" {
-  value = azurerm_cosmosdb_account.cosmos_account.primary_key
+  value     = azurerm_cosmosdb_account.cosmos_account.primary_key
+  sensitive = true
 }
 
 output "endpoint" {
