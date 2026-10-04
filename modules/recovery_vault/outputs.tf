@@ -31,8 +31,8 @@ output "resource_group_name" {
 }
 
 output "soft_delete_enabled" {
-  description = "Boolean indicating if soft deleted is enabled on the vault."
-  value       = try(var.settings.soft_delete_enabled, true)
+  description = "Legacy compatibility indicator. AzureRM no longer exposes the vault's soft-delete setting; this output is not a readback of remote state."
+  value       = true
 }
 
 output "rbac_id" {

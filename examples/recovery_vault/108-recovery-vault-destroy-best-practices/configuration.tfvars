@@ -1,4 +1,6 @@
 global_settings = {
+  default_region = "region1"
+  random_length  = 5
   regions = {
     region1 = "australiaeast"
   }
@@ -10,8 +12,6 @@ provider_azurerm_features_recovery_service = {
   purge_protected_items_from_vault_on_destroy = true
   # Stop protection without retaining data for VMs
   vm_backup_stop_protection_and_retain_data_on_destroy = false
-  # Don't suspend protection - delete immediately
-  vm_backup_suspend_protection_and_retain_data_on_destroy = false
 }
 
 provider_azurerm_features_recovery_services_vault = {
@@ -21,7 +21,7 @@ provider_azurerm_features_recovery_services_vault = {
 
 resource_groups = {
   primary = {
-    name   = "rg-recovery-vault-destroy-test"
+    name   = "recovery-vault-destroy-test"
     region = "region1"
   }
 }
@@ -32,8 +32,7 @@ recovery_vaults = {
     resource_group_key = "primary"
     region             = "region1"
 
-    # Disable soft delete for immediate destruction in test environments
-    soft_delete_enabled = false
+    # AzureRM 5.8 does not expose a setting to disable soft delete.
 
     # Configure custom timeouts for destroy operations
     timeouts = {
