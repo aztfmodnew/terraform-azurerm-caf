@@ -18,7 +18,11 @@ data "azurerm_storage_container" "storage_account_blobs" {
   name               = each.value.storage_container_name
   storage_account_id = module.storage_accounts[each.value.storage_account_key].id
 
-  depends_on = [module.storage_accounts]
+  depends_on = [
+    module.storage_accounts,
+    module.storage_account_static_websites,
+    module.storage_account_static_websites_compat
+  ]
 }
 
 module "storage_account_blobs" {

@@ -14,5 +14,5 @@ module "rules" {
     cdn_frontdoor_origin_groups = module.origin_groups
   })
 
-  depends_on = [module.rule_sets, module.origin_groups]
+  depends_on = [module.rule_sets, module.origin_groups, module.origins]
 }

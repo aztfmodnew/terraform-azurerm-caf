@@ -24,6 +24,27 @@ The solution includes:
 
 ## Key Features
 
+### AzureRM 5.8 compatibility
+
+The examples wrapper passes the plural `cdn_frontdoor_profiles` collection.
+Legacy rule action and condition names remain supported, including cache
+duration and response-header settings. Rule creation waits for both origin
+groups and origins.
+
+Storage container lookup waits for static website configuration, including
+the legacy nested `static_website` input, before looking up `$web`. This
+prevents a container-not-found race when uploading website blobs.
+
+```bash
+terraform -chdir=./examples test \
+  -test-directory=./tests/mock \
+  -var-file=../examples/cdn/cdn_frontdoor_profile/102-frontdoor-static-website/configuration.tfvars \
+  -var-file=../examples/cdn/cdn_frontdoor_profile/102-frontdoor-static-website/storage_accounts.tfvars \
+  -var-file=../examples/cdn/cdn_frontdoor_profile/102-frontdoor-static-website/cdn_frontdoor_profiles.tfvars \
+  -var-file=../examples/cdn/cdn_frontdoor_profile/102-frontdoor-static-website/diagnostics.tfvars \
+  -verbose
+```
+
 ### Static Website Hosting
 - HTML, CSS, and JavaScript files hosted on Azure Storage Account
 - Custom error pages (404.html)

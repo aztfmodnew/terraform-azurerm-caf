@@ -91,7 +91,7 @@ module "example" {
   # }
 
   cdn = {
-    cdn_frontdoor_profile = var.cdn_frontdoor_profiles
+    cdn_frontdoor_profiles = var.cdn_frontdoor_profiles
   }
 
   cognitive_services = {
