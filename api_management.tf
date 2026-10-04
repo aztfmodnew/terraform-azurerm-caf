@@ -209,8 +209,9 @@ output "api_management_certificate" {
 }
 
 module "api_management_custom_domain" {
-  source   = "./modules/apim/api_management_custom_domain"
-  for_each = local.apim.api_management_custom_domain
+  source     = "./modules/apim/api_management_custom_domain"
+  for_each   = local.apim.api_management_custom_domain
+  depends_on = [module.keyvault_access_policies]
 
   global_settings = local.global_settings
   client_config   = local.client_config
@@ -222,6 +223,7 @@ module "api_management_custom_domain" {
     api_management                = local.combined_objects_api_management
     keyvault_certificates         = local.combined_objects_keyvault_certificates
     keyvault_certificate_requests = local.combined_objects_keyvault_certificate_requests
+    managed_identities            = local.combined_objects_managed_identities
   }
 }
 output "api_management_custom_domain" {

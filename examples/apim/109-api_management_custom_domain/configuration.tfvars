@@ -1,5 +1,6 @@
 global_settings = {
   default_region = "region1"
+  random_length  = 5
   regions = {
     region1 = "australiaeast"
   }
@@ -70,17 +71,19 @@ api_management_custom_domain = {
     }
     gateways = {
       gw1 = {
-        host_name = "api.example.com"
+        host_name        = "api.example.com"
+        managed_identity = { key = "mi1" }
         key_vault_certificate = {
-          certificate_request_key = "example"
+          certificate_key = "example"
         }
       }
     }
 
     developer_portal = {
-      host_name = "portal.example.com"
+      host_name        = "portal.example.com"
+      managed_identity = { key = "mi1" }
       key_vault_certificate = {
-        certificate_request_key = "example"
+        certificate_key = "example"
         #id = ""
       }
     }
