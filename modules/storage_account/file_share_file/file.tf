@@ -1,6 +1,6 @@
 resource "azurerm_storage_share_file" "share_file" {
   name                = var.settings.name
-  storage_share_id    = var.share_id
+  storage_share_url   = var.share_id
   path                = try(var.settings.path, null)
   source              = try(var.settings.source, null)
   content_type        = try(var.settings.content_type, null)

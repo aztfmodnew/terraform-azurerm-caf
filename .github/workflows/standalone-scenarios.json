@@ -139,6 +139,7 @@
     "storage_accounts/110-file-share-with-acl",
     "storage_accounts/112-storage-account-with-defender",
     "storage_accounts/113-storage-account-cmk-key-uri",
+    "storage_accounts/114-file-share-directories-and-files",
     "storage_container/101-storage_container",
     "synapse_analytics/100-synapse",
     "synapse_analytics/101-synapse-sparkpool",
