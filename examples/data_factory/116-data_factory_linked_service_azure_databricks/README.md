@@ -1,4 +1,24 @@
-# data_factory_linked_service_sql_server
+# Data Factory Azure Databricks linked service
+
+## AzureRM 5.8 workspace ID migration
+
+The module uses the current `msi_workspace_id` provider argument. An explicit
+`settings.msi_workspace_id` takes precedence over the legacy
+`settings.msi_work_space_resource_id` alias. Existing
+`databricks_workspace = { key = "dtbwsp1" }` references continue to resolve the
+workspace ID through CAF.
+
+The example creates the workspace and linked service, but does not execute a
+Databricks cluster or pipeline.
+
+```bash
+terraform -chdir=examples test -test-directory=tests/mock \
+  -var-file=./data_factory/116-data_factory_linked_service_azure_databricks/configuration.tfvars
+```
+
+Validated against the [AzureRM 5.8 linked-service schema](https://registry.terraform.io/providers/hashicorp/azurerm/5.8.0/docs/resources/data_factory_linked_service_azure_databricks).
+
+## Existing reference
 
 This module is part of Cloud Adoption Framework landing zones for Azure on Terraform.
 
