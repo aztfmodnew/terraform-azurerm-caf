@@ -16,9 +16,17 @@ resource "azurerm_kusto_attached_database_configuration" "kusto" {
   location                            = var.location
   resource_group_name                 = var.resource_group_name
   cluster_name                        = var.cluster_name
-  cluster_resource_id                 = var.cluster_resource_id
+  cluster_id                          = var.cluster_resource_id
   database_name                       = var.database_name
-  default_principal_modification_kind = try(var.settings.database_name, null)
+  default_principal_modification_kind = try(var.settings.default_principal_modification_kind, var.settings.default_principal_modifications_kind, "None")
 
-
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
+    }
+  }
 }
