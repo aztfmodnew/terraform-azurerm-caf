@@ -1,9 +1,5 @@
-variable "storage_account_name" {
-  description = "Specifies the name of the Storage Account."
-  type        = string
-}
-variable "storage_container_name" {
-  description = "Specifies the name of the Storage Container."
+variable "storage_container_id" {
+  description = "The ID of the Storage Container in which this blob should be created."
   type        = string
 }
 variable "settings" {
