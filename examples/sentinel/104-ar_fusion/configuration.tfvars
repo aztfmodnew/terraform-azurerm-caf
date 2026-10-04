@@ -13,8 +13,9 @@ resource_groups = {
 
 log_analytics = {
   law1 = {
-    name               = "sentinal-automation-rule"
-    resource_group_key = "rg1"
+    name                = "sentinal-automation-rule"
+    resource_group_key  = "rg1"
+    sentinel_onboarding = {}
     solutions_maps = {
       SecurityInsights = {
         "publisher" = "Microsoft"
