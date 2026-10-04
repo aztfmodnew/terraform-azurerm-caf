@@ -10,8 +10,7 @@ resource "azurerm_private_dns_a_record" "a_records" {
   for_each = try(var.records.a_records, {})
 
   name                = each.value.name
-  resource_group_name = local.resource_group_name
-  zone_name           = azurerm_private_dns_zone.private_dns.name
+  private_dns_zone_id = azurerm_private_dns_zone.private_dns.id
   ttl                 = each.value.ttl
   tags                = merge(local.tags, try(each.value.tags, {}))
   records             = each.value.records
@@ -21,8 +20,7 @@ resource "azurerm_private_dns_aaaa_record" "aaaa_records" {
   for_each = try(var.records.aaaa_records, {})
 
   name                = each.value.name
-  resource_group_name = local.resource_group_name
-  zone_name           = azurerm_private_dns_zone.private_dns.name
+  private_dns_zone_id = azurerm_private_dns_zone.private_dns.id
   ttl                 = each.value.ttl
   tags                = merge(local.tags, try(each.value.tags, {}))
   records             = each.value.records
@@ -32,8 +30,7 @@ resource "azurerm_private_dns_cname_record" "cname_records" {
   for_each = try(var.records.cname_records, {})
 
   name                = each.value.name
-  resource_group_name = local.resource_group_name
-  zone_name           = azurerm_private_dns_zone.private_dns.name
+  private_dns_zone_id = azurerm_private_dns_zone.private_dns.id
   ttl                 = each.value.ttl
   tags                = merge(local.tags, try(each.value.tags, {}))
   record              = each.value.records
@@ -43,8 +40,7 @@ resource "azurerm_private_dns_mx_record" "mx_records" {
   for_each = try(var.records.mx_records, {})
 
   name                = each.value.name
-  resource_group_name = local.resource_group_name
-  zone_name           = azurerm_private_dns_zone.private_dns.name
+  private_dns_zone_id = azurerm_private_dns_zone.private_dns.id
   ttl                 = each.value.ttl
   tags                = merge(local.tags, try(each.value.tags, {}))
 
@@ -62,8 +58,7 @@ resource "azurerm_private_dns_ptr_record" "ptr_records" {
   for_each = try(var.records.ptr_records, {})
 
   name                = each.value.name
-  resource_group_name = local.resource_group_name
-  zone_name           = azurerm_private_dns_zone.private_dns.name
+  private_dns_zone_id = azurerm_private_dns_zone.private_dns.id
   ttl                 = each.value.ttl
   tags                = merge(local.tags, try(each.value.tags, {}))
   records             = each.value.records
@@ -73,8 +68,7 @@ resource "azurerm_private_dns_srv_record" "srv_records" {
   for_each = try(var.records.srv_records, {})
 
   name                = each.value.name
-  resource_group_name = local.resource_group_name
-  zone_name           = azurerm_private_dns_zone.private_dns.name
+  private_dns_zone_id = azurerm_private_dns_zone.private_dns.id
   ttl                 = each.value.ttl
   tags                = merge(local.tags, try(each.value.tags, {}))
 
@@ -94,8 +88,7 @@ resource "azurerm_private_dns_txt_record" "txt_records" {
   for_each = try(var.records.txt_records, {})
 
   name                = each.value.name
-  resource_group_name = local.resource_group_name
-  zone_name           = azurerm_private_dns_zone.private_dns.name
+  private_dns_zone_id = azurerm_private_dns_zone.private_dns.id
   ttl                 = each.value.ttl
   tags                = merge(local.tags, try(each.value.tags, {}))
 
