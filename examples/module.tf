@@ -172,7 +172,7 @@ module "example" {
     mssql_mi_secondary_tdes            = var.mssql_mi_secondary_tdes
     mssql_mi_tdes                      = var.mssql_mi_tdes
     mssql_servers                      = var.mssql_servers
-    mysql_flexible_server              = var.mysql_flexible_server
+    mysql_flexible_servers             = var.mysql_flexible_server
     postgresql_flexible_servers        = var.postgresql_flexible_servers
     synapse_workspaces                 = var.synapse_workspaces
     data_explorer = {
