@@ -11,13 +11,19 @@ resource "azurecaf_name" "evhub" {
 # Last reviewed :  AzureRM version 2.64.0
 # Ref : https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/eventhub_authorization_rule
 
-resource "azurerm_eventhub" "evhub" {
-  name                = azurecaf_name.evhub.result
-  namespace_name      = var.namespace_name
+data "azurerm_eventhub_namespace" "evh" {
+  count = var.namespace != null ? 0 : (var.namespace_id == null ? 1 : 0)
+
+  name                = var.namespace_name
   resource_group_name = var.resource_group_name
-  partition_count     = var.settings.partition_count
-  message_retention   = var.settings.message_retention
-  status              = try(var.settings.status, null)
+}
+
+resource "azurerm_eventhub" "evhub" {
+  name              = azurecaf_name.evhub.result
+  namespace_id      = var.namespace != null ? var.namespace.id : (var.namespace_id != null ? var.namespace_id : data.azurerm_eventhub_namespace.evh[0].id)
+  partition_count   = var.settings.partition_count
+  message_retention = var.settings.message_retention
+  status            = try(var.settings.status, null)
 
   dynamic "capture_description" {
     for_each = try(var.settings.capture_description, false) == false ? [] : [1]
@@ -36,8 +42,18 @@ resource "azurerm_eventhub" "evhub" {
           blob_container_name = var.settings.capture_description.destination.blob_container_name
           storage_account_id  = var.storage_account_id
         }
+
       }
     }
   }
-}
 
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
+    }
+  }
+}
