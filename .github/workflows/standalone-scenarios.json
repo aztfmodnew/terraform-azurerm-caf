@@ -60,6 +60,7 @@
     "keyvault/102-keyvault-cert-issuer",
     "keyvault/104-keyvault-dynamic-secret",
     "keyvault/105-keyvault-dynamic-certificate",
+    "keyvault/106-certificate-contacts",
     "load_test/100-load-test",
     "logic_app/100-logic_app_workflow",
     "logic_app/102-logic_app_integration_account",
