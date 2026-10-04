@@ -53,3 +53,23 @@ The caller needs read access to the external vault.
 account's container submodule. Top-level `storage_containers` creates standalone
 containers through the same submodule. The blob container data source reads an
 existing container for legacy name-based blob inputs; it does not create one.
+
+## AzureRM 5.8 queue properties
+
+The [queue example](106-storage-account-queue/configuration.tfvars) exercises
+standalone and nested queues, CORS, logging and metrics. Account IDs are wired
+internally; existing `storage_account_key` inputs remain unchanged.
+Direct callers of the queue submodule must supply `storage_account_id`; the
+retained `storage_account_name` input alone cannot identify an ARM resource.
+
+Queue properties now use the standalone
+[AzureRM 5.8 resource](https://registry.terraform.io/providers/hashicorp/azurerm/5.8.0/docs/resources/storage_account_queue_properties).
+Existing nested configuration remains supported. Legacy metrics with
+`enabled = false` omit the corresponding block; current metrics omit `enabled`
+and are enabled by the presence of their block. Configure at least one active
+CORS, logging or metrics block.
+
+For existing deployments, import the new queue-properties resource at
+`module.example.module.storage_accounts["<key>"].azurerm_storage_account_queue_properties.stg["queue_properties"]`
+using the storage account ARM ID before applying. Remove the `module.example.`
+prefix when using CAF directly. An inline block cannot be migrated with `moved`.

@@ -19,6 +19,39 @@ storage_accounts = {
     account_kind             = "StorageV2"
     account_tier             = "Standard"
     account_replication_type = "LRS" # https://docs.microsoft.com/en-us/azure/storage/common/storage-redundancy
+    queues = {
+      nested = {
+        name = "nestedqueue"
+      }
+    }
+    queue_properties = {
+      cors_rule = {
+        allowed_headers    = ["*"]
+        allowed_methods    = ["GET", "POST"]
+        allowed_origins    = ["https://example.com"]
+        exposed_headers    = ["*"]
+        max_age_in_seconds = 200
+      }
+      logging = {
+        delete                = true
+        read                  = true
+        write                 = true
+        version               = "1.0"
+        retention_policy_days = 7
+      }
+      minute_metrics = {
+        enabled               = false
+        version               = "1.0"
+        include_apis          = true
+        retention_policy_days = 7
+      }
+      hour_metrics = {
+        enabled               = true
+        version               = "1.0"
+        include_apis          = true
+        retention_policy_days = 7
+      }
+    }
     tags = {
       environment = "dev"
       team        = "IT"
@@ -26,7 +59,7 @@ storage_accounts = {
   }
 }
 
-# Be sure to declare the Storage Account Queue outside of the Storage Account object
+# Both nested queues and standalone queues are supported.
 storage_account_queues = {
   samplequeue = {
     name                = "samplequeuename"
