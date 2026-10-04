@@ -47,6 +47,12 @@ variable "daily_data_cap_notifications_disabled" {
   type        = bool
 }
 
+variable "daily_data_cap_notifications_enabled" {
+  description = "Whether to send a notification email when the daily data volume cap is met. Overrides the legacy disabled setting."
+  default     = null
+  type        = bool
+}
+
 variable "retention_in_days" {
   description = "(Optional) Specifies the retention period in days. Possible values are 30, 60, 90, 120, 180, 270, 365, 550 or 730. Defaults to 90."
   default     = 90
@@ -67,6 +73,12 @@ variable "sampling_percentage" {
 variable "disable_ip_masking" {
   description = "(Optional) By default the real client ip is masked as 0.0.0.0 in the logs. Use this argument to disable masking and log the real client ip. Defaults to false."
   default     = false
+  type        = bool
+}
+
+variable "ip_masking_enabled" {
+  description = "Whether to mask client IP addresses. Overrides the legacy disable setting."
+  default     = null
   type        = bool
 }
 
