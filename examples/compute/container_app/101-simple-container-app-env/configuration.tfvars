@@ -37,12 +37,27 @@ container_apps = {
 
     revision_mode = "Single"
     template = {
+      termination_grace_period_seconds = 45
       container = {
         cont1 = {
           name   = "nginx"
           image  = "nginx:latest"
           cpu    = 0.5
           memory = "1Gi"
+          liveness_probe = {
+            port             = 80
+            transport        = "HTTP"
+            path             = "/"
+            initial_delay    = 10
+            interval_seconds = 10
+          }
+          startup_probe = {
+            port                    = 80
+            transport               = "HTTP"
+            path                    = "/"
+            interval_seconds        = 10
+            failure_count_threshold = 6
+          }
         }
       }
       min_replicas = 1

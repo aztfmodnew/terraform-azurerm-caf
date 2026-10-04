@@ -21,6 +21,6 @@ module "container_apps" {
 }
 
 output "container_apps" {
-  value = module.container_apps
+  value     = module.container_apps
+  sensitive = true
 }
-
