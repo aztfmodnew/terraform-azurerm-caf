@@ -66,57 +66,57 @@ resource "azurerm_api_management" "apim" {
 
     content {
       dynamic "management" {
-        for_each = try(var.settings.management, null) != null ? [var.settings.management] : []
+        for_each = try(hostname_configuration.value.management, var.settings.management, null) != null ? [try(hostname_configuration.value.management, var.settings.management)] : []
 
         content {
           host_name                    = try(management.value.host_name, null)
-          key_vault_id                 = try(management.value.key_vault_id, null)
+          key_vault_certificate_id     = try(management.value.key_vault_certificate_id, management.value.key_vault_id, null)
           certificate                  = try(management.value.certificate, null)
           certificate_password         = try(management.value.certificate_password, null)
           negotiate_client_certificate = try(management.value.negotiate_client_certificate, null)
         }
       }
       dynamic "portal" {
-        for_each = try(var.settings.portal, null) != null ? [var.settings.portal] : []
+        for_each = try(hostname_configuration.value.portal, var.settings.portal, null) != null ? [try(hostname_configuration.value.portal, var.settings.portal)] : []
 
         content {
           host_name                    = try(portal.value.host_name, null)
-          key_vault_id                 = try(portal.value.key_vault_id, null)
+          key_vault_certificate_id     = try(portal.value.key_vault_certificate_id, portal.value.key_vault_id, null)
           certificate                  = try(portal.value.certificate, null)
           certificate_password         = try(portal.value.certificate_password, null)
           negotiate_client_certificate = try(portal.value.negotiate_client_certificate, null)
         }
       }
       dynamic "developer_portal" {
-        for_each = try(var.settings.developer_portal, null) != null ? [var.settings.developer_portal] : []
+        for_each = try(hostname_configuration.value.developer_portal, var.settings.developer_portal, null) != null ? [try(hostname_configuration.value.developer_portal, var.settings.developer_portal)] : []
 
         content {
           host_name                    = try(developer_portal.value.host_name, null)
-          key_vault_id                 = try(developer_portal.value.key_vault_id, null)
+          key_vault_certificate_id     = try(developer_portal.value.key_vault_certificate_id, developer_portal.value.key_vault_id, null)
           certificate                  = try(developer_portal.value.certificate, null)
           certificate_password         = try(developer_portal.value.certificate_password, null)
           negotiate_client_certificate = try(developer_portal.value.negotiate_client_certificate, null)
         }
       }
       dynamic "proxy" {
-        for_each = try(var.settings.proxy, null) != null ? [var.settings.proxy] : []
+        for_each = try(hostname_configuration.value.proxy, var.settings.proxy, null) != null ? [try(hostname_configuration.value.proxy, var.settings.proxy)] : []
 
         content {
 
           default_ssl_binding          = try(proxy.value.default_ssl_binding, null)
           host_name                    = try(proxy.value.host_name, null)
-          key_vault_id                 = try(proxy.value.key_vault_id, null)
+          key_vault_certificate_id     = try(proxy.value.key_vault_certificate_id, proxy.value.key_vault_id, null)
           certificate                  = try(proxy.value.certificate, null)
           certificate_password         = try(proxy.value.certificate_password, null)
           negotiate_client_certificate = try(proxy.value.negotiate_client_certificate, null)
         }
       }
       dynamic "scm" {
-        for_each = try(var.settings.scm, null) != null ? [var.settings.scm] : []
+        for_each = try(hostname_configuration.value.scm, var.settings.scm, null) != null ? [try(hostname_configuration.value.scm, var.settings.scm)] : []
 
         content {
           host_name                    = try(scm.value.host_name, null)
-          key_vault_id                 = try(scm.value.key_vault_id, null)
+          key_vault_certificate_id     = try(scm.value.key_vault_certificate_id, scm.value.key_vault_id, null)
           certificate                  = try(scm.value.certificate, null)
           certificate_password         = try(scm.value.certificate_password, null)
           negotiate_client_certificate = try(scm.value.negotiate_client_certificate, null)
