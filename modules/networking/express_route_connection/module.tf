@@ -4,9 +4,9 @@ resource "azurerm_express_route_connection" "erc" {
   express_route_circuit_peering_id = var.express_route_circuit_peering_id
 
   # Optional
-  authorization_key        = var.authorization_key
-  enable_internet_security = try(var.settings.enable_internet_security, null)
-  routing_weight           = try(var.settings.routing_weight, null)
+  authorization_key         = var.authorization_key
+  internet_security_enabled = try(var.settings.internet_security_enabled, var.settings.enable_internet_security, null)
+  routing_weight            = try(var.settings.routing_weight, null)
 
   dynamic "routing" {
     for_each = can(var.settings.routing) ? [1] : []
