@@ -30,10 +30,10 @@ resource "azurerm_kubernetes_cluster_node_pool" "nodepools" {
   host_group_id                 = try(each.value.host_group_id, null)
 
   dynamic "kubelet_config" {
-    for_each = try(each.value.kubelet_config, null) == null ? [] : [1]
+    for_each = try(each.value.kubelet_config, null) == null ? [] : [each.value.kubelet_config]
     content {
       allowed_unsafe_sysctls    = try(kubelet_config.value.allowed_unsafe_sysctls, null)
-      container_log_max_line    = try(kubelet_config.value.container_log_max_line, null)
+      container_log_max_files   = try(kubelet_config.value.container_log_max_files, kubelet_config.value.container_log_max_line, null)
       container_log_max_size_mb = try(kubelet_config.value.container_log_max_size_mb, null)
       cpu_cfs_quota_enabled     = try(kubelet_config.value.cpu_cfs_quota_enabled, null)
       cpu_cfs_quota_period      = try(kubelet_config.value.cpu_cfs_quota_period, null)
@@ -46,11 +46,11 @@ resource "azurerm_kubernetes_cluster_node_pool" "nodepools" {
   }
 
   dynamic "linux_os_config" {
-    for_each = try(each.value.linux_os_config, null) == null ? [] : [1]
+    for_each = try(each.value.linux_os_config, null) == null ? [] : [each.value.linux_os_config]
     content {
       swap_file_size_mb = try(linux_os_config.value.swap_file_size_mb, null)
       dynamic "sysctl_config" {
-        for_each = try(linux_os_config.value.sysctl_config, null) == null ? [] : [1]
+        for_each = try(linux_os_config.value.sysctl_config, null) == null ? [] : [linux_os_config.value.sysctl_config]
         content {
           fs_aio_max_nr                      = try(sysctl_config.value.fs_aio_max_nr, null)
           fs_file_max                        = try(sysctl_config.value.fs_file_max, null)
@@ -83,8 +83,8 @@ resource "azurerm_kubernetes_cluster_node_pool" "nodepools" {
           vm_vfs_cache_pressure              = try(sysctl_config.value.vm_vfs_cache_pressure, null)
         }
       }
-      transparent_huge_page_defrag  = try(linux_os_config.value.transparent_huge_page_defrag, null)
-      transparent_huge_page_enabled = try(linux_os_config.value.transparent_huge_page_enabled, null)
+      transparent_huge_page_defrag = try(linux_os_config.value.transparent_huge_page_defrag, null)
+      transparent_huge_page        = try(linux_os_config.value.transparent_huge_page, linux_os_config.value.transparent_huge_page_enabled, null)
     }
   }
 
