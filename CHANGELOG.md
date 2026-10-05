@@ -1,3 +1,23 @@
+## Unreleased
+
+### AzureRM 5.8 compatibility
+
+* Align root and examples provider requirements with AzureRM `~> 5.8.0`.
+* Preserve legacy settings for renamed APIM certificate, HTTP2 and TLS fields; load-balancer networking flags; gateway BGP; NetApp export protocols; Data Factory pipeline metrics and linked services; SQL email alerts; VM/VMSS networking, disks and upgrades; and Event Grid endpoint references. Current input names take precedence over legacy aliases.
+* Invert legacy Cosmos DB `local_authentication_disabled` and VMSS `disable_automatic_rollback` when mapping to the corresponding enabled flags. Mark Cosmos DB primary-key and aggregate outputs sensitive; consuming root outputs must also declare `sensitive = true`.
+* Mark Container App custom-domain verification and aggregate outputs sensitive to match the provider's sensitivity annotation.
+* Preserve Kusto language extensions supplied as a legacy single object or collection, and map legacy Front Door actions, conditions and negation to the current nested schema.
+* Add the required AKS node-provisioning profile with the documented `Manual` default; preserve kubelet and Linux configuration aliases.
+* Resolve storage customer-managed keys as Key Vault key URIs. Existing key-name/reference and version settings remain supported; omitted, null or empty versions produce a versionless URI. Explicit versions remain pinned.
+* Add mocked compatibility assertions and validate representative APIM, Data Factory, NetApp, Application Gateway and AI Services examples without deploying Azure resources.
+
+### Migration requirements
+
+* **AI Services:** the examples-level `moved` block only moves the module wrapper address. Changing from `azurerm_ai_services` to `azurerm_cognitive_account` requires the separate state/import procedure in [the AI Services README](examples/ai_services/README.md). Do not apply a destroy/recreate plan for an existing account. Preserve the former project-management default; legacy `managed_hsm_key_id` is rejected explicitly.
+* **Key Vault contacts:** keep the existing `settings.contacts` map. Contacts now use `azurerm_key_vault_certificate_contacts` rather than an inline block. For existing contacts, back up state and import them at `module.keyvaults["<key>"].azurerm_key_vault_certificate_contacts.contacts["contacts"]`; examples add the `module.example.` prefix. The import ID is `https://<vault>.vault.azure.net/certificates/contacts`, not the vault ARM ID. A `moved` block cannot extract an inline block into a resource. Ensure `ManageContacts` certificate permissions are granted before managing contacts, and inspect the subsequent plan.
+* **Linux Web Apps and slots:** native `ruby_version` is no longer supported. Configure a custom container instead; legacy Ruby configuration fails with an explicit migration message.
+* **Container Apps:** per-probe `termination_grace_period_seconds` is no longer supported. It is rejected explicitly rather than silently moved to template scope, which would change its meaning. Configure the template-level grace period intentionally.
+
 ## [4.52.7](https://github.com/aztfmodnew/terraform-azurerm-caf/compare/4.52.6...4.52.7) (2026-09-23)
 
 
@@ -394,6 +414,3 @@
 ### Reverts
 
 * **ci:** remove example 114 from standalone-compute.json ([47555f5](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/47555f5abfa6fb04f87e15033cec322ab5a1cb76))
-
-
-
