@@ -1,5 +1,6 @@
 global_settings = {
   default_region = "region1"
+  random_length  = 5
   regions = {
     region1 = "australiaeast"
   }
@@ -45,7 +46,7 @@ virtual_network_gateways = {
     name                       = "mygateway"
     resource_group_key         = "vpngw"
     type                       = "Vpn"
-    sku                        = "VpnGw1"
+    sku                        = "VpnGw1AZ"
     private_ip_address_enabled = true
     # enable_bpg defaults to false. If set, true, input the necessary parameters as well. VPN Type only
     enable_bgp = false
@@ -81,6 +82,7 @@ virtual_network_gateway_connections = {
     region                      = "region1"
     virtual_network_gateway_key = "gateway1"
     local_network_gateway_key   = "local1"
+    enable_bgp                  = false
 
     shared_key = "ie9p8y32r78eho'pmkl/dns3289ry"
   }

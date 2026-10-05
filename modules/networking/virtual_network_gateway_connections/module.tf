@@ -37,7 +37,7 @@ resource "azurerm_virtual_network_gateway_connection" "vngw_connection" {
   connection_protocol                = try(var.settings.connection_method, null)
   dpd_timeout_seconds                = try(var.settings.dpd_timeout_seconds, null)
   shared_key                         = try(var.settings.shared_key, null)
-  enable_bgp                         = try(var.settings.enable_bgp, null)
+  bgp_enabled                        = try(var.settings.bgp_enabled, var.settings.enable_bgp, null)
   local_network_gateway_id           = try(var.local_network_gateway_id, null)
   routing_weight                     = try(var.settings.routing_weight, null)
   use_policy_based_traffic_selectors = try(var.settings.use_policy_based_traffic_selectors, false) #if set true, IPsec Policy block has to be set
