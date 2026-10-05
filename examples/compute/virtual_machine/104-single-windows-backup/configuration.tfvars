@@ -144,7 +144,7 @@ recovery_vaults = {
     resource_group_key = "vm_region1"
 
     region              = "region1"
-    soft_delete_enabled = false
+    soft_delete_enabled = true
 
     backup_policies = {
       vms = {

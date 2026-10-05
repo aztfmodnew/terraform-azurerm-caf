@@ -13,6 +13,7 @@
 
 ### Migration requirements
 
+* **Recovery Services Vaults:** legacy `soft_delete_enabled = false` is rejected because AzureRM 5.8 no longer exposes that setting. VM backup examples use `true`; this does not bypass Azure soft-delete retention during live cleanup.
 * **AI Services:** the examples-level `moved` block only moves the module wrapper address. Changing from `azurerm_ai_services` to `azurerm_cognitive_account` requires the separate state/import procedure in [the AI Services README](examples/ai_services/README.md). Do not apply a destroy/recreate plan for an existing account. Preserve the former project-management default; legacy `managed_hsm_key_id` is rejected explicitly.
 * **Key Vault contacts:** keep the existing `settings.contacts` map. Contacts now use `azurerm_key_vault_certificate_contacts` rather than an inline block. For existing contacts, back up state and import them at `module.keyvaults["<key>"].azurerm_key_vault_certificate_contacts.contacts["contacts"]`; examples add the `module.example.` prefix. The import ID is `https://<vault>.vault.azure.net/certificates/contacts`, not the vault ARM ID. A `moved` block cannot extract an inline block into a resource. Ensure `ManageContacts` certificate permissions are granted before managing contacts, and inspect the subsequent plan.
 * **Linux Web Apps and slots:** native `ruby_version` is no longer supported. Configure a custom container instead; legacy Ruby configuration fails with an explicit migration message.

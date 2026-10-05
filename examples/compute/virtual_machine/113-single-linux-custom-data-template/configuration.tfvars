@@ -297,8 +297,7 @@ recovery_vaults = {
 
     region = "region1"
 
-    # Disable soft delete for easier destruction in test environments
-    soft_delete_enabled = false
+    soft_delete_enabled = true
 
     # Configure custom timeouts for destroy operations
     timeouts = {
