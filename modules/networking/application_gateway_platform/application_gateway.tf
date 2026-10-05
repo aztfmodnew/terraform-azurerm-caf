@@ -32,7 +32,7 @@ resource "azurerm_application_gateway" "agw" {
   location            = local.location
 
   zones                             = try(var.settings.zones, null)
-  enable_http2                      = try(var.settings.enable_http2, true)
+  http2_enabled                     = try(var.settings.http2_enabled, var.settings.enable_http2, true)
   tags                              = merge(local.tags, try(var.settings.tags, {}))
   firewall_policy_id                = can(var.settings.firewall_policy_id) == true ? var.settings.firewall_policy_id : (can(var.settings.waf_policy.key) == true ? var.application_gateway_waf_policies[try(var.settings.waf_policy.lz_key, var.client_config.landingzone_key)][var.settings.waf_policy.key].id : null)
   force_firewall_policy_association = can(var.settings.firewall_policy_id) == false && can(var.settings.waf_policy.key) == false ? false : true
@@ -51,9 +51,9 @@ resource "azurerm_application_gateway" "agw" {
   dynamic "ssl_profile" {
     for_each = try(var.settings.ssl_profiles, {})
     content {
-      name                             = ssl_profile.value.name
-      trusted_client_certificate_names = try(ssl_profile.trusted_client_certificate_names, null)
-      verify_client_cert_issuer_dn     = try(ssl_profile.verify_client_cert_issuer_dn, null)
+      name                                = ssl_profile.value.name
+      trusted_client_certificate_names    = try(ssl_profile.value.trusted_client_certificate_names, null)
+      verify_client_certificate_issuer_dn = try(ssl_profile.value.verify_client_certificate_issuer_dn, ssl_profile.value.verify_client_cert_issuer_dn, null)
 
       dynamic "ssl_policy" {
         for_each = try(ssl_profile.value.ssl_policy, null) == null ? [] : [ssl_profile.value.ssl_policy]
