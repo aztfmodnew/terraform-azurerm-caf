@@ -55,10 +55,24 @@ variable "provider_azurerm_features_resource_group" {
   }
 }
 
+variable "provider_azurerm_features_netapp" {
+  description = "NetApp volume deletion protection. Disable only for disposable test volumes."
+  type = object({
+    prevent_volume_destruction = optional(bool, true)
+  })
+  default = {}
+}
+
 variable "provider_azurerm_features_template_deployment" {
   default = {
     delete_nested_items_during_deletion = false
   }
+}
+
+variable "provider_azurerm_resource_providers_to_register" {
+  description = "Additional resource provider namespaces to register through AzureRM. Empty by default."
+  type        = list(string)
+  default     = []
 }
 
 variable "provider_azurerm_features_virtual_machine" {
