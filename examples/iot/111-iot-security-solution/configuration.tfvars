@@ -26,9 +26,15 @@ iot_hub = {
 
 iot_security_solution = {
   csg1 = {
-    name               = "iot-security-solution-1"
-    resource_group_key = "ioth_region1"
-    display_name       = "Iot Security Solution"
+    name                  = "iot-security-solution-1"
+    resource_group_key    = "ioth_region1"
+    display_name          = "Iot Security Solution"
+    enabled               = true
+    disabled_data_sources = ["TwinData"]
+    recommendations_enabled = {
+      baseline   = false
+      open_ports = false
+    }
     iot_hub = {
       iothub1 = {
         key = "iothub1"
