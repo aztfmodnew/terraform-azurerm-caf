@@ -1,5 +1,6 @@
 global_settings = {
   default_region = "region1"
+  random_length  = 5
   regions = {
     region1 = "southeastasia"
   }
@@ -48,9 +49,7 @@ virtual_machines = {
         admin_username = "adminuser"
 
 
-        # Spot VM to save money
-        priority        = "Spot"
-        eviction_policy = "Deallocate"
+        enable_automatic_updates = true
 
         patch_mode = "AutomaticByOS"
         # When you want to load the file from the folder in the custom_data always use the relative path from the caf_solution in landing zones
