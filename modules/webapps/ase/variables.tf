@@ -64,6 +64,11 @@ variable "global_settings" {
   type        = any
 }
 
+variable "client_config" {
+  description = "Client configuration object used to resolve the current landing zone."
+  type        = any
+}
+
 variable "private_dns" {
   description = "(Optional) Private DNS zones map used to create ASE private DNS A records when `settings.private_dns_records` is configured."
   default     = {}

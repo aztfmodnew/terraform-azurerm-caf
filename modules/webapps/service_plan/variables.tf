@@ -29,6 +29,12 @@ Supported attributes:
 - tags - (Optional) Additional tags merged into module tags.
 - timeouts - (Optional) Terraform operation timeouts object. Supported keys: create, read, update, delete.
 
+Legacy compatibility:
+- kind - (Optional) Legacy O/S type alias for os_type.
+- sku.size - (Optional) Legacy SKU alias for sku_name.
+- sku.capacity - (Optional) Legacy worker count alias for worker_count.
+- sku.per_site_scaling - (Optional) Legacy alias for per_site_scaling_enabled.
+
 Provider note (azurerm_service_plan): premium_plan_auto_scale_enabled is a provider argument but is not currently exposed by this module version.
 DESCRIPTION
   type        = any
