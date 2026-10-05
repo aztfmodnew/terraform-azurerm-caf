@@ -75,7 +75,8 @@ variable "settings" {
   `site_config.application_stack` (Optional object):
   - docker_image_name, docker_registry_url, docker_registry_username, docker_registry_password,
     dotnet_version, go_version, java_server, java_server_version, java_version,
-    node_version, php_version, python_version, ruby_version.
+    node_version, php_version, python_version.
+    Ruby workloads require a custom container; ruby_version is unsupported in AzureRM 5.8.
 
   `site_config.auto_heal_setting` (Optional object):
   - action - (Required when block is used):

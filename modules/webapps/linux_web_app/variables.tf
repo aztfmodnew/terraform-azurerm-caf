@@ -88,7 +88,8 @@ variable "settings" {
     - vnet_route_all_enabled
     - websockets_enabled
     - worker_count
-    - application_stack.{docker_image_name,docker_registry_url,docker_registry_username,docker_registry_password,dotnet_version,go_version,java_server,java_server_version,java_version,node_version,php_version,python_version,ruby_version}
+    - application_stack.{docker_image_name,docker_registry_url,docker_registry_username,docker_registry_password,dotnet_version,go_version,java_server,java_server_version,java_version,node_version,php_version,python_version}
+    - application_stack.ruby_version is unsupported in AzureRM 5.8; use a Ruby custom container instead.
     - auto_heal_setting.action.{action_type,minimum_process_execution_time}
     - auto_heal_setting.trigger.requests.{count,interval}
     - auto_heal_setting.trigger.slow_request.{count,interval,time_taken}
