@@ -31,7 +31,8 @@ output "resource_group_name" {
 }
 
 output "soft_delete_enabled" {
-  description = "Legacy compatibility indicator. AzureRM no longer exposes the vault's soft-delete setting; this output is not a readback of remote state."
+  # Deprecated: retained for compatibility, not the actual Azure soft-delete status.
+  description = "Deprecated legacy compatibility indicator. AzureRM no longer exposes the vault's soft-delete setting; this output is not a readback of remote state."
   value       = true
 }
 

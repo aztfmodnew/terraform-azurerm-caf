@@ -150,8 +150,8 @@ recovery_vaults = {
     name               = "vault_re1"
     resource_group_key = "vm_region1"
 
-    region              = "region1"
-    soft_delete_enabled = true
+    region = "region1"
+    # Deprecated: soft_delete_enabled is no longer managed by AzureRM 5.8.
 
     backup_policies = {
       vms = {
