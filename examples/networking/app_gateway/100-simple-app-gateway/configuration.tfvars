@@ -17,6 +17,19 @@ resource_groups = {
   }
 }
 
+private_dns = {
+  agw_internal = {
+    name               = "app-gateway.internal"
+    resource_group_key = "agw_region1"
+    vnet_links = {
+      app_gateway = {
+        name     = "app-gateway-vnet"
+        vnet_key = "vnet_region1"
+      }
+    }
+  }
+}
+
 application_gateways = {
   agw1 = {
     resource_group_key = "agw_region1"
@@ -36,6 +49,15 @@ application_gateways = {
     }
     zones        = ["1"]
     enable_http2 = true
+    private_dns_records = {
+      a_records = {
+        private_ip = {
+          name            = "app-gateway"
+          ttl             = 300
+          private_dns_key = "agw_internal"
+        }
+      }
+    }
     tags = {
       project = "demo"
     }
