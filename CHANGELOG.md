@@ -1,49 +1,25 @@
-## [4.52.7](https://github.com/aztfmodnew/terraform-azurerm-caf/compare/4.52.6...4.52.7) (2026-09-23)
+# [4.52.7](https://github.com/aztfmodnew/terraform-azurerm-caf/compare/4.52.6...4.52.7) (2026-09-24)
 
+## What's Changed
 
-### Bug Fixes
+- Fix changelog version for 4.52.7 @rfernandezdo (#200)
+- Auto-format Terraform files @[github-actions[bot]](https://github.com/apps/github-actions) (#185)
 
-* **ai_services:** change sku_name S1 to S0 for AIServices kind ([d56d4a8](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/d56d4a8e181b9763e8bd25c07657cd34e85580c6))
-* **app_gateway:** migrate waf_configuration to application_gateway_waf_policies in example 100 ([a8b687b](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/a8b687bfa13091254792a228b9695d585f20f8cc))
-* **authorization:** update role_definition_id logic to ensure correct resolution ([46623dd](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/46623dd74c79da3a36d418603473afaf29b58181))
-* **ci:** fix Release Automation workflow — changelog via PR + populate CHANGELOG.md ([#161](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/161)) ([40922e4](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/40922e4c1ff8043b7cf1245eab06dbc7b2268e7a))
-* **container_app:** add subnet delegation for Microsoft.App/environments ([3e4213e](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/3e4213ee416c1f92464af42cd42227ec279ceef2))
-* correct monthly CI failures - Basic PIP, firewall zones, waf_configuration, rbac_id, networking-pip scenario ([b96a7cb](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/b96a7cb3ed00d06f50eed6c8906d16854a7570ba))
-* **databricks/vmss:** fix Databricks standard SKU and LB standard capitalization ([ed59582](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/ed59582872178ee731b8b728b4f059ba74b6b208))
-* **databricks:** update sku from standard to premium ([81920b8](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/81920b82d5d9e1f1ac2252201eee30fd182a756a))
-* **examples:** apply same fixes to non-CI examples ([f3ea76b](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/f3ea76b6e131a58db3ac13786630a0590909f02f))
-* **examples:** update stale PIP comments and fix remaining Basic PIPs ([4295526](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/4295526a9a6f7c87b9b9ca7600b52479c7b983bd))
-* finalize managed redis access policy integration ([a6a97e3](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/a6a97e38e6ba4894b1deb77d39dc4dc23a4f5e04)), closes [#189](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/189)
-* **firewall:** restore zones and change region northeurope->westeurope in examples 101-104 ([e88f614](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/e88f6146b2a8bad877cb0d91232bdb53e2ff1e28))
-* **pim:** use resolved role_definition_id without scope prefix ([d1d31a4](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/d1d31a458d2f2976245986c54501a18080a307ea))
-* **region:** replace retired australiacentral with australiaeast ([89c50bf](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/89c50bf1cab4b3d117fdd7ad3ad91f28ddc905f6))
-* replace underscores with dashes in PostgreSQL user password secret names ([b1eb20f](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/b1eb20f3d78b9fca53a27dfe1ec0a83516a69331))
-* **review:** address Copilot PR review comments ([edd3fc4](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/edd3fc4080417932c9882696dcb25d0e67f29402))
-* **security_policy:** add frontdoor_custom_domains to dependencies ([cc40c6f](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/cc40c6f86bc18b51f98e6b3783def4913d3622d3))
-* **service_plan:** align timeouts implementation with documented settings keys ([26355b9](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/26355b945e4539b48197cf665cca4c11932eef2e))
-* **vmss:** update Basic PIP to Standard + allocation Static in VMSS examples ([8c09bf4](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/8c09bf482686cfb28b555286d437316e2740b226))
-* **vng:** replace deprecated enable_bgp with bgp_enabled (backward compatible) ([3b520ef](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/3b520ef1f51bf731e4473660ae6f4a83963de4ba))
-* **webapps:** correct rbac_id to return identity principal_id for linux_web_app and windows_function_app ([dd342f4](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/dd342f4debbdb1b44bd37c70248f525ff46e206f))
+## 📖 Documentation
 
+- docs: update changelog for 4.53.0 @[github-actions[bot]](https://github.com/apps/github-actions) (#198)
 
-### Features
+## 🧹 Maintenance
 
-* add centralized data_sources lookup (batch 1) + remove deprecated azurerm_batch_certificate ([59ff98e](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/59ff98e0c95e8a53584e487bda5772a394d18193))
-* **agents:** add diagnostics/private-endpoint integrator workers ([98c402f](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/98c402f7e40248b69dca1e7113dd5075cee5fcd1))
-* **aks:** add vertical pod autoscaler support to workload autoscaler profile ([#196](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/196)) ([82a1250](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/82a1250048094e1caafb9d39cb1b6ee163cb019c))
-* centralize data_sources lookups and remove reused vnet pattern ([4027ea8](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/4027ea833a446cc984f3b772ef39e49e4a7dc5f3))
-* centralized data_sources lookup Batch 2 (log_analytics, application_insights, service_plans, cosmos_dbs, mssql_servers) ([be26d53](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/be26d53a8cd6647db5e13d5124939f58af1dc2aa))
-* centralized data_sources lookup Batch 3 (event_hub_namespaces, servicebus_namespaces, container_registry, virtual_hubs, mysql_flexible_servers, aks_clusters, dns_zones, disk_encryption_sets) ([66aa94c](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/66aa94c7587308385abf779fc08f2cfa9816dbe4))
-* **data-sources:** support subscription lookup by display_name with ambiguity guard ([a33afe8](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/a33afe8ba13e42c621a4a04caa90dcf342efd0e4))
-* extend centralized data_sources lookup for rg, subscriptions and azuread groups ([cd05733](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/cd05733759a09131eabb598a85c30d15e3a95a75))
-* **iot:** complete Digital Twins modules with endpoint implementations ([#175](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/175)) ([35c5e56](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/35c5e56e1beb903786c40a46214fa52646766b9e))
-* **pim:** add centralized lookup-based scope and role resolution ([47fb6f4](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/47fb6f441e340695e636ead0fd2851bf1e6da17a))
-* **pim:** add pim group assignments module and safe key-based groups example ([#171](https://github.com/aztfmodnew/terraform-azurerm-caf/issues/171)) ([0484c05](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/0484c05007a2396fb30f4c5b33219394dde465c6))
-* **pim:** add role management policy module for permanent assignment governance ([82e45ee](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/82e45ee42ecf20e164226cb7591abe206f8eaed3))
-* **pim:** add standalone selector resolution and examples ([447f65a](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/447f65af5125f80da046274d6fb447e95ae1a46d))
-* **waf:** enhance log scrubbing settings for waf policy ([c2cac70](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/c2cac70aa888cfaccde134034535e7f23e8bbc42))
+- chore(deps): bump actions/setup-node from 6 to 7 in /.github/workflows @[dependabot[bot]](https://github.com/apps/dependabot) (#192)
+- chore(deps): bump actions/checkout from 6 to 7 in /.github/workflows @[dependabot[bot]](https://github.com/apps/dependabot) (#183)
+- chore(deps): bump actions/cache from 5 to 6 in /.github/workflows @[dependabot[bot]](https://github.com/apps/dependabot) (#186)
+- chore(deps): update azure/azapi requirement from ~> 2.10.0 to ~> 2.11.0 @[dependabot[bot]](https://github.com/apps/dependabot) (#191)
+- chore(deps): update hashicorp/azurerm requirement from ~> 4.77.0 to ~> 4.81.0 @[dependabot[bot]](https://github.com/apps/dependabot) (#193)
+- chore(deps): bump actions/github-script from 7 to 9 in /.github/workflows @[dependabot[bot]](https://github.com/apps/dependabot) (#181)
+- chore(deps): bump peter-evans/create-pull-request from 7 to 8 in /.github/workflows @[dependabot[bot]](https://github.com/apps/dependabot) (#177)
 
-
+**Full Changelog**: https://github.com/aztfmodnew/terraform-azurerm-caf/compare/4.52.6...4.52.7
 
 ## [4.51.3](https://github.com/aztfmodnew/terraform-azurerm-caf/compare/4.51.2...4.51.3) (2026-04-15)
 
@@ -394,6 +370,3 @@
 ### Reverts
 
 * **ci:** remove example 114 from standalone-compute.json ([47555f5](https://github.com/aztfmodnew/terraform-azurerm-caf/commit/47555f5abfa6fb04f87e15033cec322ab5a1cb76))
-
-
-
