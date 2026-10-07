@@ -122,7 +122,7 @@ Skills to enforce during flow:
 
 The `Migration Assistant` is the delegated owner of Terraform MCP provider-schema validation, migration impact analysis, and Terraform state-address analysis (including the `moved`-versus-import decision). The Orchestrator coordinates the work, checks that the delegated report covers its acceptance criteria, and sequences follow-up agents; it must not duplicate provider-schema research, guess schema details, or independently make the delegated state-address decision.
 
-Before any migration edit, the Migration Assistant must use Terraform MCP to discover each affected AzureRM resource's provider documentation and retrieve its full details. The handoff must require provider details for the exact version resolved by the repository's provider constraint/lock file, and the assistant must report the constraint and resolved version. When the repository constraint is `~> 5.6.0`, target the corresponding resolved AzureRM 5.6.x version; do not validate against an unspecified or merely latest version. If MCP discovery or provider details are unavailable or cannot resolve an affected resource, the assistant must stop and report the blocker rather than guess or edit.
+Before any migration edit, the Migration Assistant must attempt Terraform MCP discovery for each affected AzureRM resource and retrieve full provider details for the exact version resolved by the repository's provider constraint/lock file. The handoff must require the assistant to report the constraint and resolved version. When the repository constraint is `~> 5.6.0`, target the corresponding resolved AzureRM 5.6.x version; do not validate against an unspecified or merely latest version. If MCP is unavailable or cannot resolve an affected resource, the assistant may use the documented local-provider-schema fallback in `migration-assistant.agent.md` (lines 149–180) and must report its source and version. It must stop and report the blocker without editing only if neither MCP nor the documented fallback can provide verifiable schema details for every affected resource; it must not guess.
 
 Every migration handoff to `Migration Assistant` must include all of these fields, using explicit paths and task-specific values:
 
@@ -141,7 +141,7 @@ non_goals:
 
 The acceptance criteria must require the Migration Assistant to return:
 
-- MCP search/discovery evidence and the exact provider version constraint, resolved version, and provider documentation used for every affected resource; do not copy MCP artifact IDs into user-facing documentation.
+- MCP search/discovery evidence and provider documentation for every affected resource, or, when MCP is unavailable or cannot resolve a resource, evidence from the documented local-provider-schema fallback. In either case, report the exact provider version constraint and resolved version; do not copy MCP artifact IDs into user-facing documentation.
 - An affected-resource and address inventory, covering relevant root aggregators, modules/submodules, examples, and CI/workflow references.
 - The state migration decision for each affected address (`moved` block versus import), with address mappings and rationale; identify explicit `count`/`for_each` instance mappings where needed and flag any mapping requiring a plan to verify.
 - Changed files, validation commands and results, and residual risks or blockers.
