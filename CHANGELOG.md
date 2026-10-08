@@ -1,12 +1,14 @@
-# [4.52.7](https://github.com/aztfmodnew/terraform-azurerm-caf/compare/4.52.6...4.52.7) (2026-09-24)
+# [5.0.0](https://github.com/aztfmodnew/terraform-azurerm-caf/compare/4.52.6...5.0.0) (2026-10-08)
 
 ## What's Changed
 
+- Feature/update azurerm provider @rfernandezdo (#207)
 - Fix changelog version for 4.52.7 @rfernandezdo (#200)
 - Auto-format Terraform files @[github-actions[bot]](https://github.com/apps/github-actions) (#185)
 
 ## 📖 Documentation
 
+- docs: update changelog for 4.52.7 @[github-actions[bot]](https://github.com/apps/github-actions) (#201)
 - docs: update changelog for 4.53.0 @[github-actions[bot]](https://github.com/apps/github-actions) (#198)
 
 ## 🧹 Maintenance
@@ -19,7 +21,7 @@
 - chore(deps): bump actions/github-script from 7 to 9 in /.github/workflows @[dependabot[bot]](https://github.com/apps/dependabot) (#181)
 - chore(deps): bump peter-evans/create-pull-request from 7 to 8 in /.github/workflows @[dependabot[bot]](https://github.com/apps/dependabot) (#177)
 
-**Full Changelog**: https://github.com/aztfmodnew/terraform-azurerm-caf/compare/4.52.6...4.52.7
+**Full Changelog**: https://github.com/aztfmodnew/terraform-azurerm-caf/compare/4.52.6...5.0.0
 
 ## [4.51.3](https://github.com/aztfmodnew/terraform-azurerm-caf/compare/4.51.2...4.51.3) (2026-04-15)
 
