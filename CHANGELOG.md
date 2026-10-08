@@ -8,6 +8,7 @@
 
 ## 📖 Documentation
 
+- docs: update changelog for 5.0.0 @[github-actions[bot]](https://github.com/apps/github-actions) (#210)
 - docs: update changelog for 4.52.7 @[github-actions[bot]](https://github.com/apps/github-actions) (#201)
 - docs: update changelog for 4.53.0 @[github-actions[bot]](https://github.com/apps/github-actions) (#198)
 
