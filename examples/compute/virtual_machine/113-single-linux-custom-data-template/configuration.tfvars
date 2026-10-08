@@ -297,8 +297,7 @@ recovery_vaults = {
 
     region = "region1"
 
-    # Disable soft delete for easier destruction in test environments
-    soft_delete_enabled = false
+    # Deprecated: soft_delete_enabled is no longer managed by AzureRM 5.8.
 
     # Configure custom timeouts for destroy operations
     timeouts = {

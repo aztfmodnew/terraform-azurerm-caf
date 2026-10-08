@@ -36,6 +36,15 @@ resource "azurerm_kubernetes_cluster" "aks" {
   name                = azurecaf_name.aks.result
   location            = local.location
   resource_group_name = local.resource_group_name
+
+  dynamic "node_provisioning_profile" {
+    for_each = [try(var.settings.node_provisioning_profile, {})]
+    content {
+      mode               = try(node_provisioning_profile.value.mode, "Manual")
+      default_node_pools = try(node_provisioning_profile.value.default_node_pools, null)
+    }
+  }
+
   default_node_pool {
     name                          = var.settings.default_node_pool.name //azurecaf_name.default_node_pool.result
     vm_size                       = var.settings.default_node_pool.vm_size
@@ -49,7 +58,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
       for_each = try(var.settings.default_node_pool.kubelet_config, null) == null ? [] : [var.settings.default_node_pool.kubelet_config]
       content {
         allowed_unsafe_sysctls    = try(kubelet_config.value.allowed_unsafe_sysctls, null)
-        container_log_max_line    = try(kubelet_config.value.container_log_max_line, null)
+        container_log_max_files   = try(kubelet_config.value.container_log_max_files, kubelet_config.value.container_log_max_line, null)
         container_log_max_size_mb = try(kubelet_config.value.container_log_max_size_mb, null)
         cpu_cfs_quota_enabled     = try(kubelet_config.value.cpu_cfs_quota_enabled, null)
         cpu_cfs_quota_period      = try(kubelet_config.value.cpu_cfs_quota_period, null)
@@ -98,8 +107,8 @@ resource "azurerm_kubernetes_cluster" "aks" {
             vm_vfs_cache_pressure              = try(sysctl_config.value.vm_vfs_cache_pressure, null)
           }
         }
-        transparent_huge_page_defrag  = try(linux_os_config.value.transparent_huge_page_defrag, null)
-        transparent_huge_page_enabled = try(linux_os_config.value.transparent_huge_page_enabled, null)
+        transparent_huge_page_defrag = try(linux_os_config.value.transparent_huge_page_defrag, null)
+        transparent_huge_page        = try(linux_os_config.value.transparent_huge_page, linux_os_config.value.transparent_huge_page_enabled, null)
       }
     }
     fips_enabled      = try(var.settings.default_node_pool.fips_enabled, null)
@@ -497,6 +506,5 @@ node_os_upgrade_channel must be set to NodeImage if automatic_upgrade_channel ha
     }
   }
 }
-
 
 

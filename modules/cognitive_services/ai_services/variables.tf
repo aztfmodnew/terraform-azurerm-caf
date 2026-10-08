@@ -25,11 +25,11 @@ variable "settings" {
   sku_name - (Required) Specifies the SKU Name for this AI Services Account. Possible values are F0, F1, S0, S, S1, S2, S3, S4, S5, S6, P0, P1, P2, E0 and DC0.
   custom_subdomain_name - (Optional) The subdomain name used for token-based authentication. This property is required when network_acls is specified. Changing this forces a new resource to be created.
   customer_managed_key - (Optional) A customer_managed_key block as documented below.
-    - key_vault_key_id - (Optional) The ID of the Key Vault Key which should be used to encrypt the data in this AI Services Account. Exactly one of key_vault_key_id, managed_hsm_key_id must be specified.
-    - managed_hsm_key_id - (Optional) The ID of the managed HSM Key which should be used to encrypt the data in this AI Services Account. Exactly one of key_vault_key_id, managed_hsm_key_id must be specified.
+    - key_vault_key_id - (Optional) The ID of the Key Vault Key or Managed HSM Key used to encrypt the data.
+    - managed_hsm_key_id - Not supported by AzureRM 5.8. Use key_vault_key_id for Key Vault and Managed HSM keys.
     - identity_client_id - (Optional) The Client ID of the User Assigned Identity that has access to the key. This property only needs to be specified when there are multiple identities attached to the Azure AI Service.   
   fqdns - (Optional) List of FQDNs allowed for the AI Services Account.
-  identity - (Optional) An identity block as defined below.
+  identity - (Optional) An identity block as defined below. Defaults to SystemAssigned when project management is enabled and no identity is supplied, as required by AzureRM 5.8.
     - type - (Required) Specifies the type of Managed Service Identity that should be configured on this AI Services Account. Possible values are SystemAssigned, UserAssigned, SystemAssigned, UserAssigned
     - identity_ids - (Optional) Specifies a list of User Assigned Managed Identity IDs to be assigned to this AI Services Account.
   local_authentication_enabled - (Optional) Whether local authentication is enabled for the AI Services Account. Defaults to true.
@@ -40,6 +40,7 @@ variable "settings" {
       - subnet_id - (Required) The ID of the subnet which should be able to access this AI Services Account.
       - ignore_missing_vnet_service_endpoint - (Optional) Whether to ignore a missing Virtual Network Service Endpoint or not. Default to false.
   outbound_network_access_restricted - (Optional) Whether outbound network access is restricted for the AI Services Account. Defaults to false.
+  project_management_enabled - (Optional) Whether project management is enabled. Defaults to true to preserve the previous azurerm_ai_services behaviour.
   public_network_access - (Optional) Whether public network access is allowed for the AI Services Account. Possible values are Enabled and Disabled. Defaults to Enabled. 
   storage - (Optional) A storage block as defined below.
     - storage_account_id - (Required) The ID of the Storage Account.
@@ -83,6 +84,7 @@ variable "settings" {
         ]
       }
       outbound_network_access_restricted = true
+      project_management_enabled = true
       public_network_access = "Disabled"
       storage = {
         storage_account_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example-resources/providers/Microsoft.Storage/storageAccounts/examplestorage"

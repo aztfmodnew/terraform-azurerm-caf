@@ -1,5 +1,6 @@
 global_settings = {
   default_region = "region1"
+  random_length  = 5
   regions = {
     region1 = "australiaeast"
   }
@@ -46,7 +47,7 @@ aks_clusters = {
 
     default_node_pool = {
       name    = "sharedsvc"
-      vm_size = "Standard_F4s_v2"
+      vm_size = "Standard_D2s_v5"
       subnet = {
         key = "aks_nodepool_system"
       }
@@ -55,12 +56,39 @@ aks_clusters = {
       max_pods              = 30
       node_count            = 1
       os_disk_size_gb       = 512
+      kubelet_config = {
+        container_log_max_line = 4
+      }
+      linux_os_config = {
+        transparent_huge_page_enabled = "madvise"
+      }
       tags = {
         "project" = "system services"
       }
     }
 
-    node_resource_group_name = "aks-nodes-re1"
+    node_resource_group_name = "migration-aks110-nodes"
+
+    node_pools = {
+      user1 = {
+        name       = "user1"
+        mode       = "User"
+        vm_size    = "Standard_D2s_v5"
+        node_count = 1
+        subnet_key = "aks_nodepool_user1"
+        kubelet_config = {
+          container_log_max_files = 3
+          container_log_max_line  = 4
+        }
+        linux_os_config = {
+          transparent_huge_page         = "never"
+          transparent_huge_page_enabled = "madvise"
+          sysctl_config = {
+            vm_swappiness = 10
+          }
+        }
+      }
+    }
 
     addon_profile = {
       azure_keyvault_secrets_provider = {

@@ -10,7 +10,7 @@ terraform {
     }
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = ">= 4.0.0"
+      version = "~> 5.8.0"
     }
   }
   required_version = ">= 1.6.0"
@@ -18,6 +18,7 @@ terraform {
 
 
 provider "azurerm" {
+  resource_providers_to_register = var.provider_azurerm_resource_providers_to_register
   features {
     api_management {
       purge_soft_delete_on_destroy = var.provider_azurerm_features_api_management.purge_soft_delete_on_destroy
@@ -44,6 +45,9 @@ provider "azurerm" {
     # }
     resource_group {
       prevent_deletion_if_contains_resources = var.provider_azurerm_features_resource_group.prevent_deletion_if_contains_resources
+    }
+    netapp {
+      prevent_volume_destruction = var.provider_azurerm_features_netapp.prevent_volume_destruction
     }
     recovery_service {
       vm_backup_stop_protection_and_retain_data_on_destroy = try(var.provider_azurerm_features_recovery_service.vm_backup_stop_protection_and_retain_data_on_destroy, null)

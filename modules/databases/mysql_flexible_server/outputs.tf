@@ -37,7 +37,7 @@ output "mysql_flexible_server_name" {
 
 output "mysql_flexible_server_public_network_access_enabled" {
   description = "Is public network access enabled?"
-  value       = azurerm_mysql_flexible_server.mysql.public_network_access_enabled
+  value       = azurerm_mysql_flexible_server.mysql.public_network_access == "Enabled"
 }
 
 output "mysql_flexible_server_configuration_id" {
@@ -65,4 +65,3 @@ output "resource_group_name" {
   description = "Name of the Resource Group where the resource exists."
   value       = var.resource_group_name
 }
-

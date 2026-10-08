@@ -23,7 +23,8 @@ resource "azurerm_data_factory_linked_service_azure_databricks" "dflsad" {
   }
 
 
-  msi_work_space_resource_id = try(coalesce(
+  msi_workspace_id = try(coalesce(
+    try(var.settings.msi_workspace_id, var.settings.msi_work_space_resource_id, null),
     try(var.settings.databricks_workspace.id, null),
     try(var.remote_objects.databricks_workspace.id, null)
   ), null)

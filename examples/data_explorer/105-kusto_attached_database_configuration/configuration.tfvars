@@ -1,5 +1,6 @@
 global_settings = {
   default_region = "region1"
+  random_length  = 5
   regions = {
     region1 = "eastus"
   }
@@ -14,6 +15,10 @@ resource_groups = {
 kusto_clusters = {
   kc_node0 = {
     name = "kc1_node0"
+    language_extensions = {
+      name  = "R"
+      image = "R"
+    }
     resource_group = {
       key = "rg1"
       #lz_key = ""
@@ -22,8 +27,8 @@ kusto_clusters = {
     region = "region1"
 
     sku = {
-      name     = "Dev(No SLA)_Standard_E2a_v4"
-      capacity = 1
+      name     = "Standard_E4d_v5"
+      capacity = 2
     }
   }
   kc_node1 = {

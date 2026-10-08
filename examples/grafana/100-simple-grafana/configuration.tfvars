@@ -16,7 +16,7 @@ resource_groups = {
 grafana = {
   grafana1 = {
     name                          = "grafana-test-1"
-    grafana_major_version         = 11
+    grafana_major_version         = 12
     sku                           = "Standard"
     api_key_enabled               = true
     public_network_access_enabled = true
@@ -38,4 +38,3 @@ grafana = {
     }
   }
 }
-

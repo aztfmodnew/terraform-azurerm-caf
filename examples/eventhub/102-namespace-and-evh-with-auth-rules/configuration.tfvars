@@ -18,6 +18,13 @@ event_hub_namespaces = {
     resource_group_key = "evh_examples"
     sku                = "Standard"
     region             = "region1"
+    event_hubs = {
+      nested = {
+        name              = "nested"
+        partition_count   = 2
+        message_retention = 1
+      }
+    }
   }
 }
 

@@ -3,7 +3,8 @@ global_settings = {
   regions = {
     region1 = "australiaeast"
   }
-  inherit_tags = true
+  random_length = 5
+  inherit_tags  = true
   tags = {
     example = "examples/networking/private_dns/100-private-dns-vnet-links"
   }
@@ -39,6 +40,38 @@ private_dns = {
     resource_group_key = "private_dns_region1"
 
     records = {
+      aaaa_records = {
+        ipv6 = {
+          name    = "ipv6"
+          ttl     = 300
+          records = ["fd00::10"]
+        }
+      }
+      cname_records = {
+        alias = {
+          name    = "alias"
+          ttl     = 300
+          records = "host.test-dns.mysite.com"
+        }
+      }
+      mx_records = {
+        mail = {
+          name = "@"
+          ttl  = 300
+          records = {
+            primary = { preference = 10, exchange = "mail.test-dns.mysite.com" }
+          }
+        }
+      }
+      srv_records = {
+        service = {
+          name = "_https._tcp"
+          ttl  = 300
+          records = {
+            primary = { priority = 10, weight = 5, port = 443, target = "host.test-dns.mysite.com" }
+          }
+        }
+      }
       a_records = {
         testa1 = {
           name    = "*"
@@ -91,6 +124,31 @@ private_dns = {
       #     vnet_key    = "hub_rg1"
       #   }
       # }
+    }
+  }
+  reverse = {
+    name               = "100.10.10.in-addr.arpa"
+    resource_group_key = "private_dns_region1"
+    records = {
+      ptr_records = {
+        host = {
+          name    = "10"
+          ttl     = 300
+          records = ["host.test-dns.mysite.com"]
+        }
+      }
+    }
+  }
+}
+
+private_dns_vnet_links = {
+  reverse = {
+    vnet_key = "vnet_test"
+    private_dns_zones = {
+      reverse = {
+        name = "reverse-link"
+        key  = "reverse"
+      }
     }
   }
 }

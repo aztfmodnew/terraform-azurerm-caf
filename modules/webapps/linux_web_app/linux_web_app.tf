@@ -30,6 +30,13 @@ resource "azurerm_linux_web_app" "linux_web_app" {
   zip_deploy_file                                = try(var.settings.zip_deploy_file, null)
   tags                                           = merge(local.tags, try(var.settings.tags, null))
 
+  lifecycle {
+    precondition {
+      condition     = try(var.settings.site_config.application_stack.ruby_version, null) == null
+      error_message = "AzureRM 5.8 no longer supports application_stack.ruby_version. Configure a Ruby custom container with docker_image_name and docker_registry_url instead."
+    }
+  }
+
   site_config {
     always_on                                     = try(var.settings.site_config.always_on, true)
     api_definition_url                            = try(var.settings.site_config.api_definition_url, null)
@@ -72,7 +79,6 @@ resource "azurerm_linux_web_app" "linux_web_app" {
         node_version             = try(application_stack.value.node_version, null)
         php_version              = try(application_stack.value.php_version, null)
         python_version           = try(application_stack.value.python_version, null)
-        ruby_version             = try(application_stack.value.ruby_version, null)
       }
     }
 

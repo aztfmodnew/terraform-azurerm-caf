@@ -42,18 +42,20 @@ variable "settings" {
       - subject          - (Required) Subject for the federated identity credential.
       - audience         - (Optional) Audience list. Defaults to ["api://AzureADTokenExchange"].
       - oidc_issuer_url  - (Optional) OIDC issuer URL.
+      - user_assigned_identity_id - (Optional) Direct ID of the user-assigned identity. If omitted, use managed_identity.
       - resource_group   - (Optional) Resource group reference (name or key/lz_key).
-      - managed_identity - (Required) Reference to the parent managed identity.
+      - managed_identity - (Optional) Reference to the parent managed identity; required when user_assigned_identity_id is omitted.
         - key    - (Required) Key of the managed identity in the managed_identities map.
         - lz_key - (Optional) Landing zone key for cross-landing-zone references.
         - id     - (Optional) Direct resource ID of the managed identity.
       - timeouts         - (Optional) Timeout overrides for create/read/update/delete.
     DESCRIPTION
   type = object({
-    name            = string
-    subject         = string
-    audience        = optional(list(string))
-    oidc_issuer_url = optional(string)
+    name                      = string
+    subject                   = string
+    audience                  = optional(list(string))
+    oidc_issuer_url           = optional(string)
+    user_assigned_identity_id = optional(string)
     resource_group = optional(object({
       name   = optional(string)
       key    = optional(string)

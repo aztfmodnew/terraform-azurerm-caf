@@ -43,8 +43,8 @@ app_service_environments_v3 = {
 
 service_plans = {
   asp1 = {
-    app_service_environment_key = "ase1"
-    resource_group_key          = "asp_project1_region1"
+    app_service_environment_v3_key = "ase1"
+    resource_group_key             = "asp_project1_region1"
 
     name    = "ase1-asp01"
     os_type = "Windows"
@@ -55,8 +55,8 @@ service_plans = {
 
   },
   asp2 = {
-    app_service_environment_key = "ase1"
-    resource_group_key          = "asp_project2_region1"
+    app_service_environment_v3_key = "ase1"
+    resource_group_key             = "asp_project2_region1"
 
     name    = "ase1-asp02"
     os_type = "Linux"

@@ -11,8 +11,8 @@ resource "azurecaf_name" "lb" {
 }
 resource "azurerm_lb_nat_rule" "lb" {
   backend_port                   = var.settings.backend_port
-  enable_floating_ip             = try(var.settings.enable_floating_ip, null)
-  enable_tcp_reset               = try(var.settings.enable_tcp_reset, null)
+  floating_ip_enabled            = try(var.settings.floating_ip_enabled, var.settings.enable_floating_ip, null)
+  tcp_reset_enabled              = try(var.settings.tcp_reset_enabled, var.settings.enable_tcp_reset, null)
   frontend_ip_configuration_name = var.settings.frontend_ip_configuration_name
   frontend_port                  = var.settings.frontend_port
   idle_timeout_in_minutes        = try(var.settings.idle_timeout_in_minutes, null)

@@ -2,6 +2,10 @@ variable "global_settings" {
   description = "Global settings object (see module README.md)"
   type        = any
 }
+variable "client_config" {
+  description = "Client configuration object used to resolve the current landing zone."
+  type        = any
+}
 variable "settings" {
   description = "The settings for the Azure resource."
   type        = any

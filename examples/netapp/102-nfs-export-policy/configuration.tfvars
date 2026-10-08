@@ -1,8 +1,11 @@
 # This example creates a NetApp NFSv3 volume and assigns an export policy for the volume.
 # Please update the CIDR to match the allowed source addresses. Must be in valid CIDR format x.x.x.x/x
 
+provider_azurerm_resource_providers_to_register = ["Microsoft.NetApp"]
+
 global_settings = {
   default_region = "region1"
+  random_length  = 5
   regions = {
     region1 = "australiaeast"
   }
@@ -58,6 +61,7 @@ netapp_accounts = {
               }
               "rule3" = {
                 rule_index          = 3
+                protocol            = ["NFSv3"]
                 allowed_clients     = ["192.168.0.0/16"]
                 protocols_enabled   = ["NFSv3"] #["CIFS", "NFSv3", "NFSv3"]
                 unix_read_only      = false     #Optional Parameter

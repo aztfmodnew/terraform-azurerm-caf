@@ -3,6 +3,7 @@ global_settings = {
   regions = {
     region1 = "australiaeast"
   }
+  random_length = 5
 }
 
 resource_groups = {
@@ -43,9 +44,10 @@ vnets = {
         nsg_key = "jump_host"
       }
       web = {
-        name    = "web-layer"
-        cidr    = ["10.1.2.0/24"]
-        nsg_key = "web"
+        name              = "web-layer"
+        cidr              = ["10.1.2.0/24"]
+        nsg_key           = "web"
+        service_endpoints = ["Microsoft.Storage"]
       }
       app = {
         name    = "app-layer"

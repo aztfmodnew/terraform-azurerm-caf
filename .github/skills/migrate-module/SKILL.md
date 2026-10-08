@@ -1,3 +1,8 @@
+---
+name: migrate-module
+description: migrate-module
+disable-model-invocation: true
+---
 # Migrate Terraform Module (Azure CAF) — correct depth and paths
 
 Goal: Move a module to the required path `modules/<category>/<module_name>/`, fix all relative paths, and ensure docs/tests continue to work.

@@ -1,9 +1,9 @@
 resource "azurerm_service_plan" "sp" {
   name                = azurecaf_name.plan.result
   location            = local.location
-  os_type             = try(var.settings.os_type, null)
+  os_type             = coalesce(try(var.settings.os_type, null), try(var.settings.kind, null))
   resource_group_name = local.resource_group_name
-  sku_name            = var.settings.sku_name
+  sku_name            = coalesce(try(var.settings.sku_name, null), try(var.settings.sku.size, null))
   app_service_environment_id = try(
     var.settings.app_service_environment_id,
     var.remote_objects.app_service_environments_v3[try(var.settings.app_service_environment_v3.lz_key, var.client_config.landingzone_key)][try(var.settings.app_service_environment_v3.key, var.settings.app_service_environment_v3_key)].id,
@@ -11,10 +11,16 @@ resource "azurerm_service_plan" "sp" {
     null
   )
   maximum_elastic_worker_count = try(var.settings.maximum_elastic_worker_count, null)
-  worker_count                 = try(var.settings.worker_count, null)
-  per_site_scaling_enabled     = try(var.settings.per_site_scaling_enabled, null)
-  zone_balancing_enabled       = try(var.settings.zone_balancing_enabled, null)
-  tags                         = local.tags
+  worker_count = try(
+    coalesce(try(var.settings.worker_count, null), try(var.settings.sku.capacity, null)),
+    null
+  )
+  per_site_scaling_enabled = try(
+    coalesce(try(var.settings.per_site_scaling_enabled, null), try(var.settings.sku.per_site_scaling, null)),
+    null
+  )
+  zone_balancing_enabled = try(var.settings.zone_balancing_enabled, null)
+  tags                   = local.tags
 
   dynamic "timeouts" {
     for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
@@ -34,5 +40,3 @@ resource "azurerm_service_plan" "sp" {
     ignore_changes = [app_service_environment_id]
   }*/
 }
-
-

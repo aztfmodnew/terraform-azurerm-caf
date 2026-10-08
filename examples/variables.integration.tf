@@ -214,6 +214,16 @@ variable "eventgrid_domain_topic" {
   default = {}
 }
 
+variable "eventgrid_system_topic" {
+  type    = any
+  default = {}
+}
+
+variable "eventgrid_system_event_subscription" {
+  type    = any
+  default = {}
+}
+
 variable "relay_hybrid_connection" {
   type    = any
   default = {}

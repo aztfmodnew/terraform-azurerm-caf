@@ -30,7 +30,7 @@ resource "azurerm_resource_group_template_deployment" "ase" {
 resource "null_resource" "destroy_ase" {
 
   triggers = {
-    resource_id = lookup(azurerm_resource_group_template_deployment.ase.output_content, "id")
+    resource_id = jsondecode(azurerm_resource_group_template_deployment.ase.output_content).id.value
   }
 
   provisioner "local-exec" {
@@ -52,4 +52,3 @@ data "azurerm_app_service_environment_v3" "ase" {
   name                = azurecaf_name.ase.result
   resource_group_name = var.resource_group_name
 }
-

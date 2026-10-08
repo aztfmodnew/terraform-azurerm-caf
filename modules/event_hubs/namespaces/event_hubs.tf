@@ -6,6 +6,7 @@ module "event_hubs" {
   client_config       = var.client_config
   global_settings     = var.global_settings
   settings            = each.value
+  namespace           = { id = azurerm_eventhub_namespace.evh.id }
   namespace_name      = azurerm_eventhub_namespace.evh.name
   storage_account_id  = try(var.storage_accounts[try(each.value.storage_account.lz_key, var.client_config.landingzone_key)][each.value.storage_account.key].id, null)
 }

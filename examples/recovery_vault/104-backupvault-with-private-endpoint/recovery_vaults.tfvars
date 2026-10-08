@@ -6,10 +6,6 @@ recovery_vaults = {
     vnet_key           = "vnet_region1"
     subnet_key         = "asr_subnet"
 
-    soft_delete_enabled = false
-
-
-
     backup_policies = {
       vms = {
         policy1 = {

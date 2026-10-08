@@ -1,9 +1,10 @@
 resource "azurerm_federated_identity_credential" "fed_cred" {
   name     = var.settings.name
   audience = try(var.settings.audience, null) == null ? ["api://AzureADTokenExchange"] : var.settings.audience
-  parent_id = coalesce(
+  user_assigned_identity_id = coalesce(
+    try(var.settings.user_assigned_identity_id, null),
     try(var.settings.managed_identity.id, null),
-    var.managed_identities[coalesce(var.settings.managed_identity.lz_key, var.client_config.landingzone_key)][var.settings.managed_identity.key].id
+    try(var.managed_identities[coalesce(try(var.settings.managed_identity.lz_key, null), var.client_config.landingzone_key)][var.settings.managed_identity.key].id, null)
   )
   subject = var.settings.subject
   issuer = coalesce(

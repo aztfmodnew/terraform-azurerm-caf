@@ -1,5 +1,6 @@
 global_settings = {
   default_region = "region1"
+  random_length  = 5
   regions = {
     region1 = "australiaeast"
   }
@@ -46,7 +47,7 @@ vnets = {
 
 keyvaults = {
   kv1 = {
-    name               = "vmsslbexmpkv1"
+    name               = "vmss-migration-100411"
     resource_group_key = "rg1"
     sku_name           = "standard"
     creation_policies = {
@@ -149,11 +150,13 @@ virtual_machine_scale_sets = {
         admin_username                  = "adminuser"
         disable_password_authentication = true
         provision_vm_agent              = true
-        priority                        = "Spot"
-        eviction_policy                 = "Deallocate"
         ultra_ssd_enabled               = false # required if planning to use UltraSSD_LRS
 
-        upgrade_mode = "Manual" # Automatic / Rolling / Manual
+        upgrade_mode = "Automatic"
+        automatic_os_upgrade_policy = {
+          disable_automatic_rollback  = true
+          enable_automatic_os_upgrade = false
+        }
 
         # rolling_upgrade_policy = {
         #   # Only for upgrade mode = "Automatic / Rolling "
@@ -193,8 +196,8 @@ virtual_machine_scale_sets = {
 
         source_image_reference = {
           publisher = "Canonical"
-          offer     = "UbuntuServer"
-          sku       = "18.04-LTS"
+          offer     = "0001-com-ubuntu-server-jammy"
+          sku       = "22_04-lts-gen2"
           version   = "latest"
         }
 
@@ -226,7 +229,7 @@ virtual_machine_scale_sets = {
         }
 
         enable_accelerated_networking = false
-        enable_ip_forwarding          = false
+        enable_ip_forwarding          = true
         internal_dns_name_label       = "nic0"
       }
     }
@@ -264,10 +267,14 @@ virtual_machine_scale_sets = {
         instances                       = 1
         admin_username                  = "adminuser"
         disable_password_authentication = true
-        priority                        = "Spot"
-        eviction_policy                 = "Deallocate"
 
-        upgrade_mode = "Manual" # Automatic / Rolling / Manual
+        upgrade_mode = "Automatic"
+        automatic_os_upgrade_policy = {
+          automatic_rollback_enabled   = true
+          disable_automatic_rollback   = true
+          automatic_os_upgrade_enabled = false
+          enable_automatic_os_upgrade  = true
+        }
 
         # rolling_upgrade_policy = {
         #   # Only for upgrade mode = "Automatic / Rolling "
@@ -327,6 +334,7 @@ virtual_machine_scale_sets = {
 
         enable_accelerated_networking = false
         enable_ip_forwarding          = false
+        ip_forwarding_enabled         = true
         internal_dns_name_label       = "nic0"
       }
     }

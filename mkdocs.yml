@@ -3,6 +3,7 @@ theme:
   name: material
 nav:
   - Overview: index.md
+  - AzureRM 5.8 migration: guides/AZURERM_5_8_MIGRATION.md
   - Modules:
       - aadb2c:
           - aadb2c_directory: modules/aadb2c/aadb2c_directory.md

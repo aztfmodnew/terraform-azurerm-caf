@@ -41,14 +41,17 @@ resource "azurerm_kusto_cluster" "kusto" {
   # virtual_network_configuration block removed - Virtual Network injection was retired on February 1, 2025
   # Use private endpoints instead for secure networking
   # Reference: https://aka.ms/adx.security.vnet.migration
-  #language_extensions = try(var.settings.language_extensions, null)
-  #In v4.0.0 and later version of the AzureRM Provider, language_extensions will be changed to a list of language_extension block. In each block, name and image are required. name is the name of the language extension, possible values are PYTHON, R. image is the image of the language extension, possible values are Python3_6_5, Python3_10_8 and R.
-  dynamic "language_extensions" {
-    for_each = try(var.settings.language_extensions, null) != null ? [var.settings.language_extensions] : []
+  dynamic "language_extension" {
+    for_each = try(
+      [for extension in var.settings.language_extension : { name = extension.name, image = extension.image }],
+      [for extension in var.settings.language_extensions : { name = extension.name, image = extension.image }],
+      [{ name = var.settings.language_extensions.name, image = var.settings.language_extensions.image }],
+      []
+    )
 
     content {
-      name  = language_extensions.value.name
-      image = language_extensions.value.image
+      name  = language_extension.value.name
+      image = language_extension.value.image
     }
   }
 

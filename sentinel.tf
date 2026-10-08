@@ -36,8 +36,9 @@ module "sentinel_watchlist_items" {
 }
 
 module "sentinel_ar_fusions" {
-  source   = "./modules/security/sentinel/ar_fusion"
-  for_each = try(local.security.sentinel_ar_fusions, {})
+  source     = "./modules/security/sentinel/ar_fusion"
+  for_each   = try(local.security.sentinel_ar_fusions, {})
+  depends_on = [module.log_analytics]
 
   name                       = each.value.name
   log_analytics_workspace_id = can(each.value.diagnostic_log_analytics_workspace) || can(each.value.log_analytics_workspace.id) ? try(local.combined_diagnostics.log_analytics[each.value.diagnostic_log_analytics_workspace.key].id, each.value.log_analytics_workspace.id) : local.combined_objects_log_analytics[try(each.value.log_analytics_workspace.lz_key, local.client_config.landingzone_key)][each.value.log_analytics_workspace.key].id

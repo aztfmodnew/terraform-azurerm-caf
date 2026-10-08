@@ -14,6 +14,15 @@ application_gateway_platforms = {
     }
     zones        = ["1"]
     enable_http2 = true
+    private_dns_records = {
+      a_records = {
+        private_ip = {
+          name            = "app-gateway"
+          ttl             = 300
+          private_dns_key = "agw_internal"
+        }
+      }
+    }
 
     identity = {
       managed_identity_keys = [
@@ -70,8 +79,9 @@ application_gateway_platforms = {
         name = "SecureTLS"
         ssl_policy = {
           policy_type = "Predefined"
-          policy_name = "AppGwSslPolicy20170401S"
+          policy_name = "AppGwSslPolicy20220101"
         }
+        verify_client_cert_issuer_dn = false
       }
     }
   }

@@ -6,7 +6,7 @@ resource "azurerm_dashboard_grafana" "grafana" {
   location            = local.location
 
   # Required argument (Grafana major version)
-  grafana_major_version = try(var.settings.grafana_major_version, 11)
+  grafana_major_version = try(var.settings.grafana_major_version, 12)
 
   # Optional arguments - validated against MCP Terraform schema
   api_key_enabled                        = try(var.settings.api_key_enabled, false)

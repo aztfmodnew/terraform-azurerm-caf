@@ -31,17 +31,87 @@ output "storage_accounts" {
   sensitive = true
 }
 
-resource "azurerm_storage_account_customer_managed_key" "cmk" {
-  depends_on = [module.keyvault_access_policies]
-  for_each = {
-    for key, value in var.storage_accounts : key => value
-    if can(value.customer_managed_key)
+locals {
+  storage_account_cmk_settings = {
+    for key, value in var.storage_accounts : key => value.customer_managed_key
+    if try(value.customer_managed_key, null) != null
   }
 
+  storage_account_cmk_key_names = {
+    for key, value in local.storage_account_cmk_settings : key => try(coalesce(
+      try(value.key_name, null),
+      try(local.combined_objects_keyvault_keys[try(value.lz_key, local.client_config.landingzone_key)][value.keyvault_key_key].name, null)
+    ), null)
+  }
+
+  storage_account_cmk_referenced_key_uris = {
+    for key, value in local.storage_account_cmk_settings : key => (
+      try(value.key_name, null) == null || try(value.key_name, "") == "" ? try(coalesce(
+        try(local.combined_objects_keyvault_keys[try(value.lz_key, local.client_config.landingzone_key)][value.keyvault_key_key].versionless_id, null),
+        try(regex("^https://[^/]+/keys/[^/]+", local.combined_objects_keyvault_keys[try(value.lz_key, local.client_config.landingzone_key)][value.keyvault_key_key].id), null)
+      ), null) : null
+    )
+  }
+
+  storage_account_cmk_version_suffixes = {
+    for key, value in local.storage_account_cmk_settings : key => (
+      try(value.key_version, null) == null ? "" : value.key_version == "" ? "" : "/${value.key_version}"
+    )
+  }
+}
+
+# ARM-only vault references need a lookup to preserve sovereign-cloud and cross-subscription endpoints.
+data "azapi_resource" "storage_account_cmk_vault" {
+  for_each = {
+    for key, value in local.storage_account_cmk_settings : key => value
+    if try(value.key_vault_key_id, null) == null &&
+    !(try(value.lz_key, local.client_config.landingzone_key) == local.client_config.landingzone_key && contains(keys(var.keyvaults), try(value.keyvault_key, ""))) &&
+    !contains(keys(try(var.remote_objects.keyvaults[try(value.lz_key, local.client_config.landingzone_key)][value.keyvault_key], var.data_sources.keyvaults[value.keyvault_key], {})), "vault_uri") &&
+    (
+      (try(value.key_name, null) != null && try(value.key_name, "") != "") ||
+      !(
+        (try(value.lz_key, local.client_config.landingzone_key) == local.client_config.landingzone_key && contains(keys(local.security.keyvault_keys), try(value.keyvault_key_key, ""))) ||
+        contains(keys(try(var.remote_objects.keyvault_keys[try(value.lz_key, local.client_config.landingzone_key)][value.keyvault_key_key], {})), "versionless_id") ||
+        contains(keys(try(var.remote_objects.keyvault_keys[try(value.lz_key, local.client_config.landingzone_key)][value.keyvault_key_key], {})), "id")
+      )
+    )
+  }
+
+  type                   = "Microsoft.KeyVault/vaults@2024-11-01"
+  resource_id            = local.combined_objects_keyvaults[try(each.value.lz_key, local.client_config.landingzone_key)][each.value.keyvault_key].id
+  response_export_values = ["properties.vaultUri"]
+}
+
+resource "azurerm_storage_account_customer_managed_key" "cmk" {
+  depends_on = [module.keyvault_access_policies]
+  for_each   = local.storage_account_cmk_settings
+
   storage_account_id = module.storage_accounts[each.key].id
-  key_vault_id       = local.combined_objects_keyvaults[try(each.value.customer_managed_key.lz_key, local.client_config.landingzone_key)][each.value.customer_managed_key.keyvault_key].id
-  key_name           = can(each.value.customer_managed_key.key_name) ? each.value.customer_managed_key.key_name : local.combined_objects_keyvault_keys[try(each.value.customer_managed_key.lz_key, local.client_config.landingzone_key)][each.value.customer_managed_key.keyvault_key_key].name
-  key_version        = try(each.value.customer_managed_key.key_version, null)
+  key_vault_key_id = coalesce(
+    try(each.value.key_vault_key_id, null),
+    try("${local.storage_account_cmk_referenced_key_uris[each.key]}${local.storage_account_cmk_version_suffixes[each.key]}", null),
+    try(format("%s/keys/%s%s",
+      trimsuffix(coalesce(
+        try(local.combined_objects_keyvaults[try(each.value.lz_key, local.client_config.landingzone_key)][each.value.keyvault_key].vault_uri, null),
+        try(data.azapi_resource.storage_account_cmk_vault[each.key].output.properties.vaultUri, null)
+      ), "/"),
+      local.storage_account_cmk_key_names[each.key],
+      local.storage_account_cmk_version_suffixes[each.key]
+    ), null)
+  )
+
+  user_assigned_identity_id    = try(each.value.user_assigned_identity_id, null)
+  federated_identity_client_id = try(each.value.federated_identity_client_id, null)
+
+  dynamic "timeouts" {
+    for_each = try(each.value.timeouts, null) == null ? [] : [each.value.timeouts]
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
+    }
+  }
 }
 
 module "encryption_scopes" {

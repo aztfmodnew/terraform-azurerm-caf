@@ -30,12 +30,12 @@ resource "azurerm_data_factory_linked_service_azure_blob_storage" "linked_servic
     null
   )
 
-  dynamic "key_vault_sas_token" {
-    for_each = try(var.settings.key_vault_sas_token, null) != null ? [var.settings.key_vault_sas_token] : []
+  dynamic "sas_token_linked_key_vault_key" {
+    for_each = try(var.settings.sas_token_linked_key_vault_key, var.settings.key_vault_sas_token, null) == null ? [] : [try(var.settings.sas_token_linked_key_vault_key, var.settings.key_vault_sas_token)]
 
     content {
-      linked_service_name = key_vault_sas_token.value.linked_service_name
-      secret_name         = key_vault_sas_token.value.secret_name
+      linked_service_name = sas_token_linked_key_vault_key.value.linked_service_name
+      secret_name         = sas_token_linked_key_vault_key.value.secret_name
     }
   }
 }

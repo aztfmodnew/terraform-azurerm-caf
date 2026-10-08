@@ -45,8 +45,10 @@ resource "azurerm_storage_account_customer_managed_key" "diasacmk" {
   }
 
   storage_account_id = module.diagnostic_storage_accounts[each.key].id
-  key_vault_id       = module.keyvaults[each.value.customer_managed_key.keyvault_key].id
-  key_name           = module.keyvault_keys[each.value.customer_managed_key.keyvault_key_key].name
+  key_vault_key_id = coalesce(
+    try(each.value.customer_managed_key.key_vault_key_id, null),
+    try(module.keyvault_keys[each.value.customer_managed_key.keyvault_key_key].versionless_id, null)
+  )
 }
 
 module "diagnostic_event_hub_namespaces" {

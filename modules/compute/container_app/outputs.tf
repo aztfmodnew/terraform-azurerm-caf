@@ -2,7 +2,8 @@ output "id" {
   value = azurerm_container_app.ca.id
 }
 output "custom_domain_verification_id" {
-  value = azurerm_container_app.ca.custom_domain_verification_id
+  value     = azurerm_container_app.ca.custom_domain_verification_id
+  sensitive = true
 }
 output "latest_revision_fqdn" {
   value = azurerm_container_app.ca.latest_revision_fqdn
