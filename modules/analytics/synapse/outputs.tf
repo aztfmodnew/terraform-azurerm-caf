@@ -14,6 +14,21 @@ output "managed_resource_group_name" {
   value       = azurerm_synapse_workspace.ws.managed_resource_group_name
 }
 
+output "workspace_firewall" {
+  description = "The legacy single Synapse workspace firewall rule, when configured."
+  value       = azurerm_synapse_firewall_rule.wrkspc_firewall
+}
+
+output "workspace_firewalls" {
+  description = "The Synapse workspace firewall rules configured as a map."
+  value       = azurerm_synapse_firewall_rule.wrkspc_firewalls
+}
+
+output "aad_admin" {
+  description = "The Synapse workspace Microsoft Entra administrator, when configured."
+  value       = azurerm_synapse_workspace_aad_admin.wrkspc_aad_admin
+}
+
 output "identity" {
   description = "An identity block which contains the Managed Service Identity information for this Synapse Workspace. - type - The Identity Type for the Service Principal associated with the Managed Service Identity of this Synapse Workspace. principal_id - The Principal ID for the Service Principal associated with the Managed Service Identity of this Synapse Workspace. tenant_id - The Tenant ID for the Service Principal associated with the Managed Service Identity of this Synapse Workspace."
   value       = azurerm_synapse_workspace.ws.identity
