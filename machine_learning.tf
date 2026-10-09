@@ -2,10 +2,16 @@ module "machine_learning_workspaces" {
   source   = "./modules/analytics/machine_learning"
   for_each = local.database.machine_learning_workspaces
 
-  client_config           = local.client_config
-  resource_groups         = local.combined_objects_resource_groups
-  global_settings         = local.global_settings
-  settings                = each.value
+  client_config     = local.client_config
+  resource_groups   = local.combined_objects_resource_groups
+  global_settings   = local.global_settings
+  settings          = each.value
+  diagnostics       = local.combined_diagnostics
+  private_dns       = local.combined_objects_private_dns
+  private_endpoints = coalesce(try(each.value.private_endpoints, null), {})
+  remote_objects = {
+    managed_identities = local.combined_objects_managed_identities
+  }
   vnets                   = local.combined_objects_networking
   storage_account_id      = can(each.value.storage_account_key) ? try(module.storage_accounts[each.value.storage_account_key].id, null) : null
   keyvault_id             = can(each.value.keyvault_key) ? try(module.keyvaults[each.value.keyvault_key].id, null) : null
