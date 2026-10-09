@@ -32,14 +32,11 @@ databricks_workspaces = {
 
     custom_parameters = {
       no_public_ip = false
+      machine_learning_workspace = {
+        key = "ml_workspace_re1"
+      }
     }
 
-    #bug opened on https://github.com/hashicorp/terraform-provider-azurerm/issues/13086
-    machine_learning = {
-      #id = "optional"
-      key = "ml_workspace_re1"
-      #lz_key = "optional"
-    }
   }
 }
 

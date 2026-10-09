@@ -33,7 +33,6 @@ databricks_workspaces = {
     name                                  = "sales_workspace"
     resource_group_key                    = "databricks_re1"
     sku                                   = "premium"
-    private_endpoint_network_policies     = "Enabled"
     network_security_group_rules_required = "NoAzureDatabricksRules"
     tags = {
       ws = "ws"
