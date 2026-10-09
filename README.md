@@ -38,6 +38,22 @@ The full documentation for all modules, usage, and dependency diagrams is publis
 
 - **[CAF Terraform Documentation (MkDocs)](https://aztfmodnew.github.io/terraform-azurerm-caf/)**
 
+### AzAPI root settings
+
+AzAPI configuration and version constraints are centralized in the root;
+modules using AzAPI declare only its `azure/azapi` source requirement.
+
+VNet peerings retain direct IDs and CAF key references. Optional
+`peer_complete_vnets`, `enable_only_ipv6_peering`, local/remote subnet names,
+address spaces (including IPAM pool prefixes), BGP communities, peering state
+and sync level, and CRUD timeouts are supported. Existing defaults are unchanged.
+See the [peering example](examples/networking/virtual_network/103-vnet-peering-v1/configuration.tfvars).
+
+Storage CMK vault lookups retain direct, name-based, remote landing-zone and
+sovereign-cloud resolution. `customer_managed_key.vault_lookup_timeouts.read`
+optionally controls the ARM vault lookup; `properties.vaultUri` remains its
+exported endpoint.
+
 Every merge to the `main` branch automatically updates the documentation site.
 
 ---

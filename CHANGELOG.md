@@ -1,3 +1,28 @@
+# Unreleased
+
+## Features and fixes
+
+- Update all active AzAPI module contracts to verified stable APIs, retaining
+  the root AzAPI declaration and upgrading its version constraint to `~> 2.13.0`.
+- Retain source-only AzAPI requirements in modules that directly use the provider,
+  with version constraints and provider configuration centralized at the root.
+- Complete network security perimeter profiles, rules, associations, links,
+  logging configuration, outputs and timeouts; read Azure-created link references
+  through data sources and preserve existing remote references during state migration.
+- Extend ARO identity and network settings, web-test validation, private DNS
+  resolution policy, invoice-section properties, SQL restore/retention options,
+  secret metadata, failover policy and VNet peering properties.
+- Fix managed database output and destroy-provisioner access for AzAPI v2 object
+  outputs, omitted failover-policy defaults, and legacy billing tag mapping.
+- Reuse existing scenarios, shared mock runner and mock-data file with
+  AzAPI/external mocks, update existing examples, and document API
+  selection and compatibility in module documentation. Add reusable AzAPI
+  schema-validation and testing guidance to existing instructions and skills.
+- Organize existing focused provider-compatibility and Event Grid tests under
+  `examples/tests/unit/<category>/<module>`, preserving assertions and keeping
+  shared scenario runners, mock data and pipelines unchanged by the relocation.
+  Use plan-time mock outputs for ASE contracts instead of executing mock applies.
+
 # [5.0.0](https://github.com/aztfmodnew/terraform-azurerm-caf/compare/4.52.6...5.0.0) (2026-10-08)
 
 ## What's Changed
