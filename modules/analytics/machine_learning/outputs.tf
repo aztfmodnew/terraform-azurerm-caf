@@ -4,15 +4,26 @@ output "id" {
 }
 
 output "name" {
-  description = "Name of the Machine Learning Workspac."
+  description = "Name of the Machine Learning Workspace."
   value       = azurerm_machine_learning_workspace.ws.name
 }
 
 output "identity" {
-  description = "An identity block exports the following: - principal_id: The (Client) ID of the Service Principal, -tenant_id: The ID of the Tenant the Service Principal is assigned in."
+  description = "The managed identity block exported by the Machine Learning Workspace."
   value       = azurerm_machine_learning_workspace.ws.identity
 }
 
 output "rbac_id" {
-  value = azurerm_machine_learning_workspace.ws.identity[0].principal_id
+  description = "The system-assigned identity principal ID, when present."
+  value       = try(azurerm_machine_learning_workspace.ws.identity[0].principal_id, null)
+}
+
+output "workspace_id" {
+  description = "The immutable ID associated with the Machine Learning Workspace."
+  value       = azurerm_machine_learning_workspace.ws.workspace_id
+}
+
+output "discovery_url" {
+  description = "The discovery service URL for the Machine Learning Workspace."
+  value       = azurerm_machine_learning_workspace.ws.discovery_url
 }
