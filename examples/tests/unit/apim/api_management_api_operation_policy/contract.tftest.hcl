@@ -1,0 +1,112 @@
+mock_provider "azurerm" {}
+
+run "operation_policy_with_direct_operation_id" {
+  command = plan
+
+  module {
+    source = "../modules/apim/api_management_api_operation_policy"
+  }
+
+  variables {
+    global_settings     = {}
+    client_config       = { landingzone_key = "local" }
+    remote_objects      = {}
+    api_management_name = "example-apim"
+    api_name            = "example-api"
+    resource_group_name = "example-rg"
+    settings = {
+      api_operation = { id = "sample-operation" }
+      xml_content   = "<policies><inbound /></policies>"
+      timeouts = {
+        create = "40m"
+        read   = "6m"
+        update = "40m"
+        delete = "40m"
+      }
+    }
+  }
+
+  assert {
+    condition     = azurerm_api_management_api_operation_policy.apim.operation_id == "sample-operation"
+    error_message = "The policy must accept a direct API operation identifier."
+  }
+  assert {
+    condition     = azurerm_api_management_api_operation_policy.apim.xml_content == "<policies><inbound /></policies>"
+    error_message = "The policy XML content must be passed to the provider."
+  }
+  assert {
+    condition     = azurerm_api_management_api_operation_policy.apim.timeouts.update == "40m"
+    error_message = "The API operation policy timeouts must be passed to the provider."
+  }
+}
+
+run "operation_policy_with_local_operation_key_and_xml_link" {
+  command = plan
+
+  module {
+    source = "../modules/apim/api_management_api_operation_policy"
+  }
+
+  variables {
+    global_settings = {}
+    client_config   = { landingzone_key = "local" }
+    remote_objects = {
+      api_management_api_operation = {
+        local = {
+          sample = { id = "resolved-operation" }
+        }
+      }
+    }
+    api_management_name = "example-apim"
+    api_name            = "example-api"
+    resource_group_name = "example-rg"
+    settings = {
+      api_operation = { key = "sample" }
+      xml_link      = "https://example.com/policy.xml"
+    }
+  }
+
+  assert {
+    condition     = azurerm_api_management_api_operation_policy.apim.operation_id == "resolved-operation"
+    error_message = "The policy must resolve a local operation key through remote_objects."
+  }
+  assert {
+    condition     = azurerm_api_management_api_operation_policy.apim.xml_link == "https://example.com/policy.xml"
+    error_message = "The policy XML link must be passed to the provider."
+  }
+}
+
+run "operation_policy_with_remote_operation_key" {
+  command = plan
+
+  module {
+    source = "../modules/apim/api_management_api_operation_policy"
+  }
+
+  variables {
+    global_settings = {}
+    client_config   = { landingzone_key = "local" }
+    remote_objects = {
+      api_management_api_operation = {
+        remote = {
+          sample = { id = "remote-operation" }
+        }
+      }
+    }
+    api_management_name = "example-apim"
+    api_name            = "example-api"
+    resource_group_name = "example-rg"
+    settings = {
+      api_operation = {
+        key    = "sample"
+        lz_key = "remote"
+      }
+      xml_content = "<policies><outbound /></policies>"
+    }
+  }
+
+  assert {
+    condition     = azurerm_api_management_api_operation_policy.apim.operation_id == "remote-operation"
+    error_message = "The policy must resolve an operation key from the configured landing zone."
+  }
+}
