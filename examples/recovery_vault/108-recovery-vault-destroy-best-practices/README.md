@@ -62,7 +62,6 @@ The focused compatibility test accepts omitted/true legacy settings and
 expects a failure for `soft_delete_enabled = false`:
 
 ```bash
-terraform -chdir=examples init -backend=false -test-directory=tests/azurerm_5_8
-terraform -chdir=examples test -test-directory=tests/azurerm_5_8 \
-  -filter=tests/azurerm_5_8/recovery_vault.tftest.hcl -no-color
+terraform -chdir=examples init -backend=false -test-directory=tests/unit/recovery_services/recovery_vault
+terraform -chdir=examples test -test-directory=tests/unit/recovery_services/recovery_vault -no-color
 ```

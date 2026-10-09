@@ -74,6 +74,10 @@ mssql_managed_instances = {
       subnet_key = "sqlmi1"
     }
     keyvault_key = "sqlmi_rg1"
+    administrator_password_secret = {
+      content_type = "text/plain"
+      timeouts     = { create = "15m" }
+    }
 
     storageSizeInGB = 32
     vCores          = 8
@@ -98,6 +102,7 @@ mssql_managed_databases = {
     resource_group_key = "sqlmi_region1"
     name               = "lz-sql-managed-db1"
     mi_server_key      = "sqlmi1"
+    timeouts           = { create = "1h" }
   }
   managed_db2 = {
     resource_group_key = "sqlmi_region1"
@@ -112,10 +117,12 @@ mssql_managed_databases_backup_ltr = {
     mi_server_key      = "sqlmi1"
     database_key       = "managed_db1"
 
-    weeklyRetention  = "P12W"
-    monthlyRetention = "P12M"
-    yearlyRetention  = "P5Y"
-    weekOfYear       = 16
+    weeklyRetention         = "P12W"
+    monthlyRetention        = "P12M"
+    yearlyRetention         = "P5Y"
+    weekOfYear              = 16
+    backupStorageAccessTier = "Hot"
+    timeouts                = { update = "15m" }
   }
 }
 

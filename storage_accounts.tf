@@ -77,9 +77,15 @@ data "azapi_resource" "storage_account_cmk_vault" {
     )
   }
 
-  type                   = "Microsoft.KeyVault/vaults@2024-11-01"
+  type                   = "Microsoft.KeyVault/vaults@2025-05-01"
   resource_id            = local.combined_objects_keyvaults[try(each.value.lz_key, local.client_config.landingzone_key)][each.value.keyvault_key].id
   response_export_values = ["properties.vaultUri"]
+  dynamic "timeouts" {
+    for_each = try(each.value.vault_lookup_timeouts, null) == null ? [] : [each.value.vault_lookup_timeouts]
+    content {
+      read = try(timeouts.value.read, null)
+    }
+  }
 }
 
 resource "azurerm_storage_account_customer_managed_key" "cmk" {

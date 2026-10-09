@@ -58,20 +58,34 @@ resource "azurerm_key_vault_secret" "sqlmi_admin_password" {
 resource "azapi_resource" "sqlmi_admin_password" {
   count = try(var.settings.administratorLoginPassword, null) == null ? 1 : 0
 
-  type      = "Microsoft.KeyVault/vaults/secrets@2021-11-01-preview"
-  name      = format("%s-password-v1", azurecaf_name.mssqlmi.result)
-  parent_id = var.keyvault.id
+  type                 = "Microsoft.KeyVault/vaults/secrets@2025-05-01"
+  name                 = format("%s-password-v1", azurecaf_name.mssqlmi.result)
+  parent_id            = var.keyvault.id
+  ignore_null_property = true
+  tags                 = try(var.settings.administrator_password_secret.tags, null)
 
   body = {
     properties = {
       attributes = {
-        enabled = true
+        enabled = try(var.settings.administrator_password_secret.enabled, true)
+        exp     = try(var.settings.administrator_password_secret.expiration_date, null)
+        nbf     = try(var.settings.administrator_password_secret.not_before_date, null)
       }
-      value = random_password.sqlmi_admin.0.result
+      contentType = try(var.settings.administrator_password_secret.content_type, null)
+      value       = random_password.sqlmi_admin.0.result
     }
   }
 
   ignore_missing_property = true
+  dynamic "timeouts" {
+    for_each = try(var.settings.administrator_password_secret.timeouts, null) == null ? [] : [var.settings.administrator_password_secret.timeouts]
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
+    }
+  }
 }
 
 data "external" "sqlmi_admin_password" {
@@ -92,7 +106,13 @@ data "azapi_resource" "mssqlmi" {
 
   name      = azurecaf_name.mssqlmi.result
   parent_id = local.parent_id
-  type      = "Microsoft.Sql/managedInstances@2021-11-01"
+  type      = "Microsoft.Sql/managedInstances@2025-01-01"
+  dynamic "timeouts" {
+    for_each = try(var.settings.managed_instance_lookup_timeouts, null) == null ? [] : [var.settings.managed_instance_lookup_timeouts]
+    content {
+      read = try(timeouts.value.read, null)
+    }
+  }
 }
 
 locals {

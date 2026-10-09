@@ -23,7 +23,7 @@ variable "combined_resources" {
 }
 variable "global_settings" {}
 variable "settings" {
-  description = "The settings for the Azure resource."
+  description = "OpenShift cluster settings, including existing profiles, optional identity and platform_workload_identity_profile, outbound/load-balancer network settings, and CRUD timeouts. Identity references resolve through combined_resources.managed_identities. See docs/AZAPI_MODULES.md."
   type        = any
 }
 variable "dynamic_keyvault_secrets" {

@@ -235,9 +235,10 @@ resource "azapi_resource" "virtualNetworkPeerings" {
   depends_on = [module.networking]
   for_each   = local.networking.vnet_peerings_v1
 
-  type      = "Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2021-05-01"
-  name      = each.value.name
-  parent_id = can(each.value.from.id) ? each.value.from.id : local.combined_objects_networking[try(each.value.from.lz_key, local.client_config.landingzone_key)][each.value.from.vnet_key].id
+  type                 = "Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2025-07-01"
+  name                 = each.value.name
+  parent_id            = can(each.value.from.id) ? each.value.from.id : local.combined_objects_networking[try(each.value.from.lz_key, local.client_config.landingzone_key)][each.value.from.vnet_key].id
+  ignore_null_property = true
 
   body = {
     properties = {
@@ -246,12 +247,66 @@ resource "azapi_resource" "virtualNetworkPeerings" {
       allowVirtualNetworkAccess = try(each.value.allow_virtual_network_access, true)
       doNotVerifyRemoteGateways = try(each.value.do_not_verify_remote_gateways, false)
       useRemoteGateways         = try(each.value.use_remote_gateways, false)
+      peerCompleteVnets         = try(each.value.peer_complete_vnets, null)
+      enableOnlyIPv6Peering     = try(each.value.enable_only_ipv6_peering, null)
+      localSubnetNames          = try(each.value.local_subnet_names, null)
+      remoteSubnetNames         = try(each.value.remote_subnet_names, null)
+      peeringState              = try(each.value.peering_state, null)
+      peeringSyncLevel          = try(each.value.peering_sync_level, null)
+      localAddressSpace = try(each.value.local_address_space, null) == null ? null : {
+        addressPrefixes = try(each.value.local_address_space.address_prefixes, null)
+        ipamPoolPrefixAllocations = try(each.value.local_address_space.ipam_pool_prefix_allocations, null) == null ? null : [
+          for allocation in each.value.local_address_space.ipam_pool_prefix_allocations : {
+            numberOfIpAddresses = allocation.number_of_ip_addresses
+            pool                = { id = allocation.pool_id }
+          }
+        ]
+      }
+      localVirtualNetworkAddressSpace = try(each.value.local_virtual_network_address_space, null) == null ? null : {
+        addressPrefixes = try(each.value.local_virtual_network_address_space.address_prefixes, null)
+        ipamPoolPrefixAllocations = try(each.value.local_virtual_network_address_space.ipam_pool_prefix_allocations, null) == null ? null : [
+          for allocation in each.value.local_virtual_network_address_space.ipam_pool_prefix_allocations : {
+            numberOfIpAddresses = allocation.number_of_ip_addresses
+            pool                = { id = allocation.pool_id }
+          }
+        ]
+      }
+      remoteAddressSpace = try(each.value.remote_address_space, null) == null ? null : {
+        addressPrefixes = try(each.value.remote_address_space.address_prefixes, null)
+        ipamPoolPrefixAllocations = try(each.value.remote_address_space.ipam_pool_prefix_allocations, null) == null ? null : [
+          for allocation in each.value.remote_address_space.ipam_pool_prefix_allocations : {
+            numberOfIpAddresses = allocation.number_of_ip_addresses
+            pool                = { id = allocation.pool_id }
+          }
+        ]
+      }
+      remoteVirtualNetworkAddressSpace = try(each.value.remote_virtual_network_address_space, null) == null ? null : {
+        addressPrefixes = try(each.value.remote_virtual_network_address_space.address_prefixes, null)
+        ipamPoolPrefixAllocations = try(each.value.remote_virtual_network_address_space.ipam_pool_prefix_allocations, null) == null ? null : [
+          for allocation in each.value.remote_virtual_network_address_space.ipam_pool_prefix_allocations : {
+            numberOfIpAddresses = allocation.number_of_ip_addresses
+            pool                = { id = allocation.pool_id }
+          }
+        ]
+      }
+      remoteBgpCommunities = try(each.value.remote_bgp_communities, null) == null ? null : {
+        virtualNetworkCommunity = each.value.remote_bgp_communities.virtual_network_community
+      }
       remoteVirtualNetwork = {
         id = can(each.value.to.remote_virtual_network_id) || can(each.value.to.id) ? try(each.value.to.remote_virtual_network_id, each.value.to.id) : local.combined_objects_networking[try(each.value.to.lz_key, local.client_config.landingzone_key)][each.value.to.vnet_key].id
       }
     }
   }
 
+  dynamic "timeouts" {
+    for_each = try(each.value.timeouts, null) == null ? [] : [each.value.timeouts]
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
+    }
+  }
 }
 
 #

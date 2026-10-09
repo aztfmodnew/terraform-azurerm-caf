@@ -9,12 +9,14 @@ data "azurecaf_name" "appiwt" {
 }
 
 resource "azapi_resource" "appiwt" {
-  type      = "Microsoft.Insights/webtests@2022-06-15"
-  name      = data.azurecaf_name.appiwt.result
-  tags      = local.tags
-  parent_id = var.resource_group_id
-  location  = var.location
+  type                 = "Microsoft.Insights/webtests@2022-06-15"
+  name                 = data.azurecaf_name.appiwt.result
+  tags                 = local.tags
+  parent_id            = var.resource_group_id
+  location             = var.location
+  ignore_null_property = true
   body = {
+    kind = "standard"
     properties = {
       Kind               = "standard"
       Name               = var.name
@@ -25,6 +27,9 @@ resource "azapi_resource" "appiwt" {
       Timeout            = try(var.settings.timeout, 30)
       RetryEnabled       = try(var.settings.retry_enabled, true)
       Locations          = [for location in var.settings.geo_locations : { Id = location }]
+      Configuration = try(var.settings.configuration.web_test, null) == null ? null : {
+        WebTest = var.settings.configuration.web_test
+      }
 
       Request = {
         RequestUrl             = var.settings.request_url
@@ -36,10 +41,20 @@ resource "azapi_resource" "appiwt" {
       }
       ValidationRules = {
         ExpectedHttpStatusCode        = try(var.settings.expected_http_status_code, 200)
+        IgnoreHttpStatusCode          = try(var.settings.ignore_http_status_code, null)
         ContentValidation             = try(var.settings.content_validation, null)
         SSLCheck                      = try(var.settings.ssl_check_enabled, false)
         SSLCertRemainingLifetimeCheck = try(var.settings.ssl_cert_remaining_lifetime_check, null)
       }
+    }
+  }
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
     }
   }
 }

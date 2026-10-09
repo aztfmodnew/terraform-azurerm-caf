@@ -13,6 +13,7 @@ variable "private_dns" {
 }
 
 variable "settings" {
+  description = "Private DNS link settings. Each private_dns_zones entry accepts resolution_policy (Default or NxDomainRedirect), registration_enabled, and CRUD timeouts; settings.timeouts is the fallback. Existing ID and CAF key references remain supported."
 }
 
 variable "inherit_tags" {

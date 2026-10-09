@@ -1,5 +1,7 @@
 variable "virtual_machine_id" {}
-variable "extension" {}
+variable "extension" {
+  description = "Extension configuration. instance_view_timeouts.read optionally controls the read-only VM status lookup; existing extension settings are unchanged."
+}
 variable "extension_name" {}
 variable "settings" {
   default = {}

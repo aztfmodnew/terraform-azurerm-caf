@@ -16,6 +16,7 @@ variable "source_database_id" {
   default = null
 }
 variable "settings" {
+  description = "Managed database restore settings with snake_case properties, cross-subscription IDs, storage identity and ledger options. Existing short_term_retention_days is required. Optional timeouts apply to the database, short_term_retention_timeouts to STR, and long_term_retention_policy.timeouts to LTR. See docs/AZAPI_MODULES.md."
   validation {
     condition = alltrue(
       [
@@ -30,6 +31,8 @@ variable "settings" {
             "name",
             "properties",
             "short_term_retention_days",
+            "short_term_retention_timeouts",
+            "timeouts",
             "tags",
             "version",
             "use_legacy_slug"
@@ -50,6 +53,8 @@ variable "settings" {
           "name",
           "properties",
           "short_term_retention_days",
+          "short_term_retention_timeouts",
+          "timeouts",
           "tags",
           "version",
           "use_legacy_slug"

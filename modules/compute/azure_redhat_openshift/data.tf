@@ -1,12 +1,12 @@
 ## getting SP details from for AKV secrets in case provided
 data "azurerm_key_vault_secret" "id" {
-  count        = can(var.settings.service_principal.client_id) ? 0 : 1
+  count        = local.use_service_principal && !can(var.settings.service_principal.client_id) ? 1 : 0
   name         = format("%s-client-id", var.settings.service_principal.keyvault.secret_prefix)
   key_vault_id = var.combined_resources.keyvaults[try(var.settings.service_principal.keyvault.lz_key, var.client_config.landingzone_key)][var.settings.service_principal.keyvault.key].id
 }
 
 data "azurerm_key_vault_secret" "password" {
-  count        = can(var.settings.service_principal.client_secret) ? 0 : 1
+  count        = local.use_service_principal && !can(var.settings.service_principal.client_secret) ? 1 : 0
   name         = format("%s-client-secret", var.settings.service_principal.keyvault.secret_prefix)
   key_vault_id = var.combined_resources.keyvaults[try(var.settings.service_principal.keyvault.lz_key, var.client_config.landingzone_key)][var.settings.service_principal.keyvault.key].id
 }

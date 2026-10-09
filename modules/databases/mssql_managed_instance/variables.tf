@@ -7,7 +7,7 @@ variable "client_config" {
   type        = any
 }
 variable "settings" {
-  description = "The settings for the Azure resource."
+  description = "Legacy managed-instance settings, with optional administrator_password_secret metadata and CRUD timeouts, plus managed_instance_lookup_timeouts.read. Secret expiration_date and not_before_date use Unix timestamps. See docs/AZAPI_MODULES.md."
   type        = any
 }
 variable "base_tags" {

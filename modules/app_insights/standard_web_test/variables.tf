@@ -31,7 +31,7 @@ variable "base_tags" {
 }
 
 variable "settings" {
-  description = "Settings object for the Application Insights WebTest."
+  description = "Standard WebTest settings, including request/validation options, raw ARM content_validation, ignore_http_status_code, optional configuration.web_test XML, and CRUD timeouts. See docs/AZAPI_MODULES.md for the full contract."
   type        = any
   default     = {}
 }

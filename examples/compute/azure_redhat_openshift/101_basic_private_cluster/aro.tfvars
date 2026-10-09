@@ -1,5 +1,6 @@
 global_settings = {
   default_region = "region1"
+  random_length  = 5
   regions = {
     region1 = "westeurope"
     region2 = "northeurope"
@@ -92,9 +93,14 @@ aro_clusters = {
     ]
 
     network_profile = {
-      pod_cidr     = "10.128.0.0/14"
-      service_cidr = "172.30.0.0/16"
+      pod_cidr      = "10.128.0.0/14"
+      service_cidr  = "172.30.0.0/16"
+      outbound_type = "Loadbalancer"
+      load_balancer_profile = {
+        managed_outbound_ips = { count = 1 }
+      }
     }
+    timeouts = { create = "60m", update = "60m" }
 
   }
 }

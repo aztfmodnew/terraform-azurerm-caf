@@ -4,7 +4,7 @@ variable "global_settings" {
 }
 variable "server_name" {}
 variable "settings" {
-  description = "The settings for the Azure resource."
+  description = "Managed database settings retaining the legacy CamelCase ARM parameters, with optional cross-subscription restore/storage/ledger settings, deployment controls, and CRUD timeouts. See docs/AZAPI_MODULES.md."
   type        = any
 }
 variable "base_tags" {

@@ -13,7 +13,7 @@ resource "azurecaf_name" "pnetlk" {
 resource "azapi_resource" "vnet_links" {
   for_each = var.settings.private_dns_zones
 
-  type      = "Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01"
+  type      = "Microsoft.Network/privateDnsZones/virtualNetworkLinks@2024-06-01"
   name      = azurecaf_name.pnetlk[each.key].result
   location  = "Global"
   parent_id = can(each.value.id) || can(each.value.dns_parent_id) ? try(each.value.id, each.value.dns_parent_id) : var.private_dns[try(each.value.lz_key, var.client_config.landingzone_key)][each.value.key].id
@@ -27,9 +27,19 @@ resource "azapi_resource" "vnet_links" {
   body = {
     properties = {
       registrationEnabled = try(each.value.registration_enabled, false)
+      resolutionPolicy    = try(each.value.resolution_policy, "Default")
       virtualNetwork = {
         id = var.virtual_network_id
       }
+    }
+  }
+  dynamic "timeouts" {
+    for_each = try(each.value.timeouts, var.settings.timeouts, null) == null ? [] : [try(each.value.timeouts, var.settings.timeouts)]
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
     }
   }
 }

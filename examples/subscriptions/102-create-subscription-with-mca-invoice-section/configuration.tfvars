@@ -1,5 +1,6 @@
 global_settings = {
   default_region = "region1"
+  random_length  = 5
   regions = {
     region1 = "eastus"
   }
@@ -30,6 +31,9 @@ subscriptions = {
 invoice_sections = {
   section_1 = {
     name               = "sandbox-automation-invoice-section"
+    display_name       = "Sandbox automation"
+    state              = "Active"
+    timeouts           = { create = "15m" }
     billing_account_id = "0000000-0000-0000-0000-0000000:000000-000000-000000-000000-000000_2019-05-31"
     billing_profile_id = "XXXX-XXXX-XXX-XXX"
     labels = {

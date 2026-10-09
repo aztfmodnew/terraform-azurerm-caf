@@ -34,6 +34,11 @@ variable "settings" {
       - billing_profile_id - (Required) The billing profile ID for this invoice section.
       - labels - (Optional) Labels to attach to the invoice section.
       - tags - (Optional) Tags to assign to the invoice section.
+      - display_name - (Optional) Display name; defaults to name.
+      - state - (Optional) Invoice section state.
+      - reason_code - (Optional) Restricted-state reason.
+      - target_cloud - (Optional) Target cloud.
+      - timeouts - (Optional) Create, read, update, and delete durations.
     DESCRIPTION
   type = object({
     name               = string
@@ -41,9 +46,19 @@ variable "settings" {
     billing_profile_id = string
     labels             = optional(map(string))
     tags               = optional(map(string))
+    display_name       = optional(string)
+    state              = optional(string)
+    reason_code        = optional(string)
+    target_cloud       = optional(string)
+    timeouts = optional(object({
+      create = optional(string)
+      read   = optional(string)
+      update = optional(string)
+      delete = optional(string)
+    }))
   })
   validation {
-    condition     = length(setsubtract(keys(var.settings), ["name", "billing_account_id", "billing_profile_id", "labels", "tags"])) == 0
-    error_message = "Unsupported attributes in settings. Allowed: name, billing_account_id, billing_profile_id, labels, tags."
+    condition     = length(setsubtract(keys(var.settings), ["name", "billing_account_id", "billing_profile_id", "labels", "tags", "display_name", "state", "reason_code", "target_cloud", "timeouts"])) == 0
+    error_message = "Unsupported invoice section setting. See the documented settings contract."
   }
 }

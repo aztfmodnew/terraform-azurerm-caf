@@ -1,5 +1,5 @@
 variable "database_id" {}
 variable "settings" {
-  description = "The settings for the Azure resource."
+  description = "LTR settings: weeklyRetention, monthlyRetention, yearlyRetention, weekOfYear, optional backupStorageAccessTier, and optional create/read/update/delete timeouts."
   type        = any
 }

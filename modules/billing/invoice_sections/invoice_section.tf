@@ -3,17 +3,28 @@
 
 resource "azapi_resource" "invoice_section" {
   name      = var.settings.name
-  type      = "Microsoft.Billing/billingAccounts/billingProfiles/invoiceSections@2020-05-01"
+  type      = "Microsoft.Billing/billingAccounts/billingProfiles/invoiceSections@2024-04-01"
   parent_id = "/providers/Microsoft.Billing/billingAccounts/${var.settings.billing_account_id}/billingProfiles/${var.settings.billing_profile_id}"
 
-  schema_validation_enabled = false
+  ignore_null_property = true
 
   body = {
     properties = {
-      labels      = try(var.settings.labels, {})
-      displayName = var.settings.name
+      tags        = merge(local.tags, var.settings.labels, var.settings.tags)
+      displayName = coalesce(var.settings.display_name, var.settings.name)
+      state       = try(var.settings.state, null)
+      reasonCode  = try(var.settings.reason_code, null)
+      targetCloud = try(var.settings.target_cloud, null)
     }
   }
 
-  tags = local.tags
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
+    }
+  }
 }
