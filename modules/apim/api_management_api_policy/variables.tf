@@ -7,7 +7,52 @@ variable "client_config" {
   type        = any
 }
 variable "settings" {
-  description = "(Required) Used to handle passthrough paramenters."
+  description = <<DESCRIPTION
+    Settings for the API Management API policy.
+
+    Optional attributes:
+      - api - API reference retained for compatibility with the root configuration.
+      - api_management - API Management service reference retained for compatibility with the root configuration.
+      - resource_group - Resource group reference retained for compatibility with the root configuration.
+      - xml_content - XML content for the policy.
+      - xml_link - Publicly available link to a policy XML document.
+      - timeouts - Create, read, update, and delete operation timeouts.
+  DESCRIPTION
+  type = object({
+    api = optional(object({
+      id     = optional(string)
+      key    = optional(string)
+      lz_key = optional(string)
+      name   = optional(string)
+    }))
+    api_management = optional(object({
+      id     = optional(string)
+      key    = optional(string)
+      lz_key = optional(string)
+      name   = optional(string)
+    }))
+    resource_group = optional(object({
+      id     = optional(string)
+      key    = optional(string)
+      lz_key = optional(string)
+      name   = optional(string)
+    }))
+    xml_content = optional(string)
+    xml_link    = optional(string)
+    timeouts = optional(object({
+      create = optional(string)
+      read   = optional(string)
+      update = optional(string)
+      delete = optional(string)
+    }))
+  })
+
+  validation {
+    condition = length(setsubtract(keys(var.settings), [
+      "api", "api_management", "resource_group", "xml_content", "xml_link", "timeouts"
+    ])) == 0
+    error_message = "Unsupported attributes in settings. Allowed: api, api_management, resource_group, xml_content, xml_link, timeouts."
+  }
 }
 variable "remote_objects" {
   description = "Remote objects configuration."
