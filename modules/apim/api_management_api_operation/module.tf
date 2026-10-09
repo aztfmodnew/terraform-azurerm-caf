@@ -202,10 +202,14 @@ resource "azurerm_api_management_api_operation" "apim" {
     }
   }
 
-  lifecycle {
-    precondition {
-      condition     = contains(["GET", "DELETE", "PUT", "POST"], var.settings.method)
-      error_message = format("Enter a valid value for method: GET, DELETE, PUT, POST. Got: %s", var.settings.method)
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
     }
   }
 
