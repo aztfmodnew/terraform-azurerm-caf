@@ -35,9 +35,16 @@ module "machine_learning_compute_instance" {
   location        = can(local.global_settings.regions[each.value.region]) ? local.global_settings.regions[each.value.region] : local.combined_objects_resource_groups[try(each.value.resource_group.lz_key, local.client_config.landingzone_key)][try(each.value.resource_group.key, each.value.resource_group_key)].location
 
   remote_objects = {
-    managed_identities            = local.combined_objects_managed_identities
-    machine_learning_workspace_id = can(each.value.machine_learning_workspace.id) ? each.value.machine_learning_workspace.id : local.combined_objects_machine_learning[try(each.value.machine_learning_workspace.lz_key, local.client_config.landingzone_key)][each.value.machine_learning_workspace.key].id
-    subnet_resource_id            = can(each.value.subnet.id) ? each.value.subnet.id : local.combined_objects_networking[try(each.value.subnet.lz_key, local.client_config.landingzone_key)][each.value.subnet.vnet_key].subnets[each.value.subnet.key].id
+    managed_identities = local.combined_objects_managed_identities
+    machine_learning_workspace_id = try(coalesce(
+      try(each.value.machine_learning_workspace.id, null),
+      try(local.combined_objects_machine_learning[try(each.value.machine_learning_workspace.lz_key, local.client_config.landingzone_key)][each.value.machine_learning_workspace.key].id, null)
+    ), null)
+    subnet_resource_id = try(coalesce(
+      try(each.value.subnet_resource_id, null),
+      try(each.value.subnet.id, null),
+      try(local.combined_objects_networking[try(each.value.subnet.lz_key, local.client_config.landingzone_key)][each.value.subnet.vnet_key].subnets[each.value.subnet.key].id, null)
+    ), null)
   }
 }
 output "machine_learning_compute_instance" {
