@@ -18,7 +18,7 @@ network_security_perimeters = {
       access_profile1_rule1 = {
         profile_key      = "profile1"
         name             = "ip_address_prefix_example"
-        address_prefixes = ["198.168.99.0/24"]
+        address_prefixes = ["203.0.113.0/24"]
         direction        = "Inbound"
       }
       access_profile1_rule2 = {
@@ -54,7 +54,7 @@ network_security_perimeters = {
     resource_associations = {
       assoc1 = {
         name = "assoc1"
-        # Audit(not supported at 12/12/2024), Enforced, Learning
+        # Start in Learning mode before enforcing the perimeter.
         access_mode = "Learning"
         # The PaaS id resource to be associated.        
         # private_link_resource_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg1/providers/Microsoft.Storage/storageAccounts/accountname"        
