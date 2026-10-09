@@ -21,3 +21,23 @@ output "workspace_id" {
   value       = azurerm_databricks_workspace.ws.workspace_id
 
 }
+
+output "disk_encryption_set_id" {
+  description = "The ID of the managed disk encryption set created by the Databricks workspace."
+  value       = azurerm_databricks_workspace.ws.disk_encryption_set_id
+}
+
+output "managed_disk_identity" {
+  description = "The managed disk identity used by the Databricks workspace for customer-managed keys."
+  value       = try(azurerm_databricks_workspace.ws.managed_disk_identity[0], null)
+}
+
+output "storage_account_identity" {
+  description = "The storage account identity used by the Databricks workspace for customer-managed keys."
+  value       = try(azurerm_databricks_workspace.ws.storage_account_identity[0], null)
+}
+
+output "root_dbfs_customer_managed_key_id" {
+  description = "The ID of the optional root DBFS customer-managed key configuration."
+  value       = try(azurerm_databricks_workspace_root_dbfs_customer_managed_key.root_dbfs["root_dbfs"].id, null)
+}
