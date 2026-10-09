@@ -12,5 +12,16 @@ resource "azurecaf_name" "apim" {
 resource "azurerm_api_management_api_operation_tag" "apim" {
   api_operation_id = var.api_operation_id
   name             = azurecaf_name.apim.result
-  display_name     = try(var.settings.display_name, null)
+  display_name     = var.settings.display_name
+
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
+    }
+  }
 }
