@@ -27,6 +27,20 @@ mock_provider "azurerm" {
     }
   }
 
+  mock_resource "azurerm_synapse_spark_pool" {
+    override_during = plan
+    defaults = {
+      id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test-rg/providers/Microsoft.Synapse/workspaces/synapse-contract/bigDataPools/spark-contract"
+    }
+  }
+
+  mock_resource "azurerm_synapse_sql_pool" {
+    override_during = plan
+    defaults = {
+      id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test-rg/providers/Microsoft.Synapse/workspaces/synapse-contract/sqlPools/sql-contract"
+    }
+  }
+
   mock_resource "azurerm_key_vault_secret" {
     defaults = {
       id = "https://test-kv.vault.azure.net/secrets/synapse-contract"
@@ -195,6 +209,64 @@ run "workspace_provider_options_and_child_resources" {
         update = "10m"
         delete = "10m"
       }
+      synapse_spark_pools = {
+        spark = {
+          name             = "spark-contract"
+          node_size_family = "MemoryOptimized"
+          node_size        = "XXXLarge"
+          spark_version    = "3.5"
+          auto_scale = {
+            min_node_count = 3
+            max_node_count = 20
+          }
+          auto_pause = {
+            delay_in_minutes = 15
+          }
+          cache_size                          = 100
+          compute_isolation_enabled           = true
+          dynamic_executor_allocation_enabled = true
+          min_executors                       = 2
+          max_executors                       = 8
+          library_requirement = {
+            content  = "requests==2.31.0"
+            filename = "requirements.txt"
+          }
+          session_level_packages_enabled = true
+          spark_config = {
+            content  = "spark.shuffle.spill true"
+            filename = "spark.conf"
+          }
+          spark_log_folder    = "/custom-logs"
+          spark_events_folder = "/custom-events"
+          timeouts = {
+            create = "45m"
+            read   = "7m"
+            update = "45m"
+            delete = "45m"
+          }
+        }
+      }
+      synapse_sql_pools = {
+        sql = {
+          name                 = "sql-contract"
+          sku_name             = "DW500c"
+          storage_account_type = "LRS"
+          create_mode          = "PointInTimeRestore"
+          collation            = "SQL_Latin1_General_CP1_CI_AS"
+          data_encrypted       = true
+          restore = {
+            point_in_time      = "2025-01-01T00:00:00Z"
+            source_database_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test-rg/providers/Microsoft.Synapse/workspaces/source/sqlPools/source"
+          }
+          geo_backup_policy_enabled = false
+          timeouts = {
+            create = "45m"
+            read   = "7m"
+            update = "45m"
+            delete = "45m"
+          }
+        }
+      }
       tags = { owner = "analytics" }
     }
   }
@@ -240,6 +312,20 @@ run "workspace_provider_options_and_child_resources" {
       azurerm_key_vault_secret.sql_admin_password[0].tags.owner == "analytics"
     )
     error_message = "CAF and workspace tags must be applied to the workspace and generated secrets."
+  }
+
+  assert {
+    condition = (
+      module.spark_pool["spark"].spark_pool.cache_size == 100 &&
+      module.spark_pool["spark"].spark_pool.spark_version == "3.5" &&
+      module.spark_pool["spark"].spark_pool.dynamic_executor_allocation_enabled &&
+      module.spark_pool["spark"].spark_pool.library_requirement[0].filename == "requirements.txt" &&
+      module.spark_pool["spark"].spark_pool.spark_config[0].filename == "spark.conf" &&
+      module.sql_pool["sql"].sql_pool.create_mode == "PointInTimeRestore" &&
+      module.sql_pool["sql"].sql_pool.restore[0].source_database_id == "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test-rg/providers/Microsoft.Synapse/workspaces/source/sqlPools/source" &&
+      module.sql_pool["sql"].sql_pool.data_encrypted
+    )
+    error_message = "Synapse Spark and SQL pool provider options must be forwarded and available as outputs."
   }
 }
 
