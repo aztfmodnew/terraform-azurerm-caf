@@ -27,3 +27,9 @@ resource_to_be_created = {
 ```
 
 You can review complete set of examples on the [GitHub repository](https://github.com/aztfmodnew/terraform-azurerm-caf/tree/master/examples/aadb2c).
+
+The `aadb2c_directory` settings accept optional `timeouts` for `create`, `read`,
+`update`, and `delete`. Their provider defaults are 30 minutes, 5 minutes,
+30 minutes, and 30 minutes respectively. The module outputs `id`, `tenant_id`,
+`billing_type`, and `effective_start_date`; the effective date may be unset
+until after the first billing cycle.
