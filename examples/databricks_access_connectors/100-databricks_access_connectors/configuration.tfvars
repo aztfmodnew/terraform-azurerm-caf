@@ -1,5 +1,6 @@
 global_settings = {
   default_region = "region1"
+  random_length  = 5
   regions = {
     region1 = "australiaeast"
   }
@@ -7,7 +8,7 @@ global_settings = {
 
 resource_groups = {
   dac_test = {
-    name = "rg-databricks-access-connectors"
+    name = "databricks-access-connectors"
   }
 }
 
@@ -19,6 +20,12 @@ databricks_access_connectors = {
       type                  = "UserAssigned" #SystemAssigned
       managed_identity_keys = ["dac_test"]
     }
+    timeouts = {
+      create = "45m"
+      read   = "10m"
+      update = "45m"
+      delete = "45m"
+    }
     tags = {
       test  = "test"
       test1 = "test1"
@@ -28,7 +35,7 @@ databricks_access_connectors = {
 
 managed_identities = {
   dac_test = {
-    name               = "mi-dac-test"
+    name               = "dac-test"
     resource_group_key = "dac_test"
   }
 }
