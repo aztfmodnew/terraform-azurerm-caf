@@ -17,3 +17,7 @@ terraform_with_var_files --dir fabric_capacity/100-basic-fabric-capacity --actio
 ```
 
 Replace `plan` with `apply` or `destroy` as needed once validation looks good.
+
+Replace the sample administrator values with existing Entra identities before
+deployment. User administrators use their UPN; service-principal
+administrators use the service principal's object ID, not its display name.

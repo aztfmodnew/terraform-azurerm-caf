@@ -32,5 +32,18 @@ resource "azurerm_fabric_capacity" "fabric_capacity" {
       condition     = local.sku.name != null && trimspace(local.sku.name) != ""
       error_message = "Fabric Capacity requires \"settings.sku.name\" to be specified."
     }
+
+    precondition {
+      condition = contains(
+        ["F2", "F4", "F8", "F16", "F32", "F64", "F128", "F256", "F512", "F1024", "F2048"],
+        local.sku.name
+      )
+      error_message = "Fabric Capacity SKU name must be one of F2, F4, F8, F16, F32, F64, F128, F256, F512, F1024, or F2048."
+    }
+
+    precondition {
+      condition     = coalesce(local.sku.tier, "Fabric") == "Fabric"
+      error_message = "Fabric Capacity supports only the Fabric SKU tier."
+    }
   }
 }
