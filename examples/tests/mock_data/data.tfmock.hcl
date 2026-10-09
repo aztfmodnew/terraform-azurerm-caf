@@ -69,3 +69,41 @@ mock_resource "azurerm_kubernetes_cluster" {
     oidc_issuer_url = "https://mock-oidc-issuer.example.com/"
   }
 }
+
+mock_resource "azapi_resource" {
+  defaults = {
+    output = {
+      properties = {
+        outputs = {
+          id = {
+            value = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Sql/managedInstances/mock-mi/databases/mock-db"
+          }
+        }
+      }
+    }
+  }
+}
+
+mock_data "azapi_resource" {
+  defaults = {
+    output = {
+      properties = {
+        vaultUri = "https://mock-vault.vault.azure.net/"
+      }
+    }
+  }
+}
+
+mock_data "azapi_resource_action" {
+  defaults = {
+    output = {
+      statuses = [{ code = "PowerState/running" }]
+    }
+  }
+}
+
+mock_data "external" {
+  defaults = {
+    result = { value = "mock-value" }
+  }
+}
