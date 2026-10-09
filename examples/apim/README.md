@@ -182,6 +182,32 @@ terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_ba
 This contract verifies Terraform's planned resource configuration only; it
 does not confirm Azure-side acceptance or deploy resources.
 
+## API Management certificate options
+
+Certificates accept either base64-encoded PFX `data` or a Key Vault secret
+reference, but not both. Key Vault certificates and certificate requests can be
+resolved by local or remote landing-zone key; the module also accepts direct
+secret IDs and preserves the legacy `key_vault_id` alias. A user-assigned
+identity can be resolved by key or supplied by client ID. PFX passwords and
+all four provider timeouts are supported. The focused plan-only contract tests
+both certificate source paths, Key Vault identity resolution, source
+exclusivity, and timeouts:
+
+```bash
+terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/api_management_certificate
+terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_certificate -no-color
+```
+
+The shared mock plan for the deployment example requires both input files:
+
+```bash
+terraform -chdir=examples test -test-directory=tests/mock -var-file=./apim/111-api_management_certificate/configuration.tfvars -var-file=./apim/111-api_management_certificate/certificates.tfvars -no-color
+```
+
+This contract verifies Terraform's planned resource configuration only; it
+does not verify the PFX payload, Key Vault access, Azure-side acceptance, or
+deploy resources.
+
 ---
 
 ## Inputs

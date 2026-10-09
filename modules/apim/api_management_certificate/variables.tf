@@ -7,7 +7,87 @@ variable "client_config" {
   type        = any
 }
 variable "settings" {
-  description = "(Required) Used to handle passthrough paramenters."
+  description = <<DESCRIPTION
+    Settings for the API Management certificate.
+
+    Required:
+      - name - CAF naming input for the certificate.
+      - Exactly one certificate source: data, key_vault_secret, key_vault_secret_id, or the legacy key_vault_id alias.
+
+    Optional:
+      - api_management - API Management service reference retained for root configuration compatibility.
+      - resource_group - Resource group reference retained for root configuration compatibility.
+      - data - Base64-encoded PFX certificate data.
+      - password - Password for the PFX certificate.
+      - key_vault_secret - Key-based reference to a managed Key Vault certificate or certificate request.
+      - key_vault_secret_id - Key Vault secret ID containing a PKCS#12 certificate.
+      - key_vault_id - Legacy alias for key_vault_secret_id.
+      - key_vault_identity_client - Managed identity reference used to retrieve the certificate from Key Vault.
+      - key_vault_identity_client_id - Direct client ID for the user-assigned managed identity.
+      - timeouts - Create, read, update, and delete operation timeouts.
+  DESCRIPTION
+  type = object({
+    name = string
+    api_management = optional(object({
+      id     = optional(string)
+      key    = optional(string)
+      lz_key = optional(string)
+      name   = optional(string)
+    }))
+    resource_group = optional(object({
+      id     = optional(string)
+      key    = optional(string)
+      lz_key = optional(string)
+      name   = optional(string)
+    }))
+    data     = optional(string)
+    password = optional(string)
+    key_vault_secret = optional(object({
+      certificate_key         = optional(string)
+      certificate_request_key = optional(string)
+      lz_key                  = optional(string)
+    }))
+    key_vault_secret_id = optional(string)
+    key_vault_id        = optional(string)
+    key_vault_identity_client = optional(object({
+      id     = optional(string)
+      key    = optional(string)
+      lz_key = optional(string)
+    }))
+    key_vault_identity_client_id = optional(string)
+    timeouts = optional(object({
+      create = optional(string)
+      read   = optional(string)
+      update = optional(string)
+      delete = optional(string)
+    }))
+  })
+
+  validation {
+    condition = length(setsubtract(keys(var.settings), [
+      "name", "api_management", "resource_group", "data", "password",
+      "key_vault_secret", "key_vault_secret_id", "key_vault_id",
+      "key_vault_identity_client", "key_vault_identity_client_id", "timeouts"
+    ])) == 0
+    error_message = "Unsupported attributes in settings. See the variable description for the supported API Management certificate settings."
+  }
+
+  validation {
+    condition = (var.settings.data != null) != (
+      var.settings.key_vault_secret != null ||
+      var.settings.key_vault_secret_id != null ||
+      var.settings.key_vault_id != null
+    )
+    error_message = "Specify exactly one API Management certificate source: data, key_vault_secret, key_vault_secret_id, or key_vault_id."
+  }
+
+  validation {
+    condition = var.settings.key_vault_secret == null || (
+      (try(var.settings.key_vault_secret.certificate_key, null) != null) !=
+      (try(var.settings.key_vault_secret.certificate_request_key, null) != null)
+    )
+    error_message = "When key_vault_secret is specified, set exactly one of certificate_key or certificate_request_key."
+  }
 }
 variable "remote_objects" {
   description = "Remote objects configuration."
