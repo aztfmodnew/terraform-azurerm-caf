@@ -81,6 +81,33 @@ acceptance, network reachability, or authentication to the compute instance.
 The schema reference used for this module is
 [AzureRM 5.9.0](https://registry.terraform.io/providers/hashicorp/azurerm/5.9.0/docs/resources/machine_learning_compute_instance).
 
+## Legacy nested compute instance
+
+The workspace `compute_instances` setting remains available for compatibility.
+Its ARM-template deployment accepts the AzureRM `debug_level`, `tags`, and
+create/read/update/delete `timeouts` settings; the existing 10-hour
+create/update/delete and 5-minute read timeout defaults are retained. The
+deployment ID and ARM output content are now exposed through the workspace
+`compute_instances` output. Incremental deployment mode and the bundled ARM
+template remain fixed. Avoid response-content debug logging when deployment
+requests or responses could contain sensitive data. New deployments should use
+the standalone module above.
+
+The opt-in contract at
+`examples/tests/unit/analytics/machine_learning/compute_instance/contract.tftest.hcl`
+checks deployment arguments, tags, output exposure, and compatibility defaults.
+Run it from the repository root:
+
+```sh
+terraform -chdir=examples init -backend=false \
+  -test-directory=tests/unit/analytics/machine_learning/compute_instance
+terraform -chdir=examples test \
+  -test-directory=tests/unit/analytics/machine_learning/compute_instance -no-color
+```
+
+This plan-only contract does not verify ARM template deployment acceptance or
+Azure-side cleanup behavior.
+
 ## Examples and tests
 
 - `100-aml` exercises the existing workspace and legacy compute-instance
