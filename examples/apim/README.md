@@ -133,6 +133,21 @@ terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_ap
 This contract verifies Terraform's planned resource configuration only; it
 does not confirm Azure-side acceptance or deploy resources.
 
+## API Management API operation tag options
+
+API operation tags require a CAF-generated `name`, a `display_name`, and an API
+operation reference. The module exposes all four provider timeouts. Its
+plan-only contract checks the required resource arguments, generated name, and
+timeouts without changing shared mocks or CI workflows:
+
+```bash
+terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/api_management_api_operation_tag
+terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_api_operation_tag -no-color
+```
+
+This contract verifies Terraform's planned resource configuration only; it
+does not confirm Azure-side acceptance or deploy resources.
+
 ---
 
 ## Inputs

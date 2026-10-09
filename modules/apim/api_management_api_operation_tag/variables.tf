@@ -7,7 +7,39 @@ variable "client_config" {
   type        = any
 }
 variable "settings" {
-  description = "(Required) Used to handle passthrough paramenters."
+  description = <<DESCRIPTION
+    Settings for the API Management API operation tag.
+
+    Required attributes:
+      - name - CAF naming input for the API operation tag.
+      - display_name - Display name of the API operation tag.
+
+    Optional attributes:
+      - api_operation - Operation reference retained for compatibility with the root configuration.
+      - timeouts - Create, read, update, and delete operation timeouts.
+  DESCRIPTION
+  type = object({
+    name         = string
+    display_name = string
+    api_operation = optional(object({
+      id     = optional(string)
+      key    = optional(string)
+      lz_key = optional(string)
+    }))
+    timeouts = optional(object({
+      create = optional(string)
+      read   = optional(string)
+      update = optional(string)
+      delete = optional(string)
+    }))
+  })
+
+  validation {
+    condition = length(setsubtract(keys(var.settings), [
+      "name", "display_name", "api_operation", "timeouts"
+    ])) == 0
+    error_message = "Unsupported attributes in settings. Allowed: name, display_name, api_operation, timeouts."
+  }
 }
 variable "remote_objects" {
   description = "Remote objects configuration."
