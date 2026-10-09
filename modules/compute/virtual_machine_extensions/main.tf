@@ -10,11 +10,17 @@ terraform {
 }
 
 data "azapi_resource_action" "azurerm_virtual_machine_status" {
-  type                   = "Microsoft.Compute/virtualMachines@2022-11-01"
+  type                   = "Microsoft.Compute/virtualMachines@2026-03-01"
   resource_id            = var.virtual_machine_id
   action                 = "instanceView"
   method                 = "GET"
   response_export_values = ["statuses"]
+  dynamic "timeouts" {
+    for_each = try(var.extension.instance_view_timeouts, null) == null ? [] : [var.extension.instance_view_timeouts]
+    content {
+      read = try(timeouts.value.read, null)
+    }
+  }
 }
 
 data "azurecaf_environment_variable" "token" {
