@@ -7,10 +7,13 @@ module "synapse_workspaces" {
   client_config                        = local.client_config
   settings                             = each.value
   storage_data_lake_gen2_filesystem_id = can(each.value.storage_data_lake_gen2_filesystem_id) || can(each.value.data_lake_filesystem.container_key) == false ? try(each.value.storage_data_lake_gen2_filesystem_id, null) : local.combined_objects_storage_accounts[try(each.value.lz_key, local.client_config.landingzone_key)][each.value.data_lake_filesystem.storage_account_key].data_lake_filesystems[each.value.data_lake_filesystem.container_key].id
-  keyvault_id                          = try(each.value.sql_administrator_login_password, null) == null ? module.keyvaults[each.value.keyvault_key].id : null
+  keyvault_id                          = try(each.value.sql_administrator_login, null) != null && try(each.value.sql_administrator_login_password, null) == null ? module.keyvaults[each.value.keyvault_key].id : null
   vnets                                = local.combined_objects_networking
   private_dns                          = local.combined_objects_private_dns
   private_endpoints                    = try(each.value.private_endpoints, {})
+  remote_objects = {
+    managed_identities = local.combined_objects_managed_identities
+  }
 
   base_tags           = local.global_settings.inherit_tags
   resource_group      = local.combined_objects_resource_groups[try(each.value.resource_group.lz_key, local.client_config.landingzone_key)][try(each.value.resource_group_key, each.value.resource_group.key)]
