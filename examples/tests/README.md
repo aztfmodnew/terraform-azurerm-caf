@@ -65,6 +65,14 @@ the root module.
   relevant mock rather than applying resources.
 - Preserve legacy inputs, precedence tests and `expect_failures` when relocating
   suites. Do not replace assertions with plan-success checks.
+- Exercise each validation separately from an otherwise valid fixture, including
+  valid boundary cases. An `expect_failures = [var.settings]` run can pass for
+  any failed validation on that variable, so combining several invalid settings
+  does not establish coverage of each rule.
+- For typed optional inputs, test omission, explicit null and explicit values
+  where defaulting or precedence matters. Do not assume the mocked provider
+  executes real provider defaulting; assert module defaults or null passthrough
+  according to the intended contract.
 - Document purpose, coverage limits, prerequisites and the exact local command
   in the module README. These suites are opt-in local checks; organizing them
   does not add them to existing CI or change pipeline selection.
