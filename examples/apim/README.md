@@ -101,6 +101,24 @@ terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/ap
 terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_api_diagnostic -no-color
 ```
 
+## API Management service diagnostic options
+
+Service diagnostics accept `applicationinsights` or `azuremonitor` identifiers,
+all four frontend/backend request/response logging blocks, and create/read/
+update/delete timeouts. Each direction supports body-byte limits, header
+selection, and nested `data_masking`; query parameters accept `Mask` or `Hide`,
+while headers support `Mask`. The module validates sampling percentages from
+0 through 100, body-byte limits up to 8192, and the documented protocol,
+verbosity, operation-name, and masking values.
+
+The plan-only contract verifies full nested masking, Azure Monitor selection,
+timeouts, and rejection of a payload limit above the provider maximum:
+
+```bash
+terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/api_management_diagnostic
+terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_diagnostic -no-color
+```
+
 ## API Management API operation options
 
 API operation settings support request definitions, multiple response
