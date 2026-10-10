@@ -15,12 +15,16 @@ module "azurerm_application_insights" {
   sampling_percentage                   = lookup(each.value, "sampling_percentage", null)
   disable_ip_masking                    = lookup(each.value, "disable_ip_masking", null)
   ip_masking_enabled                    = lookup(each.value, "ip_masking_enabled", null)
-  workspace_id                          = try(local.combined_objects_log_analytics[try(each.value.log_analytics_workspace.lz_key, local.client_config.landingzone_key)][each.value.log_analytics_workspace.key].id, local.combined_diagnostics.log_analytics[local.combined_diagnostics.diagnostics_destinations.log_analytics[each.value.log_analytics_workspace_destination].log_analytics_key].id, null)
-  global_settings                       = local.global_settings
-  base_tags                             = try(local.global_settings.inherit_tags, false) ? try(local.combined_objects_resource_groups[try(each.value.resource_group.lz_key, local.client_config.landingzone_key)][try(each.value.resource_group.key, each.value.resource_group_key)].tags, {}) : {}
-  diagnostic_profiles                   = try(each.value.diagnostic_profiles, null)
-  diagnostics                           = local.combined_diagnostics
-  settings                              = each.value
+  workspace_id = try(coalesce(
+    try(each.value.workspace_id, null),
+    try(local.combined_objects_log_analytics[try(each.value.log_analytics_workspace.lz_key, local.client_config.landingzone_key)][each.value.log_analytics_workspace.key].id, null),
+    try(local.combined_diagnostics.log_analytics[local.combined_diagnostics.diagnostics_destinations.log_analytics[each.value.log_analytics_workspace_destination].log_analytics_key].id, null)
+  ), null)
+  global_settings     = local.global_settings
+  base_tags           = try(local.global_settings.inherit_tags, false) ? try(local.combined_objects_resource_groups[try(each.value.resource_group.lz_key, local.client_config.landingzone_key)][try(each.value.resource_group.key, each.value.resource_group_key)].tags, {}) : {}
+  diagnostic_profiles = try(each.value.diagnostic_profiles, null)
+  diagnostics         = local.combined_diagnostics
+  settings            = each.value
 }
 
 output "application_insights" {
