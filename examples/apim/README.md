@@ -171,6 +171,27 @@ terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/ap
 terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_group -no-color
 ```
 
+## API Management logger options
+
+Loggers support buffered publishing, description, the portal-linked resource
+ID, and all four timeouts. Application Insights accepts a local/remote
+reference or direct instrumentation key/connection string. Use
+`identity_client_id` with a connection-string source for managed-identity
+ingestion; the legacy instrumentation-key mode remains supported. Configure
+either Application Insights or Event Hubs as the logger destination, not both.
+Event Hubs supports connection strings or endpoint URI with a user-assigned
+identity client ID. Prefer endpoint URI and managed identity to avoid shared
+keys.
+
+The focused plan-only contract checks source selection, local App Insights
+resolution, linked resource ID resolution, Event Hubs authentication options,
+eventhub-only loggers, timeouts, and invalid source combinations:
+
+```bash
+terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/api_management_logger
+terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_logger -no-color
+```
+
 ## API Management API operation options
 
 API operation settings support request definitions, multiple response
