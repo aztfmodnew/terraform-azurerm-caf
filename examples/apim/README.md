@@ -163,6 +163,25 @@ terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_ap
 This contract verifies Terraform's planned resource configuration only; it
 does not confirm Azure-side acceptance or deploy resources.
 
+## API Management backend options
+
+Backends support credentials and authorization, proxy and TLS settings,
+Service Fabric cluster certificates and nested server X.509 names, circuit
+breaker failure conditions, and all four provider timeouts. Circuit breaker
+settings validate the required count-or-percentage and failure criteria, while
+Service Fabric settings require a client certificate reference. The historical
+top-level `server_x509_name` setting remains supported; new configurations
+should use `service_fabric_cluster.server_x509_name`. The focused plan-only
+contract exercises these nested blocks and compatibility:
+
+```bash
+terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/api_management_backend
+terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_backend -no-color
+```
+
+This contract verifies Terraform's planned resource configuration only; it
+does not confirm Azure-side acceptance or deploy resources.
+
 ---
 
 ## Inputs
