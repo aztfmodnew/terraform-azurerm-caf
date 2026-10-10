@@ -115,17 +115,29 @@ When relevant, explicitly invoke these skill procedures in the workflow:
 
 #### Step 1.3: Research New Feature/Attribute
 
-1. Use `microsoft_docs_search`:
-   - Query: "Azure <service> <new_feature> configuration"
+Use the Terraform provider schema as the source of truth for module syntax and support. Use Microsoft Learn to clarify Azure behavior and feature requirements.
 
-2. Use `microsoft_code_sample_search`:
+1. Identify the provider version supported by the module from its `required_providers` configuration and the repository lock file.
+2. Find the resource documentation with `mcp_terraform_search_providers`:
+
+   ```text
+   mcp_terraform_search_providers(
+     provider_namespace = "hashicorp",
+     provider_name      = "azurerm",
+     service_slug       = "<resource_name_without_azurerm_prefix>",
+     provider_document_type = "resources",
+     provider_version   = "<version_supported_by_the_module>"
+   )
+   ```
+
+   For `azapi` resources, use `provider_namespace = "Azure"` and `provider_name = "azapi"` with the corresponding resource slug.
+3. Fetch the full schema for the returned resource using `mcp_terraform_get_provider_details(provider_doc_id = "<id_from_search>")`. Verify that the attribute or nested block exists in the supported provider version, and check its required/optional status, defaults, constraints, and deprecation status.
+4. Use `microsoft_docs_search` when Azure-side behavior or prerequisites need clarification:
+   - Query: "Azure <service> <new_feature> configuration"
+5. For `azapi` resources, use `microsoft_docs_search` when an official Azure configuration is needed:
    - Query: "Azure <service> <new_feature> example"
 
-3. Understand:
-   - What is the new feature/attribute?
-   - What are the requirements?
-   - What are the dependencies?
-   - What are the security implications?
+Do not use Azure documentation or code samples as evidence that a Terraform provider argument exists; confirm provider syntax and support with the provider schema.
 
 ### Phase 2: Impact Analysis
 
@@ -189,7 +201,10 @@ For managed identity patterns, follow the established repository implementations
 ### Phase 5: Documentation Updates
 
 - Update module README with new features
-- Add to CHANGELOG.md with impact analysis
+- For every publishable submodule under the updated module, create or update a `README.md` in that submodule's directory so the Terraform Registry can show complete submodule documentation. Document the submodule's purpose, usage, inputs, outputs, and relevant examples using the repository's documentation-generation conventions.
+- Inventory all submodule directories under the updated module; do not limit this to the submodule directly changed when sibling submodules are missing Registry documentation.
+- Update the parent module README with links to its submodules where appropriate.
+- Include the change impact analysis in the pull request template's Description section; for breaking changes, also complete its breaking-change section with the impact and migration path
 - Document migration paths for breaking changes
 - Update variable descriptions
 
@@ -211,7 +226,8 @@ Before marking complete:
 - [ ] dynamic blocks for optional nested objects
 - [ ] Backward compatibility maintained
 - [ ] Examples updated/created
-- [ ] Documentation updated (README + CHANGELOG)
+- [ ] Parent README and all publishable submodule READMEs updated for Terraform Registry
+- [ ] Impact analysis included in the pull request
 - [ ] All tests pass
 - [ ] No regression in existing functionality
 
@@ -222,7 +238,8 @@ Before marking complete:
 - Always maintain deprecated attributes for at least one minor version
 - Always document breaking changes with migration guide
 - Always test existing examples to ensure no regression
-- Always update CHANGELOG.md with impact analysis
+- Always create or update a `README.md` for every publishable submodule under the updated module
+- Always include change impact analysis in the pull request template's Description section; for breaking changes, also document the impact and migration path in its breaking-change section
 - Always implement ALL new attributes from provider (not just requested ones)
 - Always search for existing implementations before creating duplicates
 
@@ -235,7 +252,7 @@ Provide clear progress updates:
 - Updating module with new attributes...
 - Maintaining backward compatibility...
 - Updating/creating examples...
-- Updating documentation (README + CHANGELOG)...
+- Updating parent and submodule Registry documentation, and recording impact analysis in the pull request...
 - Testing updated module and examples...
 
 Upon completion, summarize:
