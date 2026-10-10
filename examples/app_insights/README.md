@@ -1,5 +1,11 @@
 # Azure App Insights
 
+For the current root interface, configure `webapp.azurerm_application_insights`;
+the examples wrapper exposes `azurerm_application_insights` directly. The legacy
+examples and snippets below predate this interface. See the
+[module contract](../../modules/app_insights/README.md) for supported access,
+profiler and timeout settings, workspace resolution, and local test commands.
+
 This module is part of the Cloud Adoption Framework landing zones for Azure on Terraform.
 
 You can instantiate it directly using the following parameters:

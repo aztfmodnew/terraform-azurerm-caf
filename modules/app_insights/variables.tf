@@ -107,7 +107,25 @@ variable "diagnostics" {
   type        = any
 }
 variable "settings" {
-  description = "Settings for the Application Insights resource."
+  description = <<DESCRIPTION
+Additional Application Insights settings. Optional local_authentication_enabled,
+internet_ingestion_enabled and internet_query_enabled retain the provider default
+of true when omitted. force_customer_storage_for_profiler defaults to false.
+timeouts accepts optional create, read, update and delete duration strings.
+The legacy individual module inputs remain supported; the root passes each
+Application Insights configuration directly as settings.
+DESCRIPTION
   default     = {}
-  type        = any
+  type = object({
+    local_authentication_enabled        = optional(bool, true)
+    internet_ingestion_enabled          = optional(bool, true)
+    internet_query_enabled              = optional(bool, true)
+    force_customer_storage_for_profiler = optional(bool, false)
+    timeouts = optional(object({
+      create = optional(string)
+      read   = optional(string)
+      update = optional(string)
+      delete = optional(string)
+    }))
+  })
 }
