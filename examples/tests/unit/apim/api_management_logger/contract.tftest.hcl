@@ -370,3 +370,44 @@ run "typed_global_settings_explicit_values_are_preserved" {
     error_message = "Explicit global_settings values must override the declared module defaults."
   }
 }
+
+run "logger_rejects_missing_destination" {
+  command         = plan
+  expect_failures = [var.settings]
+
+  module {
+    source = "../modules/apim/api_management_logger"
+  }
+
+  variables {
+    global_settings     = {}
+    client_config       = { landingzone_key = "local" }
+    remote_objects      = {}
+    resource_group_name = "example-rg"
+    api_management_name = "example-apim"
+    settings = {
+      name = "no-destination-logger"
+    }
+  }
+}
+
+run "logger_rejects_application_insights_without_source" {
+  command         = plan
+  expect_failures = [var.settings]
+
+  module {
+    source = "../modules/apim/api_management_logger"
+  }
+
+  variables {
+    global_settings     = {}
+    client_config       = { landingzone_key = "local" }
+    remote_objects      = {}
+    resource_group_name = "example-rg"
+    api_management_name = "example-apim"
+    settings = {
+      name                 = "sourceless-logger"
+      application_insights = {}
+    }
+  }
+}
