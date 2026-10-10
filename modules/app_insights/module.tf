@@ -20,5 +20,20 @@ resource "azurerm_application_insights" "appinsights" {
   sampling_percentage                  = var.sampling_percentage
   ip_masking_enabled                   = var.ip_masking_enabled == null ? (var.disable_ip_masking == null ? null : !var.disable_ip_masking) : var.ip_masking_enabled
   workspace_id                         = var.workspace_id
+  local_authentication_enabled         = try(var.settings.local_authentication_enabled, null)
+  internet_ingestion_enabled           = try(var.settings.internet_ingestion_enabled, null)
+  internet_query_enabled               = try(var.settings.internet_query_enabled, null)
+  force_customer_storage_for_profiler  = try(var.settings.force_customer_storage_for_profiler, null)
   tags                                 = local.tags
+
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
+    }
+  }
 }
