@@ -129,3 +129,112 @@ run "gateway_with_direct_api_management_id" {
     error_message = "A direct API Management resource ID must remain supported."
   }
 }
+
+run "typed_global_settings_defaults_applied_when_omitted" {
+  command = plan
+
+  module {
+    source = "../modules/apim/api_management_gateway"
+  }
+
+  variables {
+    global_settings = {}
+    client_config   = { landingzone_key = "local" }
+    remote_objects  = {}
+    settings = {
+      name = "defaults-gateway"
+      api_management = {
+        id = "/subscriptions/test/resourceGroups/rg/providers/Microsoft.ApiManagement/service/apim-direct"
+      }
+      location_data = {
+        name = "Sydney"
+      }
+    }
+  }
+
+  assert {
+    condition = (
+      azurecaf_name.apim.random_length == 0 &&
+      azurecaf_name.apim.passthrough == false &&
+      azurecaf_name.apim.use_slug == true &&
+      azurecaf_name.apim.prefixes == null
+    )
+    error_message = "Omitted global_settings attributes must fall back to the declared module defaults."
+  }
+}
+
+run "typed_global_settings_defaults_applied_for_explicit_null" {
+  command = plan
+
+  module {
+    source = "../modules/apim/api_management_gateway"
+  }
+
+  variables {
+    global_settings = {
+      prefixes      = null
+      random_length = null
+      passthrough   = null
+      use_slug      = null
+    }
+    client_config  = { landingzone_key = "local" }
+    remote_objects = {}
+    settings = {
+      name = "defaults-gateway"
+      api_management = {
+        id = "/subscriptions/test/resourceGroups/rg/providers/Microsoft.ApiManagement/service/apim-direct"
+      }
+      location_data = {
+        name = "Sydney"
+      }
+    }
+  }
+
+  assert {
+    condition = (
+      azurecaf_name.apim.random_length == 0 &&
+      azurecaf_name.apim.passthrough == false &&
+      azurecaf_name.apim.use_slug == true &&
+      azurecaf_name.apim.prefixes == null
+    )
+    error_message = "Explicit null global_settings attributes must be replaced by the declared module defaults."
+  }
+}
+
+run "typed_global_settings_explicit_values_are_preserved" {
+  command = plan
+
+  module {
+    source = "../modules/apim/api_management_gateway"
+  }
+
+  variables {
+    global_settings = {
+      prefixes      = ["caf"]
+      random_length = 3
+      passthrough   = true
+      use_slug      = false
+    }
+    client_config  = { landingzone_key = "local" }
+    remote_objects = {}
+    settings = {
+      name = "defaults-gateway"
+      api_management = {
+        id = "/subscriptions/test/resourceGroups/rg/providers/Microsoft.ApiManagement/service/apim-direct"
+      }
+      location_data = {
+        name = "Sydney"
+      }
+    }
+  }
+
+  assert {
+    condition = (
+      azurecaf_name.apim.random_length == 3 &&
+      azurecaf_name.apim.passthrough == true &&
+      azurecaf_name.apim.use_slug == false &&
+      azurecaf_name.apim.prefixes == tolist(["caf"])
+    )
+    error_message = "Explicit global_settings values must override the declared module defaults."
+  }
+}
