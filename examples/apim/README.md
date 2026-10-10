@@ -242,6 +242,28 @@ mock runner:
 terraform -chdir=examples test -test-directory=tests/mock -var-file=apim/116-api_management_subscription/configuration.tfvars -no-color
 ```
 
+## API Management user options
+
+Users support the required identifier, email, first and last names, optional
+confirmation mode, note, password, state, and all four AzureRM timeouts. The
+password is sensitive in the provider. Confirmation accepts `invite` or
+`signup`; state accepts `active`, `blocked`, or `pending`. Azure only permits
+pending users to transition to active or blocked.
+
+The focused plan-only contract checks optional settings, password sensitivity,
+timeouts, and invalid enum values:
+
+```bash
+terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/api_management_user
+terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_user -no-color
+```
+
+The existing user example is checked with the shared mock runner:
+
+```bash
+terraform -chdir=examples test -test-directory=tests/mock -var-file=apim/108-api_management_user/configuration.tfvars -no-color
+```
+
 ## API Management API operation options
 
 API operation settings support request definitions, multiple response
