@@ -101,6 +101,22 @@ terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/ap
 terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_api_diagnostic -no-color
 ```
 
+## API Management API operation options
+
+API operation settings support request definitions, multiple response
+definitions, headers, query parameters, representations, form parameters,
+examples, template parameters, and all four operation timeouts. Request and
+response collections use maps with stable keys. Any HTTP method supported by
+API Management is accepted; template parameters should be provided when the
+URL template includes placeholders. Form parameters are required for
+URL-encoded and multipart representations. The focused contract exercises the
+nested request/response blocks and verifies a nonstandard HTTP method:
+
+```bash
+terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/api_management_api_operation
+terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_api_operation -no-color
+```
+
 ---
 
 ## Inputs
