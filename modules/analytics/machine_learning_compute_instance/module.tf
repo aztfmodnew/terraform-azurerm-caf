@@ -19,7 +19,7 @@ resource "azurerm_machine_learning_compute_instance" "mlci" {
     for_each = try(var.settings.assign_to_user, null) != null ? [var.settings.assign_to_user] : []
 
     content {
-      object_id = assign_to_user.value.object_id
+      object_id = try(assign_to_user.value.object_id, null)
       tenant_id = coalesce(
         try(assign_to_user.value.tenant_id, null),
         var.client_config.tenant_id
@@ -34,17 +34,15 @@ resource "azurerm_machine_learning_compute_instance" "mlci" {
 
     content {
       type = identity.value.type
-      identity_ids = coalesce(
-        var.settings.identity.identity_ids,
-        local.managed_identities
+      identity_ids = (
+        length(coalesce(try(identity.value.identity_ids, null), [])) > 0
+        ? identity.value.identity_ids
+        : local.managed_identities
       )
     }
-
   }
 
-  #It's on the AzureRM provider documentation but it does raises an error.
-  #https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/machine_learning_compute_instance
-  #local_auth_enabled = try(var.settings.local_auth_enabled,null)
+  local_auth_enabled = coalesce(try(var.settings.local_auth_enabled, null), true)
 
   dynamic "ssh" {
     for_each = try(var.settings.ssh, null) != null ? [var.settings.ssh] : []
@@ -54,7 +52,21 @@ resource "azurerm_machine_learning_compute_instance" "mlci" {
     }
   }
 
-  subnet_resource_id = try(var.remote_objects.subnet_resource_id, null)
-  tags               = local.tags
+  subnet_resource_id = try(coalesce(
+    try(var.settings.subnet_resource_id, null),
+    try(var.remote_objects.subnet_resource_id, null)
+  ), null)
+  node_public_ip_enabled = coalesce(try(var.settings.node_public_ip_enabled, null), true)
+  tags                   = local.tags
+
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      delete = try(timeouts.value.delete, null)
+    }
+  }
 
 }
