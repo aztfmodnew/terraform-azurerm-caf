@@ -48,6 +48,19 @@ variable "settings" {
     ], var.settings.identity.type), true)
     error_message = "identity.type must be SystemAssigned, UserAssigned, or SystemAssigned, UserAssigned."
   }
+
+  validation {
+    condition = var.settings.identity == null ? true : (
+      length(coalesce(var.settings.identity.identity_ids, [])) +
+      length(coalesce(var.settings.identity.managed_identity_keys, [])) +
+      length(flatten([
+        for value in values(coalesce(var.settings.identity.remote, {})) : value.managed_identity_keys
+      ]))
+      ) == (
+      strcontains(var.settings.identity.type, "UserAssigned") ? 1 : 0
+    )
+    error_message = "A Databricks access connector supports exactly one user-assigned identity: provide a single identity_ids, managed_identity_keys or identity.remote reference when identity.type includes UserAssigned, and none otherwise."
+  }
 }
 
 variable "global_settings" {
