@@ -16,8 +16,9 @@ module "caf" {
 |user_id| The Identifier for this User, which must be unique within the API Management Service. Changing this forces a new resource to be created.||True|
 |confirmation| The kind of confirmation email which will be sent to this user. Possible values are `invite` and `signup`. Changing this forces a new resource to be created.||False|
 |note| A note about this user.||False|
-|password| The password associated with this user.||False|
-|state| The state of this user. Possible values are `active`, `blocked` and `pending`.||False|
+|password| The password associated with this user. AzureRM treats it as sensitive.||False|
+|state| The state of this user. Possible values are `active`, `blocked` and `pending`. A pending user can become active or blocked, but an active or blocked user cannot return to pending.||False|
+|timeouts| Create, read, update, and delete operation timeouts.||False|
 
 ## Blocks
 | Block | Argument | Description | Required |
@@ -33,3 +34,19 @@ module "caf" {
 | Name | Description |
 |------|-------------|
 |id|The ID of the API Management User.|||
+
+## Testing
+
+The existing example can be plan-checked with the shared mock runner:
+
+```bash
+terraform -chdir=examples test -test-directory=tests/mock -var-file=apim/108-api_management_user/configuration.tfvars -no-color
+```
+
+The opt-in module contract checks provider options, password sensitivity,
+timeout configuration, and invalid enum values:
+
+```bash
+terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/api_management_user
+terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_user -no-color
+```
