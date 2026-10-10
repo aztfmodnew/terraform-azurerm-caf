@@ -218,6 +218,30 @@ configuration with the shared mock runner:
 terraform -chdir=examples test -test-directory=tests/mock -var-file=apim/117-api_management_product/configuration.tfvars -no-color
 ```
 
+## API Management subscription options
+
+Subscriptions support API or product scope, a user association, caller-supplied
+primary/secondary keys, a subscription identifier, tracing, state, and all
+four AzureRM timeouts. Product and API scopes are mutually exclusive; omitting
+both retains the provider's all-APIs scope. The defaults remain `submitted`
+for state and `true` for tracing.
+
+The focused plan-only contract checks product and API scopes, user and key
+settings, provider defaults, timeout handling, and invalid state/scope
+combinations:
+
+```bash
+terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/api_management_subscription
+terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_subscription -no-color
+```
+
+The dedicated example covers the all-APIs subscription form with the shared
+mock runner:
+
+```bash
+terraform -chdir=examples test -test-directory=tests/mock -var-file=apim/116-api_management_subscription/configuration.tfvars -no-color
+```
+
 ## API Management API operation options
 
 API operation settings support request definitions, multiple response
