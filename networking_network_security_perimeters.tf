@@ -12,12 +12,13 @@ module "network_security_perimeters" {
 
 
   remote_objects = {
-    storage_accounts = local.combined_objects_storage_accounts
-    keyvaults        = local.combined_objects_keyvaults
-    event_hubs       = local.combined_objects_event_hubs
-    cosmos_dbs       = local.combined_objects_cosmos_dbs
-    mssql_servers    = local.combined_objects_mssql_servers
-    diagnostics      = local.combined_diagnostics
+    storage_accounts     = local.combined_objects_storage_accounts
+    keyvaults            = local.combined_objects_keyvaults
+    event_hubs           = local.combined_objects_event_hubs
+    event_hub_namespaces = local.combined_objects_event_hub_namespaces
+    cosmos_dbs           = local.combined_objects_cosmos_dbs
+    mssql_servers        = local.combined_objects_mssql_servers
+    diagnostics          = local.combined_diagnostics
   }
 }
 

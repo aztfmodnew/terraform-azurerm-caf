@@ -431,6 +431,11 @@ vnet_peerings_v1 = {
     allow_forwarded_traffic      = false
     allow_gateway_transit        = false
     use_remote_gateways          = false
+    peer_complete_vnets          = true
+    timeouts = {
+      create = "15m"
+      update = "15m"
+    }
   }
 
   hub_re2_TO_hub_re1 = {
@@ -445,6 +450,7 @@ vnet_peerings_v1 = {
     allow_forwarded_traffic      = false
     allow_gateway_transit        = false
     use_remote_gateways          = false
+    peer_complete_vnets          = true
   }
 
 

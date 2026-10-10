@@ -22,6 +22,43 @@ Validating the resource schema ensures:
 
 ## Step-by-Step Validation Process
 
+### AzAPI resources and data sources
+
+For AzAPI, validate two distinct contracts before editing:
+
+1. Resolve and fetch the official `azure/azapi` provider documentation for the
+   installed or proposed version and the exact resource/data-source kind.
+   Check supported arguments, output types, timeout operations and deprecations.
+2. Check the ARM `type@api-version` and request body against official ARM
+   documentation and the schemas embedded in that released provider version.
+   Prefer the newest supported stable API, not merely the newest ARM page.
+   A schema file's presence alone does not prove the binary supports that API;
+   verify with the installed provider.
+
+Inventory all directly used `azapi_*` resources and data sources before a
+cross-module update. Check writable properties, nested bodies, exported
+responses, outputs and downstream consumers. Do not send read-only fields.
+Preserve existing resource addresses, names, defaults and legacy inputs.
+
+Do not assume different AzAPI kinds accept the same arguments. In particular,
+confirm null-omission options and supported timeout operations for each kind.
+Use output access appropriate to the selected provider version rather than
+unconditionally decoding outputs as JSON strings.
+
+Keep the version constraint and provider configuration in the CAF root.
+Every child directly using AzAPI must declare its `azure/azapi` source without
+repeating the version or adding a provider configuration. Verify resolution
+with `terraform providers`, then initialize and validate the real worktree.
+Passing a temporarily modified copy is diagnostic evidence, not proof that
+the repository itself works.
+
+Use existing examples and the shared mock runner for regressions. Mock plans
+do not prove service-side acceptance; report static checks, mock tests and real
+deployment checks separately. Record module-specific interfaces in module
+documentation. Keep inventories, command logs, plans and execution reports in
+session storage or a verified ignored, unsynchronized temporary directory;
+ask before introducing new permanent documents.
+
 ### Step 1: Identify the Resource
 
 Get the full Azure resource type name:

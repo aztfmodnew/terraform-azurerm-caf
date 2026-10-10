@@ -31,25 +31,40 @@ resource "azurecaf_name" "manageddb" {
 # managed database using azapi (since Azurerm provider does not have create from backup capability)
 resource "azapi_resource" "sqlmanageddatabase" {
 
-  type      = "Microsoft.Sql/managedInstances/databases@2021-11-01"
-  name      = azurecaf_name.manageddb.result
-  location  = var.server_location
-  parent_id = var.server_id
-  tags      = merge(local.tags, try(var.settings.tags, null))
+  type                 = "Microsoft.Sql/managedInstances/databases@2025-01-01"
+  name                 = azurecaf_name.manageddb.result
+  location             = var.server_location
+  parent_id            = var.server_id
+  tags                 = merge(local.tags, try(var.settings.tags, null))
+  ignore_null_property = true
   body = {
     properties = {
-      autoCompleteRestore               = try(var.settings.properties.auto_complete_restore, null)
-      catalogCollation                  = try(var.settings.properties.catalog_collation, null)
-      collation                         = try(var.settings.properties.collation, "SQL_Latin1_General_CP1_CI_AS")
-      createMode                        = local.create_mode
-      lastBackupName                    = try(var.settings.properties.last_backup_name, null)
-      longTermRetentionBackupResourceId = try(local.long_term_retention_backup_id, null)
-      recoverableDatabaseId             = try(local.recoverable_database_id, null)
-      restorableDroppedDatabaseId       = try(local.restorable_dropped_database_id, null)
-      restorePointInTime                = try(local.restore_point_datetime, null)
-      sourceDatabaseId                  = try(local.source_database_id, null)
-      storageContainerSasToken          = try(var.settings.properties.storage_container_sas_token, null)
-      storageContainerUri               = try(var.settings.properties.storage_container_uri, null)
+      autoCompleteRestore                          = try(var.settings.properties.auto_complete_restore, null)
+      catalogCollation                             = try(var.settings.properties.catalog_collation, null)
+      collation                                    = try(var.settings.properties.collation, "SQL_Latin1_General_CP1_CI_AS")
+      createMode                                   = local.create_mode
+      lastBackupName                               = try(var.settings.properties.last_backup_name, null)
+      longTermRetentionBackupResourceId            = try(local.long_term_retention_backup_id, null)
+      recoverableDatabaseId                        = try(local.recoverable_database_id, null)
+      restorableDroppedDatabaseId                  = try(local.restorable_dropped_database_id, null)
+      restorePointInTime                           = try(local.restore_point_datetime, null)
+      sourceDatabaseId                             = try(local.source_database_id, null)
+      crossSubscriptionSourceDatabaseId            = try(var.settings.properties.cross_subscription_source_database_id, null)
+      crossSubscriptionRestorableDroppedDatabaseId = try(var.settings.properties.cross_subscription_restorable_dropped_database_id, null)
+      crossSubscriptionTargetManagedInstanceId     = try(var.settings.properties.cross_subscription_target_managed_instance_id, null)
+      isLedgerOn                                   = try(var.settings.properties.is_ledger_on, null)
+      storageContainerIdentity                     = try(var.settings.properties.storage_container_identity, null)
+      storageContainerSasToken                     = try(var.settings.properties.storage_container_sas_token, null)
+      storageContainerUri                          = try(var.settings.properties.storage_container_uri, null)
+    }
+  }
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
     }
   }
 }
@@ -59,12 +74,21 @@ resource "azapi_update_resource" "short_term_retention" {
   depends_on = [
     azapi_resource.sqlmanageddatabase
   ]
-  type      = "Microsoft.Sql/managedInstances/databases/backupShortTermRetentionPolicies@2021-11-01"
+  type      = "Microsoft.Sql/managedInstances/databases/backupShortTermRetentionPolicies@2025-01-01"
   name      = "default"
   parent_id = resource.azapi_resource.sqlmanageddatabase.id
   body = {
     properties = {
       retentionDays = local.short_term_retention_days
+    }
+  }
+  dynamic "timeouts" {
+    for_each = try(var.settings.short_term_retention_timeouts, null) == null ? [] : [var.settings.short_term_retention_timeouts]
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
     }
   }
 }
@@ -75,16 +99,27 @@ resource "azapi_update_resource" "longtermretention" {
     azapi_resource.sqlmanageddatabase
   ]
   count     = can(var.settings.long_term_retention_policy) ? 1 : 0
-  type      = "Microsoft.Sql/managedInstances/databases/backupLongTermRetentionPolicies@2021-11-01"
+  type      = "Microsoft.Sql/managedInstances/databases/backupLongTermRetentionPolicies@2025-01-01"
   name      = "default"
   parent_id = resource.azapi_resource.sqlmanageddatabase.id
   body = {
     properties = {
-      weeklyRetention  = local.long_term_retention_policy.weekly_retention
-      monthlyRetention = local.long_term_retention_policy.monthly_retention
-      yearlyRetention  = local.long_term_retention_policy.yearly_retention
-      weekOfYear       = local.long_term_retention_policy.week_of_year
-
+      for key, value in {
+        weeklyRetention         = local.long_term_retention_policy.weekly_retention
+        monthlyRetention        = local.long_term_retention_policy.monthly_retention
+        yearlyRetention         = local.long_term_retention_policy.yearly_retention
+        weekOfYear              = local.long_term_retention_policy.week_of_year
+        backupStorageAccessTier = try(var.settings.long_term_retention_policy.backup_storage_access_tier, null)
+      } : key => value if value != null
+    }
+  }
+  dynamic "timeouts" {
+    for_each = try(var.settings.long_term_retention_policy.timeouts, null) == null ? [] : [var.settings.long_term_retention_policy.timeouts]
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
     }
   }
 }

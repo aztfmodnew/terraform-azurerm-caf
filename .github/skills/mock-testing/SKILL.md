@@ -28,6 +28,33 @@ Mock tests ensure:
 
 ## Directory Structure: Examples and Mock Tests
 
+Reuse `tests/mock` and the existing shared mock-data directory for example
+planning; do not create a parallel suite merely to repeat the same plans.
+Module-specific tests are justified by explicit behavioral assertions or
+expected failures that the shared runner does not cover. Store them under
+`examples/tests/unit/<category>/<module>/contract.tftest.hcl`, preserving child
+paths where needed. Additional focused files may use descriptive names.
+Follow the [test contract](../../../examples/tests/README.md#contract-for-new-and-updated-tests).
+Select the directory containing the suite explicitly; Terraform does not
+recursively discover nested suites from `tests/unit`. Local module source paths
+remain relative to the examples configuration directory.
+Document purpose and the opt-in execution command in the module README.
+Do not modify the existing mock runner, shared defaults, general test or
+pipelines as part of contract organization.
+
+Load all complementary example variable files in a documented deterministic
+order, but do not combine alternative complete configurations. Providers not
+explicitly mocked may still execute real operations. Use plan-only runs when
+validating examples, especially modules with provisioners.
+
+Successful mock plans do not establish service-side acceptance, full behavior
+coverage or idempotency. For an approved real lifecycle test, confirm the Azure
+subscription, use isolated state, review the saved plan, verify deployed
+resources, check a follow-up plan, and obtain cleanup confirmation. Verify the
+state is empty and document any soft-delete retention. Keep execution evidence
+outside tracked documentation; retain only reusable test commands and coverage
+limits in module READMEs.
+
 **Mock tests use the same configuration files as deployment examples**:
 
 ```

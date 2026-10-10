@@ -1,5 +1,6 @@
 global_settings = {
   default_region = "region1"
+  random_length  = 5
   regions = {
     region1 = "australiaeast"
   }
@@ -32,8 +33,10 @@ private_dns_vnet_links = {
     #lz_key = "remote landing zone key for vnet"
     private_dns_zones = {
       dns_zone1 = {
-        name = "dns1-lnk"
-        key  = "dns1"
+        name              = "dns1-lnk"
+        key               = "dns1"
+        resolution_policy = "Default"
+        timeouts          = { update = "15m" }
         #lz_key = "provide the landing zone key of private dns zone"
         # dns_parent_id = "resource id of the private dns zone"
       }

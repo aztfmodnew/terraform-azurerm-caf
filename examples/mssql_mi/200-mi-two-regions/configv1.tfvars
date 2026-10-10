@@ -320,6 +320,7 @@ mssql_mi_failover_groups = {
       mi_server_key = "sqlmi2"
     }
     readonly_endpoint_failover_policy_enabled = false
+    timeouts                                  = { create = "1h", update = "1h" }
     read_write_endpoint_failover_policy = {
       mode          = "Automatic"
       grace_minutes = 60

@@ -8,6 +8,20 @@ Use these rules when editing files under `modules/**`. Focus on correctness, CAF
 
 **See also**: `variable-settings-definition.md` for detailed settings variable design standards
 
+- Provider inheritance and source requirements
+  - Child modules inherit provider configurations, not `required_providers` source declarations. Module depth does not change this rule.
+  - Keep the AzAPI version constraint and `provider "azapi"` configuration centralized in the CAF root.
+  - Each child module that directly uses AzAPI resources or data sources must declare `azapi = { source = "azure/azapi" }` in its `terraform.required_providers`, without repeating the version constraint or adding a provider configuration block.
+  - A missing source defaults to `hashicorp/<local-name>`. This happens to resolve providers such as `azurerm` and `azuread`, but incorrectly resolves AzAPI to the nonexistent `hashicorp/azapi`. Do not use those modules as evidence that AzAPI source requirements can be removed.
+  - Modules that do not directly use AzAPI need no AzAPI requirement merely because a descendant uses it. Requirements belong to the module using the provider and may reside in any `.tf` file, not necessarily `providers.tf`.
+  - See [HashiCorp's provider requirements documentation](https://developer.hashicorp.com/terraform/language/modules/develop/providers#provider-version-constraints-in-modules).
+  - For AzAPI updates, follow the [schema validation skill](../skills/azure-schema-validation/SKILL.md#azapi-resources-and-data-sources): validate both the provider-level schema and the ARM request contract against the selected released version.
+
+- Module behavioral tests
+  - Store focused contracts in `examples/tests/unit/<category>/<module>/`, preserving child module paths when relevant. Use `contract.tftest.hcl` or a descriptive additional suite name.
+  - Follow the [shared test contract](../../examples/tests/README.md#contract-for-new-and-updated-tests). Reuse existing assertions and mocks; do not duplicate scenario plans or change the existing mock/general runners or pipelines merely to organize contracts.
+  - Keep runs plan-only and document coverage and opt-in execution commands. A directory named `unit` does not guarantee isolation: explicitly select the module and mock external provider dependencies.
+
 - CAF naming (MANDATORY)
   - Every named resource must use `azurecaf_name` in `azurecaf_name.tf` and assign `name = azurecaf_name.<id>.result` in the resource.
   - Use the correct `resource_type` for the Azure resource (see Appendix A in main instructions).

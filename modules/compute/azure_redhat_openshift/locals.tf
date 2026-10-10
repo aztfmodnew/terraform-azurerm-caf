@@ -1,6 +1,8 @@
 locals {
 
-  service_principal = {
+  use_service_principal = try(var.settings.service_principal, null) != null || try(var.settings.identity, null) == null
+
+  service_principal = !local.use_service_principal ? null : {
     clientId     = can(var.settings.service_principal.client_id) ? var.settings.service_principal.client_id : data.azurerm_key_vault_secret.id[0].value
     clientSecret = can(var.settings.service_principal.client_secret) ? var.settings.service_principal.client_secret : data.azurerm_key_vault_secret.password[0].value
   }
@@ -45,8 +47,15 @@ locals {
   ]
 
   network_profile = {
-    podCidr     = var.settings.network_profile.pod_cidr
-    serviceCidr = var.settings.network_profile.service_cidr
+    podCidr          = var.settings.network_profile.pod_cidr
+    serviceCidr      = var.settings.network_profile.service_cidr
+    outboundType     = try(var.settings.network_profile.outbound_type, null)
+    preconfiguredNSG = try(var.settings.network_profile.preconfigured_nsg, null)
+    loadBalancerProfile = try(var.settings.network_profile.load_balancer_profile, null) == null ? null : {
+      managedOutboundIps = {
+        count = var.settings.network_profile.load_balancer_profile.managed_outbound_ips.count
+      }
+    }
   }
 
   module_tag = {

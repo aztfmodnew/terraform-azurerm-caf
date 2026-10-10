@@ -6,6 +6,12 @@ applyTo: "/*.tf"
 
 When editing Terraform at the repo root (aggregators), wire modules consistently and expose outputs for consumption by other stacks.
 
+- AzAPI provider ownership
+  - Centralize the AzAPI version constraint and provider configuration in the CAF root.
+  - Do not remove source-only `required_providers` entries from child modules that use AzAPI. Children must identify `azure/azapi`; inheriting configuration or passing providers explicitly does not replace that source requirement.
+  - Child entries identify the same provider, not separate versions or configurations. Without a source Terraform assumes `hashicorp/<local-name>`, which works for AzureRM/AzureAD but not AzAPI. Module depth does not change this behavior.
+  - Check `terraform providers`, initialization and validation in the real worktree after changing provider requirements.
+
 - Variables and locals
   - Add a category variable in root variable definitions (preferred in `variables.tf`; split files like `variables.<category>.tf` are also allowed if the interface remains unchanged).
   - When splitting variables across files, preserve public variable names, types, defaults, and validations to avoid breaking consumers.

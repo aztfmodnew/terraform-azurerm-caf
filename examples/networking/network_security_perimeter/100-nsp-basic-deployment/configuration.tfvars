@@ -1,7 +1,8 @@
 global_settings = {
   default_region = "region1"
+  random_length  = 5
   regions = {
-    region1 = "australiaeast" # You can adjust the Azure Region you want to use to deploy NAT Gateway
+    region1 = "australiaeast"
     # region2 = "australiacentral"            # Optional - Add additional regions
   }
 }
@@ -22,4 +23,3 @@ network_security_perimeters = {
     }
   }
 }
-

@@ -1,5 +1,7 @@
 
 global_settings = {
+  default_region = "region1"
+  random_length  = 5
   regions = {
     region1 = "australiaeast"
   }
@@ -59,6 +61,8 @@ azurerm_application_insights_standard_web_test = {
     retry_enabled                     = true
     description                       = "A sample standard Web test"
     request_url                       = "https://microsoft.com"
+    ignore_http_status_code           = false
+    timeouts                          = { create = "15m" }
     ssl_check_enabled                 = true
     ssl_cert_remaining_lifetime_check = 30
   }
