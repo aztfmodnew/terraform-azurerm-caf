@@ -28,6 +28,44 @@ resource_to_be_created = {
 
 You can review the complete set of examples in the [GitHub repository](https://github.com/aztfmodnew/terraform-azurerm-caf/tree/main/examples/apim).
 
+## API Management service options
+
+The `api_management` service configuration supports the AzureRM resource
+options for regional deployments, certificates, delegation, managed identity,
+hostnames, protocols, security, sign-in/sign-up, tenant access, virtual
+networking, public network access, tags, and create/read/update/delete
+timeouts. Optional regional locations and certificates can be supplied as
+maps using `additional_locations` and `certificates`. The legacy singular
+`additional_location` and `certificate` forms remain supported.
+
+The resource accepts both current AzureRM names and existing CAF aliases for
+HTTP/2, security settings, and Key Vault certificate IDs. In security
+configuration, current AzureRM argument names take precedence over `enable_*`
+and the historical, inverted `disable_*` aliases; for backward compatibility,
+the latter values map directly to the provider's `*_enabled` arguments. The
+documented `tls_ecdheRsa_*` spellings are retained as aliases for
+`tls_ecdhe_rsa_*`. If both hostname certificate ID names are set,
+`key_vault_certificate_id` takes precedence.
+Terms of service should be configured under `sign_up.terms_of_service`; the
+previous top-level `terms_of_service` form remains accepted as a fallback.
+
+For regional subnet references, use the `virtual_network_configuration` block
+within the relevant location and provide either `subnet_id` directly or the
+CAF `vnet_key`/`subnet_key` reference. The top-level
+`public_network_access_enabled` setting controls management-plane access; Azure
+requires public access to be enabled when the service is initially created.
+
+The focused, plan-only module contract checks legacy aliases and the added
+provider options without changing the shared mock runner or CI workflows:
+
+```bash
+terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/api_management
+terraform -chdir=examples test -test-directory=tests/unit/apim/api_management -no-color
+```
+
+The contract verifies Terraform's planned configuration only; it does not
+confirm service-side acceptance or deploy resources.
+
 ---
 
 ## Inputs
@@ -39,10 +77,13 @@ You can review the complete set of examples in the [GitHub repository](https://g
 | resource_group                | The `resource_group` block as defined below.                                                                                                                                                                                                                                                                                                   | Block  |   True   |
 | publisher_name                | The name of publisher/company.                                                                                                                                                                                                                                                                                                                 |        |   True   |
 | publisher_email               | The email of publisher/company.                                                                                                                                                                                                                                                                                                                |        |   True   |
-| sku_name                      | `sku_name` is a string consisting of two parts separated by an underscore(\_). The first part is the `name`, valid values include: `Consumption`, `Developer`, `Basic`, `Standard` and `Premium`. The second part is the `capacity` (e.g. the number of deployed units of the `sku`), which must be a positive `integer` (e.g. `Developer_1`). |        |   True   |
+| sku_name                      | A supported tier (`Consumption`, `Developer`, `Basic`, `BasicV2`, `Standard`, `StandardV2`, `Premium`, or `PremiumV2`) and positive capacity separated by an underscore, for example `Developer_1`. Consumption capacity should be zero. |        |   True   |
 | additional_location           | One or more `additional_location` blocks as defined below.                                                                                                                                                                                                                                                                                     | Block  |  False   |
+| additional_locations          | Map of additional regional locations, each with location, capacity, zones, public IP, gateway, and virtual network settings.                                                                                                                                                                                                                   | Map    |  False   |
 | certificate                   | One or more (up to 10) `certificate` blocks as defined below.                                                                                                                                                                                                                                                                                  | Block  |  False   |
+| certificates                  | Map of certificates to configure on the service.                                                                                                                                                                                                                                                                                              | Map    |  False   |
 | client_certificate_enabled    | Enforce a client certificate to be presented on each request to the gateway? This is only supported when sku type is `Consumption`.                                                                                                                                                                                                            |        |  False   |
+| delegation                    | A `delegation` block as defined below.                                                                                                                                                                                                                                                                                                         | Block  |  False   |
 | gateway_disabled              | Disable the gateway in main region? This is only supported when `additional_location` is set.                                                                                                                                                                                                                                                  |        |  False   |
 | min_api_version               | The version which the control plane API calls to API Management service are limited with version equal to or newer than.                                                                                                                                                                                                                       |        |  False   |
 | zones                         | A list of availability zones.                                                                                                                                                                                                                                                                                                                  |        |  False   |
@@ -55,9 +96,12 @@ You can review the complete set of examples in the [GitHub repository](https://g
 | sign_in                       | A `sign_in` block as defined below.                                                                                                                                                                                                                                                                                                            | Block  |  False   |
 | sign_up                       | A `sign_up` block as defined below.                                                                                                                                                                                                                                                                                                            | Block  |  False   |
 | tenant_access                 | A `tenant_access` block as defined below.                                                                                                                                                                                                                                                                                                      | Block  |  False   |
+| public_ip_address_id          | ID of a standard SKU IPv4 public IP address.                                                                                                                                                                                                                                                                                                  | String |  False   |
+| public_network_access_enabled | Whether public management-plane access is enabled. Defaults to `true`; it must be `true` during creation.                                                                                                                                                                                                                                       | Bool   |  False   |
 | virtual_network_type          | The type of virtual network you want to use, valid values include: `None`, `External`, `Internal`.                                                                                                                                                                                                                                             |        |  False   |
 | virtual_network_configuration | A `virtual_network_configuration` block as defined below. Required when `virtual_network_type` is `External` or `Internal`.                                                                                                                                                                                                                    | Block  |  False   |
 | tags                          | A mapping of tags assigned to the resource.                                                                                                                                                                                                                                                                                                    |        |  False   |
+| timeouts                      | Optional create, read, update, and delete operation timeouts.                                                                                                                                                                                                                                                                                 | Block  |  False   |
 
 ## Blocks
 
@@ -66,8 +110,11 @@ You can review the complete set of examples in the [GitHub repository](https://g
 | resource_group                | key                                                 | Key for resource_group                                                                                                                                                                                          |          |
 | resource_group                | lz_key                                              | Landing Zone Key in which the resource_group is located                                                                                                                                                         | True     |
 | resource_group                | name                                                | The name of the resource_group                                                                                                                                                                                  | True     |
-| additional_location           | sku_name                                            | The `sku_name` for the location. Possible values are `Consumption`, `Developer`, `Basic`, `Standard` and `Premium`.                                                                                             | True     |
 | additional_location           | location                                            | The name of the Azure Region in which the API Management Service should be expanded to.                                                                                                                         | True     |
+| additional_location           | capacity                                            | Number of compute units for this region; defaults to the main region capacity.                                                                                                                                  | False    |
+| additional_location           | zones                                               | Availability zones for this regional instance.                                                                                                                                                                   | False    |
+| additional_location           | public_ip_address_id                               | Standard SKU IPv4 public IP ID for this regional instance.                                                                                                                                                       | False    |
+| additional_location           | gateway_disabled                                   | Whether the gateway is disabled in this additional region.                                                                                                                                                      | False    |
 | additional_location           | virtual_network_configuration                       | A `virtual_network_configuration` block as defined below. Required when `virtual_network_type` is `External` or `Internal`.                                                                                     | False    |
 | virtual_network_configuration | subnet_id                                           | The id of the subnet that will be used for the API Management.                                                                                                                                                  | True     |
 | certificate                   | encoded_certificate                                 | The Base64 Encoded PFX or Base64 Encoded X.509 Certificate.                                                                                                                                                     | True     |

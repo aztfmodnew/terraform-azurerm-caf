@@ -2,7 +2,7 @@
 
 This Developer-tier example exercises the retained `enable_http2` and
 `enable_backend_*` / `enable_frontend_*` settings. The module maps them to the
-AzureRM 5.8 `http2_enabled`, `backend_*_enabled` and `frontend_*_enabled` arguments.
+AzureRM 5.9.0 `http2_enabled`, `backend_*_enabled` and `frontend_*_enabled` arguments.
 HTTP/2 is enabled; SSL 3.0, TLS 1.0 and TLS 1.1 remain disabled.
 
 Current argument names are also accepted and take precedence when both forms
