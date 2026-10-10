@@ -34,13 +34,21 @@ DESCRIPTION
   })
 
   validation {
-    condition     = var.settings.administrative_unit_object.id != null || var.settings.administrative_unit_object.key != null
-    error_message = "settings.administrative_unit_object requires either id or key."
+    condition = (
+      var.settings.administrative_unit_object.id == null ? false : var.settings.administrative_unit_object.id != ""
+      ) || (
+      var.settings.administrative_unit_object.key == null ? false : var.settings.administrative_unit_object.key != ""
+    )
+    error_message = "settings.administrative_unit_object requires either a non-empty id or a non-empty key."
   }
 
   validation {
-    condition     = var.settings.member_object.id != null || var.settings.member_object.key != null
-    error_message = "settings.member_object requires either id or key."
+    condition = (
+      var.settings.member_object.id == null ? false : var.settings.member_object.id != ""
+      ) || (
+      var.settings.member_object.key == null ? false : var.settings.member_object.key != ""
+    )
+    error_message = "settings.member_object requires either a non-empty id or a non-empty key."
   }
 
   validation {
