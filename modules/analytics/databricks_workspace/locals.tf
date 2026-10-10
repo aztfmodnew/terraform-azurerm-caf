@@ -9,7 +9,7 @@ locals {
     local.module_tag
   ) : merge(try(var.settings.tags, null), local.module_tag)
 
-  location            = coalesce(var.location, try(var.settings.location, null), var.resource_group.location)
+  location            = coalesce(var.location, try(var.settings.location, null), try(var.global_settings.regions[var.settings.region], null), var.resource_group.location)
   resource_group_name = coalesce(var.resource_group_name, try(var.settings.resource_group_name, null), var.resource_group.name)
 
   machine_learning_workspace_reference = (

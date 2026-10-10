@@ -24,7 +24,7 @@ variables {
     passthrough   = false
     use_slug      = true
     tags          = {}
-    regions       = { region1 = "australiaeast" }
+    regions       = { region1 = "australiaeast", region2 = "westeurope" }
   }
   client_config = { landingzone_key = "local" }
   resource_group = {
@@ -220,5 +220,30 @@ run "legacy_machine_learning_key_reference_is_preserved" {
       azurerm_databricks_workspace.ws.custom_parameters[0].no_public_ip == false
     )
     error_message = "The legacy machine_learning key reference, standard SKU default, and no_public_ip=false default must be preserved."
+  }
+}
+
+run "settings_region_key_resolves_the_workspace_location" {
+  command = plan
+
+  module {
+    source = "../modules/analytics/databricks_workspace"
+  }
+
+  variables {
+    location = null
+    settings = {
+      name               = "dbw-region"
+      resource_group_key = "test_rg"
+      region             = "region2"
+    }
+    remote_objects = var.remote_objects
+    vnets          = var.vnets
+    aml            = var.aml
+  }
+
+  assert {
+    condition     = azurerm_databricks_workspace.ws.location == "westeurope"
+    error_message = "settings.region must be resolved through global_settings.regions instead of falling back to the resource group location."
   }
 }
