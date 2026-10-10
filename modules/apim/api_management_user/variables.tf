@@ -105,25 +105,6 @@ DESCRIPTION
     ], var.settings.state)
     error_message = "state must be active, blocked, or pending."
   }
-
-  validation {
-    condition = length(setsubtract(keys(var.settings), [
-      "user_id",
-      "email",
-      "first_name",
-      "last_name",
-      "confirmation",
-      "note",
-      "password",
-      "state",
-      "api_management",
-      "resource_group",
-      "resource_group_key",
-      "resource_group_name",
-      "timeouts"
-    ])) == 0
-    error_message = "Unsupported attributes in API Management user settings."
-  }
 }
 
 variable "remote_objects" {

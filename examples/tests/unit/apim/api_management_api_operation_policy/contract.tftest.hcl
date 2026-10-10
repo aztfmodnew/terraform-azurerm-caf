@@ -188,3 +188,24 @@ run "operation_policy_normalizes_legacy_arm_operation_output" {
     error_message = "Legacy API operation ARM IDs must be reduced to the logical operation identifier before being passed to the provider."
   }
 }
+
+run "api_operation_without_id_or_key_is_rejected" {
+  command = plan
+  module {
+    source = "../modules/apim/api_management_api_operation_policy"
+  }
+  variables {
+    global_settings     = {}
+    client_config       = { landingzone_key = "local" }
+    remote_objects      = {}
+    api_management_name = "example-apim"
+    api_name            = "example-api"
+    resource_group_name = "example-rg"
+    settings = {
+      api_operation = {}
+      xml_content   = "<policies></policies>"
+    }
+  }
+
+  expect_failures = [var.settings]
+}

@@ -29,17 +29,6 @@ variable "settings" {
       delete = optional(string)
     }))
   })
-  validation {
-    condition = length(setsubtract(keys(var.settings), [
-      "display_name",
-      "description",
-      "prevent_duplicate_names",
-      "members",
-      "hidden_membership_enabled",
-      "timeouts"
-    ])) == 0
-    error_message = "Unsupported administrative unit settings. Allowed attributes: display_name, description, prevent_duplicate_names, members, hidden_membership_enabled, timeouts."
-  }
 }
 variable "remote_objects" {
   description = "Remote objects configuration."

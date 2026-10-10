@@ -76,9 +76,19 @@ run "passes_request_validation_xml_and_timeouts" {
       azapi_resource.appiwt.body.properties.Request.Headers[0].key == "Content-Type" &&
       azapi_resource.appiwt.body.properties.Request.HttpVerb == "POST" &&
       !azapi_resource.appiwt.body.properties.Request.FollowRedirects &&
+      azapi_resource.appiwt.body.properties.Request.ParseDependentRequests &&
+      azapi_resource.appiwt.body.properties.Description == "Contract" &&
+      !azapi_resource.appiwt.body.properties.Enabled &&
+      !azapi_resource.appiwt.body.properties.RetryEnabled &&
+      azapi_resource.appiwt.body.properties.Frequency == 600 &&
+      azapi_resource.appiwt.body.properties.Timeout == 60 &&
       azapi_resource.appiwt.body.properties.Configuration.WebTest == "<WebTest />" &&
       azapi_resource.appiwt.body.properties.ValidationRules.ContentValidation.ContentMatch == "healthy" &&
+      azapi_resource.appiwt.body.properties.ValidationRules.ContentValidation.IgnoreCase &&
+      azapi_resource.appiwt.body.properties.ValidationRules.ContentValidation.PassIfTextFound &&
+      azapi_resource.appiwt.body.properties.ValidationRules.SSLCheck &&
       azapi_resource.appiwt.body.properties.ValidationRules.SSLCertRemainingLifetimeCheck == 30 &&
+      azapi_resource.appiwt.body.properties.ValidationRules.IgnoreHttpStatusCode == false &&
       azapi_resource.appiwt.body.properties.ValidationRules.ExpectedHttpStatusCode == 201 &&
       azapi_resource.appiwt.timeouts.create == "40m" &&
       azapi_resource.appiwt.timeouts.read == "6m" &&

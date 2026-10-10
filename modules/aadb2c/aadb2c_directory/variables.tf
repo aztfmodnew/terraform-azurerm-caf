@@ -31,36 +31,6 @@ variable "settings" {
     }))
   })
   sensitive = false
-  validation {
-    # Check if all provided keys are within the allowed set.
-    condition = length(setsubtract(
-      keys(var.settings),
-      [
-        "country_code",
-        "data_residency_location",
-        "display_name",
-        "domain_name",
-        "sku_name",
-        "tags",
-        "timeouts"
-      ]
-    )) == 0
-    error_message = format("The following attributes are not supported within settings: %s. Allowed attributes are: country_code, data_residency_location, display_name, domain_name, sku_name, tags, timeouts.", join(", ",
-      setsubtract(
-        keys(var.settings),
-        [
-          "country_code",
-          "data_residency_location",
-          "display_name",
-          "domain_name",
-          "sku_name",
-          "tags",
-          "timeouts"
-        ]
-      )
-      )
-    )
-  }
 }
 
 

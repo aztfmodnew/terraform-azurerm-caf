@@ -105,26 +105,6 @@ DESCRIPTION
     ], var.settings.state)
     error_message = "state must be active, cancelled, expired, rejected, submitted, or suspended."
   }
-
-  validation {
-    condition = length(setsubtract(keys(var.settings), [
-      "display_name",
-      "api_id",
-      "user_id",
-      "primary_key",
-      "secondary_key",
-      "subscription_id",
-      "state",
-      "allow_tracing",
-      "api_management",
-      "resource_group",
-      "resource_group_key",
-      "resource_group_name",
-      "product",
-      "timeouts"
-    ])) == 0
-    error_message = "Unsupported attributes in API Management subscription settings."
-  }
 }
 
 variable "remote_objects" {

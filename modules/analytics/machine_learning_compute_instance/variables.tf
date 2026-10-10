@@ -14,11 +14,14 @@ Settings for an Azure Machine Learning compute instance.
 
 Required:
   - name - CAF input name used to generate the resource name.
-  - machine_learning_workspace - Workspace reference with either id or key; lz_key
-    selects a remote landing zone when key is used.
   - virtual_machine_size - Azure VM size for the compute instance.
 
 Optional:
+  - machine_learning_workspace - Workspace reference with either id or key; lz_key
+    selects a remote landing zone when key is used. The key reference is resolved by
+    the CAF root module only; when calling this module directly, omit this attribute
+    and pass the resolved workspace id through
+    remote_objects.machine_learning_workspace_id.
   - region - Region key from global_settings.regions.
   - authorization_type - Supported value: personal.
   - assign_to_user - Optional personal user assignment (object_id and tenant_id).
@@ -27,18 +30,20 @@ Optional:
   - local_auth_enabled - Enables local authentication; defaults to true.
   - ssh - SSH settings containing a required RSA public_key.
   - subnet_resource_id - Direct subnet resource ID.
-  - subnet - Subnet reference with id, or key and vnet_key, and optional lz_key.
+  - subnet - Subnet reference with either id, or both key and vnet_key, plus an
+    optional lz_key. Key references are resolved by the CAF root module only; direct
+    callers must pass subnet_resource_id or remote_objects.subnet_resource_id.
   - node_public_ip_enabled - Whether the instance has a public IP; defaults to true.
   - tags - Additional resource tags.
   - timeouts - Create, read, and delete operation timeouts.
 DESCRIPTION
   type = object({
     name = string
-    machine_learning_workspace = object({
+    machine_learning_workspace = optional(object({
       id     = optional(string)
       key    = optional(string)
       lz_key = optional(string)
-    })
+    }))
     virtual_machine_size = string
     region               = optional(string)
     authorization_type   = optional(string)
@@ -77,10 +82,23 @@ DESCRIPTION
 
   validation {
     condition = (
+      try(var.settings.machine_learning_workspace, null) == null ||
       try(var.settings.machine_learning_workspace.id, null) != null ||
       try(var.settings.machine_learning_workspace.key, null) != null
     )
-    error_message = "machine_learning_workspace must specify either id or key."
+    error_message = "When machine_learning_workspace is supplied it must specify either id or key. Omit it entirely to use the resolved remote_objects.machine_learning_workspace_id."
+  }
+
+  validation {
+    condition = (
+      try(var.settings.subnet, null) == null ||
+      try(var.settings.subnet.id, null) != null ||
+      (
+        try(var.settings.subnet.key, null) != null &&
+        try(var.settings.subnet.vnet_key, null) != null
+      )
+    )
+    error_message = "When subnet is supplied it must specify either id, or both key and vnet_key, otherwise the subnet silently resolves to null and the instance is created outside the intended network."
   }
 
   validation {
@@ -116,27 +134,6 @@ DESCRIPTION
       ])) > 0
     )
     error_message = "A user-assigned identity type requires identity_ids or managed identity keys."
-  }
-
-  validation {
-    condition = length(setsubtract(keys(var.settings), [
-      "name",
-      "machine_learning_workspace",
-      "virtual_machine_size",
-      "region",
-      "authorization_type",
-      "assign_to_user",
-      "description",
-      "identity",
-      "local_auth_enabled",
-      "ssh",
-      "subnet_resource_id",
-      "subnet",
-      "node_public_ip_enabled",
-      "tags",
-      "timeouts"
-    ])) == 0
-    error_message = "Unsupported attributes in settings. See the variable description for allowed attributes."
   }
 }
 

@@ -128,26 +128,6 @@ DESCRIPTION
     )
     error_message = "policy.xml_file must point to a readable file relative to the Terraform configuration directory."
   }
-
-  validation {
-    condition = length(setsubtract(keys(var.settings), [
-      "product_id",
-      "display_name",
-      "published",
-      "subscription_required",
-      "approval_required",
-      "subscriptions_limit",
-      "description",
-      "terms",
-      "api_management",
-      "resource_group",
-      "resource_group_key",
-      "resource_group_name",
-      "policy",
-      "timeouts"
-    ])) == 0
-    error_message = "Unsupported attributes in API Management product settings."
-  }
 }
 
 variable "remote_objects" {

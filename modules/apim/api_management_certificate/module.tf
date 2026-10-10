@@ -14,15 +14,15 @@ resource "azurerm_api_management_certificate" "apim" {
   data                = try(var.settings.data, null)
   password            = try(var.settings.password, null)
   key_vault_secret_id = try(coalesce(
-    try(var.remote_objects.keyvault_certificates[coalesce(try(var.settings.key_vault_secret.lz_key, null), var.client_config.landingzone_key)][var.settings.key_vault_secret.certificate_key].secret_id, null),
-    try(var.remote_objects.keyvault_certificate_requests[coalesce(try(var.settings.key_vault_secret.lz_key, null), var.client_config.landingzone_key)][var.settings.key_vault_secret.certificate_request_key].secret_id, null),
     try(var.settings.key_vault_secret_id, null),
-    try(var.settings.key_vault_id, null)
+    try(var.settings.key_vault_id, null),
+    try(var.remote_objects.keyvault_certificates[coalesce(try(var.settings.key_vault_secret.lz_key, null), var.client_config.landingzone_key)][var.settings.key_vault_secret.certificate_key].secret_id, null),
+    try(var.remote_objects.keyvault_certificate_requests[coalesce(try(var.settings.key_vault_secret.lz_key, null), var.client_config.landingzone_key)][var.settings.key_vault_secret.certificate_request_key].secret_id, null)
   ), null)
   key_vault_identity_client_id = try(coalesce(
-    try(var.remote_objects.managed_identities[coalesce(try(var.settings.key_vault_identity_client.lz_key, null), var.client_config.landingzone_key)][var.settings.key_vault_identity_client.key].client_id, null),
+    try(var.settings.key_vault_identity_client_id, null),
     try(var.settings.key_vault_identity_client.id, null),
-    try(var.settings.key_vault_identity_client_id, null)
+    try(var.remote_objects.managed_identities[coalesce(try(var.settings.key_vault_identity_client.lz_key, null), var.client_config.landingzone_key)][var.settings.key_vault_identity_client.key].client_id, null)
   ), null)
 
   dynamic "timeouts" {

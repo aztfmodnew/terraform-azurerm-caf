@@ -58,7 +58,13 @@ The standalone `machine_learning_compute_instance` module exposes the
 AzureRM 5.9.0 compute-instance arguments, including user assignment, managed
 identity references, SSH configuration, subnet and public-IP settings, local
 authentication, tags, and the supported create/read/delete timeouts. Workspace
-and subnet dependencies accept direct IDs or CAF key references. Existing
+and subnet dependencies accept direct IDs or CAF key references. Key references
+(`settings.machine_learning_workspace.key`, `settings.subnet.key` /
+`settings.subnet.vnet_key`) are resolved by the CAF root module in
+`machine_learning.tf`; the child module itself only consumes pre-resolved IDs.
+When calling this module directly, omit the key-based objects and pass
+`remote_objects.machine_learning_workspace_id` and either
+`settings.subnet_resource_id` or `remote_objects.subnet_resource_id`. Existing
 example inputs and the legacy workspace `compute_instances` setting remain
 supported.
 

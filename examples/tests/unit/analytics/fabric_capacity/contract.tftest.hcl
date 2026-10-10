@@ -95,7 +95,8 @@ run "fabric_tier_is_defaulted_when_omitted" {
     location        = var.location
     base_tags       = false
     settings = {
-      name = "fabric-default-tier"
+      name                   = "fabric-default-tier"
+      administration_members = ["00000000-0000-0000-0000-000000000001"]
       sku = {
         name = "F4"
       }
@@ -126,7 +127,8 @@ run "unsupported_sku_name_is_rejected" {
     location        = var.location
     base_tags       = false
     settings = {
-      name = "fabric-invalid-sku"
+      name                   = "fabric-invalid-sku"
+      administration_members = ["00000000-0000-0000-0000-000000000001"]
       sku = {
         name = "F1"
       }
@@ -150,7 +152,8 @@ run "unsupported_sku_tier_is_rejected" {
     location        = var.location
     base_tags       = false
     settings = {
-      name = "fabric-invalid-tier"
+      name                   = "fabric-invalid-tier"
+      administration_members = ["00000000-0000-0000-0000-000000000001"]
       sku = {
         name = "F2"
         tier = "Premium"
@@ -159,4 +162,28 @@ run "unsupported_sku_tier_is_rejected" {
   }
 
   expect_failures = [azurerm_fabric_capacity.fabric_capacity]
+}
+
+run "missing_administration_members_is_rejected" {
+  command = plan
+
+  module {
+    source = "../modules/analytics/fabric_capacity"
+  }
+
+  variables {
+    global_settings = var.global_settings
+    client_config   = var.client_config
+    resource_group  = var.resource_group
+    location        = var.location
+    base_tags       = false
+    settings = {
+      name = "fabric-no-admins"
+      sku = {
+        name = "F2"
+      }
+    }
+  }
+
+  expect_failures = [var.settings]
 }

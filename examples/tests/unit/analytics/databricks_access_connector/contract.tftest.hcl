@@ -35,6 +35,11 @@ variables {
           id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test-rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/dac-test"
         }
       }
+      remote_lz = {
+        dac_remote = {
+          id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/remote-rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/dac-remote"
+        }
+      }
     }
   }
 }
@@ -110,6 +115,71 @@ run "missing_name_is_rejected" {
   variables {
     settings = {
       resource_group_key = "dac_test"
+    }
+  }
+}
+
+run "remote_landing_zone_identity_is_resolved" {
+  command = plan
+  module {
+    source = "../modules/analytics/databricks_access_connector"
+  }
+  variables {
+    settings = {
+      name               = "dac-remote"
+      resource_group_key = "dac_test"
+      identity = {
+        type = "UserAssigned"
+        remote = {
+          remote_lz = {
+            managed_identity_keys = ["dac_remote"]
+          }
+        }
+      }
+    }
+  }
+  assert {
+    condition     = azurerm_databricks_access_connector.databricks_access_connector.identity[0].identity_ids == toset([var.remote_objects.managed_identities.remote_lz.dac_remote.id])
+    error_message = "Identities declared under identity.remote must be resolved from the referenced landing zone."
+  }
+}
+
+run "user_assigned_identity_without_reference_is_rejected" {
+  command         = plan
+  expect_failures = [var.settings]
+  module {
+    source = "../modules/analytics/databricks_access_connector"
+  }
+  variables {
+    settings = {
+      name               = "dac-invalid"
+      resource_group_key = "dac_test"
+      identity = {
+        type = "UserAssigned"
+      }
+    }
+  }
+}
+
+run "multiple_user_assigned_identities_are_rejected" {
+  command         = plan
+  expect_failures = [var.settings]
+  module {
+    source = "../modules/analytics/databricks_access_connector"
+  }
+  variables {
+    settings = {
+      name               = "dac-invalid"
+      resource_group_key = "dac_test"
+      identity = {
+        type                  = "UserAssigned"
+        managed_identity_keys = ["dac_test"]
+        remote = {
+          remote_lz = {
+            managed_identity_keys = ["dac_remote"]
+          }
+        }
+      }
     }
   }
 }

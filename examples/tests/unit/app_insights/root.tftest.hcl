@@ -14,6 +14,11 @@ mock_provider "azapi" {
 mock_provider "external" {
   source = "./tests/mock_data"
 }
+mock_provider "azurecaf" {
+  mock_resource "azurecaf_name" {
+    defaults = { result = "contractinsights" }
+  }
+}
 
 run "root_preserves_direct_workspace_id_precedence" {
   command = plan

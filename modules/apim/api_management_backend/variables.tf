@@ -110,15 +110,6 @@ variable "settings" {
   }
 
   validation {
-    condition = length(setsubtract(keys(var.settings), [
-      "name", "protocol", "url", "api_management", "resource_group",
-      "circuit_breaker_rule", "credentials", "description", "proxy",
-      "resource_id", "server_x509_name", "service_fabric_cluster", "title", "tls", "timeouts"
-    ])) == 0
-    error_message = "Unsupported attributes in settings. See the variable description for the supported API Management backend settings."
-  }
-
-  validation {
     condition = var.settings.circuit_breaker_rule == null || (
       (try(var.settings.circuit_breaker_rule.failure_condition.count, null) != null) !=
       (try(var.settings.circuit_breaker_rule.failure_condition.percentage, null) != null)

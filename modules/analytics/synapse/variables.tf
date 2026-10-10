@@ -26,6 +26,7 @@ Optional:
   - identity - System-assigned and/or user-assigned managed identity configuration. User-assigned identities accept direct IDs or CAF local/remote identity keys.
   - timeouts - Create, read, update, and delete timeouts for the workspace.
   - key_vault_secret_timeouts - Create, read, update, and delete timeouts for generated Key Vault secrets.
+  - key_vault_secret_tags - Tags applied to the generated Key Vault secrets. Key Vault secrets accept at most 15 tags, so inherited CAF tags are intentionally not propagated; supply this map to tag them explicitly.
   - workspace_firewall - Legacy single firewall rule; retained for compatibility.
   - workspace_firewalls - Map of firewall rules; each rule may set a name and timeouts.
   - aad_admin - Optional workspace Microsoft Entra administrator and timeouts.
@@ -116,6 +117,7 @@ DESCRIPTION
       update = optional(string)
       delete = optional(string)
     }))
+    key_vault_secret_tags = optional(map(string))
     workspace_firewall = optional(object({
       name     = string
       start_ip = string
@@ -156,49 +158,8 @@ DESCRIPTION
   })
 
   validation {
-    condition = length(setsubtract(keys(var.settings), [
-      "name",
-      "resource_group_key",
-      "resource_group_name",
-      "resource_group",
-      "lz_key",
-      "location",
-      "region",
-      "storage_data_lake_gen2_filesystem_id",
-      "data_lake_filesystem",
-      "keyvault_key",
-      "sql_administrator_login",
-      "sql_administrator_login_password",
-      "sql_administrator_login_password_not_before",
-      "sql_administrator_login_password_expiration_date",
-      "azuread_authentication_only",
-      "compute_subnet_id",
-      "compute_subnet",
-      "data_exfiltration_protection_enabled",
-      "customer_managed_key_versionless_id",
-      "customer_managed_key",
-      "customer_managed_key_key_name",
-      "customer_managed_key_user_assigned_identity_id",
-      "azure_devops_repo",
-      "github_repo",
-      "linking_allowed_for_aad_tenant_ids",
-      "managed_resource_group_name",
-      "managed_virtual_network_enabled",
-      "public_network_access_enabled",
-      "purview_id",
-      "sql_identity_control_enabled",
-      "identity",
-      "timeouts",
-      "key_vault_secret_timeouts",
-      "workspace_firewall",
-      "workspace_firewalls",
-      "aad_admin",
-      "synapse_spark_pools",
-      "synapse_sql_pools",
-      "private_endpoints",
-      "tags"
-    ])) == 0
-    error_message = "Unsupported attributes in settings. See the variable description for allowed attributes."
+    condition     = try(var.settings.key_vault_secret_tags, null) == null ? true : length(var.settings.key_vault_secret_tags) <= 15
+    error_message = "settings.key_vault_secret_tags accepts at most 15 entries because AzureRM limits Key Vault secret tags to 15."
   }
 
   validation {

@@ -155,3 +155,35 @@ run "api_operation_nested_configuration" {
     error_message = "URL template parameters must be passed through."
   }
 }
+
+run "api_operation_rejects_malformed_method" {
+  command = plan
+
+  module {
+    source = "../modules/apim/api_management_api_operation"
+  }
+
+  variables {
+    global_settings = {
+      prefixes      = []
+      random_length = 0
+      passthrough   = true
+      use_slug      = false
+      tags          = {}
+    }
+    client_config       = { landingzone_key = "local" }
+    base_tags           = {}
+    remote_objects      = {}
+    api_management_name = "example-apim"
+    api_name            = "example-api"
+    resource_group_name = "example-rg"
+    settings = {
+      operation_id = "get-wishlists"
+      display_name = "Get WishLists"
+      method       = "get"
+      url_template = "/wishlists/{id}"
+    }
+  }
+
+  expect_failures = [var.settings]
+}
