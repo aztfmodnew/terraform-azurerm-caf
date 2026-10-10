@@ -31,7 +31,59 @@ variable "base_tags" {
 }
 
 variable "settings" {
-  description = "Standard WebTest settings, including request/validation options, raw ARM content_validation, ignore_http_status_code, optional configuration.web_test XML, and CRUD timeouts. See docs/AZAPI_MODULES.md for the full contract."
-  type        = any
-  default     = {}
+  description = <<DESCRIPTION
+Standard WebTest settings. request_url and geo_locations are required.
+Optional request_headers uses ARM key/value entries; request_body is base64
+encoded. content_validation uses ARM ContentMatch, IgnoreCase and PassIfTextFound.
+description, enabled, frequency, timeout, retry_enabled, http_verb,
+follow_redirects, parse_dependent_requests, expected_http_status_code,
+ignore_http_status_code, ssl_check_enabled, ssl_cert_remaining_lifetime_check,
+configuration.web_test, tags and CRUD timeouts customize the test.
+DESCRIPTION
+  type = object({
+    request_url   = string
+    geo_locations = list(string)
+    description   = optional(string, "")
+    enabled       = optional(bool, true)
+    frequency     = optional(number, 300)
+    timeout       = optional(number, 30)
+    retry_enabled = optional(bool, true)
+    request_headers = optional(list(object({
+      key   = string
+      value = string
+    })))
+    http_verb                 = optional(string, "GET")
+    request_body              = optional(string)
+    follow_redirects          = optional(bool)
+    parse_dependent_requests  = optional(bool, false)
+    expected_http_status_code = optional(number, 200)
+    ignore_http_status_code   = optional(bool)
+    content_validation = optional(object({
+      ContentMatch    = string
+      IgnoreCase      = optional(bool)
+      PassIfTextFound = optional(bool)
+    }))
+    ssl_check_enabled                 = optional(bool, false)
+    ssl_cert_remaining_lifetime_check = optional(number)
+    configuration = optional(object({
+      web_test = optional(string)
+    }))
+    tags = optional(map(string))
+    timeouts = optional(object({
+      create = optional(string)
+      read   = optional(string)
+      update = optional(string)
+      delete = optional(string)
+    }))
+  })
+
+  validation {
+    condition     = contains([300, 600, 900], var.settings.frequency)
+    error_message = "Standard WebTest frequency must be 300, 600 or 900 seconds."
+  }
+
+  validation {
+    condition     = var.settings.ssl_cert_remaining_lifetime_check == null ? true : var.settings.ssl_check_enabled && var.settings.ssl_cert_remaining_lifetime_check > 0
+    error_message = "Certificate lifetime checks require SSL checking and a positive number of days."
+  }
 }
