@@ -208,6 +208,27 @@ This contract verifies Terraform's planned resource configuration only; it
 does not verify the PFX payload, Key Vault access, Azure-side acceptance, or
 deploy resources.
 
+## API Management custom-domain options
+
+Custom domains support all five AzureRM endpoint blocks:
+`developer_portal`, `management`, `portal`, `gateway`, and `scm`. Singular
+settings configure one endpoint; plural forms accept maps for repeated blocks.
+The legacy `gateways` input accepts either a map or list, and `proxy` remains
+an alias. Endpoints support PFX certificate data/password, direct Key Vault
+secret URIs or local/remote certificate references, managed-identity
+resolution, client-certificate negotiation, and provider timeouts.
+`default_ssl_binding` is supported for gateways only.
+
+The focused compatibility contract checks legacy input shapes, all endpoint
+blocks, certificate and identity resolution, repeated endpoints, and timeouts:
+
+```bash
+terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/api_management_custom_domain
+terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_custom_domain -no-color
+```
+
+This plan-only test does not verify Azure-side acceptance or deploy resources.
+
 ---
 
 ## Inputs
