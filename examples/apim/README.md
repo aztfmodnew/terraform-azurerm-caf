@@ -54,6 +54,9 @@ within the relevant location and provide either `subnet_id` directly or the
 CAF `vnet_key`/`subnet_key` reference. The top-level
 `public_network_access_enabled` setting controls management-plane access; Azure
 requires public access to be enabled when the service is initially created.
+Omitted or null public-access and virtual-network settings default to `true`
+and `None`. Omitted delegation flags remain null at the module boundary; the
+AzureRM provider documents disabled defaults for those flags.
 
 The focused, plan-only module contract checks legacy aliases and the added
 provider options without changing the shared mock runner or CI workflows:
@@ -74,13 +77,18 @@ authentication, the terms-of-service URL, subscription-key parameter names,
 and create/read/update/delete timeouts. API type defaults to `http` and
 subscription keys are required by default. A version requires a version set;
 websocket APIs require `service_url`. Without `source_api_id`, configure
-`display_name`, `path`, and `protocols`. OAuth2 and OpenID authentication are
+`display_name`, `path`, and `protocols`. A supplied display name must not be
+empty; an empty path is valid for a root API. OAuth2 and OpenID authentication are
 mutually exclusive. The existing API import remains supported; `wsdl_selector`
 is limited to `wsdl` and `wsdl-link` imports.
 
-The focused API contract checks the new fields and provider defaults using a
-plan-only mock; it does not validate imported document contents or Azure-side
-acceptance:
+The focused API contract checks the new fields, module defaults, each
+cross-field/allowed-value validation, and the valid empty path for a root API
+using a plan-only mock. Both `header` and `query` are required when
+`subscription_key_parameter_names` is supplied, matching the
+[provider contract](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/api_management_api).
+Tests do not validate imported document contents, real provider defaulting or
+Azure-side acceptance:
 
 ```bash
 terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/api_management_api
