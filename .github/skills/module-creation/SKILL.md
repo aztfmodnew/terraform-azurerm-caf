@@ -116,10 +116,8 @@ variable "settings" {
     # Add all other attributes with proper types
     # Use optional() for optional attributes
   })
-  validation {
-    condition     = length(setsubtract(keys(var.settings), ["name", "attribute1", "attribute2"])) == 0
-    error_message = "Unsupported attributes in settings. Allowed: name, attribute1, attribute2."
-  }
+  # Undeclared attributes are discarded by the typed object; add validation
+  # blocks only for value constraints and cross-field rules.
 }
 
 variable "resource_group" {

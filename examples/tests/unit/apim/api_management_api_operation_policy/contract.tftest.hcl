@@ -117,6 +117,44 @@ run "operation_policy_with_remote_operation_key" {
   }
 }
 
+run "operation_policy_explicit_remote_landing_zone_wins_key_collision" {
+  command = plan
+
+  module {
+    source = "../modules/apim/api_management_api_operation_policy"
+  }
+
+  variables {
+    global_settings = {}
+    client_config   = { landingzone_key = "local" }
+    remote_objects = {
+      api_management_api_operation = {
+        local = {
+          sample = { operation_id = "local-operation" }
+        }
+        remote = {
+          sample = { operation_id = "remote-operation" }
+        }
+      }
+    }
+    api_management_name = "example-apim"
+    api_name            = "example-api"
+    resource_group_name = "example-rg"
+    settings = {
+      api_operation = {
+        key    = "sample"
+        lz_key = "remote"
+      }
+      xml_content = "<policies><outbound /></policies>"
+    }
+  }
+
+  assert {
+    condition     = azurerm_api_management_api_operation_policy.apim.operation_id == "remote-operation"
+    error_message = "An explicit landing-zone key must select that landing zone even when the local landing zone has the same operation key."
+  }
+}
+
 run "operation_policy_normalizes_legacy_arm_operation_output" {
   command = plan
 
