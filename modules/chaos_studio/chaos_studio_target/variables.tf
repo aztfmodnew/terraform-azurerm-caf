@@ -40,10 +40,6 @@ variable "settings" {
       update = optional(string)
     }))
   })
-  validation {
-    condition     = length(setsubtract(keys(var.settings), ["location", "target_resource_id", "target_resource", "target_type", "resource_group", "tags", "timeouts"])) == 0
-    error_message = "Unsupported attributes in settings. Allowed: location, target_resource_id, target_resource, target_type, resource_group, tags, timeouts."
-  }
 }
 
 variable "resource_group" {

@@ -215,3 +215,77 @@ run "certificate_source_must_be_exclusive" {
     }
   }
 }
+
+run "certificate_rejects_multiple_key_vault_sources" {
+  command         = plan
+  expect_failures = [var.settings]
+
+  module {
+    source = "../modules/apim/api_management_certificate"
+  }
+
+  variables {
+    global_settings     = {}
+    client_config       = { landingzone_key = "local" }
+    base_tags           = {}
+    remote_objects      = {}
+    api_management_name = "example-apim"
+    resource_group_name = "example-rg"
+    settings = {
+      name                = "example-cert"
+      key_vault_secret_id = "https://example-vault.vault.azure.net/secrets/cert1"
+      key_vault_id        = "https://example-vault.vault.azure.net/secrets/legacy-cert"
+    }
+  }
+}
+
+run "certificate_explicit_ids_take_precedence_over_remote_objects" {
+  command = plan
+
+  module {
+    source = "../modules/apim/api_management_certificate"
+  }
+
+  variables {
+    global_settings = {
+      prefixes      = []
+      random_length = 0
+      passthrough   = true
+      use_slug      = false
+      tags          = {}
+    }
+    client_config = { landingzone_key = "local" }
+    base_tags     = {}
+    remote_objects = {
+      keyvault_certificates = {
+        local = {
+          cert1 = { secret_id = "https://example-vault.vault.azure.net/secrets/resolved-by-key" }
+        }
+      }
+      managed_identities = {
+        local = {
+          mi1 = { client_id = "00000000-0000-0000-0000-000000000002" }
+        }
+      }
+    }
+    api_management_name = "example-apim"
+    resource_group_name = "example-rg"
+    settings = {
+      name                         = "example-cert"
+      key_vault_secret_id          = "https://example-vault.vault.azure.net/secrets/explicit"
+      key_vault_identity_client_id = "00000000-0000-0000-0000-000000000001"
+      key_vault_identity_client = {
+        key = "mi1"
+      }
+    }
+  }
+
+  assert {
+    condition     = azurerm_api_management_certificate.apim.key_vault_secret_id == "https://example-vault.vault.azure.net/secrets/explicit"
+    error_message = "An explicit key_vault_secret_id must be used verbatim."
+  }
+  assert {
+    condition     = azurerm_api_management_certificate.apim.key_vault_identity_client_id == "00000000-0000-0000-0000-000000000001"
+    error_message = "An explicit key_vault_identity_client_id must take precedence over the key-based remote_objects lookup."
+  }
+}

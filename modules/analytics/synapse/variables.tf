@@ -156,52 +156,6 @@ DESCRIPTION
   })
 
   validation {
-    condition = length(setsubtract(keys(var.settings), [
-      "name",
-      "resource_group_key",
-      "resource_group_name",
-      "resource_group",
-      "lz_key",
-      "location",
-      "region",
-      "storage_data_lake_gen2_filesystem_id",
-      "data_lake_filesystem",
-      "keyvault_key",
-      "sql_administrator_login",
-      "sql_administrator_login_password",
-      "sql_administrator_login_password_not_before",
-      "sql_administrator_login_password_expiration_date",
-      "azuread_authentication_only",
-      "compute_subnet_id",
-      "compute_subnet",
-      "data_exfiltration_protection_enabled",
-      "customer_managed_key_versionless_id",
-      "customer_managed_key",
-      "customer_managed_key_key_name",
-      "customer_managed_key_user_assigned_identity_id",
-      "azure_devops_repo",
-      "github_repo",
-      "linking_allowed_for_aad_tenant_ids",
-      "managed_resource_group_name",
-      "managed_virtual_network_enabled",
-      "public_network_access_enabled",
-      "purview_id",
-      "sql_identity_control_enabled",
-      "identity",
-      "timeouts",
-      "key_vault_secret_timeouts",
-      "workspace_firewall",
-      "workspace_firewalls",
-      "aad_admin",
-      "synapse_spark_pools",
-      "synapse_sql_pools",
-      "private_endpoints",
-      "tags"
-    ])) == 0
-    error_message = "Unsupported attributes in settings. See the variable description for allowed attributes."
-  }
-
-  validation {
     condition = (
       try(var.settings.sql_administrator_login, null) != null ||
       try(var.settings.customer_managed_key_versionless_id, null) != null ||

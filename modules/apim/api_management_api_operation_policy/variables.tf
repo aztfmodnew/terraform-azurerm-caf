@@ -52,14 +52,6 @@ variable "settings" {
       delete = optional(string)
     }))
   })
-
-  validation {
-    condition = length(setsubtract(keys(var.settings), [
-      "api_operation", "api", "api_management", "resource_group",
-      "xml_content", "xml_link", "timeouts"
-    ])) == 0
-    error_message = "Unsupported attributes in settings. Allowed: api_operation, api, api_management, resource_group, xml_content, xml_link, timeouts."
-  }
 }
 variable "remote_objects" {
   description = "Remote objects configuration."
