@@ -37,6 +37,10 @@ network access, Purview, and workspace timeouts. Existing SQL pools, Spark
 pools, private endpoints, generated Key Vault secrets, and both firewall-rule
 interfaces remain supported. The legacy single `workspace_firewall` setting is
 preserved for compatibility.
+The Spark pool module exposes cache, isolation, executor, session-package,
+library, Spark configuration, and timeout options. The SQL pool module exposes
+restore, encryption, collation, geo-backup, and timeout options while retaining
+the existing `DW100c` and `GRS` defaults.
 
 The deployment examples are independent configurations. Run their existing
 shared mock plans separately:
@@ -51,9 +55,10 @@ terraform -chdir=examples test -test-directory=./tests/mock \
 
 The focused, plan-only contract checks provider option wiring, local and remote
 managed identity resolution, generated secret tags, Git integration, both
-firewall interfaces, and the AAD administrator. It does not validate Azure-side
-acceptance, deployment behavior, password rotation, or idempotency. It is an
-opt-in local suite and does not change CI selection:
+firewall interfaces, the AAD administrator, and Spark/SQL child-pool settings.
+It does not validate Azure-side acceptance, deployment behavior, password
+rotation, or idempotency. It is an opt-in local suite and does not change CI
+selection:
 
 ```bash
 terraform -chdir=examples init -backend=false -input=false \
