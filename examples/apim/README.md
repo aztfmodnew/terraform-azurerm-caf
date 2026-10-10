@@ -148,6 +148,21 @@ terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_ap
 This contract verifies Terraform's planned resource configuration only; it
 does not confirm Azure-side acceptance or deploy resources.
 
+## API Management API policy options
+
+API policies support either XML content or a publicly accessible XML link, and
+all four create/read/update/delete provider timeouts. The focused plan-only
+contract checks both XML forms and timeout passthrough without changing shared
+mocks or CI workflows:
+
+```bash
+terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/api_management_api_policy
+terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_api_policy -no-color
+```
+
+This contract verifies Terraform's planned resource configuration only; it
+does not confirm Azure-side acceptance or deploy resources.
+
 ---
 
 ## Inputs
