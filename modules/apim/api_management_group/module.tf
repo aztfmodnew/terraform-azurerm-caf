@@ -12,24 +12,25 @@ resource "azurerm_api_management_group" "apim" {
   name = azurecaf_name.apim.result
 
   api_management_name = coalesce(
-    try(var.remote_objects.api_management[var.settings.api_management.lz_key][var.settings.api_management.key].name, null),
+    try(var.remote_objects.api_management[coalesce(try(var.settings.api_management.lz_key, null), var.client_config.landingzone_key)][var.settings.api_management.key].name, null),
     try(var.remote_objects.api_management[var.client_config.landingzone_key][var.settings.api_management.key].name, null),
     try(var.settings.api_management.name, null)
   )
 
   resource_group_name = coalesce(
-    try(var.remote_objects.resource_group[var.settings.resource_group.lz_key][var.settings.resource_group.key].name, null),
-    try(var.remote_objects.resource_group[var.client_config.landingzone_key][var.settings.resource_group.key].name, null),
+    try(var.remote_objects.resource_group[coalesce(try(var.settings.resource_group.lz_key, null), var.client_config.landingzone_key)][coalesce(try(var.settings.resource_group.key, null), try(var.settings.resource_group_key, null))].name, null),
+    try(var.remote_objects.resource_group[var.client_config.landingzone_key][coalesce(try(var.settings.resource_group.key, null), try(var.settings.resource_group_key, null))].name, null),
     try(var.settings.resource_group.name, null)
   )
 
   display_name = var.settings.display_name
   description  = try(var.settings.description, null)
-  #external_id         = var.settings.external_id
-  #type                = var.settings.type
+  external_id  = try(var.settings.external_id, null)
+  type         = try(var.settings.type, null)
 
   dynamic "timeouts" {
-    for_each = try(var.settings.timeouts, null) != null ? [var.settings.timeouts] : []
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+
     content {
       create = try(timeouts.value.create, null)
       read   = try(timeouts.value.read, null)
