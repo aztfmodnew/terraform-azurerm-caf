@@ -119,6 +119,24 @@ terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/ap
 terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_diagnostic -no-color
 ```
 
+## API Management gateway options
+
+Gateways require a CAF-generated name, an API Management service reference,
+and `location_data.name`; the location block also accepts city, district, and
+region. The optional description and all four create/read/update/delete
+timeouts are supported. The service reference accepts a local or remote key,
+or a direct ID; existing keyed references continue to take precedence over a
+simultaneously supplied direct ID.
+
+The focused plan-only contract checks CAF naming, location fields, local and
+remote references, direct-ID compatibility, key-reference precedence, and
+timeouts:
+
+```bash
+terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/api_management_gateway
+terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_gateway -no-color
+```
+
 ## API Management API operation options
 
 API operation settings support request definitions, multiple response
