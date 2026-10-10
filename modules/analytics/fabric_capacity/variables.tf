@@ -60,23 +60,6 @@ variable "settings" {
       delete = optional(string)
     }))
   })
-
-  validation {
-    condition = length(setsubtract(keys(var.settings), [
-      "name",
-      "key",
-      "location",
-      "region",
-      "resource_group",
-      "resource_group_key",
-      "resource_group_name",
-      "sku",
-      "administration_members",
-      "tags",
-      "timeouts"
-    ])) == 0
-    error_message = "Unsupported attributes in settings. See the variable description for the supported Fabric Capacity configuration."
-  }
 }
 
 variable "resource_group" {

@@ -41,20 +41,6 @@ variable "settings" {
   })
 
   validation {
-    condition = length(setsubtract(keys(var.settings), [
-      "name",
-      "resource_group_key",
-      "resource_group",
-      "lz_key",
-      "region",
-      "identity",
-      "tags",
-      "timeouts"
-    ])) == 0
-    error_message = "Unsupported access connector settings. Allowed attributes: name, resource_group_key, resource_group, lz_key, region, identity, tags, timeouts."
-  }
-
-  validation {
     condition = try(contains([
       "SystemAssigned",
       "UserAssigned",

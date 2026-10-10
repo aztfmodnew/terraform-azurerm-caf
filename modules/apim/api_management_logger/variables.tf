@@ -138,23 +138,6 @@ DESCRIPTION
     condition     = var.settings.application_insights == null || var.settings.eventhub == null
     error_message = "A logger can configure either application_insights or eventhub, but not both."
   }
-
-  validation {
-    condition = length(setsubtract(keys(var.settings), [
-      "name",
-      "buffered",
-      "description",
-      "resource_id",
-      "api_management",
-      "resource_group",
-      "resource_group_key",
-      "resource",
-      "application_insights",
-      "eventhub",
-      "timeouts"
-    ])) == 0
-    error_message = "Unsupported attributes in API Management logger settings."
-  }
 }
 
 variable "remote_objects" {

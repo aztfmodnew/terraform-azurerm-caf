@@ -64,20 +64,14 @@ variable "settings" {
   })
 
   validation {
-    condition = length(setsubtract(keys(var.settings), [
-      "name", "api_management", "resource_group", "data", "password",
-      "key_vault_secret", "key_vault_secret_id", "key_vault_id",
-      "key_vault_identity_client", "key_vault_identity_client_id", "timeouts"
-    ])) == 0
-    error_message = "Unsupported attributes in settings. See the variable description for the supported API Management certificate settings."
-  }
-
-  validation {
-    condition = (var.settings.data != null) != (
-      var.settings.key_vault_secret != null ||
-      var.settings.key_vault_secret_id != null ||
-      var.settings.key_vault_id != null
-    )
+    condition = length([
+      for present in [
+        var.settings.data != null,
+        var.settings.key_vault_secret != null,
+        var.settings.key_vault_secret_id != null,
+        var.settings.key_vault_id != null
+      ] : present if present
+    ]) == 1
     error_message = "Specify exactly one API Management certificate source: data, key_vault_secret, key_vault_secret_id, or key_vault_id."
   }
 

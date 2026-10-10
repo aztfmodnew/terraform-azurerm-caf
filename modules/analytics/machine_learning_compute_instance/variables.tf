@@ -117,27 +117,6 @@ DESCRIPTION
     )
     error_message = "A user-assigned identity type requires identity_ids or managed identity keys."
   }
-
-  validation {
-    condition = length(setsubtract(keys(var.settings), [
-      "name",
-      "machine_learning_workspace",
-      "virtual_machine_size",
-      "region",
-      "authorization_type",
-      "assign_to_user",
-      "description",
-      "identity",
-      "local_auth_enabled",
-      "ssh",
-      "subnet_resource_id",
-      "subnet",
-      "node_public_ip_enabled",
-      "tags",
-      "timeouts"
-    ])) == 0
-    error_message = "Unsupported attributes in settings. See the variable description for allowed attributes."
-  }
 }
 
 variable "remote_objects" {

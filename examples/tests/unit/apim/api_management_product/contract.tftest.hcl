@@ -108,7 +108,7 @@ run "product_policy_preserves_xml_file_precedence" {
       display_name = "File Policy Product"
       published    = true
       policy = {
-        xml_file    = "examples/apim/117-api_management_product/policies/example-policy.xml"
+        xml_file    = "apim/117-api_management_product/policies/example-policy.xml"
         xml_content = "<policies><inbound><base /></inbound></policies>"
       }
     }
@@ -117,7 +117,7 @@ run "product_policy_preserves_xml_file_precedence" {
   assert {
     condition = (
       azurerm_api_management_product_policy.apim[0].xml_content ==
-      file("${path.cwd}/examples/apim/117-api_management_product/policies/example-policy.xml")
+      file("${path.cwd}/apim/117-api_management_product/policies/example-policy.xml")
     )
     error_message = "A configured XML file must retain precedence over the legacy inline-content fallback."
   }

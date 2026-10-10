@@ -97,19 +97,6 @@ DESCRIPTION
     ) != null
     error_message = "api_management must provide either an id or a key reference."
   }
-
-  validation {
-    condition = length(setsubtract(keys(var.settings), [
-      "name",
-      "api_management",
-      "description",
-      "location_data",
-      "resource_group",
-      "resource_group_key",
-      "timeouts"
-    ])) == 0
-    error_message = "Unsupported attributes in API Management Gateway settings."
-  }
 }
 
 variable "remote_objects" {

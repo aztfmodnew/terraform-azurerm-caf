@@ -199,19 +199,6 @@ DESCRIPTION
       delete = optional(string)
     }))
   })
-
-  validation {
-    condition = length(setsubtract(keys(var.settings), [
-      "api_management",
-      "developer_portal", "developer_portals",
-      "management", "managements",
-      "portal", "portals",
-      "gateway", "gateways", "proxy",
-      "scm", "scms",
-      "timeouts"
-    ])) == 0
-    error_message = "Unsupported attributes in custom-domain settings."
-  }
 }
 
 variable "remote_objects" {
