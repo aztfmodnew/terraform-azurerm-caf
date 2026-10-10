@@ -1,3 +1,11 @@
+# [5.0.1](https://github.com/aztfmodnew/terraform-azurerm-caf/compare/5.0.0...5.0.1) (2026-10-10)
+
+## What's Changed
+
+- Update AzAPI modules and complete Network Security Perimeter @rfernandezdo (#213)
+
+**Full Changelog**: https://github.com/aztfmodnew/terraform-azurerm-caf/compare/5.0.0...5.0.1
+
 # Unreleased
 
 ## Features and fixes
