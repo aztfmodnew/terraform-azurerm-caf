@@ -13,6 +13,7 @@ variable "settings" {
       - domain_name - (Required) Domain name of the B2C tenant, including the .onmicrosoft.com suffix. Changing this forces a new AAD B2C Directory to be created.
       - sku_name - (Required) Billing SKU for the B2C tenant. Must be one of: PremiumP1 or PremiumP2 (Standard is not supported). See official docs for more information.
       - tags - (Optional) A mapping of tags which should be assigned to the AAD B2C Directory.
+      - timeouts - (Optional) Operation timeouts. Supports create (30m default), read (5m default), update (30m default), and delete (30m default).
     DESCRIPTION
   default     = null # This makes the entire variable optional if not provided
   type = object({
@@ -22,6 +23,12 @@ variable "settings" {
     domain_name             = string                # Required
     sku_name                = string                # Required
     tags                    = optional(map(string)) # Marked as optional
+    timeouts = optional(object({
+      create = optional(string)
+      read   = optional(string)
+      update = optional(string)
+      delete = optional(string)
+    }))
   })
   sensitive = false
   validation {
@@ -34,10 +41,11 @@ variable "settings" {
         "display_name",
         "domain_name",
         "sku_name",
-        "tags"
+        "tags",
+        "timeouts"
       ]
     )) == 0
-    error_message = format("The following attributes are not supported within settings: %s. Allowed attributes are: country_code, data_residency_location, display_name, domain_name, sku_name, tags.", join(", ",
+    error_message = format("The following attributes are not supported within settings: %s. Allowed attributes are: country_code, data_residency_location, display_name, domain_name, sku_name, tags, timeouts.", join(", ",
       setsubtract(
         keys(var.settings),
         [
@@ -46,7 +54,8 @@ variable "settings" {
           "display_name",
           "domain_name",
           "sku_name",
-          "tags"
+          "tags",
+          "timeouts"
         ]
       )
       )

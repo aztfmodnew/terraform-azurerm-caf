@@ -27,3 +27,10 @@ resource_to_be_created = {
 ```
 
 You can review complete set of examples on the [GitHub repository](https://github.com/aztfmod/terraform-azurerm-caf/tree/main/examples/azuread).
+
+Administrative unit settings support `members` as a set of user or group
+object IDs, as well as the provider's `create`, `read`, `update`, and `delete`
+timeouts. Do not manage the same administrative unit's membership through both
+`members` and the separate `azuread_administrative_unit_member` resource.
+Administrative unit module outputs include both the Azure resource `id` and
+directory `object_id`.

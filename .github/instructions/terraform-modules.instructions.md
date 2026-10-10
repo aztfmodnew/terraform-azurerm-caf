@@ -22,6 +22,10 @@ Use these rules when editing files under `modules/**`. Focus on correctness, CAF
   - Follow the [shared test contract](../../examples/tests/README.md#contract-for-new-and-updated-tests). Reuse existing assertions and mocks; do not duplicate scenario plans or change the existing mock/general runners or pipelines merely to organize contracts.
   - Keep runs plan-only and document coverage and opt-in execution commands. A directory named `unit` does not guarantee isolation: explicitly select the module and mock external provider dependencies.
 
+- Repository-wide capability audits
+  - Use the reusable [module coverage audit skill](../skills/module-coverage-audit/SKILL.md) to inventory and compare modules against their exact provider schemas.
+  - Keep generated inventories and per-module progress in a verified ignored temporary directory. Classify nested and helper directories explicitly; do not silently skip them.
+
 - CAF naming (MANDATORY)
   - Every named resource must use `azurecaf_name` in `azurecaf_name.tf` and assign `name = azurecaf_name.<id>.result` in the resource.
   - Use the correct `resource_type` for the Azure resource (see Appendix A in main instructions).

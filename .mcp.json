@@ -12,5 +12,18 @@
       "gallery": "https://api.mcp.github.com/v0/servers/34cd3839-461a-404a-a290-3d3bc9d8bee3",
       "version": "1.0.0"
     }
+  },
+  "hashicorp/terraform-mcp-server": {
+    "type": "local",
+    "command": "docker",
+    "args": [
+      "run",
+      "-i",
+      "--rm",
+      "hashicorp/terraform-mcp-server"
+    ],
+    "tools": [
+      "*"
+    ]
   }
 }

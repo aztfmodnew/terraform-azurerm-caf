@@ -151,6 +151,7 @@ variable "aadb2c" {
     - resource_group_name - (Required if resource_group_key or resource_group is not set) The name of the resource group in which the AAD B2C directory will be created. This is required and cannot be null.
     - sku_name - (Required) The SKU name for the AAD B2C directory. This is required and cannot be null.
     - tags - (Optional) A mapping of tags which should be assigned to the AAD B2C Directory.
+    - timeouts - (Optional) Operation timeouts: create (30m default), read (5m default), update (30m default), and delete (30m default).
     - resource_group_key - (Optional) The key of the resource group in which the AAD B2C directory will be created. This is optional and can be set to null.
     - resource_group - (Optional) The resource group object in which the AAD B2C directory will be created. This is optional and can be set to null.
       - lz_key - (Optional) The key of the landing zone in which the AAD B2C directory will be created. This is optional and can be set to null.
@@ -173,6 +174,12 @@ variable "aadb2c" {
         key    = optional(string)
         name   = optional(string)
       }))
+      timeouts = optional(object({
+        create = optional(string)
+        read   = optional(string)
+        update = optional(string)
+        delete = optional(string)
+      }))
     })), {})
   })
   sensitive = false
@@ -189,10 +196,11 @@ variable "aadb2c" {
         "sku_name",
         "tags",
         "resource_group_key",
-        "resource_group"
+        "resource_group",
+        "timeouts"
       ])) == 0
     ])
-    error_message = "One or more entries in aadb2c.aadb2c_directory contain unsupported attributes. Allowed attributes are: country_code, data_residency_location, display_name, domain_name, resource_group_name, sku_name, tags, resource_group_key, resource_group."
+    error_message = "One or more entries in aadb2c.aadb2c_directory contain unsupported attributes. Allowed attributes are: country_code, data_residency_location, display_name, domain_name, resource_group_name, sku_name, tags, resource_group_key, resource_group, timeouts."
   }
 }
 
