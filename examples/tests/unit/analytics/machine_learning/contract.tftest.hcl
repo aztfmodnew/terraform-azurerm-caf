@@ -7,6 +7,13 @@ mock_provider "azurerm" {
       discovery_url = "https://region.api.azureml.ms/discovery"
     }
   }
+  mock_resource "azurerm_resource_group_template_deployment" {
+    override_during = plan
+    defaults = {
+      id             = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test-rg/providers/Microsoft.Resources/deployments/aml-legacy-compute"
+      output_content = "{}"
+    }
+  }
 }
 
 variables {
@@ -215,6 +222,16 @@ run "all_workspace_options_and_child_resources_are_supported" {
           destination_key  = "central"
         }
       }
+      compute_instances = {
+        legacy = {
+          computeInstanceName   = "aml-legacy-compute"
+          vmSize                = "Standard_DS3_v2"
+          adminUserName         = "azureuser"
+          sshAccess             = "Disabled"
+          adminUserSshPublicKey = ""
+          subnet_id             = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test-rg/providers/Microsoft.Network/virtualNetworks/test-vnet/subnets/aml"
+        }
+      }
       tags = { owner = "analytics" }
       timeouts = {
         create = "40m"
@@ -257,6 +274,14 @@ run "all_workspace_options_and_child_resources_are_supported" {
       output.discovery_url == azurerm_machine_learning_workspace.ws.discovery_url
     )
     error_message = "The module must create each managed-network rule type and expose the workspace outputs."
+  }
+
+  assert {
+    condition = (
+      module.compute_instance["legacy"].id == output.compute_instances["legacy"].id &&
+      output.compute_instances["legacy"].id != null
+    )
+    error_message = "Legacy ARM-template-backed compute instances must be exposed through output.compute_instances."
   }
 }
 
