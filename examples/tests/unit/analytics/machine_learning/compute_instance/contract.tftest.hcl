@@ -77,6 +77,16 @@ run "deployment_options_tags_and_outputs_are_supported" {
     )
     error_message = "The nested module must expose the template deployment ID and output content."
   }
+
+  assert {
+    condition = (
+      azurerm_resource_group_template_deployment.mlci.timeouts.create == "45m" &&
+      azurerm_resource_group_template_deployment.mlci.timeouts.read == "8m" &&
+      azurerm_resource_group_template_deployment.mlci.timeouts.update == "45m" &&
+      azurerm_resource_group_template_deployment.mlci.timeouts.delete == "45m"
+    )
+    error_message = "Custom timeouts must be forwarded to the template deployment."
+  }
 }
 
 run "deployment_defaults_are_preserved_when_options_are_omitted" {
@@ -110,5 +120,15 @@ run "deployment_defaults_are_preserved_when_options_are_omitted" {
       azurerm_resource_group_template_deployment.mlci.tags.module == "compute_instance"
     )
     error_message = "Omitting optional deployment settings must preserve incremental mode and inherited CAF tags."
+  }
+
+  assert {
+    condition = (
+      azurerm_resource_group_template_deployment.mlci.timeouts.create == "10h" &&
+      azurerm_resource_group_template_deployment.mlci.timeouts.read == "5m" &&
+      azurerm_resource_group_template_deployment.mlci.timeouts.update == "10h" &&
+      azurerm_resource_group_template_deployment.mlci.timeouts.delete == "10h"
+    )
+    error_message = "Omitting timeouts must preserve the historical 10h/5m deployment timeouts."
   }
 }
