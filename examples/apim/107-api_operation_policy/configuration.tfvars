@@ -94,7 +94,7 @@ api_management_api_operation_policy = {
       key = "rg1"
     }
     api_operation = {
-      id = "sample"
+      key = "apimapio1"
     }
 
 

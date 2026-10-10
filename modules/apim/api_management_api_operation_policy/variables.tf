@@ -11,7 +11,7 @@ variable "settings" {
     Settings for the API Management API operation policy.
 
     Optional attributes:
-      - api_operation - Operation reference, using a direct id or a key and optional landing-zone key.
+      - api_operation - Operation reference, using a logical operation ID or a key and optional landing-zone key. Do not use the operation's ARM resource ID.
       - api - API reference retained for compatibility with the root configuration.
       - api_management - API Management service reference retained for compatibility with the root configuration.
       - resource_group - Resource group reference retained for compatibility with the root configuration.
