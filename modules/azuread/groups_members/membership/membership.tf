@@ -3,6 +3,14 @@ resource "azuread_group_member" "group_ids" {
 
   group_object_id  = var.group_object_id
   member_object_id = var.azuread_groups[each.key].object_id
+  dynamic "timeouts" {
+    for_each = var.timeouts == null ? [] : [var.timeouts]
+    content {
+      create = timeouts.value.create
+      read   = timeouts.value.read
+      delete = timeouts.value.delete
+    }
+  }
 }
 
 resource "azuread_group_member" "ids" {
@@ -10,6 +18,14 @@ resource "azuread_group_member" "ids" {
 
   group_object_id  = var.group_object_id
   member_object_id = var.azuread_service_principals[each.key].object_id
+  dynamic "timeouts" {
+    for_each = var.timeouts == null ? [] : [var.timeouts]
+    content {
+      create = timeouts.value.create
+      read   = timeouts.value.read
+      delete = timeouts.value.delete
+    }
+  }
 }
 
 resource "azuread_group_member" "msi_ids" {
@@ -17,6 +33,14 @@ resource "azuread_group_member" "msi_ids" {
 
   group_object_id  = var.group_object_id
   member_object_id = var.managed_identities[each.key].principal_id
+  dynamic "timeouts" {
+    for_each = var.timeouts == null ? [] : [var.timeouts]
+    content {
+      create = timeouts.value.create
+      read   = timeouts.value.read
+      delete = timeouts.value.delete
+    }
+  }
 }
 
 resource "azuread_group_member" "mssql_server_ids" {
@@ -24,4 +48,12 @@ resource "azuread_group_member" "mssql_server_ids" {
 
   group_object_id  = var.group_object_id
   member_object_id = var.mssql_servers[each.key].rbac_id
+  dynamic "timeouts" {
+    for_each = var.timeouts == null ? [] : [var.timeouts]
+    content {
+      create = timeouts.value.create
+      read   = timeouts.value.read
+      delete = timeouts.value.delete
+    }
+  }
 }

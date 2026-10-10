@@ -8,3 +8,13 @@ variable "member_object_id" {
   type        = string
   default     = null
 }
+
+variable "timeouts" {
+  description = "Optional create, read and delete membership operation timeouts."
+  type = object({
+    create = optional(string)
+    read   = optional(string)
+    delete = optional(string)
+  })
+  default = null
+}
