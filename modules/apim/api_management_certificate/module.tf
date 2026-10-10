@@ -13,20 +13,26 @@ resource "azurerm_api_management_certificate" "apim" {
   resource_group_name = var.resource_group_name
   data                = try(var.settings.data, null)
   password            = try(var.settings.password, null)
-  #key_vault_secret_id          = var.remote_objects.keyvault_certificates[var.settings.key_vault_secret.lz_key][var.settings.key_vault_secret.certificate_key].secret_id
-  key_vault_secret_id = try(
-    #data.azurerm_key_vault_certificate.manual_certs[each.key].secret_id,
-    var.remote_objects.keyvault_certificates[var.settings.key_vault_secret.lz_key][var.settings.key_vault_secret.certificate_key].secret_id,
-    var.remote_objects.keyvault_certificates[var.client_config.landingzone_key][var.settings.key_vault_secret.certificate_key].secret_id,
-    var.remote_objects.keyvault_certificate_requests[var.settings.key_vault_secret.lz_key][var.settings.key_vault_secret.certificate_request_key].secret_id,
-    var.remote_objects.keyvault_certificate_requests[var.client_config.landingzone_key][var.settings.key_vault_secret.certificate_request_key].secret_id,
-    var.settings.key_vault_id,
-    null
-  )
-  key_vault_identity_client_id = try(
-    var.remote_objects.managed_identities[var.settings.key_vault_identity_client.lz_key][var.settings.key_vault_identity_client.key].client_id,
-    var.remote_objects.managed_identities[var.client_config.landingzone_key][var.settings.key_vault_identity_client.key].client_id,
-    var.settings.key_vault_identity_client.id,
-    null
-  )
+  key_vault_secret_id = try(coalesce(
+    try(var.remote_objects.keyvault_certificates[coalesce(try(var.settings.key_vault_secret.lz_key, null), var.client_config.landingzone_key)][var.settings.key_vault_secret.certificate_key].secret_id, null),
+    try(var.remote_objects.keyvault_certificate_requests[coalesce(try(var.settings.key_vault_secret.lz_key, null), var.client_config.landingzone_key)][var.settings.key_vault_secret.certificate_request_key].secret_id, null),
+    try(var.settings.key_vault_secret_id, null),
+    try(var.settings.key_vault_id, null)
+  ), null)
+  key_vault_identity_client_id = try(coalesce(
+    try(var.remote_objects.managed_identities[coalesce(try(var.settings.key_vault_identity_client.lz_key, null), var.client_config.landingzone_key)][var.settings.key_vault_identity_client.key].client_id, null),
+    try(var.settings.key_vault_identity_client.id, null),
+    try(var.settings.key_vault_identity_client_id, null)
+  ), null)
+
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
+    }
+  }
 }
