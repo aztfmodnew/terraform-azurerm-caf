@@ -98,3 +98,31 @@ run "rejects_administrative_unit_without_id_or_key" {
   }
   expect_failures = [var.settings]
 }
+
+run "rejects_member_with_empty_key" {
+  command = plan
+  module {
+    source = "../modules/azuread/administrative_unit_member"
+  }
+  variables {
+    settings = {
+      administrative_unit_object = { id = "00000000-0000-0000-0000-000000000001" }
+      member_object              = { key = "", resource_type = "azuread_groups" }
+    }
+  }
+  expect_failures = [var.settings]
+}
+
+run "rejects_administrative_unit_with_empty_id" {
+  command = plan
+  module {
+    source = "../modules/azuread/administrative_unit_member"
+  }
+  variables {
+    settings = {
+      administrative_unit_object = { id = "" }
+      member_object              = { id = "00000000-0000-0000-0000-000000000002" }
+    }
+  }
+  expect_failures = [var.settings]
+}
