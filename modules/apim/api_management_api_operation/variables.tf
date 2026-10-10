@@ -189,6 +189,11 @@ DESCRIPTION
       delete = optional(string)
     }))
   })
+
+  validation {
+    condition     = can(regex("^[A-Z]+$", var.settings.method))
+    error_message = "settings.method must be a non-empty uppercase HTTP method such as GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS or TRACE."
+  }
 }
 
 variable "remote_objects" {
