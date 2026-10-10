@@ -34,7 +34,9 @@ resource "azapi_resource" "vnet_links" {
     }
   }
   dynamic "timeouts" {
-    for_each = try(each.value.timeouts, var.settings.timeouts, null) == null ? [] : [try(each.value.timeouts, var.settings.timeouts)]
+    for_each = try(each.value.timeouts, null) != null ? [each.value.timeouts] : (
+      try(var.settings.timeouts, null) != null ? [var.settings.timeouts] : []
+    )
     content {
       create = try(timeouts.value.create, null)
       read   = try(timeouts.value.read, null)

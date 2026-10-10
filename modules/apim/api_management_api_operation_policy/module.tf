@@ -1,8 +1,4 @@
 locals {
-  local_api_operation = try(
-    var.remote_objects.api_management_api_operation[var.client_config.landingzone_key][var.settings.api_operation.key],
-    null
-  )
   referenced_api_operation = try(
     var.remote_objects.api_management_api_operation[coalesce(
       try(var.settings.api_operation.lz_key, null),
@@ -11,9 +7,6 @@ locals {
     null
   )
   operation_id = try(coalesce(
-    try(local.local_api_operation.operation_id, null),
-    try(regex("/operations/([^/]+)$", local.local_api_operation.id)[0], null),
-    try(local.local_api_operation.id, null),
     try(local.referenced_api_operation.operation_id, null),
     try(regex("/operations/([^/]+)$", local.referenced_api_operation.id)[0], null),
     try(local.referenced_api_operation.id, null),

@@ -366,16 +366,8 @@ variable "settings" {
     }))
   })
 
-  validation {
-    condition = length(setsubtract(keys(var.settings), [
-      "required_arg1", "required_arg2",
-      "optional_arg1", "optional_arg2",
-      "nested_block",
-      "location", "resource_group_name", "tags",
-      "timeouts"
-    ])) == 0
-    error_message = "Unsupported attributes detected in settings. See variable description for allowed attributes."
-  }
+  # Undeclared attributes are discarded during type conversion; do not add a
+  # keys(var.settings) allowlist. Validate values and cross-field rules instead.
 }
 ```
 
