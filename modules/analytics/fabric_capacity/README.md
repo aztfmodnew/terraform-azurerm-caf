@@ -7,7 +7,9 @@ timeouts. The supported SKU names are `F2`, `F4`, `F8`, `F16`, `F32`, `F64`,
 `F128`, `F256`, `F512`, `F1024`, and `F2048`; the tier is `Fabric`.
 
 `administration_members` accepts Entra user UPNs and service-principal object
-IDs. The module applies `Fabric` when `sku.tier` is omitted and validates the
+IDs and must contain at least one entry: AzureRM fails the create call when the
+administrator list is empty, so the module validates it up front. The module
+applies `Fabric` when `sku.tier` is omitted and validates the
 provider-supported SKU names and tier. Fabric Capacity does not currently
 support the diagnostics or private endpoint integrations in this repository.
 

@@ -88,7 +88,7 @@ DESCRIPTION
   }
 
   validation {
-    condition = try(var.settings.auto_scale, null) == null || (
+    condition = try(var.settings.auto_scale, null) == null ? true : (
       var.settings.auto_scale.min_node_count >= 3 &&
       var.settings.auto_scale.min_node_count <= var.settings.auto_scale.max_node_count &&
       var.settings.auto_scale.max_node_count <= 200
@@ -97,7 +97,7 @@ DESCRIPTION
   }
 
   validation {
-    condition = try(var.settings.auto_pause, null) == null || (
+    condition = try(var.settings.auto_pause, null) == null ? true : (
       var.settings.auto_pause.delay_in_minutes >= 5 &&
       var.settings.auto_pause.delay_in_minutes <= 10080
     )
