@@ -209,6 +209,7 @@ run "workspace_provider_options_and_child_resources" {
         update = "10m"
         delete = "10m"
       }
+      key_vault_secret_tags = { owner = "analytics" }
       synapse_spark_pools = {
         spark = {
           name             = "spark-contract"
@@ -309,9 +310,10 @@ run "workspace_provider_options_and_child_resources" {
       azurerm_synapse_workspace.ws.tags.environment == "test" &&
       azurerm_synapse_workspace.ws.tags.cost_center == "analytics" &&
       azurerm_synapse_workspace.ws.tags.owner == "analytics" &&
-      azurerm_key_vault_secret.sql_admin_password[0].tags.owner == "analytics"
+      azurerm_key_vault_secret.sql_admin_password[0].tags.owner == "analytics" &&
+      !contains(keys(azurerm_key_vault_secret.sql_admin_password[0].tags), "environment")
     )
-    error_message = "CAF and workspace tags must be applied to the workspace and generated secrets."
+    error_message = "CAF and workspace tags must be applied to the workspace, while generated secrets must only carry key_vault_secret_tags (Key Vault secrets allow at most 15 tags)."
   }
 
   assert {

@@ -129,7 +129,7 @@ resource "azurerm_key_vault_secret" "sql_admin_password" {
   not_before_date = try(var.settings.sql_administrator_login_password_not_before, null)
   content_type    = "text/plain"
   expiration_date = coalesce(try(var.settings.sql_administrator_login_password_expiration_date, null), timeadd(timestamp(), "2160h")) # 2160 hours = 90 days
-  tags            = local.tags
+  tags            = try(var.settings.key_vault_secret_tags, null)
   # This is to prevent the secret from being updated when the password is changed
   # in the azurerm_synapse_workspace resource. This is a workaround for the issue
   # where the azurerm_synapse_workspace resource does not support updating the password
@@ -161,7 +161,7 @@ resource "azurerm_key_vault_secret" "sql_admin" {
   key_vault_id    = var.keyvault_id
   content_type    = "text/plain"
   expiration_date = coalesce(try(var.settings.sql_administrator_login_password_expiration_date, null), timeadd(timestamp(), "2160h")) # 2160 hours = 90 days
-  tags            = local.tags
+  tags            = try(var.settings.key_vault_secret_tags, null)
 
   dynamic "timeouts" {
     for_each = try(var.settings.key_vault_secret_timeouts, null) == null ? [] : [var.settings.key_vault_secret_timeouts]
@@ -183,7 +183,7 @@ resource "azurerm_key_vault_secret" "synapse_name" {
   key_vault_id    = var.keyvault_id
   content_type    = "text/plain"
   expiration_date = coalesce(try(var.settings.sql_administrator_login_password_expiration_date, null), timeadd(timestamp(), "2160h")) # 2160 hours = 90 days
-  tags            = local.tags
+  tags            = try(var.settings.key_vault_secret_tags, null)
 
   dynamic "timeouts" {
     for_each = try(var.settings.key_vault_secret_timeouts, null) == null ? [] : [var.settings.key_vault_secret_timeouts]
@@ -205,7 +205,7 @@ resource "azurerm_key_vault_secret" "synapse_rg_name" {
   key_vault_id    = var.keyvault_id
   content_type    = "text/plain"
   expiration_date = coalesce(try(var.settings.sql_administrator_login_password_expiration_date, null), timeadd(timestamp(), "2160h")) # 2160 hours = 90 days
-  tags            = local.tags
+  tags            = try(var.settings.key_vault_secret_tags, null)
 
   dynamic "timeouts" {
     for_each = try(var.settings.key_vault_secret_timeouts, null) == null ? [] : [var.settings.key_vault_secret_timeouts]

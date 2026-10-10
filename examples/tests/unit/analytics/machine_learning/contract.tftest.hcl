@@ -297,3 +297,106 @@ run "provider_defaults_and_system_identity_are_preserved" {
     error_message = "Omitted optional workspace settings must retain the public-access, system identity, and CAF tag defaults."
   }
 }
+
+run "serverless_compute_public_ip_follows_provider_constraints" {
+  command = plan
+
+  module {
+    source = "../modules/analytics/machine_learning"
+  }
+
+  variables {
+    global_settings         = var.global_settings
+    client_config           = var.client_config
+    resource_groups         = var.resource_groups
+    base_tags               = var.base_tags
+    keyvault_id             = var.keyvault_id
+    storage_account_id      = var.storage_account_id
+    application_insights_id = var.application_insights_id
+    container_registry_id   = null
+    vnets                   = var.vnets
+    diagnostics             = var.diagnostics
+    private_endpoints       = {}
+    private_dns             = {}
+    remote_objects          = {}
+    settings = {
+      name                          = "aml-serverless"
+      resource_group_key            = "test_rg"
+      public_network_access_enabled = false
+      serverless_compute            = {}
+    }
+  }
+
+  assert {
+    condition     = azurerm_machine_learning_workspace.ws.serverless_compute[0].public_ip_enabled
+    error_message = "AzureRM rejects public_ip_enabled = false when serverless compute has no subnet_id and public network access is disabled, so the default must be true."
+  }
+}
+
+run "service_side_encryption_without_encryption_block_is_rejected" {
+  command = plan
+
+  module {
+    source = "../modules/analytics/machine_learning"
+  }
+
+  variables {
+    global_settings         = var.global_settings
+    client_config           = var.client_config
+    resource_groups         = var.resource_groups
+    base_tags               = var.base_tags
+    keyvault_id             = var.keyvault_id
+    storage_account_id      = var.storage_account_id
+    application_insights_id = var.application_insights_id
+    container_registry_id   = null
+    vnets                   = var.vnets
+    diagnostics             = var.diagnostics
+    private_endpoints       = {}
+    private_dns             = {}
+    remote_objects          = {}
+    settings = {
+      name                            = "aml-encryption"
+      resource_group_key              = "test_rg"
+      service_side_encryption_enabled = true
+    }
+  }
+
+  expect_failures = [var.settings]
+}
+
+run "encryption_block_without_service_side_flag_is_allowed" {
+  command = plan
+
+  module {
+    source = "../modules/analytics/machine_learning"
+  }
+
+  variables {
+    global_settings         = var.global_settings
+    client_config           = var.client_config
+    resource_groups         = var.resource_groups
+    base_tags               = var.base_tags
+    keyvault_id             = var.keyvault_id
+    storage_account_id      = var.storage_account_id
+    application_insights_id = var.application_insights_id
+    container_registry_id   = null
+    vnets                   = var.vnets
+    diagnostics             = var.diagnostics
+    private_endpoints       = {}
+    private_dns             = {}
+    remote_objects          = {}
+    settings = {
+      name               = "aml-cmk"
+      resource_group_key = "test_rg"
+      encryption = {
+        key_vault_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test-rg/providers/Microsoft.KeyVault/vaults/test-kv"
+        key_id       = "https://test-kv.vault.azure.net/keys/aml/00000000000000000000000000000000"
+      }
+    }
+  }
+
+  assert {
+    condition     = azurerm_machine_learning_workspace.ws.encryption[0].key_vault_id != ""
+    error_message = "AzureRM only declares RequiredWith on service_side_encryption_enabled, so an encryption block without the flag must stay valid."
+  }
+}

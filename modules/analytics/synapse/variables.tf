@@ -26,6 +26,7 @@ Optional:
   - identity - System-assigned and/or user-assigned managed identity configuration. User-assigned identities accept direct IDs or CAF local/remote identity keys.
   - timeouts - Create, read, update, and delete timeouts for the workspace.
   - key_vault_secret_timeouts - Create, read, update, and delete timeouts for generated Key Vault secrets.
+  - key_vault_secret_tags - Tags applied to the generated Key Vault secrets. Key Vault secrets accept at most 15 tags, so inherited CAF tags are intentionally not propagated; supply this map to tag them explicitly.
   - workspace_firewall - Legacy single firewall rule; retained for compatibility.
   - workspace_firewalls - Map of firewall rules; each rule may set a name and timeouts.
   - aad_admin - Optional workspace Microsoft Entra administrator and timeouts.
@@ -116,6 +117,7 @@ DESCRIPTION
       update = optional(string)
       delete = optional(string)
     }))
+    key_vault_secret_tags = optional(map(string))
     workspace_firewall = optional(object({
       name     = string
       start_ip = string
@@ -154,6 +156,11 @@ DESCRIPTION
     private_endpoints   = optional(map(any), {})
     tags                = optional(map(string), {})
   })
+
+  validation {
+    condition     = try(var.settings.key_vault_secret_tags, null) == null ? true : length(var.settings.key_vault_secret_tags) <= 15
+    error_message = "settings.key_vault_secret_tags accepts at most 15 entries because AzureRM limits Key Vault secret tags to 15."
+  }
 
   validation {
     condition = (
