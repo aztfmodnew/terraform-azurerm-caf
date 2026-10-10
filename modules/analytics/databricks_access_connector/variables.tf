@@ -5,7 +5,7 @@ variable "name" {
 variable "settings" {
   description = <<DESCRIPTION
     Settings for an Azure Databricks access connector:
-      - name - (Required) Resource name.
+      - name - (Optional) Resource name. Required unless the module-level name variable is provided, which takes precedence.
       - resource_group_key - (Optional) Key of the resource group in the current landing zone.
       - resource_group - (Optional) Resource group reference with key and optional lz_key.
       - lz_key - (Optional) Landing-zone key used with resource_group_key.
@@ -15,7 +15,7 @@ variable "settings" {
       - timeouts - (Optional) Create, read, update, and delete timeouts. Provider defaults are 30 minutes for create/update/delete and 5 minutes for read.
   DESCRIPTION
   type = object({
-    name               = string
+    name               = optional(string)
     resource_group_key = optional(string)
     resource_group = optional(object({
       key    = optional(string)

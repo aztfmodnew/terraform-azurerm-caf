@@ -77,9 +77,9 @@ authentication, the terms-of-service URL, subscription-key parameter names,
 and create/read/update/delete timeouts. API type defaults to `http` and
 subscription keys are required by default. A version requires a version set;
 websocket APIs require `service_url`. Without `source_api_id`, configure
-`display_name`, `path`, and `protocols`. A supplied display name must not be
-empty; an empty path is valid for a root API. OAuth2 and OpenID authentication are
-mutually exclusive. The existing API import remains supported; `wsdl_selector`
+`display_name` and a non-empty `protocols` list. A supplied display name must
+not be empty; `path` is optional and an empty path represents a root API.
+OAuth2 and OpenID authentication are mutually exclusive. The existing API import remains supported; `wsdl_selector`
 is limited to `wsdl` and `wsdl-link` imports.
 
 The focused API contract checks the new fields, module defaults, each

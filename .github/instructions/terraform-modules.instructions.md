@@ -54,7 +54,7 @@ Use these rules when editing files under `modules/**`. Focus on correctness, CAF
         - List of all supported attributes with their descriptions
         - Whether each attribute is required or optional
         - Constraints and valid values from the Azure provider documentation
-      - Validation block that checks no unsupported attributes are provided (see example below)
+      - Validation blocks for value constraints and cross-field rules. Do not add a `keys(var.settings)` allowlist to a typed object: Terraform discards undeclared attributes before validation, so it cannot detect misspellings. Document that undeclared attributes are ignored.
       - Descriptions must be user-facing and implementation-focused:
         - Do NOT include MCP artifact references in variable descriptions
         - Do NOT include providerDocID values in variable descriptions
@@ -74,11 +74,12 @@ Use these rules when editing files under `modules/**`. Focus on correctness, CAF
             tags     = optional(map(string))
           })
           validation {
-            condition = length(setsubtract(keys(var.settings), ["name", "enabled", "tags"])) == 0
-            error_message = "Unsupported attributes in settings. Allowed: name, enabled, tags."
+            condition     = var.settings.name != ""
+            error_message = "name must not be empty."
           }
         }
         ```
+  - Shared objects: when `global_settings` or `client_config` is typed instead of `any`, type the complete root shape (every key produced by `locals.tf`, with optional attributes and the root defaults), not only the keys the module currently reads. Extra attributes are discarded, not rejected, so a narrow type silently hides data from later changes. Keep the rest of the module family consistent.
   - Locals: compute `module_tag`, `tags = merge(...)`, `location`, `resource_group_name` using the standard block.
 
 - Pattern 0: Validate resource schema (ALWAYS MANDATORY — use MCP tools)
