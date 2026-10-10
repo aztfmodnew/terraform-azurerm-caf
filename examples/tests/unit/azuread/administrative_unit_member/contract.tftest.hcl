@@ -56,3 +56,45 @@ run "resolves_local_and_remote_keys_with_null_direct_ids" {
     error_message = "Null direct IDs must allow same-landing-zone and remote-key resolution."
   }
 }
+
+run "rejects_member_without_id_or_key" {
+  command = plan
+  module {
+    source = "../modules/azuread/administrative_unit_member"
+  }
+  variables {
+    settings = {
+      administrative_unit_object = { id = "00000000-0000-0000-0000-000000000001" }
+      member_object              = { lz_key = "remote", resource_type = "azuread_groups" }
+    }
+  }
+  expect_failures = [var.settings]
+}
+
+run "rejects_key_based_member_without_supported_resource_type" {
+  command = plan
+  module {
+    source = "../modules/azuread/administrative_unit_member"
+  }
+  variables {
+    settings = {
+      administrative_unit_object = { id = "00000000-0000-0000-0000-000000000001" }
+      member_object              = { key = "group" }
+    }
+  }
+  expect_failures = [var.settings]
+}
+
+run "rejects_administrative_unit_without_id_or_key" {
+  command = plan
+  module {
+    source = "../modules/azuread/administrative_unit_member"
+  }
+  variables {
+    settings = {
+      administrative_unit_object = { lz_key = "remote" }
+      member_object              = { id = "00000000-0000-0000-0000-000000000002" }
+    }
+  }
+  expect_failures = [var.settings]
+}
