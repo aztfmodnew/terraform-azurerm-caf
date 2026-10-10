@@ -137,6 +137,23 @@ terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/ap
 terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_gateway -no-color
 ```
 
+## API Management gateway API options
+
+Gateway API associations require both an API Management gateway reference and
+an API reference. Each accepts a direct ID or local/remote key; keyed references
+retain precedence over direct IDs, and each reference resolves its own landing
+zone. The supported create/read/delete timeouts are configurable; AzureRM does
+not support an update timeout for this immutable association resource.
+
+The focused plan-only contract verifies direct IDs, local and remote key
+resolution, null landing-zone fallback, keyed-reference precedence, and the
+three supported timeouts:
+
+```bash
+terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/api_management_gateway_api
+terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_gateway_api -no-color
+```
+
 ## API Management API operation options
 
 API operation settings support request definitions, multiple response
