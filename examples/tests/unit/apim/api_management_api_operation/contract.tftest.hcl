@@ -131,6 +131,10 @@ run "api_operation_nested_configuration" {
     error_message = "HTTP operation methods must not be limited to a hard-coded subset."
   }
   assert {
+    condition     = output.operation_id == "get-wishlists"
+    error_message = "The operation identifier must be exposed for downstream policy references."
+  }
+  assert {
     condition     = one(azurerm_api_management_api_operation.apim.request).header[0].name == "Authorization"
     error_message = "Request headers and examples must be passed through."
   }

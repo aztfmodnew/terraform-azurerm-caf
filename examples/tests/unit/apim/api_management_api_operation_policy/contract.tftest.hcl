@@ -53,7 +53,10 @@ run "operation_policy_with_local_operation_key_and_xml_link" {
     remote_objects = {
       api_management_api_operation = {
         local = {
-          sample = { id = "resolved-operation" }
+          sample = {
+            id           = "/subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/example-rg/providers/Microsoft.ApiManagement/service/example-apim/apis/example-api/operations/operation-arm-id"
+            operation_id = "resolved-operation"
+          }
         }
       }
     }
@@ -89,7 +92,10 @@ run "operation_policy_with_remote_operation_key" {
     remote_objects = {
       api_management_api_operation = {
         remote = {
-          sample = { id = "remote-operation" }
+          sample = {
+            id           = "/subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/example-rg/providers/Microsoft.ApiManagement/service/example-apim/apis/example-api/operations/remote-arm-id"
+            operation_id = "remote-operation"
+          }
         }
       }
     }
@@ -108,5 +114,39 @@ run "operation_policy_with_remote_operation_key" {
   assert {
     condition     = azurerm_api_management_api_operation_policy.apim.operation_id == "remote-operation"
     error_message = "The policy must resolve an operation key from the configured landing zone."
+  }
+}
+
+run "operation_policy_normalizes_legacy_arm_operation_output" {
+  command = plan
+
+  module {
+    source = "../modules/apim/api_management_api_operation_policy"
+  }
+
+  variables {
+    global_settings = {}
+    client_config   = { landingzone_key = "local" }
+    remote_objects = {
+      api_management_api_operation = {
+        local = {
+          sample = {
+            id = "/subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/example-rg/providers/Microsoft.ApiManagement/service/example-apim/apis/example-api/operations/legacy-operation"
+          }
+        }
+      }
+    }
+    api_management_name = "example-apim"
+    api_name            = "example-api"
+    resource_group_name = "example-rg"
+    settings = {
+      api_operation = { key = "sample" }
+      xml_content   = "<policies><inbound /></policies>"
+    }
+  }
+
+  assert {
+    condition     = azurerm_api_management_api_operation_policy.apim.operation_id == "legacy-operation"
+    error_message = "Legacy API operation ARM IDs must be reduced to the logical operation identifier before being passed to the provider."
   }
 }

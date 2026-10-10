@@ -283,10 +283,13 @@ terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_ap
 ## API Management API operation policy options
 
 API operation policies support `xml_content` or a publicly accessible
-`xml_link`, references to an API operation by direct ID or by a local/remote
-landing-zone key, and all four create/read/update/delete timeouts. The focused
-plan-only contract checks both XML input forms and operation reference
-resolution without changing shared mocks or CI workflows:
+`xml_link`, references to an API operation by its logical `operation_id` or by
+a local/remote landing-zone key, and all four create/read/update/delete
+timeouts. Do not pass the operation's ARM resource ID where the provider
+expects its logical identifier. Key references resolve this value through the
+operation module output. The focused plan-only contract checks both XML input
+forms and operation reference resolution without changing shared mocks or CI
+workflows:
 
 ```bash
 terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/api_management_api_operation_policy
