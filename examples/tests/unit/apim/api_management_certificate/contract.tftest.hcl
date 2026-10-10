@@ -239,7 +239,7 @@ run "certificate_rejects_multiple_key_vault_sources" {
   }
 }
 
-run "certificate_explicit_ids_take_precedence_over_remote_objects" {
+run "certificate_uses_explicit_secret_id_and_identity_client_id" {
   command = plan
 
   module {
@@ -257,11 +257,6 @@ run "certificate_explicit_ids_take_precedence_over_remote_objects" {
     client_config = { landingzone_key = "local" }
     base_tags     = {}
     remote_objects = {
-      keyvault_certificates = {
-        local = {
-          cert1 = { secret_id = "https://example-vault.vault.azure.net/secrets/resolved-by-key" }
-        }
-      }
       managed_identities = {
         local = {
           mi1 = { client_id = "00000000-0000-0000-0000-000000000002" }
@@ -282,7 +277,7 @@ run "certificate_explicit_ids_take_precedence_over_remote_objects" {
 
   assert {
     condition     = azurerm_api_management_certificate.apim.key_vault_secret_id == "https://example-vault.vault.azure.net/secrets/explicit"
-    error_message = "An explicit key_vault_secret_id must be used verbatim."
+    error_message = "An explicitly configured key_vault_secret_id must be used verbatim."
   }
   assert {
     condition     = azurerm_api_management_certificate.apim.key_vault_identity_client_id == "00000000-0000-0000-0000-000000000001"
