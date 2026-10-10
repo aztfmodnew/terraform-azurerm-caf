@@ -29,8 +29,10 @@ variable "settings" {
       - sku - (Required) SKU configuration. name must be one of F2, F4, F8,
         F16, F32, F64, F128, F256, F512, F1024, or F2048. tier defaults to
         Fabric and Fabric is the only supported tier.
-      - administration_members - (Optional) Entra user UPNs or service
-        principal object IDs that administer the capacity.
+      - administration_members - (Required) Entra user UPNs or service
+        principal object IDs that administer the capacity. The provider rejects
+        an empty list when creating a Fabric Capacity, so at least one member
+        must be supplied.
       - tags - (Optional) Tags to merge with inherited CAF tags.
       - timeouts - (Optional) Create, read, update, and delete operation timeouts.
     DESCRIPTION
@@ -60,6 +62,11 @@ variable "settings" {
       delete = optional(string)
     }))
   })
+
+  validation {
+    condition     = try(var.settings.administration_members, null) == null ? false : length(var.settings.administration_members) > 0
+    error_message = "settings.administration_members must contain at least one Entra user UPN or service principal object ID. AzureRM rejects an empty administrator list when creating a Fabric Capacity."
+  }
 }
 
 variable "resource_group" {

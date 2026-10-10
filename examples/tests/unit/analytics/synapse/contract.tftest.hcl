@@ -371,3 +371,44 @@ run "customer_managed_key_can_replace_sql_credentials" {
     error_message = "Customer-managed-key-only workspaces must not create SQL administrator credentials or secrets."
   }
 }
+
+run "fixed_size_spark_pool_without_auto_scale_or_auto_pause" {
+  command = plan
+
+  module {
+    source = "../modules/analytics/synapse"
+  }
+
+  variables {
+    global_settings                      = var.global_settings
+    client_config                        = var.client_config
+    resource_group                       = var.resource_group
+    resource_group_name                  = var.resource_group_name
+    location                             = var.location
+    base_tags                            = var.base_tags
+    storage_data_lake_gen2_filesystem_id = var.storage_data_lake_gen2_filesystem_id
+    vnets                                = var.vnets
+    remote_objects                       = var.remote_objects
+    private_endpoints                    = var.private_endpoints
+    private_dns                          = var.private_dns
+    settings = {
+      name                                 = "synapse-fixed-pool"
+      sql_administrator_login              = "sqladminuser"
+      storage_data_lake_gen2_filesystem_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test-rg/providers/Microsoft.Storage/storageAccounts/contract/blobServices/default/containers/fs"
+      synapse_spark_pools = {
+        fixed = {
+          name             = "spark-fixed"
+          node_size_family = "MemoryOptimized"
+          node_size        = "Small"
+          spark_version    = "3.5"
+          node_count       = 3
+        }
+      }
+    }
+  }
+
+  assert {
+    condition     = module.spark_pool["fixed"].spark_pool.node_count == 3
+    error_message = "A fixed-size Spark pool must plan successfully when auto_scale and auto_pause are omitted."
+  }
+}

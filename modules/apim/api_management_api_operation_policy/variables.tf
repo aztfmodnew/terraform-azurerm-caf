@@ -52,6 +52,11 @@ variable "settings" {
       delete = optional(string)
     }))
   })
+
+  validation {
+    condition     = try(var.settings.api_operation.id, null) != null || try(var.settings.api_operation.key, null) != null
+    error_message = "settings.api_operation must be provided with either id or key so that operation_id can be resolved."
+  }
 }
 variable "remote_objects" {
   description = "Remote objects configuration."

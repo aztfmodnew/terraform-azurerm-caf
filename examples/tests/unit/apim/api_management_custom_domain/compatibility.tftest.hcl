@@ -19,7 +19,6 @@ variables {
   location            = "westeurope"
   resource_group_name = "migrationtest"
   resource_group      = { name = "migrationtest", location = "westeurope", tags = {} }
-  base_tags           = {}
   remote_objects      = {}
   private_endpoints   = {}
   resource_groups     = {}
@@ -33,7 +32,6 @@ run "apim_custom_domain_legacy_remote_certificate" {
     source = "../modules/apim/api_management_custom_domain"
   }
   variables {
-    base_tags         = {}
     api_management_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/migrationtest/providers/Microsoft.ApiManagement/service/test"
     remote_objects = {
       keyvault_certificates = { local = { cert = { secret_id = "https://migrationtest.vault.azure.net/secrets/cert" } } }
@@ -169,4 +167,20 @@ run "apim_custom_domain_plural_endpoints" {
     )
     error_message = "Plural endpoint maps must generate every configured provider block."
   }
+}
+
+run "legacy_gateway_without_host_name_is_rejected" {
+  command = plan
+  module {
+    source = "../modules/apim/api_management_custom_domain"
+  }
+  variables {
+    api_management_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/migrationtest/providers/Microsoft.ApiManagement/service/test"
+    remote_objects    = {}
+    settings = {
+      gateways = [{ key_vault_id = "https://migrationtest.vault.azure.net/secrets/cert" }]
+    }
+  }
+
+  expect_failures = [var.settings]
 }
