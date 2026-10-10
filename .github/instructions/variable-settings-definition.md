@@ -23,45 +23,21 @@ variable "settings" {
       - high_availability_enabled - (Optional) Whether to enable high availability. Defaults to true. Changing this forces a new resource to be created.
       - identity - (Optional) An identity block specifying system-assigned or user-assigned managed identities.
       - tags - (Optional) A mapping of tags which should be assigned to the resource.
+      Attributes that are not declared below are silently ignored by Terraform's
+      type conversion.
     DESCRIPTION
   type = object({
-    name                          = string
-    resource_group_key            = optional(string)
-    sku_name                      = string
-    high_availability_enabled     = optional(bool)
-    identity                      = optional(any)
-    tags                          = optional(map(string))
-    azurecaf_resource_type        = optional(string)
+    name                      = string
+    resource_group_key        = optional(string)
+    sku_name                  = string
+    high_availability_enabled = optional(bool)
+    identity                  = optional(any)
+    tags                      = optional(map(string))
+    azurecaf_resource_type    = optional(string)
   })
   validation {
-    condition = length(setsubtract(
-      keys(var.settings),
-      [
-        "name",
-        "resource_group_key",
-        "sku_name",
-        "high_availability_enabled",
-        "identity",
-        "tags",
-        "azurecaf_resource_type"
-      ]
-    )) == 0
-    error_message = format("The following attributes are not supported within settings: %s. Allowed attributes are: name, resource_group_key, sku_name, high_availability_enabled, identity, tags, azurecaf_resource_type.",
-      join(", ",
-        setsubtract(
-          keys(var.settings),
-          [
-            "name",
-            "resource_group_key",
-            "sku_name",
-            "high_availability_enabled",
-            "identity",
-            "tags",
-            "azurecaf_resource_type"
-          ]
-        )
-      )
-    )
+    condition     = contains(["Balanced_B0", "Balanced_B1", "MemoryOptimized_M10"], var.settings.sku_name)
+    error_message = "sku_name must be a supported Managed Redis SKU."
   }
 }
 ```
