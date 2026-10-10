@@ -117,6 +117,22 @@ terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/ap
 terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_api_operation -no-color
 ```
 
+## API Management API operation policy options
+
+API operation policies support `xml_content` or a publicly accessible
+`xml_link`, references to an API operation by direct ID or by a local/remote
+landing-zone key, and all four create/read/update/delete timeouts. The focused
+plan-only contract checks both XML input forms and operation reference
+resolution without changing shared mocks or CI workflows:
+
+```bash
+terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/api_management_api_operation_policy
+terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_api_operation_policy -no-color
+```
+
+This contract verifies Terraform's planned resource configuration only; it
+does not confirm Azure-side acceptance or deploy resources.
+
 ---
 
 ## Inputs
