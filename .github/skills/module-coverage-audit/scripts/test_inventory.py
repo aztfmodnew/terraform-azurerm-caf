@@ -89,6 +89,30 @@ module "diagnostics" {
             "composition-or-helper",
         )
 
+    def test_inventory_ignores_block_comments_and_heredoc_bodies(self):
+        self.write_terraform(
+            "storage/account/main.tf",
+            '''
+/*
+resource "azurerm_commented_resource" "ignored" {}
+module "commented" {}
+*/
+resource "azurerm_storage_account" "example" {}
+locals {
+  policy = <<-XML
+resource "azurerm_heredoc_resource" "ignored" {}
+module "heredoc" {}
+XML
+}
+''',
+        )
+
+        rows = collect_inventory(self.modules_root)
+        row = {row["path"]: row for row in rows}["modules/storage/account"]
+
+        self.assertEqual(row["managed_resource_types"], "azurerm_storage_account")
+        self.assertEqual(row["child_module_calls"], "")
+
     def test_inventory_serializes_a_tab_delimited_header_and_rows(self):
         self.write_terraform("security/keyvault/main.tf", "")
         output = io.StringIO()
