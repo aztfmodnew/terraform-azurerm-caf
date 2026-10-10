@@ -43,6 +43,7 @@ azuread_groups = {
 
 azuread_groups_membership = {
   ad_group1 = { # ad group key
+    timeouts = { create = "10m", read = "6m", delete = "10m" }
     managed_identities = {
       launchpad = {
         # group_lz_key = "" # group lz_key
