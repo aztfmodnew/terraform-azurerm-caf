@@ -154,6 +154,23 @@ terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/ap
 terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_gateway_api -no-color
 ```
 
+## API Management group options
+
+Groups support all AzureRM arguments: required display name, description,
+external directory ID, type (`custom`, `external`, or `system`), and all four
+timeouts. The provider default group type is retained when `type` is omitted.
+API Management and resource-group dependencies accept direct names or
+local/remote keys; the legacy `resource_group_key` remains a fallback.
+
+The focused plan-only contract checks provider options, CAF naming,
+local/remote/direct references, the legacy resource-group key, provider
+defaults, and invalid-type rejection:
+
+```bash
+terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/api_management_group
+terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_group -no-color
+```
+
 ## API Management API operation options
 
 API operation settings support request definitions, multiple response
