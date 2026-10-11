@@ -48,6 +48,7 @@ azuread_administrative_units = {
 azuread_administrative_unit_members = {
   # Add an Azure AD Group from tenant root into the administrative unit
   admum2 = {
+    timeouts = { create = "10m", read = "6m", delete = "10m" }
     administrative_unit_object = {
       key = "admu1"
     }
