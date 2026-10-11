@@ -40,7 +40,31 @@ vnets = {
       private_endpoints = {
         name                              = "private_endpoints"
         cidr                              = ["100.64.55.0/24"]
-        private_endpoint_network_policies = "Enabled"
+        private_endpoint_network_policies = "Disabled"
+      }
+    }
+
+  }
+}
+
+private_dns = {
+  aml_workspace_api = {
+    name               = "privatelink.api.azureml.ms"
+    resource_group_key = "dap_azure_ml_re1"
+    vnet_links = {
+      aml_workspace_api = {
+        name     = "aml-workspace-api"
+        vnet_key = "spoke_dap_re1"
+      }
+    }
+  }
+  aml_workspace_notebooks = {
+    name               = "privatelink.notebooks.azure.net"
+    resource_group_key = "dap_azure_ml_re1"
+    vnet_links = {
+      aml_workspace_notebooks = {
+        name     = "aml-workspace-notebooks"
+        vnet_key = "spoke_dap_re1"
       }
     }
   }

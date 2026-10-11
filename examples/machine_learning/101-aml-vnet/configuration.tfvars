@@ -28,7 +28,24 @@ machine_learning_workspaces = {
     keyvault_key                  = "aml_secrets"
     storage_account_key           = "amlstorage_re1"
     application_insights_key      = "ml_app_insight"
-    public_network_access_enabled = true
+    public_network_access_enabled = false
+    private_endpoints = {
+      aml_workspace = {
+        name               = "aml-workspace"
+        resource_group_key = "dap_azure_ml_re1"
+        vnet_key           = "spoke_dap_re1"
+        subnet_key         = "private_endpoints"
+        private_service_connection = {
+          name                 = "aml-workspace"
+          is_manual_connection = false
+          subresource_names    = ["amlworkspace"]
+        }
+        private_dns = {
+          zone_group_name = "aml-workspace"
+          keys            = ["aml_workspace_api", "aml_workspace_notebooks"]
+        }
+      }
+    }
     #sku_name                 = "Enterprise" # disabling this will set up Basic
     #Commenting sku_name as deprecated - per https://docs.microsoft.com/en-us/azure/machine-learning/concept-workspace#what-happened-to-enterprise-edition
 
