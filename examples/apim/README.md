@@ -83,7 +83,7 @@ plan-only mock; it does not validate imported document contents or Azure-side
 acceptance:
 
 ```bash
-terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/api_management_api
+terraform -chdir=examples init -backend=false
 terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_api -no-color
 ```
 
@@ -97,7 +97,7 @@ query parameters and mask headers. The focused contract verifies this nested
 shape without changing shared runners or pipelines:
 
 ```bash
-terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/api_management_api_diagnostic
+terraform -chdir=examples init -backend=false
 terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_api_diagnostic -no-color
 ```
 
