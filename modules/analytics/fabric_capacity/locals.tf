@@ -11,7 +11,7 @@ locals {
 
   tags = merge(
     local.inherited_tags,
-    try(var.settings.tags, {})
+    coalesce(try(var.settings.tags, null), {})
   )
 
   resource_group = {
@@ -32,7 +32,7 @@ locals {
     try(var.settings.location, null),
     var.location,
     local.resource_group.location,
-    try(var.global_settings.regions[try(var.settings.region, var.global_settings.default_region)], null)
+    try(var.global_settings.regions[coalesce(try(var.settings.region, null), try(var.global_settings.default_region, null))], null)
   )
 
   resource_name_input = coalesce(
@@ -44,5 +44,5 @@ locals {
   sku = merge({
     name = null
     tier = "Fabric"
-  }, try(var.settings.sku, {}))
+  }, coalesce(try(var.settings.sku, null), {}))
 }

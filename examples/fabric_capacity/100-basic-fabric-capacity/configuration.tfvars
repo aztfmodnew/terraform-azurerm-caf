@@ -24,11 +24,12 @@ fabric_capacities = {
 
     sku = {
       name = "F16"
+      tier = "Fabric"
     }
 
     administration_members = [
       "dataops_lead@contoso.com",
-      "spn-caf-automation-001"
+      "00000000-0000-0000-0000-000000000001"
     ]
 
     tags = {
