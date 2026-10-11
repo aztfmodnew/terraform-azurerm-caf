@@ -9,6 +9,17 @@ resource "azurerm_api_management_product" "apim" {
   published             = var.settings.published
   subscriptions_limit   = try(var.settings.subscriptions_limit, null)
   terms                 = try(var.settings.terms, null)
+
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
+    }
+  }
 }
 
 resource "azurerm_api_management_product_policy" "apim" {
@@ -17,13 +28,19 @@ resource "azurerm_api_management_product_policy" "apim" {
   resource_group_name = var.resource_group_name
   product_id          = var.settings.product_id
 
-  xml_content = try(
-    try(
-      file("${path.cwd}/${var.settings.policy.xml_file}"),
-      var.settings.policy.xml_content
-    ),
-    null
-  )
-
+  xml_content = try(var.settings.policy.xml_file, null) != null ? file(
+    "${path.cwd}/${var.settings.policy.xml_file}"
+  ) : try(var.settings.policy.xml_content, null)
   xml_link = try(var.settings.policy.xml_link, null)
+
+  dynamic "timeouts" {
+    for_each = try(var.settings.policy.timeouts, null) == null ? [] : [var.settings.policy.timeouts]
+
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
+    }
+  }
 }

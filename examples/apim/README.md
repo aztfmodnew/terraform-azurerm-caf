@@ -192,6 +192,32 @@ terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/ap
 terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_logger -no-color
 ```
 
+## API Management product options
+
+Products support all AzureRM product arguments and four configurable
+timeouts. `subscription_required` retains the provider default of `true`;
+`approval_required` and `subscriptions_limit` are only valid when subscriptions
+are required. An optional product policy can use inline XML, the legacy
+configuration-directory-relative `xml_file`, or a publicly reachable `xml_link`.
+When both `xml_file` and `xml_content` are provided, the file continues to take
+precedence. A policy has its own four independent timeouts.
+
+The focused plan-only contract checks provider defaults, product and policy
+options, XML source selection, legacy file precedence, timeout handling, and
+invalid combinations:
+
+```bash
+terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/api_management_product
+terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_product -no-color
+```
+
+The existing example exercises the integrated product, policy, and subscription
+configuration with the shared mock runner:
+
+```bash
+terraform -chdir=examples test -test-directory=tests/mock -var-file=apim/117-api_management_product/configuration.tfvars -no-color
+```
+
 ## API Management API operation options
 
 API operation settings support request definitions, multiple response
