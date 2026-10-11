@@ -66,3 +66,50 @@ run "identity_reference_and_timeouts_are_supported" {
     error_message = "The access connector must resolve a managed identity key, expose its identity, and accept all supported timeout operations."
   }
 }
+
+run "legacy_name_variable_without_settings_name" {
+  command = plan
+  module {
+    source = "../modules/analytics/databricks_access_connector"
+  }
+  variables {
+    name = "dac-legacy"
+    settings = {
+      resource_group_key = "dac_test"
+    }
+  }
+  assert {
+    condition     = azurerm_databricks_access_connector.databricks_access_connector.name == "dac-legacy"
+    error_message = "The legacy module-level name must remain sufficient when settings.name is omitted."
+  }
+}
+
+run "settings_name_without_name_variable" {
+  command = plan
+  module {
+    source = "../modules/analytics/databricks_access_connector"
+  }
+  variables {
+    settings = {
+      name               = "dac-settings"
+      resource_group_key = "dac_test"
+    }
+  }
+  assert {
+    condition     = azurerm_databricks_access_connector.databricks_access_connector.name == "dac-settings"
+    error_message = "settings.name must remain supported when the module-level name is omitted."
+  }
+}
+
+run "missing_name_is_rejected" {
+  command         = plan
+  expect_failures = [azurerm_databricks_access_connector.databricks_access_connector]
+  module {
+    source = "../modules/analytics/databricks_access_connector"
+  }
+  variables {
+    settings = {
+      resource_group_key = "dac_test"
+    }
+  }
+}

@@ -169,9 +169,8 @@ run "creation_requires_display_name" {
   }
 }
 
-run "creation_requires_path" {
-  command         = plan
-  expect_failures = [var.settings]
+run "creation_allows_omitted_path" {
+  command = plan
   module {
     source = "../modules/apim/api_management_api"
   }
@@ -182,6 +181,10 @@ run "creation_requires_path" {
       display_name = "Example API"
       protocols    = ["https"]
     }
+  }
+  assert {
+    condition     = azurerm_api_management_api.apim.display_name == "Example API"
+    error_message = "A configuration that omits the provider-computed path must be accepted by the module contract."
   }
 }
 
@@ -197,6 +200,23 @@ run "creation_requires_protocols" {
       revision     = "1"
       display_name = "Example API"
       path         = "example"
+    }
+  }
+}
+
+run "creation_rejects_empty_protocols" {
+  command         = plan
+  expect_failures = [var.settings]
+  module {
+    source = "../modules/apim/api_management_api"
+  }
+  variables {
+    settings = {
+      name         = "example-api"
+      revision     = "1"
+      display_name = "Example API"
+      path         = "example"
+      protocols    = []
     }
   }
 }

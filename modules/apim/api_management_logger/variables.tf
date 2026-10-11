@@ -1,17 +1,52 @@
 variable "global_settings" {
-  description = "Global settings used by CAF naming."
+  description = <<DESCRIPTION
+Global CAF settings, as produced by the root module. Supported attributes:
+  - default_region, environment - (Optional) Default region key and environment name.
+  - inherit_tags - (Optional) Whether resources inherit global tags. Defaults to false.
+  - prefix, suffix, prefix_with_hyphen - (Optional) Naming prefix, suffix and hyphenated prefix.
+  - prefixes, suffixes - (Optional) Naming prefix and suffix lists used by azurecaf.
+  - random_length, random_seed - (Optional) Random suffix length (defaults to 0) and seed.
+  - resource_types - (Optional) Additional azurecaf resource types. Defaults to [].
+  - separator - (Optional) Naming separator. Defaults to "-".
+  - passthrough, use_slug, clean_input - (Optional) azurecaf naming flags. Default to false, true and true.
+  - regions - (Optional) Map of region keys to Azure region names.
+  - tags - (Optional) Global tags.
+DESCRIPTION
   type = object({
-    prefixes      = list(string)
-    random_length = number
-    passthrough   = bool
-    use_slug      = bool
+    default_region     = optional(string)
+    environment        = optional(string)
+    inherit_tags       = optional(bool, false)
+    prefix             = optional(string)
+    suffix             = optional(string)
+    prefix_with_hyphen = optional(string)
+    prefixes           = optional(list(string))
+    suffixes           = optional(list(string))
+    random_length      = optional(number, 0)
+    random_seed        = optional(number)
+    resource_types     = optional(list(string), [])
+    separator          = optional(string, "-")
+    passthrough        = optional(bool, false)
+    regions            = optional(map(string))
+    tags               = optional(map(string))
+    use_slug           = optional(bool, true)
+    clean_input        = optional(bool, true)
   })
 }
 
 variable "client_config" {
-  description = "Client configuration, including the current landing-zone key."
+  description = <<DESCRIPTION
+Client configuration, as produced by the root module. landingzone_key is required;
+client_id, object_id, logged_aad_app_objectId, logged_user_objectId, subscription_id
+and tenant_id are optional.
+DESCRIPTION
   type = object({
-    landingzone_key = string
+    client_id               = optional(string)
+    landingzone_key         = string
+    logged_aad_app_objectId = optional(string)
+    logged_user_objectId    = optional(string)
+    object_id               = optional(string)
+    subscription_id         = optional(string)
+    tenant_id               = optional(string)
   })
 }
 

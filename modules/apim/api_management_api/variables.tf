@@ -22,9 +22,11 @@ version_description, source_api_id, and timeouts.
 
 api_type accepts graphql, http, soap, or websocket and defaults to http.
 protocols accepts http, https, ws, and wss. display_name, path, and protocols
-are required when source_api_id is not set. service_url is required for
+are accepted as optional inputs; display_name and a non-empty protocols list
+are required when source_api_id is not set, while path may be omitted or empty
+(root API) because AzureRM treats it as optional. service_url is required for
 websocket APIs. When version is set, version_set_id must also be provided.
-display_name must not be empty when supplied; an empty path is supported.
+display_name must not be empty when supplied.
 subscription_required defaults to true. See the module examples for complete
 configuration patterns.
 DESCRIPTION
@@ -171,15 +173,10 @@ DESCRIPTION
   }
 
   validation {
-    condition = (
-      var.settings.source_api_id != null ||
-      (
-        var.settings.display_name != null &&
-        var.settings.path != null &&
-        var.settings.protocols != null
-      )
+    condition = var.settings.source_api_id != null ? true : (
+      var.settings.display_name != null && var.settings.protocols != null ? length(var.settings.protocols) > 0 : false
     )
-    error_message = "display_name, path, and protocols must be specified when source_api_id is not set."
+    error_message = "display_name and at least one protocol must be specified when source_api_id is not set."
   }
 
   validation {

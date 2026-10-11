@@ -123,32 +123,27 @@ description = <<DESCRIPTION
   DESCRIPTION
 ```
 
-### 4. Validation Block (MANDATORY)
+### 4. Validation Blocks (MANDATORY for constraints)
 
-Always include validation that rejects unsupported attributes:
+The typed `object()` is the input contract. Terraform converts the value to
+that type before running validation and silently discards attributes that are
+not declared, so a `keys(var.settings)` allowlist can never detect a misspelled
+attribute. Do not add one to a typed object; state in the DESCRIPTION that
+undeclared attributes are ignored.
+
+Use validation blocks for constraints the type cannot express: allowed values,
+cross-field requirements, and mutually exclusive options. Guard optional values
+with a conditional expression, because `||` and `&&` may evaluate both operands:
 
 ```hcl
 validation {
-  condition = length(setsubtract(
-    keys(var.settings),
-    ["name", "enabled", "config", "tags"]
-  )) == 0
-  error_message = format("Unsupported settings attributes: %s. Allowed: name, enabled, config, tags.",
-    join(", ",
-      setsubtract(
-        keys(var.settings),
-        ["name", "enabled", "config", "tags"]
-      )
-    )
-  )
+  condition     = var.settings.mode == null ? true : contains(["a", "b"], var.settings.mode)
+  error_message = "mode must be a or b."
 }
 ```
 
-**Why validation is critical:**
-
-- Catches typos early (e.g., `enabld` instead of `enabled`)
-- Provides clear error messages to users
-- Prevents silent failures from misspelled attributes
+An allowlist is meaningful only when the input is `any` or a map, where the
+raw keys are preserved.
 
 ### 5. Standard Attributes
 
@@ -188,7 +183,7 @@ Reference these modules for correct implementations:
 - Define all attributes in `object()`
 - Use `optional()` for non-required attributes
 - Include comprehensive DESCRIPTION documentation
-- Add validation block to catch unsupported attributes
+- Add validation blocks for allowed values and cross-field rules (not key allowlists on typed objects)
 - Update settings variable when adding new attributes
 
 ❌ **DON'T:**
