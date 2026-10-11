@@ -22,11 +22,13 @@ resource "azurerm_resource_group_template_deployment" "mlci" {
   parameters_content = jsonencode(local.parameters_content)
 
   deployment_mode = "Incremental"
+  debug_level     = try(var.settings.debug_level, null)
+  tags            = local.tags
 
   timeouts {
-    create = "10h"
-    update = "10h"
-    delete = "10h"
-    read   = "5m"
+    create = coalesce(try(var.settings.timeouts.create, null), "10h")
+    read   = coalesce(try(var.settings.timeouts.read, null), "5m")
+    update = coalesce(try(var.settings.timeouts.update, null), "10h")
+    delete = coalesce(try(var.settings.timeouts.delete, null), "10h")
   }
 }

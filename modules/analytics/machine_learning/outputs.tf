@@ -27,3 +27,8 @@ output "discovery_url" {
   description = "The discovery service URL for the Machine Learning Workspace."
   value       = azurerm_machine_learning_workspace.ws.discovery_url
 }
+
+output "compute_instances" {
+  description = "Outputs for legacy ARM-template-backed compute instances."
+  value       = module.compute_instance
+}
