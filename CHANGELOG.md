@@ -1,3 +1,46 @@
+# [5.0.1](https://github.com/aztfmodnew/terraform-azurerm-caf/compare/5.0.0...5.0.1) (2026-10-11)
+
+## What's Changed
+
+- fix(modules): address stacked-PR review findings on settings contracts @rfernandezdo (#250)
+- Address second review batch: API validation, typed shared objects and guidance @rfernandezdo (#249)
+- Address first APIM review batch and strengthen test contracts @rfernandezdo (#248)
+- Complete AzureAD membership timeouts and dependency resolution @rfernandezdo (#247)
+- Complete standard availability test contracts and document classic migration @rfernandezdo (#246)
+- Complete Application Insights configuration and root workspace references @rfernandezdo (#245)
+- Fix API operation policy ID references @rfernandezdo (#244)
+- Complete API Management user coverage @rfernandezdo (#243)
+- Complete API Management subscription coverage @rfernandezdo (#242)
+- Complete API Management product coverage @rfernandezdo (#241)
+- Complete API Management logger coverage @rfernandezdo (#240)
+- Complete API Management group coverage @rfernandezdo (#239)
+- Complete API Management gateway API coverage @rfernandezdo (#238)
+- Complete API Management gateway coverage @rfernandezdo (#237)
+- Complete API Management diagnostic coverage @rfernandezdo (#236)
+- Complete API Management custom domain coverage @rfernandezdo (#235)
+- Complete API Management certificate coverage @rfernandezdo (#234)
+- Complete API Management backend coverage @rfernandezdo (#233)
+- Complete API Management API policy coverage @rfernandezdo (#232)
+- Complete API Management operation tag coverage @rfernandezdo (#231)
+- Complete API Management operation policy coverage @rfernandezdo (#230)
+- Complete API Management API operation coverage @rfernandezdo (#229)
+- Complete API Management API diagnostic coverage @rfernandezdo (#228)
+- Complete API Management API coverage @rfernandezdo (#226)
+- Complete API Management service coverage @rfernandezdo (#225)
+- Complete Synapse Spark and SQL pool coverage @rfernandezdo (#224)
+- Synapse workspace configuration coverage @rfernandezdo (#223)
+- feature/machine learning legacy compute instance coverage @rfernandezdo (#222)
+- feature/machine learning compute instance coverage @rfernandezdo (#221)
+- Complete Machine Learning workspace coverage @rfernandezdo (#220)
+- Complete Fabric Capacity module coverage @rfernandezdo (#219)
+- Complete Databricks workspace module coverage @rfernandezdo (#218)
+- Complete Databricks access connector module options @rfernandezdo (#217)
+- Refresh root Azure provider constraints @rfernandezdo (#216)
+- feature/module configuration coverage @rfernandezdo (#214)
+- Update AzAPI modules and complete Network Security Perimeter @rfernandezdo (#213)
+
+**Full Changelog**: https://github.com/aztfmodnew/terraform-azurerm-caf/compare/5.0.0...5.0.1
+
 # Unreleased
 
 ## Features and fixes
