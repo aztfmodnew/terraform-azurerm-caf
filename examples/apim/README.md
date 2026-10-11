@@ -66,6 +66,27 @@ terraform -chdir=examples test -test-directory=tests/unit/apim/api_management -n
 The contract verifies Terraform's planned configuration only; it does not
 confirm service-side acceptance or deploy resources.
 
+## API Management API options
+
+The `api_management_api` settings support `api_type` (`graphql`, `http`,
+`soap`, or `websocket`), contact and license blocks, OAuth2 and OpenID
+authentication, the terms-of-service URL, subscription-key parameter names,
+and create/read/update/delete timeouts. API type defaults to `http` and
+subscription keys are required by default. A version requires a version set;
+websocket APIs require `service_url`. Without `source_api_id`, configure
+`display_name`, `path`, and `protocols`. OAuth2 and OpenID authentication are
+mutually exclusive. The existing API import remains supported; `wsdl_selector`
+is limited to `wsdl` and `wsdl-link` imports.
+
+The focused API contract checks the new fields and provider defaults using a
+plan-only mock; it does not validate imported document contents or Azure-side
+acceptance:
+
+```bash
+terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/api_management_api
+terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_api -no-color
+```
+
 ---
 
 ## Inputs

@@ -14,10 +14,20 @@ resource "azurerm_api_management_api" "apim" {
   api_management_name = var.api_management_name
   resource_group_name = var.resource_group_name
   revision            = var.settings.revision
+  api_type            = var.settings.api_type
   display_name        = try(var.settings.display_name, null)
   path                = try(var.settings.path, null)
   protocols           = try(var.settings.protocols, null)
   description         = try(var.settings.description, null)
+  dynamic "contact" {
+    for_each = try(var.settings.contact, null) == null ? [] : [var.settings.contact]
+
+    content {
+      email = try(contact.value.email, null)
+      name  = try(contact.value.name, null)
+      url   = try(contact.value.url, null)
+    }
+  }
   dynamic "import" {
     for_each = try(var.settings.import, null) != null ? [var.settings.import] : []
 
@@ -34,6 +44,14 @@ resource "azurerm_api_management_api" "apim" {
           endpoint_name = try(wsdl_selector.value.endpoint_name, null)
         }
       }
+    }
+  }
+  dynamic "license" {
+    for_each = try(var.settings.license, null) == null ? [] : [var.settings.license]
+
+    content {
+      name = try(license.value.name, null)
+      url  = try(license.value.url, null)
     }
   }
   dynamic "oauth2_authorization" {
@@ -64,10 +82,22 @@ resource "azurerm_api_management_api" "apim" {
       query  = try(subscription_key_parameter_names.value.query, null)
     }
   }
-  subscription_required = try(var.settings.subscription_required, null)
+  subscription_required = var.settings.subscription_required
+  terms_of_service_url  = try(var.settings.terms_of_service_url, null)
   version               = try(var.settings.version, null)
   version_set_id        = try(var.settings.version_set_id, null)
   revision_description  = try(var.settings.revision_description, null)
   version_description   = try(var.settings.version_description, null)
   source_api_id         = try(var.settings.source_api_id, null)
+
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
+    }
+  }
 }
