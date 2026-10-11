@@ -107,8 +107,8 @@ DESCRIPTION
       key    = string
       lz_key = optional(string)
     }))
-    public_network_access_enabled = optional(bool)
-    virtual_network_type          = optional(string)
+    public_network_access_enabled = optional(bool, true)
+    virtual_network_type          = optional(string, "None")
     virtual_network_configuration = optional(object({
       subnet_id  = optional(string)
       lz_key     = optional(string)

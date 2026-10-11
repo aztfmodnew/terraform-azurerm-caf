@@ -216,6 +216,10 @@ run "apim_provider_options_and_repeated_blocks" {
     error_message = "public_network_access_enabled must be passed through to the API Management resource."
   }
   assert {
+    condition     = azurerm_api_management.apim.virtual_network_type == "Internal"
+    error_message = "An explicit virtual network type must take precedence over the default."
+  }
+  assert {
     condition     = length(azurerm_api_management.apim.additional_location) == 2
     error_message = "The legacy single location and the additional_locations map must both produce regional blocks."
   }
@@ -226,6 +230,10 @@ run "apim_provider_options_and_repeated_blocks" {
   assert {
     condition     = one(azurerm_api_management.apim.delegation).url == "https://example.com/delegation"
     error_message = "Delegation options must be passed through to the API Management resource."
+  }
+  assert {
+    condition     = one(azurerm_api_management.apim.delegation).subscriptions_enabled && one(azurerm_api_management.apim.delegation).user_registration_enabled
+    error_message = "Explicitly enabled delegation flags must be preserved."
   }
   assert {
     condition     = one(azurerm_api_management.apim.hostname_configuration).proxy[0].ssl_keyvault_identity_client_id == "00000000-0000-0000-0000-000000000000"

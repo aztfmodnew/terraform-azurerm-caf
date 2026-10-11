@@ -22,6 +22,17 @@ Use these rules when editing files under `modules/**`. Focus on correctness, CAF
   - Follow the [shared test contract](../../examples/tests/README.md#contract-for-new-and-updated-tests). Reuse existing assertions and mocks; do not duplicate scenario plans or change the existing mock/general runners or pipelines merely to organize contracts.
   - Keep runs plan-only and document coverage and opt-in execution commands. A directory named `unit` does not guarantee isolation: explicitly select the module and mock external provider dependencies.
 
+- Typed optional inputs and defaults
+  - `try(value, fallback)` handles evaluation errors, not present nulls. Typed `optional(...)` attributes without defaults are present as null when omitted; `can(...)` also succeeds for them.
+  - When the module promises a non-null default, use `optional(type, default)` and test omitted, explicit-null and explicit values. Do not use truthiness to replace an explicitly supplied `false`.
+  - Keep null when the provider should own default/computed behavior. Mock providers do not necessarily run the real provider's defaulting logic; distinguish module passthrough assertions from provider-runtime behavior.
+
+- Reviewing proposed validation changes
+  - Verify each review claim against the exact provider documentation and, when ambiguous, the released implementation before changing input types or validation.
+  - Do not weaken required nested fields or reject valid empty values based on a suggestion alone. Add a positive boundary test for valid empty/root-path or source-resource configurations.
+  - Pair each new validation with an isolated negative contract: change one constraint from a valid fixture and retain valid adjacent cases. Do not treat one expected variable failure as proof that every constraint is covered.
+  - Keep mutable provider-version references out of general usage examples; retain exact versions in schema-validation evidence where they establish what was verified.
+
 - Repository-wide capability audits
   - Use the reusable [module coverage audit skill](../skills/module-coverage-audit/SKILL.md) to inventory and compare modules against their exact provider schemas.
   - Keep generated inventories and per-module progress in a verified ignored temporary directory. Classify nested and helper directories explicitly; do not silently skip them.
