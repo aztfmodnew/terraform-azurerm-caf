@@ -22,6 +22,16 @@ azurerm_application_insights = {
     retention_in_days                     = 180
     sampling_percentage                   = 50
     disable_ip_masking                    = true
+    local_authentication_enabled          = true
+    internet_ingestion_enabled            = true
+    internet_query_enabled                = true
+    force_customer_storage_for_profiler   = false
+    timeouts = {
+      create = "70m"
+      read   = "6m"
+      update = "40m"
+      delete = "40m"
+    }
   }
   ios = {
     name               = "tf-test-appinsights-ios"
