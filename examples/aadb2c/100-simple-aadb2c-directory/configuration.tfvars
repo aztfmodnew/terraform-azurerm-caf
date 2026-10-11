@@ -25,5 +25,11 @@ aadb2c_directory = {
     # Domain requires .onmicrosoft.com suffix
     domain_name = "100simpleaadb2cdirectory.onmicrosoft.com"
     sku_name    = "PremiumP1"
+    timeouts = {
+      create = "45m"
+      read   = "10m"
+      update = "45m"
+      delete = "45m"
+    }
   }
 }

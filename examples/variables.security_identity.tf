@@ -226,6 +226,7 @@ variable "aadb2c_directory" {
       - lz_key - (Optional) The key of the landing zone in which the AAD B2C directory will be created. This is optional and can be set to null.
       - key - (Optional) The key of the resource group in which the AAD B2C directory will be created. This is optional and can be set to null.
       - name - (Optional) The name of the resource group in which the AAD B2C directory will be created. This is optional and can be set to null.
+    - timeouts - (Optional) Operation timeouts: create (30m default), read (5m default), update (30m default), and delete (30m default).
   DESCRIPTION
   default     = {} # Make the variable nullable by default
   type = map(object({
@@ -242,6 +243,12 @@ variable "aadb2c_directory" {
       key    = optional(string)
       name   = optional(string)
     }))
+    timeouts = optional(object({
+      create = optional(string)
+      read   = optional(string)
+      update = optional(string)
+      delete = optional(string)
+    }))
   }))
   sensitive = false
   validation {
@@ -257,10 +264,11 @@ variable "aadb2c_directory" {
         "sku_name",
         "tags",
         "resource_group_key",
-        "resource_group"
+        "resource_group",
+        "timeouts"
       ])) == 0
     ])
-    error_message = "One or more entries in aadb2c_directory contain unsupported attributes. Allowed attributes are: country_code, data_residency_location, display_name, domain_name, resource_group_name, sku_name, tags, resource_group_key, resource_group."
+    error_message = "One or more entries in aadb2c_directory contain unsupported attributes. Allowed attributes are: country_code, data_residency_location, display_name, domain_name, resource_group_name, sku_name, tags, resource_group_key, resource_group, timeouts."
   }
 }
 

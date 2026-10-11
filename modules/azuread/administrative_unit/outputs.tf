@@ -18,3 +18,11 @@ output "object_id" {
   value       = azuread_administrative_unit.admu.object_id
   description = "The object ID of the administrative unit"
 }
+output "id" {
+  value       = azuread_administrative_unit.admu.id
+  description = "The resource ID of the administrative unit."
+}
+output "hidden_membership_enabled" {
+  value       = azuread_administrative_unit.admu.hidden_membership_enabled
+  description = "Whether the administrative unit and its members are hidden."
+}
