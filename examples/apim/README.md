@@ -87,6 +87,20 @@ terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/ap
 terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_api -no-color
 ```
 
+## API Management API diagnostic options
+
+API diagnostic settings support all four request/response directions, logging
+verbosity and sampling, correlation protocol, client IP logging, operation
+name format, and create/read/update/delete timeouts. Optional `data_masking`
+belongs inside the selected request or response block and can mask or hide
+query parameters and mask headers. The focused contract verifies this nested
+shape without changing shared runners or pipelines:
+
+```bash
+terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/api_management_api_diagnostic
+terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_api_diagnostic -no-color
+```
+
 ---
 
 ## Inputs
