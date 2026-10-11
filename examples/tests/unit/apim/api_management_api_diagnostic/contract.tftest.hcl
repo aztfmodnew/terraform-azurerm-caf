@@ -82,19 +82,19 @@ run "api_diagnostic_configuration" {
     error_message = "Backend request settings must be passed through."
   }
   assert {
-    condition     = one(one(azurerm_api_management_api_diagnostic.apim.backend_request).data_masking).query_params[0].value == "token"
+    condition     = anytrue([for qp in one(one(azurerm_api_management_api_diagnostic.apim.backend_request).data_masking).query_params : qp.value == "token"])
     error_message = "Backend request query parameter masking must be nested under its data_masking block."
   }
   assert {
-    condition     = one(one(azurerm_api_management_api_diagnostic.apim.backend_request).data_masking).headers[0].value == "authorization"
+    condition     = anytrue([for header in one(one(azurerm_api_management_api_diagnostic.apim.backend_request).data_masking).headers : header.value == "authorization"])
     error_message = "Backend request header masking must be nested under its data_masking block."
   }
   assert {
-    condition     = one(one(azurerm_api_management_api_diagnostic.apim.backend_response).data_masking).query_params[0].mode == "Hide"
+    condition     = anytrue([for qp in one(one(azurerm_api_management_api_diagnostic.apim.backend_response).data_masking).query_params : qp.mode == "Hide"])
     error_message = "Backend response query masking must be passed through."
   }
   assert {
-    condition     = one(one(azurerm_api_management_api_diagnostic.apim.frontend_request).data_masking).headers[0].value == "cookie"
+    condition     = anytrue([for header in one(one(azurerm_api_management_api_diagnostic.apim.frontend_request).data_masking).headers : header.value == "cookie"])
     error_message = "Frontend request header masking must be passed through."
   }
 }
