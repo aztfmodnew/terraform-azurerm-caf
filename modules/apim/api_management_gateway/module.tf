@@ -12,30 +12,32 @@ resource "azurerm_api_management_gateway" "apim" {
   name = azurecaf_name.apim.result
 
   api_management_id = coalesce(
-    try(var.remote_objects.api_management[var.settings.api_management.lz_key][var.settings.api_management.key].id, null),
+    try(var.remote_objects.api_management[coalesce(try(var.settings.api_management.lz_key, null), var.client_config.landingzone_key)][var.settings.api_management.key].id, null),
     try(var.remote_objects.api_management[var.client_config.landingzone_key][var.settings.api_management.key].id, null),
     try(var.settings.api_management.id, null)
   )
 
-  # resource_group_name exists in the documentation but not in the provider Source code
-  # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/api_management_gateway
-  #
-  #
-  # resource_group_name = coalesce(
-  #   try(var.remote_objects.resource_group[var.settings.resource_group.lz_key][var.settings.resource_group.key].name, null),
-  #   try(var.remote_objects.resource_group[var.client_config.landingzone_key][var.settings.resource_group.key].name, null),
-  #   try(var.settings.resource_group.name, null)
-  # )
-
   description = try(var.settings.description, null)
 
   dynamic "location_data" {
-    for_each = try(var.settings.location_data, null) != null ? [var.settings.location_data] : []
+    for_each = [var.settings.location_data]
+
     content {
-      name     = try(location_data.value.name, null)
-      region   = try(location_data.value.region, null)
+      name     = location_data.value.name
       city     = try(location_data.value.city, null)
       district = try(location_data.value.district, null)
+      region   = try(location_data.value.region, null)
+    }
+  }
+
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
     }
   }
 }
