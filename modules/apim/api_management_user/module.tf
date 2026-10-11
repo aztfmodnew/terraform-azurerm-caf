@@ -9,4 +9,15 @@ resource "azurerm_api_management_user" "apim" {
   note                = try(var.settings.note, null)
   password            = try(var.settings.password, null)
   state               = try(var.settings.state, null)
+
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
+    }
+  }
 }
