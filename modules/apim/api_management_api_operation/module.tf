@@ -202,10 +202,24 @@ resource "azurerm_api_management_api_operation" "apim" {
     }
   }
 
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
+    }
+  }
+
   lifecycle {
     precondition {
-      condition     = contains(["GET", "DELETE", "PUT", "POST"], var.settings.method)
-      error_message = format("Enter a valid value for method: GET, DELETE, PUT, POST. Got: %s", var.settings.method)
+      condition = contains(
+        ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT", "TRACE"],
+        var.settings.method
+      )
+      error_message = "settings.method must be one of DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT, or TRACE."
     }
   }
 
