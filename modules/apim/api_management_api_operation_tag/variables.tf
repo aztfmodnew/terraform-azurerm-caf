@@ -33,13 +33,6 @@ variable "settings" {
       delete = optional(string)
     }))
   })
-
-  validation {
-    condition = length(setsubtract(keys(var.settings), [
-      "name", "display_name", "api_operation", "timeouts"
-    ])) == 0
-    error_message = "Unsupported attributes in settings. Allowed: name, display_name, api_operation, timeouts."
-  }
 }
 variable "remote_objects" {
   description = "Remote objects configuration."

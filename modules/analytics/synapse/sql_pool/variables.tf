@@ -45,23 +45,6 @@ DESCRIPTION
   })
 
   validation {
-    condition = length(setsubtract(keys(var.settings), [
-      "name",
-      "sku_name",
-      "storage_account_type",
-      "create_mode",
-      "collation",
-      "data_encrypted",
-      "recovery_database_id",
-      "restore",
-      "geo_backup_policy_enabled",
-      "tags",
-      "timeouts"
-    ])) == 0
-    error_message = "Unsupported attributes in settings. See the variable description for allowed attributes."
-  }
-
-  validation {
     condition = contains(
       ["DW100c", "DW200c", "DW300c", "DW400c", "DW500c", "DW1000c", "DW1500c", "DW2000c", "DW2500c", "DW3000c", "DW5000c", "DW6000c", "DW7500c", "DW10000c", "DW15000c", "DW30000c"],
       var.settings.sku_name

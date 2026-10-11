@@ -44,8 +44,4 @@ variable "settings" {
     }))
     tags = optional(map(string))
   })
-  validation {
-    condition     = length(setsubtract(keys(var.settings), ["name", "module_link", "timeouts", "tags"])) == 0
-    error_message = "Unsupported attributes in settings. Allowed: name, module_link, timeouts, tags."
-  }
 }

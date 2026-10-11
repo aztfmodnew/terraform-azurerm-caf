@@ -132,44 +132,6 @@ variable "settings" {
   })
 
   validation {
-    condition = length(setsubtract(keys(var.settings), [
-      "name",
-      "sku",
-      "resource_group_key",
-      "resource_group_name",
-      "resource_group",
-      "lz_key",
-      "location",
-      "region",
-      "managed_resource_group_name",
-      "load_balancer_backend_address_pool_id",
-      "customer_managed_key_enabled",
-      "infrastructure_encryption_enabled",
-      "managed_services_cmk_key_vault_id",
-      "managed_services_cmk_key_vault_key_id",
-      "managed_services_cmk_key",
-      "managed_disk_cmk_key_vault_id",
-      "managed_disk_cmk_key_vault_key_id",
-      "managed_disk_cmk_key",
-      "managed_disk_cmk_rotation_to_latest_version_enabled",
-      "public_network_access_enabled",
-      "default_storage_firewall_enabled",
-      "access_connector_id",
-      "access_connector",
-      "network_security_group_rules_required",
-      "custom_parameters",
-      "enhanced_security_compliance",
-      "root_dbfs_customer_managed_key",
-      "machine_learning",
-      "diagnostic_profiles",
-      "tags",
-      "azurecaf_resource_type",
-      "timeouts"
-    ])) == 0
-    error_message = "Unsupported Databricks workspace settings were provided."
-  }
-
-  validation {
     condition     = try(contains(["standard", "premium", "trial"], var.settings.sku), true)
     error_message = "sku must be standard, premium, or trial."
   }

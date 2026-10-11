@@ -16,6 +16,9 @@ BLOCK_PATTERN = re.compile(
     re.MULTILINE,
 )
 MODULE_PATTERN = re.compile(r'^\s*module\s+"([^"]+)"', re.MULTILINE)
+HEREDOC_START_PATTERN = re.compile(r"<<[-~]?([A-Za-z_][A-Za-z0-9_]*)\s*$")
+BLOCK_COMMENT_PATTERN = re.compile(r"/\*.*?\*/", re.DOTALL)
+LINE_COMMENT_PATTERN = re.compile(r"(^|\s)(#|//).*$", re.MULTILINE)
 EXCLUDED_PARTS = {".git", ".terraform"}
 FIELDS = [
     "path",
@@ -60,6 +63,25 @@ def classify(directory: Path, modules_root: Path) -> str:
     return "nested-candidate"
 
 
+def strip_non_code(source: str) -> str:
+    """Remove comments and heredoc bodies so block scanning only sees HCL code."""
+    source = BLOCK_COMMENT_PATTERN.sub("", source)
+    source = LINE_COMMENT_PATTERN.sub("", source)
+
+    lines = source.splitlines()
+    kept: list[str] = []
+    terminator: str | None = None
+    for line in lines:
+        if terminator is None:
+            kept.append(line)
+            match = HEREDOC_START_PATTERN.search(line)
+            if match:
+                terminator = match.group(1)
+        elif line.strip() == terminator:
+            terminator = None
+    return "\n".join(kept)
+
+
 def collect_inventory(modules_root: Path) -> list[dict[str, str | int]]:
     rows = []
     for directory in find_module_directories(modules_root):
@@ -68,7 +90,7 @@ def collect_inventory(modules_root: Path) -> list[dict[str, str | int]]:
         module_calls: set[str] = set()
 
         for terraform_file in sorted(directory.glob("*.tf")):
-            source = terraform_file.read_text(encoding="utf-8")
+            source = strip_non_code(terraform_file.read_text(encoding="utf-8"))
             for block_kind, block_type in BLOCK_PATTERN.findall(source):
                 if block_kind == "resource":
                     resources.add(block_type)

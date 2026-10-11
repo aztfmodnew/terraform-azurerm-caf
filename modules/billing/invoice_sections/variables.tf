@@ -57,8 +57,4 @@ variable "settings" {
       delete = optional(string)
     }))
   })
-  validation {
-    condition     = length(setsubtract(keys(var.settings), ["name", "billing_account_id", "billing_profile_id", "labels", "tags", "display_name", "state", "reason_code", "target_cloud", "timeouts"])) == 0
-    error_message = "Unsupported invoice section setting. See the documented settings contract."
-  }
 }

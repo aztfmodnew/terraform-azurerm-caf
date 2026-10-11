@@ -18,7 +18,7 @@ variables {
   vnets               = {}
 }
 
-run "omitted_settings_preserve_provider_defaults" {
+run "omitted_settings_apply_module_defaults" {
   command = plan
   module {
     source = "../modules/apim/api_management"
@@ -34,7 +34,7 @@ run "omitted_settings_preserve_provider_defaults" {
   }
   assert {
     condition     = azurerm_api_management.apim.public_network_access_enabled == true && azurerm_api_management.apim.virtual_network_type == "None"
-    error_message = "Omitted typed settings must retain public access and no virtual network."
+    error_message = "Omitted typed settings must apply the module defaults for public access and virtual network type."
   }
   assert {
     condition     = one(azurerm_api_management.apim.delegation).subscriptions_enabled == null && one(azurerm_api_management.apim.delegation).user_registration_enabled == null
@@ -42,7 +42,7 @@ run "omitted_settings_preserve_provider_defaults" {
   }
 }
 
-run "explicit_null_settings_preserve_provider_defaults" {
+run "explicit_null_settings_apply_module_defaults" {
   command = plan
   module {
     source = "../modules/apim/api_management"
@@ -63,7 +63,7 @@ run "explicit_null_settings_preserve_provider_defaults" {
   }
   assert {
     condition     = azurerm_api_management.apim.public_network_access_enabled == true && azurerm_api_management.apim.virtual_network_type == "None"
-    error_message = "Explicit null settings must retain the provider's service defaults."
+    error_message = "Explicit null settings must be replaced by the module defaults, matching the omitted case."
   }
   assert {
     condition     = one(azurerm_api_management.apim.delegation).subscriptions_enabled == null && one(azurerm_api_management.apim.delegation).user_registration_enabled == null

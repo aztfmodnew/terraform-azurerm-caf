@@ -54,11 +54,8 @@ variable "settings" {
   })
 
   validation {
-    condition = length(setsubtract(keys(var.settings), [
-      "api_operation", "api", "api_management", "resource_group",
-      "xml_content", "xml_link", "timeouts"
-    ])) == 0
-    error_message = "Unsupported attributes in settings. Allowed: api_operation, api, api_management, resource_group, xml_content, xml_link, timeouts."
+    condition     = try(var.settings.api_operation.id, null) != null || try(var.settings.api_operation.key, null) != null
+    error_message = "settings.api_operation must be provided with either id or key so that operation_id can be resolved."
   }
 }
 variable "remote_objects" {

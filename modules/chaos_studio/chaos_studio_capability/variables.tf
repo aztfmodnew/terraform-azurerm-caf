@@ -30,10 +30,6 @@ variable "settings" {
       read   = optional(string)
     }))
   })
-  validation {
-    condition     = length(setsubtract(keys(var.settings), ["capability_type", "chaos_studio_target_id", "chaos_studio_target", "tags", "timeouts"])) == 0
-    error_message = "Unsupported attributes in settings. Allowed: capability_type, chaos_studio_target_id, chaos_studio_target, tags, timeouts."
-  }
 }
 
 variable "base_tags" {

@@ -201,3 +201,76 @@ run "direct_user_assigned_identity_ids_are_supported" {
     error_message = "The module must accept direct user-assigned identity IDs."
   }
 }
+
+run "legacy_resolved_workspace_id_without_workspace_setting_is_supported" {
+  command = plan
+
+  module {
+    source = "../modules/analytics/machine_learning_compute_instance"
+  }
+
+  variables {
+    global_settings = var.global_settings
+    client_config   = var.client_config
+    location        = var.location
+    base_tags       = var.base_tags
+    remote_objects  = var.remote_objects
+    settings = {
+      name                 = "aml-compute-legacy"
+      virtual_machine_size = "STANDARD_DS2_V2"
+    }
+  }
+
+  assert {
+    condition     = azurerm_machine_learning_compute_instance.mlci.machine_learning_workspace_id == var.remote_objects.machine_learning_workspace_id
+    error_message = "Callers passing only remote_objects.machine_learning_workspace_id must keep working without a duplicate settings.machine_learning_workspace reference."
+  }
+}
+
+run "workspace_reference_without_id_or_key_is_rejected" {
+  command = plan
+
+  module {
+    source = "../modules/analytics/machine_learning_compute_instance"
+  }
+
+  variables {
+    global_settings = var.global_settings
+    client_config   = var.client_config
+    location        = var.location
+    base_tags       = var.base_tags
+    remote_objects  = var.remote_objects
+    settings = {
+      name                       = "aml-compute-bad-workspace"
+      machine_learning_workspace = {}
+      virtual_machine_size       = "STANDARD_DS2_V2"
+    }
+  }
+
+  expect_failures = [var.settings]
+}
+
+run "incomplete_subnet_reference_is_rejected" {
+  command = plan
+
+  module {
+    source = "../modules/analytics/machine_learning_compute_instance"
+  }
+
+  variables {
+    global_settings = var.global_settings
+    client_config   = var.client_config
+    location        = var.location
+    base_tags       = var.base_tags
+    remote_objects  = var.remote_objects
+    settings = {
+      name                 = "aml-compute-bad-subnet"
+      virtual_machine_size = "STANDARD_DS2_V2"
+      subnet = {
+        key = "aml"
+      }
+    }
+  }
+
+  expect_failures = [var.settings]
+}

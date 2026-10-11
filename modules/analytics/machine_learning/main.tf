@@ -6,8 +6,10 @@ terraform {
       version = ">= 3.1.0"
     }
     azurerm = {
-      source  = "hashicorp/azurerm"
-      version = ">= 4.0.0"
+      source = "hashicorp/azurerm"
+      # 4.46.0 is the first release providing service_side_encryption_enabled and
+      # the three machine learning workspace network outbound rule resources.
+      version = ">= 4.46.0"
     }
   }
 }

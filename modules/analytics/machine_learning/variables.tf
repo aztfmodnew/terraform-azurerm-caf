@@ -4,6 +4,40 @@ variable "settings" {
     Supports the AzureRM workspace arguments and nested blocks, CAF managed
     identity references, diagnostic profiles, private endpoints, managed
     network outbound rules, and the legacy compute_instances child module.
+
+    Required:
+      - name - (string) Workspace name passed to azurecaf for CAF naming.
+
+    Dependency resolution (supply exactly one form per dependency):
+      - resource_group_key / resource_group_name / resource_group - resource group
+        reference. The object form additionally accepts lz_key, name and location.
+      - storage_account_key, keyvault_key, application_insights_key and
+        container_registry_key - CAF keys resolved through remote_objects, or
+        container_registry_id for a direct resource id.
+      - lz_key - landing zone key used for every *_key lookup above.
+
+    Frequently used optional arguments (null unless noted):
+      - location / region - region override; defaults to the resource group region.
+      - sku_name, description, friendly_name, high_business_impact.
+      - public_network_access_enabled - (bool) defaults to the provider default of true.
+      - service_side_encryption_enabled - (bool) AzureRM declares RequiredWith on
+        encryption, so the encryption block is mandatory when this is true. The
+        reverse is not true: an encryption block alone is valid.
+      - identity - (object) type plus identity_ids and/or CAF managed_identity_keys
+        and remote references.
+      - encryption - (object) key_vault_id and key_id are required,
+        user_assigned_identity_id is optional.
+      - managed_network - (object) isolation_mode and provision_on_creation_enabled.
+      - feature_store - (object) required when kind is FeatureStore.
+      - serverless_compute - (object) subnet_id and public_ip_enabled. AzureRM rejects
+        public_ip_enabled = false when subnet_id is unset and public network access is
+        disabled, so the module defaults public_ip_enabled to true in that case and to
+        the provider default of false otherwise. AzureRM also forbids updating
+        public_ip_enabled from true to false while subnet_id is unset.
+      - network_outbound_rules - (object) fqdn, private_endpoint and service_tag maps,
+        each requiring azurerm 4.15.0 or newer.
+      - tags - (map(string)) merged on top of the CAF inherited tags.
+      - timeouts - (object) create, read, update and delete.
   DESCRIPTION
 
   type = object({
@@ -108,10 +142,10 @@ variable "settings" {
 
   validation {
     condition = (
-      (try(var.settings.service_side_encryption_enabled, null) == null) ==
-      (try(var.settings.encryption, null) == null)
+      coalesce(try(var.settings.service_side_encryption_enabled, null), false) == false ||
+      try(var.settings.encryption, null) != null
     )
-    error_message = "The encryption block and service_side_encryption_enabled must be configured together."
+    error_message = "The encryption block must be configured when service_side_encryption_enabled is true."
   }
 
   validation {

@@ -201,28 +201,19 @@ DESCRIPTION
   })
 
   validation {
-    condition = length(setsubtract(keys(var.settings), [
-      "api_management",
-      "developer_portal", "developer_portals",
-      "management", "managements",
-      "portal", "portals",
-      "gateway", "gateways", "proxy",
-      "scm", "scms",
-      "timeouts"
-    ])) == 0
-    error_message = "Unsupported attributes in custom-domain settings."
+    condition = alltrue([
+      for value in concat(
+        values(try({ for key, entry in var.settings.proxy : tostring(key) => entry }, {})),
+        values(try({ for key, entry in var.settings.gateways : tostring(key) => entry }, {}))
+      ) : try(value.host_name, null) != null
+    ])
+    error_message = "Every legacy gateways or proxy entry must define host_name."
   }
 }
 
 variable "remote_objects" {
   description = "Key Vault certificates, certificate requests, and managed identities used by endpoint settings."
   type        = any
-  default     = {}
-}
-
-variable "base_tags" {
-  description = "Base tags inherited from the resource group."
-  type        = map(any)
   default     = {}
 }
 

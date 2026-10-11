@@ -231,8 +231,9 @@ terraform -chdir=examples test -test-directory=tests/mock -var-file=apim/117-api
 Subscriptions support API or product scope, a user association, caller-supplied
 primary/secondary keys, a subscription identifier, tracing, state, and all
 four AzureRM timeouts. Product and API scopes are mutually exclusive; omitting
-both retains the provider's all-APIs scope. The defaults remain `submitted`
-for state and `true` for tracing.
+both retains the provider's all-APIs scope. The module applies its own
+defaults of `submitted` for state and `true` for tracing, so those values are
+always sent explicitly even when the attributes are omitted.
 
 The focused plan-only contract checks product and API scopes, user and key
 settings, provider defaults, timeout handling, and invalid state/scope

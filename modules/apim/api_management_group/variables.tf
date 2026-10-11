@@ -106,21 +106,6 @@ DESCRIPTION
     ) != null || try(var.settings.resource_group_key, null) != null
     error_message = "resource_group must provide a key, a direct name, or the legacy resource_group_key."
   }
-
-  validation {
-    condition = length(setsubtract(keys(var.settings), [
-      "name",
-      "display_name",
-      "description",
-      "external_id",
-      "type",
-      "api_management",
-      "resource_group",
-      "resource_group_key",
-      "timeouts"
-    ])) == 0
-    error_message = "Unsupported attributes in API Management group settings."
-  }
 }
 
 variable "remote_objects" {

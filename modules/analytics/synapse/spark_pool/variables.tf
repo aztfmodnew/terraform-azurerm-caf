@@ -62,31 +62,6 @@ DESCRIPTION
   })
 
   validation {
-    condition = length(setsubtract(keys(var.settings), [
-      "name",
-      "node_size_family",
-      "node_size",
-      "spark_version",
-      "node_count",
-      "auto_scale",
-      "auto_pause",
-      "cache_size",
-      "compute_isolation_enabled",
-      "dynamic_executor_allocation_enabled",
-      "min_executors",
-      "max_executors",
-      "library_requirement",
-      "session_level_packages_enabled",
-      "spark_config",
-      "spark_log_folder",
-      "spark_events_folder",
-      "tags",
-      "timeouts"
-    ])) == 0
-    error_message = "Unsupported attributes in settings. See the variable description for allowed attributes."
-  }
-
-  validation {
     condition     = (try(var.settings.node_count, null) != null) != (try(var.settings.auto_scale, null) != null)
     error_message = "Specify exactly one of node_count or auto_scale."
   }
@@ -113,7 +88,7 @@ DESCRIPTION
   }
 
   validation {
-    condition = try(var.settings.auto_scale, null) == null || (
+    condition = try(var.settings.auto_scale, null) == null ? true : (
       var.settings.auto_scale.min_node_count >= 3 &&
       var.settings.auto_scale.min_node_count <= var.settings.auto_scale.max_node_count &&
       var.settings.auto_scale.max_node_count <= 200
@@ -122,7 +97,7 @@ DESCRIPTION
   }
 
   validation {
-    condition = try(var.settings.auto_pause, null) == null || (
+    condition = try(var.settings.auto_pause, null) == null ? true : (
       var.settings.auto_pause.delay_in_minutes >= 5 &&
       var.settings.auto_pause.delay_in_minutes <= 10080
     )

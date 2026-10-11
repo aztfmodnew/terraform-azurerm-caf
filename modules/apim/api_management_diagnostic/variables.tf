@@ -174,18 +174,6 @@ DESCRIPTION
     ]))
     error_message = "Query parameter masking mode must be Mask or Hide; header masking mode must be Mask."
   }
-
-  validation {
-    condition = length(setsubtract(keys(var.settings), [
-      "identifier",
-      "always_log_errors", "http_correlation_protocol", "log_client_ip",
-      "sampling_percentage", "verbosity", "operation_name_format",
-      "api_management", "resource_group", "resource_group_key", "api_management_logger",
-      "backend_request", "backend_response", "frontend_request", "frontend_response",
-      "timeouts"
-    ])) == 0
-    error_message = "Unsupported attributes in API Management diagnostic settings."
-  }
 }
 
 variable "remote_objects" {

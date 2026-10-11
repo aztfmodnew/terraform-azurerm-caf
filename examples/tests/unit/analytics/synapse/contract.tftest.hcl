@@ -209,6 +209,7 @@ run "workspace_provider_options_and_child_resources" {
         update = "10m"
         delete = "10m"
       }
+      key_vault_secret_tags = { owner = "analytics" }
       synapse_spark_pools = {
         spark = {
           name             = "spark-contract"
@@ -309,9 +310,10 @@ run "workspace_provider_options_and_child_resources" {
       azurerm_synapse_workspace.ws.tags.environment == "test" &&
       azurerm_synapse_workspace.ws.tags.cost_center == "analytics" &&
       azurerm_synapse_workspace.ws.tags.owner == "analytics" &&
-      azurerm_key_vault_secret.sql_admin_password[0].tags.owner == "analytics"
+      azurerm_key_vault_secret.sql_admin_password[0].tags.owner == "analytics" &&
+      !contains(keys(azurerm_key_vault_secret.sql_admin_password[0].tags), "environment")
     )
-    error_message = "CAF and workspace tags must be applied to the workspace and generated secrets."
+    error_message = "CAF and workspace tags must be applied to the workspace, while generated secrets must only carry key_vault_secret_tags (Key Vault secrets allow at most 15 tags)."
   }
 
   assert {
@@ -369,5 +371,46 @@ run "customer_managed_key_can_replace_sql_credentials" {
       length(azurerm_key_vault_secret.sql_admin_password) == 0
     )
     error_message = "Customer-managed-key-only workspaces must not create SQL administrator credentials or secrets."
+  }
+}
+
+run "fixed_size_spark_pool_without_auto_scale_or_auto_pause" {
+  command = plan
+
+  module {
+    source = "../modules/analytics/synapse"
+  }
+
+  variables {
+    global_settings                      = var.global_settings
+    client_config                        = var.client_config
+    resource_group                       = var.resource_group
+    resource_group_name                  = var.resource_group_name
+    location                             = var.location
+    base_tags                            = var.base_tags
+    storage_data_lake_gen2_filesystem_id = var.storage_data_lake_gen2_filesystem_id
+    vnets                                = var.vnets
+    remote_objects                       = var.remote_objects
+    private_endpoints                    = var.private_endpoints
+    private_dns                          = var.private_dns
+    settings = {
+      name                                 = "synapse-fixed-pool"
+      sql_administrator_login              = "sqladminuser"
+      storage_data_lake_gen2_filesystem_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test-rg/providers/Microsoft.Storage/storageAccounts/contract/blobServices/default/containers/fs"
+      synapse_spark_pools = {
+        fixed = {
+          name             = "spark-fixed"
+          node_size_family = "MemoryOptimized"
+          node_size        = "Small"
+          spark_version    = "3.5"
+          node_count       = 3
+        }
+      }
+    }
+  }
+
+  assert {
+    condition     = module.spark_pool["fixed"].spark_pool.node_count == 3
+    error_message = "A fixed-size Spark pool must plan successfully when auto_scale and auto_pause are omitted."
   }
 }

@@ -71,8 +71,14 @@ resource "azurerm_machine_learning_workspace" "ws" {
     for_each = try(var.settings.serverless_compute, null) == null ? [] : [var.settings.serverless_compute]
 
     content {
-      subnet_id         = try(serverless_compute.value.subnet_id, null)
-      public_ip_enabled = coalesce(try(serverless_compute.value.public_ip_enabled, null), false)
+      subnet_id = try(serverless_compute.value.subnet_id, null)
+      # AzureRM rejects public_ip_enabled = false when no subnet_id is supplied and
+      # public network access is disabled, so the default follows that constraint
+      # instead of the provider default of false.
+      public_ip_enabled = coalesce(
+        try(serverless_compute.value.public_ip_enabled, null),
+        try(serverless_compute.value.subnet_id, null) == null && coalesce(try(var.settings.public_network_access_enabled, null), true) == false
+      )
     }
   }
 

@@ -135,25 +135,17 @@ DESCRIPTION
   }
 
   validation {
-    condition     = var.settings.application_insights == null || var.settings.eventhub == null
-    error_message = "A logger can configure either application_insights or eventhub, but not both."
+    condition     = (var.settings.application_insights == null) != (var.settings.eventhub == null)
+    error_message = "A logger must configure exactly one of application_insights or eventhub."
   }
 
   validation {
-    condition = length(setsubtract(keys(var.settings), [
-      "name",
-      "buffered",
-      "description",
-      "resource_id",
-      "api_management",
-      "resource_group",
-      "resource_group_key",
-      "resource",
-      "application_insights",
-      "eventhub",
-      "timeouts"
-    ])) == 0
-    error_message = "Unsupported attributes in API Management logger settings."
+    condition = var.settings.application_insights == null || (
+      try(var.settings.application_insights.key, null) != null ||
+      try(var.settings.application_insights.connection_string, null) != null ||
+      try(var.settings.application_insights.instrumentation_key, null) != null
+    )
+    error_message = "application_insights must provide a telemetry source: key, connection_string or instrumentation_key."
   }
 }
 

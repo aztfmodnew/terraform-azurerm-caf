@@ -32,13 +32,49 @@ variable "base_tags" {
 
 variable "settings" {
   description = <<DESCRIPTION
-Standard WebTest settings. request_url and geo_locations are required.
-Optional request_headers uses ARM key/value entries; request_body is base64
-encoded. content_validation uses ARM ContentMatch, IgnoreCase and PassIfTextFound.
-description, enabled, frequency, timeout, retry_enabled, http_verb,
-follow_redirects, parse_dependent_requests, expected_http_status_code,
-ignore_http_status_code, ssl_check_enabled, ssl_cert_remaining_lifetime_check,
-configuration.web_test, tags and CRUD timeouts customize the test.
+Settings for a Standard WebTest (`Microsoft.Insights/webtests@2022-06-15`).
+
+Required:
+  - request_url - (string) Absolute URL the test calls. Maps to `Request.RequestUrl`.
+  - geo_locations - (list(string)) Azure test location ids (for example
+    `emea-nl-ams-azr`). Each entry becomes a `Locations[*].Id` entry.
+
+Optional:
+  - description - (string) Free-form description. Defaults to `""`.
+  - enabled - (bool) Whether the test runs. Defaults to `true`.
+  - frequency - (number) Seconds between runs. Standard WebTests accept only
+    `300`, `600` and `900`. Defaults to `300`.
+  - timeout - (number) Seconds before a single run is considered failed.
+    Defaults to `30`.
+  - retry_enabled - (bool) Retry once on failure before alerting. Defaults to `true`.
+  - request_headers - (list(object)) ARM `HeaderField` entries, each with the
+    lowercase ARM attributes `key` and `value`. Defaults to null (no headers).
+  - http_verb - (string) HTTP verb sent by the test. ARM types this as a
+    free-form string; the portal uses `GET` and `POST`. Defaults to `GET`.
+  - request_body - (string) Base64 encoded request body. Defaults to null.
+  - follow_redirects - (bool) Follow HTTP redirects. Defaults to null, leaving
+    the service default in place.
+  - parse_dependent_requests - (bool) Also load dependent requests such as
+    images and scripts. Defaults to `false`.
+  - expected_http_status_code - (number) Status code treated as success.
+    Defaults to `200`.
+  - ignore_http_status_code - (bool) Ignore the returned status code entirely.
+    Defaults to null (the status code is evaluated).
+  - content_validation - (object) Response body check, using the ARM attribute
+    names:
+      - ContentMatch - (string, required) Text that must be present or absent.
+      - IgnoreCase - (bool) Case-insensitive match. Defaults to null.
+      - PassIfTextFound - (bool) `true` passes when the text is found, `false`
+        passes when it is absent. Defaults to null.
+  - ssl_check_enabled - (bool) Validate the TLS certificate. Defaults to `false`.
+  - ssl_cert_remaining_lifetime_check - (number) Fail when the certificate
+    expires in fewer than this many days. Requires `ssl_check_enabled = true`
+    and a positive value. Defaults to null.
+  - configuration - (object) Optional raw WebTest definition:
+      - web_test - (string) XML WebTest document sent as `Configuration.WebTest`.
+  - tags - (map(string)) Additional resource tags merged over the inherited tags.
+  - timeouts - (object) Terraform CRUD timeouts (`create`, `read`, `update`,
+    `delete`). Defaults to null, which uses the provider defaults.
 DESCRIPTION
   type = object({
     request_url   = string
