@@ -52,6 +52,35 @@ workspace. Resource log categories and metric availability are service
 specific; consult the [Azure Machine Learning monitoring data
 reference](https://learn.microsoft.com/en-us/azure/machine-learning/monitor-azure-machine-learning-reference?view=azureml-api-2).
 
+## Compute instance module coverage
+
+The standalone `machine_learning_compute_instance` module exposes the
+AzureRM 5.9.0 compute-instance arguments, including user assignment, managed
+identity references, SSH configuration, subnet and public-IP settings, local
+authentication, tags, and the supported create/read/delete timeouts. Workspace
+and subnet dependencies accept direct IDs or CAF key references. Existing
+example inputs and the legacy workspace `compute_instances` setting remain
+supported.
+
+The opt-in contract at
+`examples/tests/unit/analytics/machine_learning_compute_instance/contract.tftest.hcl`
+asserts the exposed provider options, local and remote identity resolution,
+default provider behavior, tags, and module outputs. The module also exposes
+the schema-supported create/read/delete timeouts. Run the contract from the
+repository root:
+
+```sh
+terraform -chdir=examples init -backend=false \
+  -test-directory=tests/unit/analytics/machine_learning_compute_instance
+terraform -chdir=examples test \
+  -test-directory=tests/unit/analytics/machine_learning_compute_instance -no-color
+```
+
+The contract is plan-only and opt-in; it does not validate Azure-side
+acceptance, network reachability, or authentication to the compute instance.
+The schema reference used for this module is
+[AzureRM 5.9.0](https://registry.terraform.io/providers/hashicorp/azurerm/5.9.0/docs/resources/machine_learning_compute_instance).
+
 ## Examples and tests
 
 - `100-aml` exercises the existing workspace and legacy compute-instance
