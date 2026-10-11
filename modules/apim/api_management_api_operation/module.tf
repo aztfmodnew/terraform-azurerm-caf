@@ -213,4 +213,14 @@ resource "azurerm_api_management_api_operation" "apim" {
     }
   }
 
+  lifecycle {
+    precondition {
+      condition = contains(
+        ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT", "TRACE"],
+        var.settings.method
+      )
+      error_message = "settings.method must be one of DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT, or TRACE."
+    }
+  }
+
 }
