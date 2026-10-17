@@ -4,7 +4,7 @@ resource "azurerm_mssql_server" "mssql" {
   location                      = local.location
   version                       = try(var.settings.version, "12.0")
   administrator_login           = try(var.settings.azuread_administrator.azuread_authentication_only, false) == true ? null : var.settings.administrator_login
-  administrator_login_password  = try(var.settings.azuread_administrator.azuread_authentication_only, false) == true ? null : try(var.settings.administrator_login_password, azurerm_key_vault_secret.sql_admin_password[0].value)
+  administrator_login_password  = try(var.settings.azuread_administrator.azuread_authentication_only, false) == true ? null : (try(var.settings.administrator_login_password, null) != null ? var.settings.administrator_login_password : azurerm_key_vault_secret.sql_admin_password[0].value)
   public_network_access_enabled = try(var.settings.public_network_access_enabled, false)
   connection_policy             = try(var.settings.connection_policy, null)
   minimum_tls_version           = try(var.settings.minimum_tls_version, "1.2")
@@ -65,7 +65,7 @@ resource "azurecaf_name" "mssql" {
 
 # Generate sql server random admin password if not provided in the attribute administrator_login_password
 resource "random_password" "sql_admin" {
-  count = try(var.settings.administrator_login_password, null) == null ? 1 : 0
+  count = try(var.settings.azuread_administrator.azuread_authentication_only, false) == true ? 0 : (try(var.settings.administrator_login_password, null) == null ? 1 : 0)
 
   length           = 128
   special          = true
@@ -76,7 +76,7 @@ resource "random_password" "sql_admin" {
 
 # Store the generated password into keyvault
 resource "azurerm_key_vault_secret" "sql_admin_password" {
-  count = try(var.settings.administrator_login_password, null) == null ? 1 : 0
+  count = try(var.settings.azuread_administrator.azuread_authentication_only, false) == true ? 0 : (try(var.settings.administrator_login_password, null) == null ? 1 : 0)
 
   name            = can(var.settings.keyvault_secret_name) ? var.settings.keyvault_secret_name : format("%s-password", azurecaf_name.mssql.result)
   value           = random_password.sql_admin[0].result

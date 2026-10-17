@@ -24,7 +24,7 @@ module "mssql_servers" {
   resource_group_name = can(each.value.resource_group.name) || can(each.value.resource_group_name) ? try(each.value.resource_group.name, each.value.resource_group_name) : null
   location            = try(local.global_settings.regions[each.value.region], null)
 
-  keyvault_id = can(each.value.administrator_login_password) ? each.value.administrator_login_password : local.combined_objects_keyvaults[try(each.value.keyvault.lz_key, local.client_config.landingzone_key)][try(each.value.keyvault.key, each.value.keyvault_key)].id
+  keyvault_id = try(each.value.azuread_administrator.azuread_authentication_only, false) == true ? null : (try(each.value.administrator_login_password, null) != null ? each.value.administrator_login_password : local.combined_objects_keyvaults[try(each.value.keyvault.lz_key, local.client_config.landingzone_key)][try(each.value.keyvault.key, each.value.keyvault_key)].id)
 
   managed_identities = local.combined_objects_managed_identities
 
