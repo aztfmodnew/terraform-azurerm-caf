@@ -33,7 +33,7 @@ Expected artifacts (files):
 
 - modules/<category>/<module_name>/
   - providers.tf (azurerm, azurecaf, azapi if needed)
-  - variables.tf (global_settings, client_config, location, resource_group, base_tags, settings:any, remote_objects:any)
+  - variables.tf (global_settings, client_config, location, resource_group, base_tags, settings: explicitly typed object, remote_objects:any)
   - locals.tf (module_tag, tags, location, resource_group_name, managed identities if needed)
   - azurecaf_name.tf (CAF naming for named resources)
   - <module_name>.tf (main resource implementation)
