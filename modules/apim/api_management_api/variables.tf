@@ -10,25 +10,68 @@ variable "client_config" {
 
 variable "settings" {
   description = <<DESCRIPTION
-Settings for an API Management API.
+Publish an API definition, import one, or create an API from another API.
+Required settings object. Leaf values are strings unless another type is stated;
+reference members are optional/null unless marked required.
 
-Required provider settings: name and revision. Optional CAF references:
-resource_group_key, resource_group_name, resource_group, and api_management.
-Optional provider settings: api_type, display_name, path, protocols, contact,
-description, import, license, oauth2_authorization, openid_authentication,
-service_url, subscription_key_parameter_names, subscription_required,
-terms_of_service_url, version, version_set_id, revision_description,
-version_description, source_api_id, and timeouts.
-
-api_type accepts graphql, http, soap, or websocket and defaults to http.
-protocols accepts http, https, ws, and wss. display_name, path, and protocols
-are accepted as optional inputs; display_name and a non-empty protocols list
-are required when source_api_id is not set, while path may be omitted or empty
-(root API) because AzureRM treats it as optional. service_url is required for
-websocket APIs. When version is set, version_set_id must also be provided.
-display_name must not be empty when supplied.
-subscription_required defaults to true. See the module examples for complete
-configuration patterns.
+- name (required string): API resource name processed by CAF naming.
+- revision (required string): revision identifier; changing it creates a new API
+  revision resource rather than modifying the identity of an existing revision.
+- api_type (optional string): graphql, http, soap, or websocket. The module
+  defaults omission/null to http.
+- display_name (optional string): developer-visible API label; cannot be empty
+  and is required when source_api_id is absent.
+- path (optional string): relative public URL prefix identifying this API.
+  The module accepts an omitted or empty path for a root-path API.
+- protocols (optional list of strings): allowed client transports: http, https,
+  ws, or wss. A non-empty list is required unless source_api_id is supplied.
+- description (optional string): API documentation text, optionally containing HTML.
+- service_url (optional string): absolute backend service URL; required for a
+  websocket API.
+- source_api_id (optional string): ARM ID of the API to copy, optionally suffixed
+  with ;rev=<revision>. This is a direct ID, not a CAF key lookup; cloned APIs
+  may omit the otherwise required display_name and protocols.
+- contact (optional object): documentation contact; email is its email address,
+  name the person/organization, and url an absolute contact-information URL.
+  All three fields are optional.
+- license (optional object): documentation license; optional name is its title
+  and optional url is an absolute URL of its terms.
+- import (optional object): load an API definition. Required content_format is
+  openapi, openapi+json, openapi+json-link, openapi-link, swagger-json,
+  swagger-link-json, wadl-link-json, wadl-xml, wsdl, or wsdl-link. Required
+  content_value is document text for inline formats or an accessible document
+  URL for link formats. Optional wsdl_selector limits a wsdl/wsdl-link import:
+  service_name is the required WSDL service and endpoint_name the required port.
+  Imported display_name, description, contact, and license can conflict with
+  explicitly configured documentation fields and cause drift.
+- oauth2_authorization (optional object): OAuth configuration, mutually exclusive
+  with openid_authentication. Required authorization_server_name is an existing
+  APIM authorization server's name, not a CAF key; optional scope identifies the
+  requested operation scope.
+- openid_authentication (optional object): OpenID Connect configuration. Required
+  openid_provider_name is an existing APIM provider's name, not a CAF key.
+  Optional bearer_token_sending_methods lists authorizationHeader and/or query;
+  an empty list is accepted.
+- subscription_key_parameter_names (optional object): required header names the
+  HTTP subscription-key header, and required query names its query parameter.
+- subscription_required (optional bool): require a subscription key. The module
+  defaults omitted/null values to true; false is preserved.
+- terms_of_service_url (optional string): absolute URL of API usage terms.
+- version (optional string): public API version label; requires version_set_id.
+- version_set_id (optional string): direct ARM ID of the associated version set.
+- revision_description / version_description (optional strings): explanatory
+  text for this revision and public API version, respectively.
+- api_management / resource_group (optional objects): references used by the root
+  to provide separate parent-name inputs. name is a direct name preferred over
+  key; key selects the corresponding combined collection; lz_key selects its
+  zone (current zone when omitted). resource_group_name is a legacy direct
+  fallback after resource_group.name; resource_group_key is the legacy group key
+  preferred before resource_group.key by root lookup.
+- timeouts (optional object): create limits API creation, read retrieval, update
+  API changes, and delete removal. Each field is an optional duration string;
+  omission/null retains the provider timeout.
+Except for api_type and subscription_required, optional fields default to null
+for provider handling. Undeclared attributes are discarded by the settings type.
 DESCRIPTION
   type = object({
     name                = string

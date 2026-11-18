@@ -8,6 +8,281 @@
 ###############################################################################
 
 locals {
+  api_management_data_sources_name_lookup = {
+    for key, value in try(var.data_sources.api_management, {}) : key => value
+    if try(value.id, null) == null && try(value.name, null) != null && try(value.resource_group_name, null) != null
+  }
+
+  api_management_api_data_sources_name_lookup = {
+    for key, value in try(var.data_sources.api_management_api, {}) : key => value
+    if try(value.id, null) == null && try(value.name, null) != null && try(value.api_management_name, null) != null && try(value.resource_group_name, null) != null && try(value.revision, null) != null
+  }
+
+  api_management_api_version_set_data_sources_name_lookup = {
+    for key, value in try(var.data_sources.api_management_api_version_set, {}) : key => value
+    if try(value.id, null) == null && try(value.name, null) != null && try(value.api_management_name, null) != null && try(value.resource_group_name, null) != null
+  }
+
+  api_management_gateway_data_sources_name_lookup = {
+    for key, value in try(var.data_sources.api_management_gateway, {}) : key => value
+    if try(value.id, null) == null && try(value.name, null) != null && try(value.api_management_id, null) != null
+  }
+
+  api_management_gateway_host_name_configuration_data_sources_name_lookup = {
+    for key, value in try(var.data_sources.api_management_gateway_host_name_configuration, {}) : key => value
+    if try(value.id, null) == null && try(value.name, null) != null && try(value.api_management_id, null) != null && try(value.gateway_name, null) != null
+  }
+
+  api_management_group_data_sources_name_lookup = {
+    for key, value in try(var.data_sources.api_management_group, {}) : key => value
+    if try(value.id, null) == null && try(value.name, null) != null && try(value.api_management_name, null) != null && try(value.resource_group_name, null) != null
+  }
+
+  api_management_product_data_sources_name_lookup = {
+    for key, value in try(var.data_sources.api_management_product, {}) : key => value
+    if try(value.id, null) == null && try(value.product_id, null) != null && try(value.api_management_name, null) != null && try(value.resource_group_name, null) != null
+  }
+
+  api_management_subscription_data_sources_name_lookup = {
+    for key, value in try(var.data_sources.api_management_subscription, {}) : key => value
+    if try(value.id, null) == null && try(value.subscription_id, null) != null && try(value.api_management_id, null) != null
+  }
+
+  api_management_user_data_sources_name_lookup = {
+    for key, value in try(var.data_sources.api_management_user, {}) : key => value
+    if try(value.id, null) == null && try(value.user_id, null) != null && try(value.api_management_name, null) != null && try(value.resource_group_name, null) != null
+  }
+
+  api_management_workspace_data_sources_name_lookup = {
+    for key, value in try(var.data_sources.api_management_workspace, {}) : key => value
+    if try(value.id, null) == null && try(value.name, null) != null && try(value.api_management_id, null) != null
+  }
+}
+
+# Lookup arguments and read timeouts validated against AzureRM provider documentation.
+data "azurerm_api_management" "data_sources_lookup" {
+  for_each = local.api_management_data_sources_name_lookup
+
+  name                = each.value.name
+  resource_group_name = each.value.resource_group_name
+
+  dynamic "timeouts" {
+    for_each = try(each.value.timeouts, null) == null ? [] : [each.value.timeouts]
+    content {
+      read = try(timeouts.value.read, null)
+    }
+  }
+}
+
+data "azurerm_api_management_api" "data_sources_lookup" {
+  for_each = local.api_management_api_data_sources_name_lookup
+
+  name                = each.value.name
+  api_management_name = each.value.api_management_name
+  resource_group_name = each.value.resource_group_name
+  revision            = each.value.revision
+
+  dynamic "timeouts" {
+    for_each = try(each.value.timeouts, null) == null ? [] : [each.value.timeouts]
+    content {
+      read = try(timeouts.value.read, null)
+    }
+  }
+}
+
+data "azurerm_api_management_api_version_set" "data_sources_lookup" {
+  for_each = local.api_management_api_version_set_data_sources_name_lookup
+
+  name                = each.value.name
+  api_management_name = each.value.api_management_name
+  resource_group_name = each.value.resource_group_name
+
+  dynamic "timeouts" {
+    for_each = try(each.value.timeouts, null) == null ? [] : [each.value.timeouts]
+    content {
+      read = try(timeouts.value.read, null)
+    }
+  }
+}
+
+data "azurerm_api_management_gateway" "data_sources_lookup" {
+  for_each = local.api_management_gateway_data_sources_name_lookup
+
+  name              = each.value.name
+  api_management_id = each.value.api_management_id
+
+  dynamic "timeouts" {
+    for_each = try(each.value.timeouts, null) == null ? [] : [each.value.timeouts]
+    content {
+      read = try(timeouts.value.read, null)
+    }
+  }
+}
+
+data "azurerm_api_management_gateway_host_name_configuration" "data_sources_lookup" {
+  for_each = local.api_management_gateway_host_name_configuration_data_sources_name_lookup
+
+  name              = each.value.name
+  api_management_id = each.value.api_management_id
+  gateway_name      = each.value.gateway_name
+
+  dynamic "timeouts" {
+    for_each = try(each.value.timeouts, null) == null ? [] : [each.value.timeouts]
+    content {
+      read = try(timeouts.value.read, null)
+    }
+  }
+}
+
+data "azurerm_api_management_group" "data_sources_lookup" {
+  for_each = local.api_management_group_data_sources_name_lookup
+
+  name                = each.value.name
+  api_management_name = each.value.api_management_name
+  resource_group_name = each.value.resource_group_name
+
+  dynamic "timeouts" {
+    for_each = try(each.value.timeouts, null) == null ? [] : [each.value.timeouts]
+    content {
+      read = try(timeouts.value.read, null)
+    }
+  }
+}
+
+data "azurerm_api_management_product" "data_sources_lookup" {
+  for_each = local.api_management_product_data_sources_name_lookup
+
+  product_id          = each.value.product_id
+  api_management_name = each.value.api_management_name
+  resource_group_name = each.value.resource_group_name
+
+  dynamic "timeouts" {
+    for_each = try(each.value.timeouts, null) == null ? [] : [each.value.timeouts]
+    content {
+      read = try(timeouts.value.read, null)
+    }
+  }
+}
+
+data "azurerm_api_management_subscription" "data_sources_lookup" {
+  for_each = local.api_management_subscription_data_sources_name_lookup
+
+  subscription_id   = each.value.subscription_id
+  api_management_id = each.value.api_management_id
+
+  dynamic "timeouts" {
+    for_each = try(each.value.timeouts, null) == null ? [] : [each.value.timeouts]
+    content {
+      read = try(timeouts.value.read, null)
+    }
+  }
+}
+
+data "azurerm_api_management_user" "data_sources_lookup" {
+  for_each = local.api_management_user_data_sources_name_lookup
+
+  user_id             = each.value.user_id
+  api_management_name = each.value.api_management_name
+  resource_group_name = each.value.resource_group_name
+
+  dynamic "timeouts" {
+    for_each = try(each.value.timeouts, null) == null ? [] : [each.value.timeouts]
+    content {
+      read = try(timeouts.value.read, null)
+    }
+  }
+}
+
+data "azurerm_api_management_workspace" "data_sources_lookup" {
+  for_each = local.api_management_workspace_data_sources_name_lookup
+
+  name              = each.value.name
+  api_management_id = each.value.api_management_id
+
+  dynamic "timeouts" {
+    for_each = try(each.value.timeouts, null) == null ? [] : [each.value.timeouts]
+    content {
+      read = try(timeouts.value.read, null)
+    }
+  }
+}
+
+locals {
+  api_management_data_sources_resolved = {
+    for key, value in local.api_management_data_sources_name_lookup : key => merge(value, {
+      id                  = data.azurerm_api_management.data_sources_lookup[key].id
+      name                = data.azurerm_api_management.data_sources_lookup[key].name
+      resource_group_name = data.azurerm_api_management.data_sources_lookup[key].resource_group_name
+      location            = data.azurerm_api_management.data_sources_lookup[key].location
+      identity            = data.azurerm_api_management.data_sources_lookup[key].identity
+    })
+  }
+
+  api_management_api_data_sources_resolved = {
+    for key, value in local.api_management_api_data_sources_name_lookup : key => merge(value, {
+      id   = data.azurerm_api_management_api.data_sources_lookup[key].id
+      name = data.azurerm_api_management_api.data_sources_lookup[key].name
+    })
+  }
+
+  api_management_api_version_set_data_sources_resolved = {
+    for key, value in local.api_management_api_version_set_data_sources_name_lookup : key => merge(value, {
+      id   = data.azurerm_api_management_api_version_set.data_sources_lookup[key].id
+      name = data.azurerm_api_management_api_version_set.data_sources_lookup[key].name
+    })
+  }
+
+  api_management_gateway_data_sources_resolved = {
+    for key, value in local.api_management_gateway_data_sources_name_lookup : key => merge(value, {
+      id   = data.azurerm_api_management_gateway.data_sources_lookup[key].id
+      name = data.azurerm_api_management_gateway.data_sources_lookup[key].name
+    })
+  }
+
+  api_management_gateway_host_name_configuration_data_sources_resolved = {
+    for key, value in local.api_management_gateway_host_name_configuration_data_sources_name_lookup : key => merge(value, {
+      id   = data.azurerm_api_management_gateway_host_name_configuration.data_sources_lookup[key].id
+      name = data.azurerm_api_management_gateway_host_name_configuration.data_sources_lookup[key].name
+    })
+  }
+
+  api_management_group_data_sources_resolved = {
+    for key, value in local.api_management_group_data_sources_name_lookup : key => merge(value, {
+      id   = data.azurerm_api_management_group.data_sources_lookup[key].id
+      name = data.azurerm_api_management_group.data_sources_lookup[key].name
+    })
+  }
+
+  api_management_product_data_sources_resolved = {
+    for key, value in local.api_management_product_data_sources_name_lookup : key => merge(value, {
+      id         = data.azurerm_api_management_product.data_sources_lookup[key].id
+      product_id = data.azurerm_api_management_product.data_sources_lookup[key].product_id
+    })
+  }
+
+  api_management_subscription_data_sources_resolved = {
+    for key, value in local.api_management_subscription_data_sources_name_lookup : key => merge(value, {
+      id              = data.azurerm_api_management_subscription.data_sources_lookup[key].id
+      subscription_id = data.azurerm_api_management_subscription.data_sources_lookup[key].subscription_id
+    })
+  }
+
+  api_management_user_data_sources_resolved = {
+    for key, value in local.api_management_user_data_sources_name_lookup : key => merge(value, {
+      id      = data.azurerm_api_management_user.data_sources_lookup[key].id
+      user_id = data.azurerm_api_management_user.data_sources_lookup[key].user_id
+    })
+  }
+
+  api_management_workspace_data_sources_resolved = {
+    for key, value in local.api_management_workspace_data_sources_name_lookup : key => merge(value, {
+      id   = data.azurerm_api_management_workspace.data_sources_lookup[key].id
+      name = data.azurerm_api_management_workspace.data_sources_lookup[key].name
+    })
+  }
+}
+
+locals {
   resource_groups_data_sources_name_lookup = {
     for key, value in try(var.data_sources.resource_groups, {}) : key => value
     if try(value.id, null) == null && try(value.name, null) != null

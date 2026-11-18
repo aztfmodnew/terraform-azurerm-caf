@@ -52,17 +52,57 @@ DESCRIPTION
 
 variable "settings" {
   description = <<DESCRIPTION
-Settings for an API Management logger. name is required. Optional settings
-include buffered (defaults to true), description, and resource_id; resource
-accepts a local/remote key or direct ID as a resource_id fallback.
-application_insights supports local/remote references or direct instrumentation
-keys, connection strings, and identity client IDs. Configure exactly one of
-connection_string or instrumentation_key; identity_client_id requires
-connection_string. eventhub requires name and either connection_string or
-endpoint_uri, and supports user_assigned_identity_client_id. Connection strings
-are sensitive values; prefer endpoint_uri with managed identity where possible.
-All four provider timeouts are configurable. api_management and resource_group
-are CAF references used by the root module.
+Define a telemetry destination referenced by service/API diagnostics.
+Required settings object. Leaf values are strings unless another type is stated;
+reference members are optional/null unless marked required.
+
+- name (required string): logger resource name processed by CAF naming.
+- buffered (optional bool): buffer records before transmission. Null is passed
+  through; the provider defaults to true, rather than a module-supplied default.
+- description (optional string): explanatory text about this logger.
+- resource_id (optional string): ARM ID of the associated destination resource.
+- resource (optional object): fallback Application Insights resource reference.
+  Optional key selects remote_objects.application_insights[lz_key][key].id;
+  optional lz_key defaults to the current zone; optional id is a direct ARM ID.
+  Resolution prefers resource_id, the selected-zone key, the current-zone key,
+  then resource.id.
+- application_insights (optional object): Application Insights destination.
+  Optional instrumentation_key supplies its sensitive instrumentation key;
+  optional connection_string supplies its sensitive ingestion connection string.
+  Do not set both directly. Optional key selects the Application Insights
+  collection and optional lz_key its zone (current by default), with a second
+  lookup in the current zone if the selected-zone lookup fails. Optional name
+  is compatibility metadata and is not used for a lookup.
+  Optional identity_client_id selects authenticated ingestion: use a
+  user-assigned managed identity's client ID, or SystemAssigned for the service's
+  system-assigned identity. It is required when the destination disables local
+  authentication and requires a direct or key-resolved connection string,
+  not an instrumentation key.
+  Direct connection_string or instrumentation_key wins over remote values.
+  Without a direct source, identity mode prefers the remote connection string;
+  non-identity mode prefers a remote instrumentation key when available,
+  otherwise a remote connection string.
+- eventhub (optional object): Event Hub destination. name is the required Event
+  Hub name. Optional connection_string authenticates with an authorization-rule
+  connection string; optional endpoint_uri identifies the namespace endpoint
+  for identity-based ingestion. At least one must be supplied. Optional
+  user_assigned_identity_client_id selects the user-assigned identity used to
+  connect to the hub; the provider documents system-assigned identity behavior
+  when it is omitted. Identity-based ingestion needs the namespace endpoint and
+  Azure Event Hubs Data Sender permissions for the service identity.
+  Destination strings are sensitive configuration.
+  Exactly one of application_insights and eventhub must be configured.
+- api_management / resource_group (optional objects): root parent references;
+  all nested fields are optional/null. name is a direct resource name preferred
+  over key, key selects its combined CAF collection, and lz_key selects its
+  zone (current by default). resource_group_key is the optional legacy key
+  preferred before resource_group.key by the root group lookup. The root
+  supplies separate parent-name inputs to this child.
+- timeouts (optional object): create limits logger creation, read retrieval,
+  update destination changes, and delete removal. Each optional duration-string
+  field defaults to null, retaining its provider timeout.
+All other optional fields default to null; reference resolution only supplies
+the fallbacks described above. Undeclared attributes are discarded by the type.
 DESCRIPTION
   type = object({
     name        = string

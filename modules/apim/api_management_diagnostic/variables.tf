@@ -52,16 +52,49 @@ DESCRIPTION
 
 variable "settings" {
   description = <<DESCRIPTION
-Settings for the API Management diagnostic. identifier is required and accepts
-applicationinsights or azuremonitor. Optional logging settings include
-always_log_errors, http_correlation_protocol (None, Legacy, or W3C),
-log_client_ip, sampling_percentage (0 to 100), verbosity (verbose,
-information, or error), and operation_name_format (Name or Url). The four
-request/response direction blocks accept body_bytes (0 to 8192), headers_to_log,
-and one data_masking block. Data masking supports query_params with Mask/Hide
-modes and headers with Mask mode. api_management, resource_group, and
-api_management_logger are root-module dependency references. timeouts supports
-create, read, update, and delete.
+Configure service-wide telemetry sent to the separately supplied APIM logger.
+Required settings object. Leaf values are strings unless another type is stated;
+reference members are optional/null unless marked required.
+
+- identifier (required string): applicationinsights or azuremonitor selects the
+  diagnostic destination type.
+- always_log_errors (optional bool): send error telemetry even when normal
+  sampling would omit it.
+- http_correlation_protocol (optional string): None disables correlation, Legacy
+  uses legacy correlation, and W3C uses W3C distributed-tracing correlation.
+- log_client_ip (optional bool): include the calling client's IP address.
+- sampling_percentage (optional number): percentage of requests sampled, 0 to 100.
+- verbosity (optional string): verbose, information, or error logging level.
+- operation_name_format (optional string): use Name or Url as the Application
+  Insights operation name. Unlike the API-specific diagnostic child, this
+  module leaves omitted/null values to the provider.
+- backend_request / backend_response (optional objects): capture requests sent
+  to the backend and responses received from it.
+- frontend_request / frontend_response (optional objects): capture requests
+  received from clients and responses sent back to them.
+  Each of these four direction objects accepts the identical nested structure:
+  - body_bytes (optional number): number of payload bytes to record, 0 to 8192.
+  - headers_to_log (optional list of strings): HTTP header names to record.
+  - data_masking (optional object): redact selected telemetry values.
+    query_params is an optional list of query-parameter masking rules; headers
+    is an optional list of HTTP-header masking rules. Both lists default to []
+    for omission or null. Each rule requires value, the parameter/header name
+    to redact, and mode, which is Mask or Hide for query_params and only Mask
+    for headers.
+- api_management / resource_group / api_management_logger (optional objects):
+  root dependency references; all their nested fields are optional/null.
+  key selects the corresponding combined CAF collection, and lz_key chooses
+  its landing zone (current zone when omitted). name supplies a direct service
+  or group name preferred over key. id supplies a direct logger ARM ID preferred
+  over its key. Service/group id fields and logger name are compatibility
+  metadata, not used by the root's corresponding name/ID lookups.
+  resource_group_key is an optional legacy group key preferred before
+  resource_group.key. The root passes resolved names/ID as separate child inputs.
+- timeouts (optional object): create limits diagnostic creation, read retrieval,
+  update telemetry changes, and delete removal. Each optional duration-string
+  field defaults to null and leaves the provider timeout unchanged.
+All other optional values default to null for provider handling. Undeclared
+attributes are discarded by the settings object type.
 DESCRIPTION
   type = object({
     identifier                = string
@@ -126,17 +159,17 @@ DESCRIPTION
   }
 
   validation {
-    condition     = try(contains(["verbose", "information", "error"], var.settings.verbosity), true)
+    condition     = var.settings.verbosity == null || contains(["verbose", "information", "error"], var.settings.verbosity)
     error_message = "verbosity must be verbose, information, or error."
   }
 
   validation {
-    condition     = try(contains(["None", "Legacy", "W3C"], var.settings.http_correlation_protocol), true)
+    condition     = var.settings.http_correlation_protocol == null || contains(["None", "Legacy", "W3C"], var.settings.http_correlation_protocol)
     error_message = "http_correlation_protocol must be None, Legacy, or W3C."
   }
 
   validation {
-    condition     = try(contains(["Name", "Url"], var.settings.operation_name_format), true)
+    condition     = var.settings.operation_name_format == null || contains(["Name", "Url"], var.settings.operation_name_format)
     error_message = "operation_name_format must be Name or Url."
   }
 

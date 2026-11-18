@@ -52,13 +52,35 @@ DESCRIPTION
 
 variable "settings" {
   description = <<DESCRIPTION
-Settings for an API Management group. name, display_name, and references to
-api_management and resource_group are required. Dependency references support
-direct names or local/remote keys. description and external_id are optional;
-external_id is typically an Entra group reference such as aad://<tenant>/groups/<object-id>.
-type accepts custom, external, or system and defaults to the provider's custom
-value. All four provider timeouts are configurable. resource_group_key is
-retained as a fallback for legacy CAF configurations.
+Define a group used to organize API Management users and product access.
+Required settings object. Leaf values are strings unless another type is stated;
+reference members are optional/null unless marked required.
+
+- name (required string): group-name input processed by CAF naming.
+- display_name (required string): human-readable group label.
+- description (optional string): explanatory text about group membership/purpose.
+- type (optional string): custom for an APIM-managed group, external for a group
+  backed by an external directory, or system for a built-in group. Omission/null
+  is passed through; the provider defaults to custom. Changing type recreates
+  the group.
+- external_id (optional string): external directory group identifier, commonly
+  aad://<tenant>/groups/<object-id>, for external membership.
+- api_management (optional object, required by validation): owning service
+  reference. key selects remote_objects.api_management[lz_key][key]; name is a
+  direct service name. Its optional lz_key defaults to the current landing zone.
+  Resolution tries the selected zone's key, the current zone's key, then name.
+- resource_group (optional object): owning service's group reference. key selects
+  remote_objects.resource_group[lz_key][key], name is a direct group name, and
+  lz_key selects its zone with a current-zone fallback. Optional id is accepted
+  metadata but is not used by this name lookup. resource_group_key is the
+  optional legacy key used only when resource_group.key is null. Lookup tries
+  the selected zone, then current zone, then direct name. Validation requires
+  a group key, legacy key, or direct name.
+- timeouts (optional object): create limits group creation, read limits retrieval,
+  update limits membership-group metadata changes, and delete limits removal.
+  Each field is an optional duration string; null preserves provider timeouts.
+All optional fields remain null unless a lookup fallback is described.
+Undeclared attributes are discarded by the settings object type.
 DESCRIPTION
   type = object({
     name         = string
@@ -87,7 +109,7 @@ DESCRIPTION
   })
 
   validation {
-    condition     = try(contains(["custom", "external", "system"], var.settings.type), true)
+    condition     = var.settings.type == null || contains(["custom", "external", "system"], var.settings.type)
     error_message = "type must be custom, external, or system."
   }
 

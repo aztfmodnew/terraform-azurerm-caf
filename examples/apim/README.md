@@ -28,6 +28,15 @@ resource_to_be_created = {
 
 You can review the complete set of examples in the [GitHub repository](https://github.com/aztfmodnew/terraform-azurerm-caf/tree/main/examples/apim).
 
+## Scenario numbering
+
+APIM examples use a flat `NNN-description/` layout. The numbers identify
+scenarios within this example family, starting with `100-basic` and `101-api`;
+they are not Terraform versions or a deployment execution order. New scenarios
+continue the existing sequence: `120-api_management_api_release` through
+`154-api_management_workspace_policy_fragment`. Do not introduce a separate
+per-module directory containing another `100-simple` scenario.
+
 ## API Management service options
 
 The `api_management` service configuration supports the AzureRM resource

@@ -52,13 +52,35 @@ DESCRIPTION
 
 variable "settings" {
   description = <<DESCRIPTION
-Settings for an API Management user. user_id, email, first_name, and last_name
-are required. Optional settings are confirmation (invite or signup), note,
-password, state (active, blocked, or pending), and create/read/update/delete
-timeouts. AzureRM treats password as sensitive. The api_management and
-resource_group references are retained for root-module dependency resolution.
-The provider allows a pending user to become active or blocked, but not the
-reverse transition.
+Create a user account in the service supplied through api_management_name.
+Required settings object. Leaf values are strings unless another type is stated;
+reference members are optional/null unless marked required.
+
+- user_id (required string): stable logical user identifier within the service,
+  not the full ARM ID returned by the module.
+- email (required string): account email address.
+- first_name / last_name (required strings): the user's given and family names.
+- confirmation (optional string): invite sends an invitation; signup sends an
+  email requesting account confirmation.
+- note (optional string): administrator-visible account note.
+- password (optional sensitive string): account password when managing it
+  explicitly; consider Terraform state exposure before providing it.
+- state (optional string): active permits access, blocked prevents access, and
+  pending represents an unconfirmed account. A pending account can become
+  active or blocked; the reverse transition to pending is not supported.
+- api_management / resource_group (optional objects): CAF references consumed
+  by the root to supply this child's separate service/group name inputs.
+  In each object, name is a direct name preferred over key, key selects the
+  matching combined collection, and lz_key selects its landing zone (current
+  zone when omitted). resource_group_key is the optional legacy group lookup
+  key; resource_group_name is the optional direct group-name fallback.
+  For groups the root prefers resource_group.name, then resource_group_name,
+  then lookup using resource_group_key before resource_group.key.
+- timeouts (optional object): create limits account creation, read retrieval,
+  update account changes, and delete account removal. Each field is an optional
+  duration string and leaves the provider timeout in control when null.
+All optional settings default to null; confirmation, password, and state do not
+have module-supplied defaults. Undeclared attributes are discarded by the type.
 DESCRIPTION
   type = object({
     user_id      = string

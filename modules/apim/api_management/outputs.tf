@@ -6,6 +6,16 @@ output "additional_location" {
   value       = azurerm_api_management.apim.additional_location
   description = "Zero or more `additional_location` blocks as documented below."
 }
+output "certificates" {
+  value       = azurerm_api_management.apim.certificate
+  description = "Service certificates, including expiry, subject, and thumbprint. Contains sensitive certificate material."
+  sensitive   = true
+}
+output "hostname_configuration" {
+  value       = azurerm_api_management.apim.hostname_configuration
+  description = "Inline hostnames, including certificate source, status, expiry, subject, and thumbprint. Contains sensitive certificate material."
+  sensitive   = true
+}
 output "gateway_url" {
   value       = azurerm_api_management.apim.gateway_url
   description = "The URL of the Gateway for the API Management Service."

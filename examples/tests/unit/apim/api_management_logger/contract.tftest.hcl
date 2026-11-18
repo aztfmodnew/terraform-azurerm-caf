@@ -56,6 +56,7 @@ run "logger_with_identity_ingestion_and_resource_reference" {
   assert {
     condition = (
       azurerm_api_management_logger.apim.name == "example-logger" &&
+      output.name == "example-logger" &&
       azurerm_api_management_logger.apim.buffered == false &&
       azurerm_api_management_logger.apim.resource_id == "/subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg/providers/Microsoft.Insights/components/app" &&
       nonsensitive(azurerm_api_management_logger.apim.application_insights[0].connection_string) == "InstrumentationKey=00000000-0000-0000-0000-000000000002;IngestionEndpoint=https://example.invalid/" &&

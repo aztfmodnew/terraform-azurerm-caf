@@ -34,6 +34,7 @@ run "user_supports_optional_provider_options_and_timeouts" {
   assert {
     condition = (
       azurerm_api_management_user.apim.user_id == "5931a75ae4bbd512288c680b" &&
+      output.user_id == "5931a75ae4bbd512288c680b" &&
       azurerm_api_management_user.apim.email == "user@example.invalid" &&
       azurerm_api_management_user.apim.first_name == "Contract" &&
       azurerm_api_management_user.apim.last_name == "User" &&

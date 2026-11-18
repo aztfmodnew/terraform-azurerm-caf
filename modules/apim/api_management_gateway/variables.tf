@@ -52,13 +52,32 @@ DESCRIPTION
 
 variable "settings" {
   description = <<DESCRIPTION
-Settings for an API Management Gateway. name and location_data are required.
-location_data.name is the required canonical location name; city, district,
-and region are optional. description and all four create/read/update/delete
-timeouts are optional. api_management accepts a direct id or a local/remote
-key reference. resource_group and resource_group_key are accepted for
-backward-compatible CAF configurations but are not arguments of this provider
-resource.
+Register a self-hosted gateway and describe its physical deployment location.
+Required settings object. Leaf values are strings unless another type is stated;
+reference members are optional/null unless marked required.
+
+- name (required string): CAF naming input for the gateway resource.
+- api_management (optional object): identifies the owning service; validation
+  requires id or key. id is a direct service ARM ID. key selects
+  remote_objects.api_management[lz_key][key]. Optional lz_key defaults to the
+  current client_config.landingzone_key. Lookup precedence is the requested
+  landing zone, then the current landing zone for the same key, then direct id.
+  Its id/key/lz_key/name fields default to null; name is retained metadata and
+  is not used by this ID-based child lookup.
+- description (optional string): explanatory text about the gateway.
+- location_data (required object): geographic information, not an Azure region
+  used to deploy a managed resource. name is the required canonical location
+  name; city is the optional city, district the optional state/province/district,
+  and region the optional country or geographic region.
+- resource_group (optional object): compatibility metadata, not used by this
+  child. id identifies the group by ARM ID, name by literal name, key by CAF
+  collection key, and lz_key by landing-zone key. resource_group_key is an
+  optional legacy group-key field; neither reference changes the service.
+- timeouts (optional object): create limits gateway registration, read limits
+  retrieval, update limits changes, and delete limits removal. Every field is an
+  optional duration string; null leaves that provider timeout unchanged.
+Optional attributes remain null unless stated otherwise. Undeclared attributes
+are discarded by the settings object type.
 DESCRIPTION
   type = object({
     name = string

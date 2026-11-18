@@ -52,11 +52,25 @@ DESCRIPTION
 
 variable "settings" {
   description = <<DESCRIPTION
-Settings for associating an API Management API with a gateway. Both
-api_management_gateway and api_management_api are required references; each may
-provide a direct id or a local/remote key and landing-zone key. timeouts accepts
-create, read, and delete. AzureRM does not support an update timeout for this
-resource.
+Make an API available through a self-hosted API Management gateway.
+Required settings object. Leaf values are strings unless another type is stated;
+reference members are optional/null unless marked required.
+
+- api_management_gateway: optional object in the type, but validation requires
+  a non-null id or key. id is a direct gateway ARM ID. key selects
+  remote_objects.api_management_gateway[lz_key][key]. lz_key is optional and
+  falls back to client_config.landingzone_key when omitted/null.
+- api_management_api: optional object in the type, but validation requires a
+  non-null id or key. id is a direct API ARM ID. key selects
+  remote_objects.api_management_api[lz_key][key]. Its optional lz_key follows
+  the same current-zone fallback.
+  For both references, id, key, and lz_key default to null; a successfully
+  resolved key takes precedence over a direct id. At least one source must
+  resolve for each reference; direct IDs require no remote_objects entries.
+- timeouts: optional duration overrides. create limits association creation,
+  read limits retrieval, and delete limits detaching the API. Each field
+  defaults to null, preserving the provider timeout. No update timeout exists.
+Undeclared attributes are discarded by the settings object type.
 DESCRIPTION
   type = object({
     api_management_gateway = optional(object({

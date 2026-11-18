@@ -8,15 +8,22 @@ variable "client_config" {
 }
 variable "settings" {
   description = <<DESCRIPTION
-    Settings for the API Management API operation tag.
+Create a tag on the operation identified by the separate api_operation_id input.
+Required settings object. Leaf values are strings unless another type is stated;
+reference members are optional/null unless marked required.
 
-    Required attributes:
-      - name - CAF naming input for the API operation tag.
-      - display_name - Display name of the API operation tag.
-
-    Optional attributes:
-      - api_operation - Operation reference retained for compatibility with the root configuration.
-      - timeouts - Create, read, update, and delete operation timeouts.
+- name (required string): tag-name input processed by CAF naming; the generated
+  value, rather than the unmodified input, becomes the provider resource name.
+- display_name (required string): human-readable tag label shown to consumers.
+- api_operation (optional object, null by default): root-level operation
+  reference. id is a direct operation resource ID and wins over key; key selects
+  the combined operation collection; lz_key selects its landing zone and
+  defaults to the current zone when omitted. The root supplies the resulting
+  ID through api_operation_id; this child does not resolve the object itself.
+- timeouts (optional object): create limits tag creation, read limits retrieval,
+  update limits changes, and delete limits removal. Each field is an optional
+  duration string and defaults to null, preserving the provider timeout.
+Undeclared attributes are discarded by the settings object type.
   DESCRIPTION
   type = object({
     name         = string

@@ -56,6 +56,7 @@ run "gateway_with_local_reference_and_full_location_data" {
   assert {
     condition = (
       azurerm_api_management_gateway.apim.name == "example-gateway" &&
+      output.name == "example-gateway" &&
       azurerm_api_management_gateway.apim.api_management_id == "/subscriptions/test/resourceGroups/rg/providers/Microsoft.ApiManagement/service/apim-key" &&
       azurerm_api_management_gateway.apim.description == "Regional API Management gateway" &&
       azurerm_api_management_gateway.apim.location_data[0].name == "Sydney" &&

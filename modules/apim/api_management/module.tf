@@ -93,7 +93,10 @@ resource "azurerm_api_management" "apim" {
 
     content {
       dynamic "management" {
-        for_each = try(hostname_configuration.value.management, null) != null ? [hostname_configuration.value.management] : try(var.settings.management, null) != null ? [var.settings.management] : []
+        for_each = concat(
+          try(hostname_configuration.value.management, null) != null ? [hostname_configuration.value.management] : try(var.settings.management, null) != null ? [var.settings.management] : [],
+          values(try(hostname_configuration.value.managements, {}))
+        )
 
         content {
           host_name                       = try(management.value.host_name, null)
@@ -105,7 +108,10 @@ resource "azurerm_api_management" "apim" {
         }
       }
       dynamic "portal" {
-        for_each = try(hostname_configuration.value.portal, null) != null ? [hostname_configuration.value.portal] : try(var.settings.portal, null) != null ? [var.settings.portal] : []
+        for_each = concat(
+          try(hostname_configuration.value.portal, null) != null ? [hostname_configuration.value.portal] : try(var.settings.portal, null) != null ? [var.settings.portal] : [],
+          values(try(hostname_configuration.value.portals, {}))
+        )
 
         content {
           host_name                       = try(portal.value.host_name, null)
@@ -117,7 +123,10 @@ resource "azurerm_api_management" "apim" {
         }
       }
       dynamic "developer_portal" {
-        for_each = try(hostname_configuration.value.developer_portal, null) != null ? [hostname_configuration.value.developer_portal] : try(var.settings.developer_portal, null) != null ? [var.settings.developer_portal] : []
+        for_each = concat(
+          try(hostname_configuration.value.developer_portal, null) != null ? [hostname_configuration.value.developer_portal] : try(var.settings.developer_portal, null) != null ? [var.settings.developer_portal] : [],
+          values(try(hostname_configuration.value.developer_portals, {}))
+        )
 
         content {
           host_name                       = try(developer_portal.value.host_name, null)
@@ -129,7 +138,10 @@ resource "azurerm_api_management" "apim" {
         }
       }
       dynamic "proxy" {
-        for_each = try(hostname_configuration.value.proxy, null) != null ? [hostname_configuration.value.proxy] : try(var.settings.proxy, null) != null ? [var.settings.proxy] : []
+        for_each = concat(
+          try(hostname_configuration.value.proxy, null) != null ? [hostname_configuration.value.proxy] : try(var.settings.proxy, null) != null ? [var.settings.proxy] : [],
+          values(try(hostname_configuration.value.proxies, {}))
+        )
 
         content {
 
@@ -143,7 +155,10 @@ resource "azurerm_api_management" "apim" {
         }
       }
       dynamic "scm" {
-        for_each = try(hostname_configuration.value.scm, null) != null ? [hostname_configuration.value.scm] : try(var.settings.scm, null) != null ? [var.settings.scm] : []
+        for_each = concat(
+          try(hostname_configuration.value.scm, null) != null ? [hostname_configuration.value.scm] : try(var.settings.scm, null) != null ? [var.settings.scm] : [],
+          values(try(hostname_configuration.value.scms, {}))
+        )
 
         content {
           host_name                       = try(scm.value.host_name, null)
