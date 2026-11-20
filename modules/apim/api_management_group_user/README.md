@@ -1,7 +1,7 @@
 # API Management group user membership
 
 Creates `azurerm_api_management_group_user`, matching all official AzureRM
-**5.9.0** arguments and supported timeout operations.
+**5.14.0** arguments and supported timeout operations.
 
 ## Inputs
 
@@ -20,7 +20,7 @@ Required: resolvable `user_id` (**logical user identifier**), `group_name`,
 accept name/id. Direct provider arguments win, then alias fields, resolved
 resource group, remote `[lz_key][key]` maps. Null/omitted lz_key uses the client
 landing zone. Both group and user ID-only outputs resolve their final segment.
-The 5.9.0 documentation example passes a user ARM ID, but the actual provider
+The 5.14.0 documentation example passes a user ARM ID, but the actual provider
 requires a logical identifier of at most 80 alphanumeric, underscore or dash
 characters. This module accepts logical identifiers or full ARM IDs for
 `user_id`/`user.id` and normalizes after choosing the highest-precedence input.
@@ -42,7 +42,7 @@ terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/ap
 terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_group_user -no-color
 ```
 
-From the root with Terraform >=1.9 and AzureRM 5.9.0. Both providers are mocked;
+From the root with Terraform >=1.9 and AzureRM 5.14.0. Both providers are mocked;
 all commands plan. Tests assert local/remote parent resolution, ID-only group
 outputs, ARM-to-logical user ID normalization, direct precedence and timeouts. Azure membership and
 parent-service consistency are not proven by a mock plan.

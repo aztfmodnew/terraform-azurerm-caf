@@ -20,6 +20,8 @@ reference members are optional/null unless marked required.
 - http_correlation_protocol (optional string): None disables correlation, Legacy
   uses legacy correlation, and W3C uses W3C distributed-tracing correlation.
 - log_client_ip (optional bool): include the calling client's IP address.
+- metrics_enabled (optional bool): emit request metrics to the configured
+  diagnostic destination. Omission/null leaves provider handling unchanged.
 - sampling_percentage (optional number): percentage of requests sampled, 0 to 100.
 - verbosity (optional string): verbose, information, or error logging level.
 - operation_name_format (optional string): use the operation Name or Url in
@@ -81,6 +83,7 @@ DESCRIPTION
     always_log_errors         = optional(bool)
     http_correlation_protocol = optional(string)
     log_client_ip             = optional(bool)
+    metrics_enabled           = optional(bool)
     sampling_percentage       = optional(number)
     verbosity                 = optional(string)
     operation_name_format     = optional(string, "Name")

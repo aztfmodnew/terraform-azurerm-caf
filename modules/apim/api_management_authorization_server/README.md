@@ -1,7 +1,7 @@
 # API Management authorization server
 
 Manages `azurerm_api_management_authorization_server`. Validated against the full
-[AzureRM 5.9.0 documentation](https://registry.terraform.io/providers/hashicorp/azurerm/5.9.0/docs/resources/api_management_authorization_server)
+[AzureRM 5.14.0 documentation](https://registry.terraform.io/providers/hashicorp/azurerm/5.14.0/docs/resources/api_management_authorization_server)
 through Terraform MCP and the installed exact provider schema. Not deprecated.
 
 ## Inputs

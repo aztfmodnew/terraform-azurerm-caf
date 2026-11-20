@@ -1,7 +1,7 @@
 # API Management gateway host name configuration
 
 Creates `azurerm_api_management_gateway_host_name_configuration` with every
-official AzureRM **5.9.0** argument and supported timeout.
+official AzureRM **5.14.0** argument and supported timeout.
 
 ## Inputs
 
@@ -43,7 +43,7 @@ terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/ap
 terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_gateway_host_name_configuration -no-color
 ```
 
-Requires Terraform >=1.9, AzureRM 5.9.0 and AzureCAF; both providers are mocked.
+Requires Terraform >=1.9, AzureRM 5.14.0 and AzureCAF; both providers are mocked.
 Plan assertions cover local/remote parents, ID-only gateway outputs, direct
 precedence, all protocol flags, HTTP/2 omission/null default and timeouts.
 DNS, TLS handshakes and certificate validation are not tested.

@@ -1,7 +1,7 @@
 # API Management API release
 
 Creates `azurerm_api_management_api_release`, validated against the official
-AzureRM **5.9.0** documentation and installed schema. Publishing a release can
+AzureRM **5.14.0** documentation and installed schema. Publishing a release can
 change the current API revision; review the target revision before deployment.
 
 ## Inputs
@@ -42,7 +42,7 @@ terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/ap
 terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_api_release -no-color
 ```
 
-Requires Terraform >=1.9 for plan-time mocks, AzureRM 5.9.0 and AzureCAF.
+Requires Terraform >=1.9 for plan-time mocks, AzureRM 5.14.0 and AzureCAF.
 The plan-only contract checks local/remote API references, direct-ID
 precedence, CAF name, notes, null optionals and timeouts. Both providers are
 mocked. It does not publish an API revision or prove Azure-side acceptance.

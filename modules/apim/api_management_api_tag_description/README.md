@@ -1,7 +1,7 @@
 # API Management API tag description
 
 Creates `azurerm_api_management_api_tag_description` with the complete official
-AzureRM **5.9.0** configuration surface.
+AzureRM **5.14.0** configuration surface.
 
 ## Inputs
 
@@ -36,7 +36,7 @@ terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/ap
 terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_api_tag_description -no-color
 ```
 
-Run from the root with Terraform >=1.9 and AzureRM 5.9.0. Both providers are
+Run from the root with Terraform >=1.9 and AzureRM 5.14.0. Both providers are
 mocked and every run is plan-only. Assertions cover local/remote association
 IDs, direct-ID precedence, all documentation fields, explicit nulls and
 timeouts. They do not verify external URLs or Azure-side tag ownership.

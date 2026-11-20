@@ -1,7 +1,7 @@
 # API Management global schema
 
 Creates `azurerm_api_management_global_schema` with the full official AzureRM
-**5.9.0** arguments and timeout contract.
+**5.14.0** arguments and timeout contract.
 
 ## Inputs
 
@@ -38,7 +38,7 @@ terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/ap
 terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_global_schema -no-color
 ```
 
-Run from the root using Terraform >=1.9, AzureRM 5.9.0 and AzureCAF. Both
+Run from the root using Terraform >=1.9, AzureRM 5.14.0 and AzureCAF. Both
 providers are mocked for plan-only assertions of CAF naming, local/remote
 parents, direct precedence, XML/JSON values, description, nulls and timeouts.
 Schema acceptance and policy validation in Azure are not established.

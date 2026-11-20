@@ -1,7 +1,7 @@
 # API Management product group association
 
 Creates `azurerm_api_management_product_group`, matching the official AzureRM
-**5.9.0** arguments and supported timeout operations.
+**5.14.0** arguments and supported timeout operations.
 
 ## Inputs
 
@@ -42,7 +42,7 @@ terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/ap
 terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_product_group -no-color
 ```
 
-Run from the root using Terraform >=1.9 and AzureRM 5.9.0. Both providers are
+Run from the root using Terraform >=1.9 and AzureRM 5.14.0. Both providers are
 mocked and commands plan. Contracts cover local/remote and ID-only parents,
 direct precedence, short product IDs and immutable timeouts. Azure access
 control and same-service parent validation are not established.

@@ -63,6 +63,8 @@ reference members are optional/null unless marked required.
 - http_correlation_protocol (optional string): None disables correlation, Legacy
   uses legacy correlation, and W3C uses W3C distributed-tracing correlation.
 - log_client_ip (optional bool): include the calling client's IP address.
+- metrics_enabled (optional bool): emit request metrics to the configured
+  diagnostic destination. Omission/null leaves provider handling unchanged.
 - sampling_percentage (optional number): percentage of requests sampled, 0 to 100.
 - verbosity (optional string): verbose, information, or error logging level.
 - operation_name_format (optional string): use Name or Url as the Application
@@ -101,6 +103,7 @@ DESCRIPTION
     always_log_errors         = optional(bool)
     http_correlation_protocol = optional(string)
     log_client_ip             = optional(bool)
+    metrics_enabled           = optional(bool)
     sampling_percentage       = optional(number)
     verbosity                 = optional(string)
     operation_name_format     = optional(string)
@@ -159,17 +162,17 @@ DESCRIPTION
   }
 
   validation {
-    condition     = var.settings.verbosity == null || contains(["verbose", "information", "error"], var.settings.verbosity)
+    condition     = try(contains(["verbose", "information", "error"], var.settings.verbosity), true)
     error_message = "verbosity must be verbose, information, or error."
   }
 
   validation {
-    condition     = var.settings.http_correlation_protocol == null || contains(["None", "Legacy", "W3C"], var.settings.http_correlation_protocol)
+    condition     = try(contains(["None", "Legacy", "W3C"], var.settings.http_correlation_protocol), true)
     error_message = "http_correlation_protocol must be None, Legacy, or W3C."
   }
 
   validation {
-    condition     = var.settings.operation_name_format == null || contains(["Name", "Url"], var.settings.operation_name_format)
+    condition     = try(contains(["Name", "Url"], var.settings.operation_name_format), true)
     error_message = "operation_name_format must be Name or Url."
   }
 

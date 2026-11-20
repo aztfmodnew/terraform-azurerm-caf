@@ -1,7 +1,7 @@
 # API Management API tag association
 
 Associates an **existing service tag** with an API using
-`azurerm_api_management_api_tag` (official AzureRM **5.9.0** docs/schema).
+`azurerm_api_management_api_tag` (official AzureRM **5.14.0** docs/schema).
 It does not create or rename a service tag.
 
 ## Inputs
@@ -39,7 +39,7 @@ terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/ap
 terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_api_tag -no-color
 ```
 
-From the root, use Terraform >=1.9 and AzureRM 5.9.0; both AzureRM and AzureCAF
+From the root, use Terraform >=1.9 and AzureRM 5.14.0; both AzureRM and AzureCAF
 are mocked. Plan assertions cover local/remote references, ID-only tag outputs,
 direct-argument precedence, unchanged names and immutable timeouts. They do not
 prove that a tag exists in Azure or belongs to the API's APIM service.

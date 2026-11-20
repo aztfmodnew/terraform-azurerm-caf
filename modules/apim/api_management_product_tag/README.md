@@ -1,7 +1,7 @@
 # API Management product tag association
 
 Creates `azurerm_api_management_product_tag` with the full official AzureRM
-**5.9.0** argument and timeout surface. It links an existing service tag.
+**5.14.0** argument and timeout surface. It links an existing service tag.
 
 ## Inputs
 
@@ -43,7 +43,7 @@ terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/ap
 terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_product_tag -no-color
 ```
 
-From the root with Terraform >=1.9 and AzureRM 5.9.0. Both providers are mocked
+From the root with Terraform >=1.9 and AzureRM 5.14.0. Both providers are mocked
 for plan-only assertions of local/remote and ID-only parents, existing tag
 names, short product IDs, direct precedence and timeouts. Existence and parent
 service consistency are not verified in Azure.

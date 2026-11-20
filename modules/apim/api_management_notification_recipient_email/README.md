@@ -1,7 +1,7 @@
 # API Management notification email recipient
 
 Manages `azurerm_api_management_notification_recipient_email`. Full
-[AzureRM 5.9.0 docs](https://registry.terraform.io/providers/hashicorp/azurerm/5.9.0/docs/resources/api_management_notification_recipient_email)
+[AzureRM 5.14.0 docs](https://registry.terraform.io/providers/hashicorp/azurerm/5.14.0/docs/resources/api_management_notification_recipient_email)
 were fetched through Terraform MCP and compared with the installed schema.
 Not deprecated.
 

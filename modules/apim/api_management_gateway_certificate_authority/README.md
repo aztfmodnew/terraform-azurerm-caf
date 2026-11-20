@@ -1,7 +1,7 @@
 # API Management gateway certificate authority
 
 Creates `azurerm_api_management_gateway_certificate_authority` using all
-arguments in the official AzureRM **5.9.0** docs and provider schema.
+arguments in the official AzureRM **5.14.0** docs and provider schema.
 
 ## Inputs
 
@@ -38,7 +38,7 @@ terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/ap
 terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_gateway_certificate_authority -no-color
 ```
 
-Run from the root with Terraform >=1.9 and AzureRM 5.9.0. Both providers are
+Run from the root with Terraform >=1.9 and AzureRM 5.14.0. Both providers are
 mocked, all runs use plan. Assertions cover ID-only local/remote parent outputs,
 direct precedence, true/false trust and timeouts. No certificate bytes are
 loaded; actual gateway trust and certificate suitability remain unverified.

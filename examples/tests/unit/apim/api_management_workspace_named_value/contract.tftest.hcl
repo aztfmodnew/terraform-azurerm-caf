@@ -1,9 +1,8 @@
 mock_provider "azurerm" {}
-mock_provider "azurecaf" {
-  mock_resource "azurecaf_name" {
-    override_during = plan
-    defaults        = { result = "caf-example" }
-  }
+override_resource {
+  target          = azurecaf_name.resource
+  override_during = plan
+  values          = { result = "caf-example" }
 }
 variables {
   client_config = { landingzone_key = "local" }

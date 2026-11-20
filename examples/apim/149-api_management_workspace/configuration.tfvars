@@ -13,7 +13,7 @@ api_management = {
     resource_group  = { key = "gateway" }
     publisher_name  = "Example"
     publisher_email = "operations@example.com"
-    # AzureRM 5.9.0 documents Classic Premium support for workspaces.
+    # AzureRM 5.14.0 documents Classic Premium support for workspaces.
     sku_name = "Premium_1"
   }
 }

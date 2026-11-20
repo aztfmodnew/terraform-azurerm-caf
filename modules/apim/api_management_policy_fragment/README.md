@@ -1,7 +1,7 @@
 # API Management policy fragment
 
 Creates `azurerm_api_management_policy_fragment` using all official AzureRM
-**5.9.0** arguments and timeout operations.
+**5.14.0** arguments and timeout operations.
 
 ## Inputs
 
@@ -39,7 +39,7 @@ terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/ap
 terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_policy_fragment -no-color
 ```
 
-Run from the root with Terraform >=1.9, AzureRM 5.9.0 and AzureCAF. Both providers
+Run from the root with Terraform >=1.9, AzureRM 5.14.0 and AzureCAF. Both providers
 are mocked and runs plan. Tests assert local/remote parents, direct-ID
 precedence, CAF name, XML omission/null default, rawxml, description, value and
 timeouts. They do not prove fragment syntax or policy execution in APIM.

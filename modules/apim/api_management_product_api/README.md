@@ -1,7 +1,7 @@
 # API Management product API association
 
 Creates `azurerm_api_management_product_api`; every configurable argument and
-timeout matches the official AzureRM **5.9.0** documentation/schema.
+timeout matches the official AzureRM **5.14.0** documentation/schema.
 
 ## Inputs
 
@@ -42,7 +42,7 @@ terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/ap
 terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_product_api -no-color
 ```
 
-Run from the root using Terraform >=1.9 and AzureRM 5.9.0. Both providers are
+Run from the root using Terraform >=1.9 and AzureRM 5.14.0. Both providers are
 mocked; plan assertions cover local/remote parents, ID-only fallbacks, short-ID
 semantics, direct precedence and timeouts. Azure product/API ownership and
 authorization are not verified.

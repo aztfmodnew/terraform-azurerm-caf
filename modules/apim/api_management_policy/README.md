@@ -1,7 +1,7 @@
 # API Management service policy
 
 Manages the **service-wide** `azurerm_api_management_policy` with every official
-AzureRM **5.9.0** argument. This is not a product/API/operation policy.
+AzureRM **5.14.0** argument. This is not a product/API/operation policy.
 
 ## Inputs
 
@@ -39,7 +39,7 @@ terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/ap
 terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_policy -no-color
 ```
 
-From the root, use Terraform >=1.9 and AzureRM 5.9.0. Both providers are mocked
+From the root, use Terraform >=1.9 and AzureRM 5.14.0. Both providers are mocked
 and all runs plan. Assertions cover inline/linked policies, local/remote parent
 IDs, direct precedence, null link, timeouts and each source-validation failure.
 Policy execution, URL availability and effects on live APIs remain unverified.

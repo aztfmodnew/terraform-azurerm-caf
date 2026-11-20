@@ -1,5 +1,5 @@
 locals {
-  # The 5.9.0 docs example uses an ARM ID, but the provider validates the
+  # The 5.14.0 docs example uses an ARM ID, but the provider validates the
   # logical user identifier. Normalize either form only after precedence.
   user_id = reverse(split("/", coalesce(
     try(var.settings.user_id, null),

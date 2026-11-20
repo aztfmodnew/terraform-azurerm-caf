@@ -1,7 +1,7 @@
 # API Management workspace named value
 
 Manages `azurerm_api_management_workspace_named_value`. Full
-[AzureRM 5.9.0 docs](https://registry.terraform.io/providers/hashicorp/azurerm/5.9.0/docs/resources/api_management_workspace_named_value)
+[AzureRM 5.14.0 docs](https://registry.terraform.io/providers/hashicorp/azurerm/5.14.0/docs/resources/api_management_workspace_named_value)
 were fetched through Terraform MCP and checked against the installed schema.
 Not deprecated.
 

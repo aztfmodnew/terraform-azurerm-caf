@@ -1,7 +1,7 @@
 # API Management workspace certificate
 
 Manages `azurerm_api_management_workspace_certificate`. Full
-[AzureRM 5.9.0 docs](https://registry.terraform.io/providers/hashicorp/azurerm/5.9.0/docs/resources/api_management_workspace_certificate)
+[AzureRM 5.14.0 docs](https://registry.terraform.io/providers/hashicorp/azurerm/5.14.0/docs/resources/api_management_workspace_certificate)
 were fetched through Terraform MCP and checked against the installed schema.
 Not deprecated.
 

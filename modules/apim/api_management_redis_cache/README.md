@@ -1,7 +1,7 @@
 # API Management external Redis cache
 
 Creates `azurerm_api_management_redis_cache`, exposing all official AzureRM
-**5.9.0** arguments and timeouts. It registers a cache; it does not provision Redis.
+**5.14.0** arguments and timeouts. It registers a cache; it does not provision Redis.
 
 ## Inputs
 
@@ -50,7 +50,7 @@ terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/ap
 terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_redis_cache -no-color
 ```
 
-Use Terraform >=1.9, AzureRM 5.9.0 and AzureCAF from the root. Both providers are
+Use Terraform >=1.9, AzureRM 5.14.0 and AzureCAF from the root. Both providers are
 mocked; plan assertions cover optional/local/remote/direct cache IDs, parent
 precedence, defaults/nulls, connection-string forwarding and timeouts. No Redis
 authentication, network connectivity or Azure cache behavior is tested.

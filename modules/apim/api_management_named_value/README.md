@@ -36,8 +36,8 @@ APIM to refresh rotated secrets. Do not put secret contents in committed tfvars.
 Setting `secret = true` encrypts the value in APIM, but does not keep an inline
 `value` out of Terraform state.
 
-Schema validated against AzureRM 5.9.0
-[`api_management_named_value`](https://registry.terraform.io/providers/hashicorp/azurerm/5.9.0/docs/resources/api_management_named_value)
+Schema validated against AzureRM 5.14.0
+[`api_management_named_value`](https://registry.terraform.io/providers/hashicorp/azurerm/5.14.0/docs/resources/api_management_named_value)
 using Terraform MCP. Key Vault access requirements:
 [Microsoft Learn](https://learn.microsoft.com/azure/api-management/api-management-howto-properties).
 

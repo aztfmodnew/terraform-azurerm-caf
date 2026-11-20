@@ -1,10 +1,9 @@
 mock_provider "azurerm" {}
 
-mock_provider "azurecaf" {
-  mock_resource "azurecaf_name" {
-    override_during = plan
-    defaults        = { result = "apimnv-backend-endpoint" }
-  }
+override_resource {
+  target          = azurecaf_name.named_value
+  override_during = plan
+  values          = { result = "apimnv-backend-endpoint" }
 }
 
 variables {
@@ -230,6 +229,43 @@ run "key_vault_requires_a_secret_source" {
       api_management       = { key = "gateway" }
       resource_group       = { key = "gateway" }
       value_from_key_vault = {}
+    }
+  }
+}
+
+run "reject_two_value_sources" {
+  command         = plan
+  expect_failures = [var.settings]
+  module {
+    source = "../modules/apim/api_management_named_value"
+  }
+  variables {
+    settings = {
+      name           = "backend-token"
+      display_name   = "backend-token"
+      value          = "https://example.com"
+      secret         = true
+      api_management = { key = "gateway" }
+      resource_group = { key = "gateway" }
+      value_from_key_vault = {
+        secret_id = "https://local-vault.vault.azure.net/secrets/backend-token"
+      }
+    }
+  }
+}
+
+run "reject_missing_value_source" {
+  command         = plan
+  expect_failures = [var.settings]
+  module {
+    source = "../modules/apim/api_management_named_value"
+  }
+  variables {
+    settings = {
+      name           = "backend-token"
+      display_name   = "backend-token"
+      api_management = { key = "gateway" }
+      resource_group = { key = "gateway" }
     }
   }
 }

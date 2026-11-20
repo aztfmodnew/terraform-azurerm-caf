@@ -1,7 +1,7 @@
 # API Management OpenID Connect provider
 
 Manages `azurerm_api_management_openid_connect_provider`. Full
-[AzureRM 5.9.0 docs](https://registry.terraform.io/providers/hashicorp/azurerm/5.9.0/docs/resources/api_management_openid_connect_provider)
+[AzureRM 5.14.0 docs](https://registry.terraform.io/providers/hashicorp/azurerm/5.14.0/docs/resources/api_management_openid_connect_provider)
 were fetched through Terraform MCP and checked against the installed schema.
 Not deprecated.
 

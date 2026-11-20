@@ -7,6 +7,7 @@ resource "azurerm_api_management_diagnostic" "apim" {
   always_log_errors         = try(var.settings.always_log_errors, null)
   http_correlation_protocol = try(var.settings.http_correlation_protocol, null)
   log_client_ip             = try(var.settings.log_client_ip, null)
+  metrics_enabled           = try(var.settings.metrics_enabled, null)
   sampling_percentage       = try(var.settings.sampling_percentage, null)
   verbosity                 = try(var.settings.verbosity, null)
   operation_name_format     = try(var.settings.operation_name_format, null)

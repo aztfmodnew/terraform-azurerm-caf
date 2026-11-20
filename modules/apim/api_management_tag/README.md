@@ -1,7 +1,7 @@
 # API Management service tag
 
 Creates `azurerm_api_management_tag` with every configurable argument and
-timeout in the official AzureRM **5.9.0** docs and provider schema.
+timeout in the official AzureRM **5.14.0** docs and provider schema.
 This creates a service-level label, not an Azure resource tag.
 
 ## Inputs
@@ -39,7 +39,7 @@ terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/ap
 terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_tag -no-color
 ```
 
-Run from the root using Terraform >=1.9, AzureRM 5.9.0 and AzureCAF. Both providers
+Run from the root using Terraform >=1.9, AzureRM 5.14.0 and AzureCAF. Both providers
 are mocked and every run plans. Tests check local/remote/direct parent IDs,
 CAF name, explicit display name, null optionals and timeouts. Provider-computed
 default display names and Azure-side uniqueness are not asserted by mocks.

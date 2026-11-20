@@ -20,7 +20,8 @@ Value and naming:
   backend-endpoint in {{backend-endpoint}}. CAF naming is not applied to it.
 - value (string, optional; default null): Literal text or policy expression
   stored in APIM. Use this for a directly supplied value rather than a Key Vault
-  reference. Values can be recorded in Terraform state; do not commit secrets.
+  reference. Exactly one of value or value_from_key_vault must be set. Values
+  can be recorded in Terraform state; do not commit secrets.
 - secret (bool, optional; default false, including explicit null): Marks the
   value as secret and encrypted in APIM. Required to be true for Key Vault
   references. This flag does not mark the Terraform input itself as sensitive.
@@ -49,8 +50,9 @@ Parent service and resource group:
 
 Key Vault source:
 - value_from_key_vault (object, optional; default null): Retrieves the value
-  through the APIM managed identity. Requires secret = true and either secret_id
-  or both key_vault and secret_name. This module does not grant vault access.
+  through the APIM managed identity. Must be set without value, and requires
+  secret = true and either secret_id or both key_vault and secret_name. This
+  module does not grant vault access.
   - secret_id (string, optional; default null): Key Vault secret URI. Takes
     precedence over constructing a URI from key_vault and secret_name.
   - secret_name (string, optional; default null): Required when secret_id is
@@ -122,6 +124,11 @@ DESCRIPTION
       delete = optional(string)
     }))
   })
+
+  validation {
+    condition     = (var.settings.value != null) != (var.settings.value_from_key_vault != null)
+    error_message = "Specify exactly one of value or value_from_key_vault."
+  }
 
   validation {
     condition     = var.settings.value_from_key_vault == null || var.settings.secret

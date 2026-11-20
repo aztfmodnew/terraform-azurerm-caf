@@ -1,7 +1,7 @@
 # API Management standalone workspace gateway
 
 Creates `azurerm_api_management_standalone_gateway` using every official
-AzureRM **5.9.0** argument, required SKU block and supported timeout.
+AzureRM **5.14.0** argument, required SKU block and supported timeout.
 This is a workspace gateway, **not** an APIM self-hosted gateway resource.
 
 ## Inputs
@@ -60,7 +60,7 @@ terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/ap
 terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_standalone_gateway -no-color
 ```
 
-From the root use Terraform >=1.9, AzureRM 5.9.0 and AzureCAF. Both providers are
+From the root use Terraform >=1.9, AzureRM 5.14.0 and AzureCAF. Both providers are
 mocked and runs plan. Tests check local/remote subnet/group resolution, direct
 precedence, region selection, SKU capacity omission/null/value, opt-in tag
 inheritance/precedence, network type, CAF fallback and timeouts. Regional SKU

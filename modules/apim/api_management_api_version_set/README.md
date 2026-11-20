@@ -1,7 +1,7 @@
 # API Management API version set
 
 Creates `azurerm_api_management_api_version_set`, implementing the full official
-AzureRM **5.9.0** arguments, outputs and timeout surface.
+AzureRM **5.14.0** arguments, outputs and timeout surface.
 
 ## Inputs
 
@@ -42,7 +42,7 @@ terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/ap
 terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_api_version_set -no-color
 ```
 
-Requires Terraform >=1.9, AzureRM 5.9.0 and AzureCAF. Both providers are mocked
+Requires Terraform >=1.9, AzureRM 5.14.0 and AzureCAF. Both providers are mocked
 for plan-only tests. Contracts check all three schemes, local/remote parents,
 direct precedence, optional fields/timeouts and each validation independently.
 Mock plans do not establish Azure API routing behavior.

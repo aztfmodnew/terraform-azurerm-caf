@@ -1,7 +1,7 @@
 # API Management email template
 
 Manages `azurerm_api_management_email_template`. The full
-[AzureRM 5.9.0 documentation](https://registry.terraform.io/providers/hashicorp/azurerm/5.9.0/docs/resources/api_management_email_template)
+[AzureRM 5.14.0 documentation](https://registry.terraform.io/providers/hashicorp/azurerm/5.14.0/docs/resources/api_management_email_template)
 was fetched through Terraform MCP and compared with the installed schema.
 Not deprecated.
 

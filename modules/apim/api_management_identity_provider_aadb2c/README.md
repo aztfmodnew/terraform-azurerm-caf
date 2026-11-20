@@ -1,7 +1,7 @@
 # API Management Azure AD B2C identity provider
 
 Manages `azurerm_api_management_identity_provider_aadb2c`. Full
-[AzureRM 5.9.0 docs](https://registry.terraform.io/providers/hashicorp/azurerm/5.9.0/docs/resources/api_management_identity_provider_aadb2c)
+[AzureRM 5.14.0 docs](https://registry.terraform.io/providers/hashicorp/azurerm/5.14.0/docs/resources/api_management_identity_provider_aadb2c)
 were retrieved through Terraform MCP and checked against the installed schema.
 Not marked deprecated by this provider version. B2C commercial availability is
 separate from Terraform resource deprecation. Its fixed Azure identifier is not

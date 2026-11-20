@@ -1,7 +1,7 @@
 # API Management API schema
 
 Creates `azurerm_api_management_api_schema`; all configurable arguments and
-timeouts follow the official AzureRM **5.9.0** documentation and local schema.
+timeouts follow the official AzureRM **5.14.0** documentation and local schema.
 
 ## Inputs
 
@@ -48,7 +48,7 @@ terraform -chdir=examples init -backend=false -test-directory=tests/unit/apim/ap
 terraform -chdir=examples test -test-directory=tests/unit/apim/api_management_api_schema -no-color
 ```
 
-Run from the root with Terraform >=1.9, AzureRM 5.9.0 and AzureCAF installed.
+Run from the root with Terraform >=1.9, AzureRM 5.14.0 and AzureCAF installed.
 Both providers are mocked; command is plan. Assertions cover CAF schema IDs,
 local/remote and ID-only parents, direct-name precedence, all payload fields,
 nulls and timeouts. Schema parsing by APIM itself remains unverified.
