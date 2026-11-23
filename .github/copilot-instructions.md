@@ -292,11 +292,12 @@ modules/
 - [ ] Root variable definitions updated (preferred in `/variables.tf`; split files like `/variables.<category>.tf` are also valid)
 - [ ] `/locals.tf` - Added module to category locals
 - [ ] `/locals.combined_objects.tf` - Added combined_objects entry
-- [ ] `/examples/category/service_name/minimal.tfvars` - Created example
+- [ ] `/examples/category/service_name/100-simple/configuration.tfvars` - Created example
 
 **Optional**:
 
-- [ ] `/examples/category/service_name/complete.tfvars` - Created comprehensive example
+- [ ] `/examples/category/service_name/200-.../configuration.tfvars` - Created comprehensive example
+- [ ] `/examples/category/service_name/300-.../configuration.tfvars` - Created advanced example
 
 ---
 
@@ -304,7 +305,7 @@ modules/
 
 ```bash
 cd examples
-terraform_with_var_files --dir /category/service_name/minimal/ --action plan --auto auto --workspace test
+terraform_with_var_files --dir /category/service_name/100-simple/ --action plan --auto auto --workspace test
 ````
 
 **Common integration issues**:
@@ -471,7 +472,7 @@ When updating modules:
 - [ ] Added private_endpoint.tf if service supports private endpoints
 - [ ] Used coalesce pattern for dependencies
 - [ ] Added dynamic blocks for optional features
-- [ ] Created at least minimal.tfvars example
+- [ ] Created at least 100-simple/configuration.tfvars example
 - [ ] Wired into root module (8 steps completed)
 - [ ] **Run mock test to validate module** (see Mock Testing section below)
 
@@ -894,40 +895,44 @@ This pattern:
 
 ## �🛡️ Technical Validation for Microsoft Products
 
-When generating or recommending technical content for Microsoft products (Azure, Terraform on Azure, Azure services, etc.):
+Use the following validation order and keep each source within its scope.
 
-### 1. Coding (Modules, Resources, Patterns)
+### 1. Local Repository First
 
-- The primary source for coding is the local repository standards and Copilot instructions.
-- Only when local standards do not cover a case, validate with MCP Terraform tools:
-  - Use `mcp_terraform_resolveProviderDocID` and `mcp_terraform_getProviderDocs` for resource patterns, arguments, and constraints.
-  - Use `mcp_terraform_searchModules` and `mcp_terraform_moduleDetails` for module usage and examples.
-- Always document the source of validation (local or MCP Terraform) in comments or documentation.
+- Before proposing Terraform code or examples, review the applicable repository instructions, existing modules, callers, and examples.
+- Use local standards as the primary source for CAF structure, naming, shared inputs, dependency resolution, and example organization.
+- Preserve existing module contracts; do not replace repository conventions with unrelated external patterns.
 
-### 2. Examples (Usage, Documentation, Architecture)
+### 2. Terraform MCP Second
 
-- All examples and architectural decisions MUST be aligned with the Microsoft Well Architected Framework pillars (Cost, Security, Reliability, Performance, Operational Excellence).
-- Validate all technical content in examples using MCP MicrosoftDocs tools:
-  - Use `microsoft_docs_search` for concepts, features, and best practices.
-  - Use `microsoft_code_sample_search` for code samples and configuration examples.
-  - Use `microsoft_docs_fetch` for complete documentation when deeper context is needed.
-- **NEVER invent technical information** – all recommendations, code, and explanations MUST be backed by official documentation.
+- After the local review, use Terraform MCP to validate provider arguments, nested blocks, defaults, constraints, deprecations, and relevant published module usage.
+- Validate against the provider or module version used by the repository.
+- Use the provider documentation search/details tools and, when needed, the module search/details tools available in the session.
+- Local examples establish repository patterns, but do not replace mandatory provider-schema validation before adding or modifying resource arguments (Pattern 0).
+- Terraform syntax, provider configuration, and module usage belong to the local repository and Terraform MCP validation path, not Azure MCP or MicrosoftDocs.
 
-This ensures that all technical guidance is reliable, up-to-date, and aligned with both the repository's standards, Microsoft's best practices, and Terraform community recommendations.
+### 3. Azure Tools Only for Azure Service Best Practices
+
+- Use Azure MCP and Microsoft Learn documentation tools only when validating architectural or operational best practices for an Azure service.
+- This includes service-level security, reliability, performance, cost optimization, and operational excellence recommendations aligned with the Microsoft Well-Architected Framework.
+- Terraform examples still follow the local-first, Terraform-MCP-second process for their code and configuration. Use Azure tools only for the Azure service design decisions within those examples.
+- Do not invoke Azure tools merely because Terraform targets Azure or an example contains Azure resources.
+
+**NEVER invent technical information.** Record the relevant validation sources in appropriate documentation or task evidence; do not add audit traces to variable descriptions.
 
 ---
 
 ## 🔧 MCP Tools Usage Rules
 
-When working with this repository, follow these rules for using MCP tools:
+When working with this repository, follow these rules for using MCP tools. The validation order and tool scopes above apply to all rules below.
 
 ### Azure Tools
 
-- **Rule**: When handling requests related to Azure, always use your Azure MCP tools when available.
+- **Rule**: Use Azure MCP tools, when available, for Azure service best-practice validation. Terraform-only work follows the local repository and Terraform MCP validation path.
 
 ### Azure Code Generation Best Practices
 
-- **Rule**: When generating code for Azure, running terminal commands for Azure, or performing operations related to Azure, invoke your Azure best practices tools if available.
+- **Rule**: When code generation or planned operations require Azure service best-practice guidance, invoke your Azure best practices tools if available. Do not use them to validate Terraform syntax, provider arguments, or CAF module patterns.
 - **Only call** when you are sure the user is discussing Azure; do not call otherwise.
 
 ### Azure Deployment Best Practices
@@ -1217,7 +1222,11 @@ cd /path/to/terraform-azurerm-caf/examples
 terraform test -test-directory=./tests/mock -var-file="./grafana/100-simple-grafana/configuration.tfvars" -verbose
 
 # Run all tests in a category
-terraform test -test-directory=./tests/mock -var-file="./grafana/**/configuration.tfvars" -verbose
+(
+  for config in ./grafana/*/configuration.tfvars; do
+    terraform test -test-directory=./tests/mock -var-file="$config" -verbose || exit 1
+  done
+)
 ```
 
 **Common Test Failures**:

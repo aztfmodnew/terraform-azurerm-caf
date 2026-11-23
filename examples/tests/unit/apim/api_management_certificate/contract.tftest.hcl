@@ -53,6 +53,10 @@ run "certificate_with_pfx_data_and_timeouts" {
     error_message = "The certificate must use the CAF-generated name."
   }
   assert {
+    condition     = output.name == "example-cert"
+    error_message = "The generated certificate name must be exported."
+  }
+  assert {
     condition     = azurerm_api_management_certificate.apim.timeouts.update == "40m"
     error_message = "Certificate timeouts must be passed to the provider."
   }

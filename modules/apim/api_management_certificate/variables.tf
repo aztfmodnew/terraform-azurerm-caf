@@ -8,23 +8,46 @@ variable "client_config" {
 }
 variable "settings" {
   description = <<DESCRIPTION
-    Settings for the API Management certificate.
+Make a client-authentication certificate available inside API Management.
+Required settings object. Leaf values are strings unless another type is stated;
+reference members are optional/null unless marked required.
 
-    Required:
-      - name - CAF naming input for the certificate.
-      - Exactly one certificate source: data, key_vault_secret, key_vault_secret_id, or the legacy key_vault_id alias.
-
-    Optional:
-      - api_management - API Management service reference retained for root configuration compatibility.
-      - resource_group - Resource group reference retained for root configuration compatibility.
-      - data - Base64-encoded PFX certificate data.
-      - password - Password for the PFX certificate.
-      - key_vault_secret - Key-based reference to a managed Key Vault certificate or certificate request.
-      - key_vault_secret_id - Key Vault secret ID containing a PKCS#12 certificate.
-      - key_vault_id - Legacy alias for key_vault_secret_id.
-      - key_vault_identity_client - Managed identity reference used to retrieve the certificate from Key Vault.
-      - key_vault_identity_client_id - Direct client ID for the user-assigned managed identity.
-      - timeouts - Create, read, update, and delete operation timeouts.
+- name (required string): certificate resource name processed by CAF naming.
+- data (optional sensitive string): base64-encoded PFX certificate bytes.
+- password (optional sensitive string): password protecting inline PFX data.
+- key_vault_secret_id (optional string): Key Vault secret URI containing a
+  PKCS#12 certificate; a secret identifier, not the vault ARM ID.
+- key_vault_id (optional string): legacy spelling of key_vault_secret_id with
+  exactly the same secret-URI meaning.
+- key_vault_secret (optional object): resolve an existing managed certificate's
+  backing secret. Optional certificate_key selects
+  remote_objects.keyvault_certificates[lz_key][certificate_key].secret_id;
+  optional certificate_request_key selects the corresponding
+  keyvault_certificate_requests collection. Set exactly one of these keys.
+  Optional lz_key selects its landing zone and defaults to
+  client_config.landingzone_key when omitted/null.
+  Exactly one source among data, key_vault_secret_id, key_vault_id, and
+  key_vault_secret must be supplied; current and legacy source fields cannot
+  both be set.
+- key_vault_identity_client_id (optional string): direct client ID of the
+  user-assigned managed identity that retrieves the Key Vault secret.
+- key_vault_identity_client (optional object): alternate identity reference.
+  Optional id is a direct identity client ID despite the legacy field name;
+  optional key selects remote_objects.managed_identities[lz_key][key].client_id;
+  optional lz_key defaults to the current zone. Resolution prefers
+  key_vault_identity_client_id, then this object's id, then its key lookup.
+  The identity must have access to the secret and be assigned to APIM.
+- api_management / resource_group (optional objects): root parent references;
+  all nested fields are optional/null. name is a direct resource name preferred
+  over key; key selects the corresponding combined CAF collection; lz_key
+  selects the landing zone (current by default). id is retained metadata, not
+  used for these name-based root inputs. The root supplies resolved parent
+  names as separate child inputs.
+- timeouts (optional object): create limits certificate registration, read
+  retrieval, update replacement, and delete removal. Each field is an optional
+  duration string and leaves the provider timeout unchanged when null.
+All optional values default to null; this child supplies no certificate or
+credential defaults. Undeclared attributes are discarded by the settings type.
   DESCRIPTION
   type = object({
     name = string

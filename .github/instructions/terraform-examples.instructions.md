@@ -8,6 +8,11 @@ When editing files under `examples/**`, treat them as executable tests and docum
 
 - Directory and naming (MANDATORY)
   - Use numbered directories by complexity: `100-...`, `200-...`, `300-...`.
+    - `100-...` is the simplest scenario, increasing numbers indicate more complex setups
+    - `200-...` is more complex, and so on
+    - `300-...` is even more complex, and so on
+    - Continue the existing sequence for each example family, rather than starting over at `100-...`.
+
   - File name must be `configuration.tfvars` (not minimal/complete/example).
   - For Terraform variable declarations in `examples/` (e.g., `examples/variables.tf`), split files by domain is allowed and recommended for maintainability (e.g., `variables.core.tf`, `variables.networking.tf`, `variables.compute.tf`).
   - Variable split must be behavior-preserving: do NOT change variable names, types, defaults, or validations during file reorganization.

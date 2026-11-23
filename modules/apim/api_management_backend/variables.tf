@@ -8,26 +8,66 @@ variable "client_config" {
 }
 variable "settings" {
   description = <<DESCRIPTION
-    Settings for the API Management backend.
+Register a reusable backend that API policies can route requests to.
+Required settings object. Leaf values are strings unless another type is stated;
+reference members are optional/null unless marked required.
 
-    Required attributes:
-      - name - CAF naming input for the backend.
-      - protocol - Backend protocol; valid values are http and soap.
-      - url - Backend host URL.
-
-    Optional attributes:
-      - api_management - API Management service reference retained for root configuration compatibility.
-      - resource_group - Resource group reference retained for root configuration compatibility.
-      - circuit_breaker_rule - Circuit breaker settings with a required failure condition.
-      - credentials - Backend authorization, certificates, headers, and query parameters.
-      - description - Backend description.
-      - proxy - Proxy URL and optional credentials.
-      - resource_id - Management URI of the backend host in an external system.
-      - service_fabric_cluster - Service Fabric management endpoints, certificates, and server names.
-      - server_x509_name - Legacy single server X.509 name; use service_fabric_cluster.server_x509_name.
-      - title - Backend title.
-      - tls - Backend certificate validation settings.
-      - timeouts - Create, read, update, and delete operation timeouts.
+- name (required string): backend resource name processed by CAF naming.
+- protocol (required string): http for an HTTP backend or soap for a SOAP backend.
+- url (required string): backend host/base URL; avoid a trailing slash when
+  composing backend resource paths.
+- title / description (optional strings): short backend label and explanatory
+  backend documentation, respectively.
+- resource_id (optional string): management URI identifying the backend host,
+  such as a Function/Logic App ARM ID or Service Fabric management endpoint.
+- credentials (optional object): authentication and parameters sent to the host.
+  authorization is an optional object: scheme names the authentication scheme
+  (for example Bearer) and parameter supplies its value; both fields are optional.
+  certificate is an optional list of client certificate thumbprints already
+  present in APIM. header and query are optional string maps of header/query
+  names to values; comma-separated values are expanded by the provider.
+- proxy (optional object): outbound HTTP proxy. url is required; username and
+  password are optional proxy credentials.
+- tls (optional object): optional validate_certificate_chain controls server
+  certificate-chain validation and optional validate_certificate_name controls
+  server-name validation. Null leaves each flag to the provider.
+- service_fabric_cluster (optional object): Service Fabric backend discovery.
+  Required management_endpoints is the set of cluster management URLs; required
+  max_partition_resolution_retries limits partition-resolution retries.
+  Optional client_certificate_thumbprint or client_certificate_id authenticates
+  to the management endpoint; at least one must be set. Optional
+  server_certificate_thumbprints is a set of trusted server thumbprints.
+  Optional server_x509_name is a set of trusted server-name objects: each
+  requires name (certificate common name) and issuer_certificate_thumbprint
+  (issuing certificate thumbprint).
+- server_x509_name (optional object): legacy single trusted server-name object
+  with the same required name and issuer_certificate_thumbprint fields. Used
+  only when service_fabric_cluster.server_x509_name is null; an explicit empty
+  nested set suppresses this fallback.
+- circuit_breaker_rule (optional object): open the circuit after backend failures.
+  Required name identifies the rule and required trip_duration gives its open
+  duration as an ISO 8601 duration. Optional accept_retry_after_enabled honors
+  Retry-After responses; this module defaults omission/null to false.
+  Required failure_condition defines the trigger:
+  - interval_duration (required string): ISO 8601 window over which failures count.
+  - count (optional number): absolute threshold, 1 to 10000.
+  - percentage (optional number): percentage threshold, 1 to 100.
+    Exactly one of count and percentage must be set.
+  - error_reasons (optional list of strings): failure categories to count.
+  - status_code_range (optional list of objects, defaults to [] for omission/null):
+    HTTP response ranges to count. Each requires min and max status codes from
+    200 to 599, with min not greater than max. At least one non-empty error_reasons
+    or status_code_range must be supplied.
+- api_management / resource_group (optional objects): root parent references;
+  every nested field is optional/null. name supplies a direct name preferred
+  over key, key selects the corresponding combined CAF collection, and lz_key
+  chooses its landing zone (current zone when omitted). id is retained metadata,
+  not used for these name-based root inputs. This child receives resolved
+  parent names through separate inputs.
+- timeouts (optional object): create limits backend creation, read retrieval,
+  update backend changes, and delete removal. Each optional duration-string
+  field defaults to null, retaining its provider timeout.
+Other optional values default to null. Undeclared attributes are discarded.
   DESCRIPTION
   type = object({
     name     = string
@@ -57,7 +97,7 @@ variable "settings" {
         status_code_range = optional(list(object({
           min = number
           max = number
-        })))
+        })), [])
       })
     }))
     credentials = optional(object({

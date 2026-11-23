@@ -52,13 +52,39 @@ DESCRIPTION
 
 variable "settings" {
   description = <<DESCRIPTION
-Settings for an API Management subscription. display_name is required.
-Optional provider arguments include api_id, user_id, primary_key,
-secondary_key, subscription_id, state, allow_tracing, and timeouts. state
-defaults to submitted and allow_tracing defaults to true. Only one of api_id
-and the resolved product_id may be set; if neither is set the subscription
-uses the service-wide API scope. api_management, resource_group, and product
-references are retained for root-module dependency resolution.
+Issue credentials granting a user access to a product, one API, or all APIs.
+Required settings object. Leaf values are strings unless another type is stated;
+reference members are optional/null unless marked required.
+
+- display_name (required string): human-readable subscription label.
+- api_id (optional string): full ARM ID of the API to scope access to; cannot
+  be combined with the separate resolved product_id input. If both are null,
+  the subscription uses the service-wide API scope.
+- user_id (optional string): ARM ID of the APIM user who owns the subscription.
+- primary_key / secondary_key (optional sensitive strings): the two alternative
+  access keys, allowing rotation without interrupting clients. When null the
+  provider generates keys; this child does not invent credential defaults.
+- subscription_id (optional string): logical identifier within APIM, generated
+  by the provider when omitted; distinct from an Azure subscription GUID.
+- state (optional string): active, cancelled, expired, rejected, submitted, or
+  suspended. The module defaults omitted/null values to submitted.
+- allow_tracing (optional bool): permits tracing for the subscription; the module
+  defaults omitted/null values to true and preserves an explicit false.
+- product (optional object): root-level product scope reference. product_id is
+  the direct product ARM ID; otherwise key selects the combined product
+  collection and lz_key selects its zone (current zone when omitted).
+  Direct product_id takes precedence. The root passes the resolved ARM ID
+  through the separate product_id input; this child does not resolve product.
+- api_management / resource_group (optional objects): root-level parent
+  references. name is the direct resource name, key the combined collection
+  key, and lz_key its landing zone (current by default). Direct names precede
+  lookups. resource_group_name is a legacy direct group-name fallback after
+  resource_group.name; resource_group_key is the legacy group key preferred by
+  root lookup before resource_group.key.
+- timeouts (optional object): create limits issuance, read retrieval, update
+  subscription changes, and delete revocation/removal. Each field is an
+  optional duration string; null leaves its provider timeout unchanged.
+Other optional values default to null. Undeclared attributes are discarded.
 DESCRIPTION
   type = object({
     display_name    = string

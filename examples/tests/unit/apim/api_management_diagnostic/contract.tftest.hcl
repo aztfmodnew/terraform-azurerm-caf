@@ -20,6 +20,7 @@ run "diagnostic_with_data_masking_and_timeouts" {
       always_log_errors         = true
       http_correlation_protocol = "W3C"
       log_client_ip             = true
+      metrics_enabled           = true
       sampling_percentage       = 25.5
       verbosity                 = "verbose"
       operation_name_format     = "Url"
@@ -56,6 +57,7 @@ run "diagnostic_with_data_masking_and_timeouts" {
       azurerm_api_management_diagnostic.apim.identifier == "applicationinsights" &&
       azurerm_api_management_diagnostic.apim.always_log_errors &&
       azurerm_api_management_diagnostic.apim.http_correlation_protocol == "W3C" &&
+      azurerm_api_management_diagnostic.apim.metrics_enabled &&
       azurerm_api_management_diagnostic.apim.sampling_percentage == 25.5 &&
       azurerm_api_management_diagnostic.apim.operation_name_format == "Url" &&
       azurerm_api_management_diagnostic.apim.backend_request[0].body_bytes == 8192 &&

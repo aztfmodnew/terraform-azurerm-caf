@@ -28,6 +28,15 @@ resource_to_be_created = {
 
 You can review the complete set of examples in the [GitHub repository](https://github.com/aztfmodnew/terraform-azurerm-caf/tree/main/examples/apim).
 
+## Scenario numbering
+
+APIM examples use a flat `NNN-description/` layout. The numbers identify
+scenarios within this example family, starting with `100-basic` and `101-api`;
+they are not Terraform versions or a deployment execution order. New scenarios
+continue the existing sequence: `120-api_management_api_release` through
+`154-api_management_workspace_policy_fragment`. Do not introduce a separate
+per-module directory containing another `100-simple` scenario.
+
 ## API Management service options
 
 The `api_management` service configuration supports the AzureRM resource
@@ -494,12 +503,12 @@ This plan-only test does not verify Azure-side acceptance or deploy resources.
 | security                      | tls_rsa_with_aes256_cbc_sha_ciphers_enabled         | Should the `TLS_RSA_WITH_AES_256_CBC_SHA` cipher be enabled? Defaults to `false`.                                                                                                                               | False    |
 | security                      | enable_triple_des_ciphers                           | Should the `TLS_RSA_WITH_3DES_EDE_CBC_SHA` cipher be enabled for all TLS versions (1.0, 1.1 and 1.2)? Defaults to `false`.                                                                                      | False    |
 | security                      | triple_des_ciphers_enabled                          | Should the `TLS_RSA_WITH_3DES_EDE_CBC_SHA` cipher be enabled for all TLS versions (1.0, 1.1 and 1.2)? Defaults to `false`.                                                                                      | False    |
-| security                      | disable_backend_ssl30                               | Should SSL 3.0 be disabled on the backend of the gateway? This property was mistakenly inverted and `true` actually enables it. Defaults to `false`.                                                            | False    |
-| security                      | disable_backend_tls10                               | Should TLS 1.0 be disabled on the backend of the gateway? This property was mistakenly inverted and `true` actually enables it. Defaults to `false`.                                                            | False    |
-| security                      | disable_backend_tls11                               | Should TLS 1.1 be disabled on the backend of the gateway? This property was mistakenly inverted and `true` actually enables it. Defaults to `false`.                                                            | False    |
-| security                      | disable_frontend_ssl30                              | Should SSL 3.0 be disabled on the frontend of the gateway? This property was mistakenly inverted and `true` actually enables it. Defaults to `false`.                                                           | False    |
-| security                      | disable_frontend_tls10                              | Should TLS 1.0 be disabled on the frontend of the gateway? This property was mistakenly inverted and `true` actually enables it. Defaults to `false`.                                                           | False    |
-| security                      | disable_frontend_tls11                              | Should TLS 1.1 be disabled on the frontend of the gateway? This property was mistakenly inverted and `true` actually enables it. Defaults to `false`.                                                           | False    |
+| security                      | disable_backend_ssl30                               | Legacy inverted SSL 3.0 alias: `true` disables the protocol on the backend of the gateway and `false` enables it. Defaults to `false`.                                                                         | False    |
+| security                      | disable_backend_tls10                               | Legacy inverted TLS 1.0 alias: `true` disables the protocol on the backend of the gateway and `false` enables it. Defaults to `false`.                                                                        | False    |
+| security                      | disable_backend_tls11                               | Legacy inverted TLS 1.1 alias: `true` disables the protocol on the backend of the gateway and `false` enables it. Defaults to `false`.                                                                        | False    |
+| security                      | disable_frontend_ssl30                              | Legacy inverted SSL 3.0 alias: `true` disables the protocol on the frontend of the gateway and `false` enables it. Defaults to `false`.                                                                        | False    |
+| security                      | disable_frontend_tls10                              | Legacy inverted TLS 1.0 alias: `true` disables the protocol on the frontend of the gateway and `false` enables it. Defaults to `false`.                                                                       | False    |
+| security                      | disable_frontend_tls11                              | Legacy inverted TLS 1.1 alias: `true` disables the protocol on the frontend of the gateway and `false` enables it. Defaults to `false`.                                                                       | False    |
 | sign_in                       | enabled                                             | Should anonymous users be redirected to the sign in page?                                                                                                                                                       | True     |
 | sign_up                       | enabled                                             | Can users sign up on the development portal?                                                                                                                                                                    | True     |
 | sign_up                       | terms_of_service                                    | A `terms_of_service` block as defined below.                                                                                                                                                                    | True     |

@@ -40,6 +40,7 @@ run "subscription_supports_product_user_keys_and_timeouts" {
       nonsensitive(azurerm_api_management_subscription.apim.primary_key) == "primary-test-key" &&
       nonsensitive(azurerm_api_management_subscription.apim.secondary_key) == "secondary-test-key" &&
       azurerm_api_management_subscription.apim.subscription_id == "contract-subscription" &&
+      output.subscription_id == "contract-subscription" &&
       azurerm_api_management_subscription.apim.state == "suspended" &&
       azurerm_api_management_subscription.apim.allow_tracing == false &&
       azurerm_api_management_subscription.apim.timeouts.update == "40m"

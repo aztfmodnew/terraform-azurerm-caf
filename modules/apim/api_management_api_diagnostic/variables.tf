@@ -10,21 +10,51 @@ variable "client_config" {
 
 variable "settings" {
   description = <<DESCRIPTION
-Settings for API Management API diagnostics.
+Configure telemetry for one API using the separately supplied APIM logger ID.
+Required settings object. Leaf values are strings unless another type is stated;
+reference members are optional/null unless marked required.
 
-Required: identifier. Optional CAF references: api_management, api,
-api_management_logger, resource_group_key, resource_group_name, and
-resource_group. Optional diagnostic options: always_log_errors,
-backend_request, backend_response, frontend_request, frontend_response,
-http_correlation_protocol, log_client_ip, sampling_percentage, verbosity,
-operation_name_format, and timeouts.
-
-identifier accepts applicationinsights or azuremonitor. Sampling percentage is
-between 0 and 100. Verbosity accepts verbose, information, or error.
-http_correlation_protocol accepts None, Legacy, or W3C. operation_name_format
-accepts Name or Url and defaults to Name. Each request/response block can
-configure body_bytes (up to 8192), headers_to_log, and a data_masking block.
-Data masking accepts lists of query_params (Mask or Hide) and headers (Mask).
+- identifier (required string): applicationinsights or azuremonitor identifies
+  the diagnostic destination type.
+- always_log_errors (optional bool): send error telemetry regardless of sampling.
+- http_correlation_protocol (optional string): None disables correlation, Legacy
+  uses legacy correlation, and W3C uses W3C distributed-tracing correlation.
+- log_client_ip (optional bool): include the calling client's IP address.
+- metrics_enabled (optional bool): emit request metrics to the configured
+  diagnostic destination. Omission/null leaves provider handling unchanged.
+- sampling_percentage (optional number): percentage of requests sampled, 0 to 100.
+- verbosity (optional string): verbose, information, or error logging level.
+- operation_name_format (optional string): use the operation Name or Url in
+  telemetry. The module defaults omission/null to Name.
+- backend_request / backend_response (optional objects): logging for traffic
+  sent to the backend and responses received from it, respectively.
+- frontend_request / frontend_response (optional objects): logging for client
+  requests received by the gateway and responses returned to clients.
+  All four direction objects share these fields:
+  - body_bytes (optional number): payload bytes captured, from 0 to 8192.
+  - headers_to_log (optional set of strings): names of HTTP headers to capture.
+  - data_masking (optional object): redact selected values before telemetry is
+    written. query_params is an optional list of query-parameter rules; headers
+    is an optional list of HTTP-header rules. Both lists default to [] even
+    when explicitly null. In every rule, required value is the parameter/header
+    name (not its secret value). Required mode is Mask or Hide for query_params;
+    for headers it must be Mask.
+- api_management / api / resource_group (optional objects): root parent-name
+  references. Every nested field is optional/null: name is a direct name
+  preferred over key, key selects the corresponding combined CAF collection,
+  and lz_key selects its zone (current zone when omitted). resource_group_key
+  is the optional legacy group key preferred before resource_group.key.
+  resource_group_name is retained compatibility metadata; the existing root
+  diagnostic call resolves resource_group.name or a key, not this field.
+- api_management_logger (optional object): root logger reference. Optional id
+  is the direct logger ARM ID preferred over optional key, which selects the
+  combined logger collection; optional lz_key selects its zone, defaulting to
+  the current zone. The root supplies separate name/ID inputs to this child.
+- timeouts (optional object): create limits diagnostic creation, read retrieval,
+  update logging changes, and delete removal. Each optional duration-string
+  field defaults to null, retaining its provider timeout.
+Other optional values remain null for provider handling. Undeclared attributes
+are discarded by the settings object type.
 DESCRIPTION
   type = object({
     identifier          = string
@@ -53,6 +83,7 @@ DESCRIPTION
     always_log_errors         = optional(bool)
     http_correlation_protocol = optional(string)
     log_client_ip             = optional(bool)
+    metrics_enabled           = optional(bool)
     sampling_percentage       = optional(number)
     verbosity                 = optional(string)
     operation_name_format     = optional(string, "Name")

@@ -8,16 +8,31 @@ variable "client_config" {
 }
 variable "settings" {
   description = <<DESCRIPTION
-    Settings for the API Management API operation policy.
+Configure the policy applied to one API operation. Attributes are optional in
+the type and default to null, but api_operation must supply id or key.
+The settings object itself is required. Leaf fields are strings unless another
+type is stated; reference members are optional/null unless marked required.
 
-    Optional attributes:
-      - api_operation - Operation reference, using a logical operation ID or a key and optional landing-zone key. Do not use the operation's ARM resource ID.
-      - api - API reference retained for compatibility with the root configuration.
-      - api_management - API Management service reference retained for compatibility with the root configuration.
-      - resource_group - Resource group reference retained for compatibility with the root configuration.
-      - xml_content - XML content for the policy.
-      - xml_link - Publicly available link to a policy XML document.
-      - timeouts - Create, read, update, and delete operation timeouts.
+- api_operation: target-operation reference. id is a direct logical operation
+  identifier, not an ARM resource ID. key selects
+  remote_objects.api_management_api_operation[lz_key][key]; lz_key defaults to
+  client_config.landingzone_key. The referenced object's operation_id wins;
+  otherwise the child extracts the final operation segment from its ARM id,
+  then falls back to its unqualified id, then the explicit api_operation.id.
+  Thus a resolved key takes precedence when both key and id are supplied.
+- xml_content: literal XML policy document. xml_link: publicly accessible URL of
+  an XML policy document. Supply one source, not both; source checks belong to
+  the provider.
+- api, api_management, resource_group: CAF references resolved by the root into
+  the separate api_name, api_management_name, and resource_group_name inputs.
+  For each, name is a direct name preferred over key, key selects the matching
+  combined collection, and lz_key selects a landing zone (current zone when
+  omitted). id is accepted reference metadata, not a substitute for these
+  name-based inputs. These three objects are not resolved inside this child.
+- timeouts: optional operation duration strings. create limits policy creation,
+  read limits retrieval, update limits XML changes, and delete limits removal.
+  Each field defaults to null, leaving that provider timeout in control.
+Undeclared attributes are discarded by the settings object type.
   DESCRIPTION
   type = object({
     api_operation = optional(object({

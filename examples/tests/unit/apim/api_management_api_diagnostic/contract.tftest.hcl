@@ -27,6 +27,7 @@ run "api_diagnostic_configuration" {
       always_log_errors         = true
       http_correlation_protocol = "W3C"
       log_client_ip             = true
+      metrics_enabled           = true
       sampling_percentage       = 5
       verbosity                 = "verbose"
       operation_name_format     = "Url"
@@ -76,6 +77,10 @@ run "api_diagnostic_configuration" {
   assert {
     condition     = azurerm_api_management_api_diagnostic.apim.operation_name_format == "Url"
     error_message = "operation_name_format must be configurable."
+  }
+  assert {
+    condition     = azurerm_api_management_api_diagnostic.apim.metrics_enabled
+    error_message = "metrics_enabled must be configurable."
   }
   assert {
     condition     = one(azurerm_api_management_api_diagnostic.apim.backend_request).body_bytes == 32

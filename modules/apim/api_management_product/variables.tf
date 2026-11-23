@@ -52,14 +52,43 @@ DESCRIPTION
 
 variable "settings" {
   description = <<DESCRIPTION
-Settings for an API Management product. product_id, display_name, and
-published are required. subscription_required defaults to true. approval_required
-and subscriptions_limit can only be set when subscriptions are required.
-Optional policy settings create a product policy from exactly one of xml_file,
-xml_content, or xml_link. When both xml_file and xml_content are set, xml_file
-retains precedence for backwards compatibility. Policy and product timeouts
-are configurable independently. api_management and resource_group references
-are retained for root-module dependency resolution.
+Bundle APIs into a published or unpublished product, optionally with its own
+product-wide policy.
+Required settings object. Leaf values are strings unless another type is stated;
+reference members are optional/null unless marked required.
+
+- product_id (required string): stable product identifier unique in the service;
+  distinct from the full ARM ID returned by this module.
+- display_name (required string): product label displayed to developers.
+- published (required bool): whether the product is published for developers.
+- subscription_required (optional bool): whether accessing included APIs requires
+  a subscription. The module defaults omission/null to true.
+- approval_required (optional bool): whether a new subscription needs approval;
+  may only be set when subscription_required is true.
+- subscriptions_limit (optional number): maximum simultaneous subscriptions per
+  user to this product; may only be set when subscriptions are required.
+- description (optional string): product description, which may contain HTML.
+- terms (optional string): conditions developers must accept before subscribing.
+- policy (optional object): omitted/null creates no embedded policy. xml_content
+  supplies literal XML; xml_link supplies a public XML document URL; xml_file
+  supplies a readable file relative to the Terraform configuration working
+  directory. Choose the file/content source or link, not both. For compatibility,
+  xml_file wins when both xml_file and xml_content are provided.
+- policy.timeouts (optional object): independent duration overrides for embedded
+  policy creation (create), retrieval (read), modification (update), and removal
+  (delete). Each field is optional/null, preserving the provider timeout.
+- timeouts (optional object): create limits product creation, read retrieval,
+  update metadata changes, and delete product removal. Optional duration-string
+  fields default to null and do not inherit policy.timeouts.
+- api_management / resource_group (optional objects): root parent references;
+  name supplies a direct name, key selects the corresponding combined CAF
+  collection, and lz_key selects its landing zone (current zone when omitted).
+  Direct names precede lookups. resource_group_name is the optional direct-name
+  fallback after resource_group.name; resource_group_key is the optional legacy
+  key preferred before resource_group.key in root group lookup. The root
+  supplies the child's separate service/group name inputs.
+Other optional values default to null for provider handling. Undeclared
+attributes are discarded by the settings object type.
 DESCRIPTION
   type = object({
     product_id            = string
