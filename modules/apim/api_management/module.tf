@@ -185,12 +185,12 @@ resource "azurerm_api_management" "apim" {
 
     content {
 
-      backend_ssl30_enabled                               = try(coalesce(security.value.backend_ssl30_enabled, security.value.enable_backend_ssl30, security.value.disable_backend_ssl30), null)
-      backend_tls10_enabled                               = try(coalesce(security.value.backend_tls10_enabled, security.value.enable_backend_tls10, security.value.disable_backend_tls10), null)
-      backend_tls11_enabled                               = try(coalesce(security.value.backend_tls11_enabled, security.value.enable_backend_tls11, security.value.disable_backend_tls11), null)
-      frontend_ssl30_enabled                              = try(coalesce(security.value.frontend_ssl30_enabled, security.value.enable_frontend_ssl30, security.value.disable_frontend_ssl30), null)
-      frontend_tls10_enabled                              = try(coalesce(security.value.frontend_tls10_enabled, security.value.enable_frontend_tls10, security.value.disable_frontend_tls10), null)
-      frontend_tls11_enabled                              = try(coalesce(security.value.frontend_tls11_enabled, security.value.enable_frontend_tls11, security.value.disable_frontend_tls11), null)
+      backend_ssl30_enabled                               = try(coalesce(security.value.backend_ssl30_enabled, security.value.enable_backend_ssl30, try(!security.value.disable_backend_ssl30, null)), null)
+      backend_tls10_enabled                               = try(coalesce(security.value.backend_tls10_enabled, security.value.enable_backend_tls10, try(!security.value.disable_backend_tls10, null)), null)
+      backend_tls11_enabled                               = try(coalesce(security.value.backend_tls11_enabled, security.value.enable_backend_tls11, try(!security.value.disable_backend_tls11, null)), null)
+      frontend_ssl30_enabled                              = try(coalesce(security.value.frontend_ssl30_enabled, security.value.enable_frontend_ssl30, try(!security.value.disable_frontend_ssl30, null)), null)
+      frontend_tls10_enabled                              = try(coalesce(security.value.frontend_tls10_enabled, security.value.enable_frontend_tls10, try(!security.value.disable_frontend_tls10, null)), null)
+      frontend_tls11_enabled                              = try(coalesce(security.value.frontend_tls11_enabled, security.value.enable_frontend_tls11, try(!security.value.disable_frontend_tls11, null)), null)
       tls_ecdhe_ecdsa_with_aes128_cbc_sha_ciphers_enabled = try(security.value.tls_ecdhe_ecdsa_with_aes128_cbc_sha_ciphers_enabled, null)
       tls_ecdhe_ecdsa_with_aes256_cbc_sha_ciphers_enabled = try(security.value.tls_ecdhe_ecdsa_with_aes256_cbc_sha_ciphers_enabled, null)
       tls_ecdhe_rsa_with_aes128_cbc_sha_ciphers_enabled   = try(coalesce(security.value.tls_ecdhe_rsa_with_aes128_cbc_sha_ciphers_enabled, security.value.tls_ecdheRsa_with_aes128_cbc_sha_ciphers_enabled), null)

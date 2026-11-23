@@ -12,7 +12,8 @@ locals {
   )
 
   product_id = coalesce(
-    var.settings.product_id,
-    try(var.remote_objects.api_management_product[coalesce(var.settings.product.lz_key, var.client_config.landingzone_key)][var.settings.product.key].product_id, null)
+    try(reverse(split("/", var.settings.product_id))[0], null),
+    try(reverse(split("/", var.remote_objects.api_management_product[coalesce(var.settings.product.lz_key, var.client_config.landingzone_key)][var.settings.product.key].product_id))[0], null),
+    try(reverse(split("/", var.remote_objects.api_management_product[coalesce(var.settings.product.lz_key, var.client_config.landingzone_key)][var.settings.product.key].id))[0], null)
   )
 }

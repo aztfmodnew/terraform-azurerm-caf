@@ -36,12 +36,15 @@ Parent service and resource group:
     client_config.landingzone_key.
 
 Product selection:
-- product_id (string, optional; default null): Logical product identifier within
-  APIM, not its ARM resource ID. Takes precedence over product.
+- product_id (string, optional; default null): Direct logical product identifier
+  or full product ARM ID. A full ARM ID is reduced to its final segment. This
+  takes precedence over product.
 - product (object, optional; default null): Product reference used when
   product_id is omitted. One of these selectors must resolve a product.
   - key (string, required within product): Business key in
-    api_management_product; the referenced object must expose product_id.
+    api_management_product; the referenced object may expose product_id or the
+    legacy id ARM output. The product_id output takes precedence, and either
+    value is reduced to its final ARM ID segment when necessary.
   - lz_key (string, optional; default null): Product namespace; null selects
     client_config.landingzone_key.
 

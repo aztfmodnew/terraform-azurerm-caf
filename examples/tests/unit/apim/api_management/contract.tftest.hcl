@@ -32,6 +32,11 @@ run "apim_inline_hostname_legacy_certificate_alias" {
       security = {
         enable_backend_tls10                             = true
         disable_backend_ssl30                            = true
+        disable_backend_tls11                            = true
+        disable_frontend_ssl30                           = true
+        enable_frontend_tls10                            = true
+        disable_frontend_tls10                           = true
+        disable_frontend_tls11                           = true
         tls_ecdheRsa_with_aes128_cbc_sha_ciphers_enabled = true
         tls_rsa_with_aes256_gcm_sha384_ciphers_enabled   = true
       }
@@ -59,8 +64,14 @@ run "apim_inline_hostname_legacy_certificate_alias" {
     error_message = "The legacy enable_backend_tls10 alias must map to backend_tls10_enabled."
   }
   assert {
-    condition     = one(azurerm_api_management.apim.security).backend_ssl30_enabled
-    error_message = "The documented legacy disable_backend_ssl30 alias must preserve its historical inverted behavior."
+    condition = (
+      !one(azurerm_api_management.apim.security).backend_ssl30_enabled &&
+      !one(azurerm_api_management.apim.security).backend_tls11_enabled &&
+      !one(azurerm_api_management.apim.security).frontend_ssl30_enabled &&
+      one(azurerm_api_management.apim.security).frontend_tls10_enabled &&
+      !one(azurerm_api_management.apim.security).frontend_tls11_enabled
+    )
+    error_message = "Legacy disable aliases must disable their protocols, while positive enable aliases take precedence."
   }
   assert {
     condition     = one(azurerm_api_management.apim.security).tls_ecdhe_rsa_with_aes128_cbc_sha_ciphers_enabled
@@ -73,6 +84,49 @@ run "apim_inline_hostname_legacy_certificate_alias" {
   assert {
     condition     = one(azurerm_api_management.apim.hostname_configuration).portal[0].host_name == "portal.example.com"
     error_message = "Legacy top-level hostname settings must remain supported."
+  }
+}
+
+run "apim_legacy_disable_protocol_aliases" {
+  command = plan
+  module {
+    source = "../modules/apim/api_management"
+  }
+  variables {
+    base_tags           = false
+    client_config       = { landingzone_key = "local" }
+    global_settings     = { prefixes = [], random_length = 0, passthrough = true, use_slug = false, tags = {} }
+    location            = "westeurope"
+    resource_group      = { name = "migrationtest", location = "westeurope", tags = {} }
+    resource_group_name = "migrationtest"
+    remote_objects      = {}
+    public_ip_addresses = {}
+    vnets               = {}
+    settings = {
+      name            = "migrationtest"
+      publisher_name  = "Migration test"
+      publisher_email = "owner@example.com"
+      sku_name        = "Developer_1"
+      security = {
+        disable_backend_ssl30  = true
+        disable_backend_tls10  = true
+        disable_backend_tls11  = true
+        disable_frontend_ssl30 = true
+        disable_frontend_tls10 = true
+        disable_frontend_tls11 = true
+      }
+    }
+  }
+  assert {
+    condition = (
+      !one(azurerm_api_management.apim.security).backend_ssl30_enabled &&
+      !one(azurerm_api_management.apim.security).backend_tls10_enabled &&
+      !one(azurerm_api_management.apim.security).backend_tls11_enabled &&
+      !one(azurerm_api_management.apim.security).frontend_ssl30_enabled &&
+      !one(azurerm_api_management.apim.security).frontend_tls10_enabled &&
+      !one(azurerm_api_management.apim.security).frontend_tls11_enabled
+    )
+    error_message = "Every true disable_* protocol alias must map to the corresponding false provider-enabled flag."
   }
 }
 
@@ -125,6 +179,10 @@ run "apim_inline_hostname_current_certificate_id_precedence" {
   assert {
     condition     = one(azurerm_api_management.apim.security).backend_tls10_enabled == false
     error_message = "The current backend_tls10_enabled argument must take precedence over its legacy alias."
+  }
+  assert {
+    condition     = output.resource_group_name == "migrationtest"
+    error_message = "The APIM module must expose its resource group name for dependent modules."
   }
 }
 

@@ -39,7 +39,9 @@ Backend subnet must satisfy Azure's workspace gateway network/delegation rules.
 Public [`resourceDefinition.json`](https://github.com/aztfmodnew/terraform-provider-azurecaf/blob/main/resourceDefinition.json)
 has **no** `azurerm_api_management_standalone_gateway` entry. The supported
 `azurerm_api_management` rule is used as a conservative compatible subset:
-alphanumeric/dash, maximum 50 characters. Global naming flags apply.
+alphanumeric/dash, maximum 50 characters. The complete standalone gateway name
+is then limited to 45 characters, preserving the configured random suffix at
+the end when the generated name must be shortened. Global naming flags apply.
 Use `global_settings.passthrough = true` for a pre-validated existing name;
 passthrough skips CAF transformation, not Azure's name constraints.
 No unsupported naming type is invented.

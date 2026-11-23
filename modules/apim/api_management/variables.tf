@@ -131,8 +131,8 @@ unless explicitly marked required.
   enable_frontend_tls11 spelling is the second choice. The corresponding
   disable_backend_ssl30/disable_backend_tls10/disable_backend_tls11 or
   disable_frontend_ssl30/disable_frontend_tls10/disable_frontend_tls11 spelling
-  is the final legacy choice. Despite their names, disable_* values are passed
-  as enabled flags without inversion; prefer the current *_enabled spelling.
+  is the final legacy choice and is inverted: true disables the corresponding
+  protocol, while false enables it. Prefer the current *_enabled spelling.
   The cipher flags below each enable the cipher named by the field:
   tls_ecdhe_ecdsa_with_aes128_cbc_sha_ciphers_enabled (ECDHE/ECDSA AES-128-CBC-SHA),
   tls_ecdhe_ecdsa_with_aes256_cbc_sha_ciphers_enabled (ECDHE/ECDSA AES-256-CBC-SHA),

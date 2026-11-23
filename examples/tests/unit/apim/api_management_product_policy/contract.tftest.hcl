@@ -13,8 +13,9 @@ variables {
       remote = { gateway = { name = "remote-rg" } }
     }
     api_management_product = {
-      local  = { gateway = { id = "/products/local", product_id = "local-product" } }
-      remote = { gateway = { id = "/products/remote", product_id = "remote-product" } }
+      local   = { gateway = { id = "/products/local", product_id = "local-product" } }
+      remote  = { gateway = { id = "/products/remote", product_id = "remote-product" } }
+      id_only = { gateway = { id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg/providers/Microsoft.ApiManagement/service/apim/products/existing" } }
     }
   }
 }
@@ -88,6 +89,25 @@ run "explicit_values_override_references" {
       azurerm_api_management_product_policy.policy.resource_group_name == "explicit-rg"
     )
     error_message = "Explicit identifiers must take precedence over key references."
+  }
+}
+
+run "data_source_product_id_is_extracted_from_arm_id" {
+  command = plan
+  module {
+    source = "../modules/apim/api_management_product_policy"
+  }
+  variables {
+    settings = {
+      api_management = { key = "gateway" }
+      resource_group = { key = "gateway" }
+      product        = { key = "gateway", lz_key = "id_only" }
+      xml_content    = "<policies />"
+    }
+  }
+  assert {
+    condition     = azurerm_api_management_product_policy.policy.product_id == "existing"
+    error_message = "A product selected from an explicit-ID data source must resolve its logical product identifier."
   }
 }
 

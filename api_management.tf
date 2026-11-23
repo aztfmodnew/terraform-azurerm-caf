@@ -19,7 +19,8 @@ module "api_management" {
   }
 }
 output "api_management" {
-  value = module.api_management
+  value     = module.api_management
+  sensitive = true
 }
 
 module "api_management_api" {
@@ -227,7 +228,8 @@ module "api_management_custom_domain" {
   }
 }
 output "api_management_custom_domain" {
-  value = module.api_management_custom_domain
+  value     = module.api_management_custom_domain
+  sensitive = true
 }
 
 module "api_management_diagnostic" {
