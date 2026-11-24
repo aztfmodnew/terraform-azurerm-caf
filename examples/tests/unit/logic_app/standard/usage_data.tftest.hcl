@@ -151,6 +151,12 @@ run "dynamic_app_settings_and_diagnostics_are_forwarded" {
           destination_type = ["log_analytics"]
           destination_key  = "usage"
         }
+        audit = {
+          name             = "usage-logic-app-audit"
+          definition_key   = "logic_app_usage"
+          destination_type = ["log_analytics"]
+          destination_key  = "usage"
+        }
       }
       timeouts = {
         create = "60m"
@@ -175,9 +181,13 @@ run "dynamic_app_settings_and_diagnostics_are_forwarded" {
 
   assert {
     condition = (
+      length(module.diagnostics) == 2 &&
+      length(module.diagnostics["operations"].diagnostic_settings) == 1 &&
+      length(module.diagnostics["audit"].diagnostic_settings) == 1 &&
       module.diagnostics["operations"].diagnostic_settings["operations"].target_resource_id == azurerm_logic_app_standard.logic_app_standard.id &&
-      module.diagnostics["operations"].diagnostic_settings["operations"].log_analytics_workspace_id == var.diagnostics.diagnostics_destinations.log_analytics.usage.log_analytics_resource_id
+      module.diagnostics["operations"].diagnostic_settings["operations"].log_analytics_workspace_id == var.diagnostics.diagnostics_destinations.log_analytics.usage.log_analytics_resource_id &&
+      module.diagnostics["audit"].diagnostic_settings["audit"].target_resource_id == azurerm_logic_app_standard.logic_app_standard.id
     )
-    error_message = "Logic App diagnostic profiles must create a setting on the Logic App with the resolved destination."
+    error_message = "Each Logic App diagnostic module instance must own exactly one profile and use the resolved destination."
   }
 }

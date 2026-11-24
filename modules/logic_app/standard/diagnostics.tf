@@ -4,5 +4,5 @@ module "diagnostics" {
   resource_id       = azurerm_logic_app_standard.logic_app_standard.id
   resource_location = azurerm_logic_app_standard.logic_app_standard.location
   diagnostics       = var.diagnostics
-  profiles          = try(var.settings.diagnostic_profiles, {})
+  profiles          = { (each.key) = each.value }
 }

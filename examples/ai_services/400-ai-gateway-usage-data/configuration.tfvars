@@ -105,8 +105,9 @@ cosmos_dbs = {
 
     sql_databases = {
       usage = {
-        name       = "ai-gateway-usage"
-        throughput = 400
+        name        = "ai-gateway-usage"
+        add_rnd_num = false
+        throughput  = 400
         containers = {
           usage_records = {
             name                  = "usage-records"

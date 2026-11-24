@@ -41,6 +41,8 @@ The single configuration file is [`configuration.tfvars`](configuration.tfvars).
 - `role_mapping`: Event Hubs and Storage Azure RBAC assignments.
 - `cosmosdb_role_mapping`: Cosmos DB data-plane role assignment.
 
+The Cosmos SQL database disables random-name suffixing so its deployed name remains `ai-gateway-usage`, matching `COSMOS_DATABASE_NAME` and the workflow contract.
+
 Dynamic application settings are resolved by the root module from CAF combined objects. For example, the Cosmos endpoint and Event Hub names are read from the created resources rather than duplicated as literals. Dynamic values override a static setting with the same name.
 
 The configuration disables Cosmos DB and Event Hubs local authentication. Workflows therefore require the managed identity and the RBAC assignments in this scenario.
@@ -62,7 +64,7 @@ The `operations` profiles send:
 - Cosmos DB `DataPlaneRequests` logs and `Requests` metrics.
 - Logic App `AllMetrics`.
 
-Both profiles use the scenario Log Analytics workspace. The diagnostic category names must remain supported by the corresponding Azure resource types.
+Both profiles use the scenario Log Analytics workspace. Each module instance receives only its keyed profile so there is exactly one Terraform resource managing each Azure diagnostic setting. The diagnostic category names must remain supported by the corresponding Azure resource types.
 
 ## Validation
 
@@ -99,7 +101,7 @@ terraform -chdir=examples test \
   -test-directory=tests/unit/authorization -no-color
 ```
 
-The focused suites assert dynamic Logic App settings, diagnostic forwarding, Cosmos account/database/container options and timeouts, and Logic App principal resolution in standard and Cosmos RBAC assignments. They do not prove service-side acceptance, eventual RBAC propagation, or application behavior.
+The focused suites assert dynamic Logic App settings, one-to-one diagnostic profile ownership, Cosmos account/database/container options and timeouts, and Logic App principal resolution in standard and Cosmos RBAC assignments. They do not prove service-side acceptance, eventual RBAC propagation, or application behavior.
 
 Run formatting and configuration validation separately:
 

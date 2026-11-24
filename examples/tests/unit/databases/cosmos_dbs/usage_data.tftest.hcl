@@ -92,6 +92,12 @@ run "cosmos_account_timeouts_and_diagnostics_are_forwarded" {
           destination_type = ["log_analytics"]
           destination_key  = "usage"
         }
+        audit = {
+          name             = "usage-cosmos-audit"
+          definition_key   = "cosmosdb_usage"
+          destination_type = ["log_analytics"]
+          destination_key  = "usage"
+        }
       }
       timeouts = {
         create = "90m"
@@ -114,10 +120,14 @@ run "cosmos_account_timeouts_and_diagnostics_are_forwarded" {
 
   assert {
     condition = (
+      length(module.diagnostics) == 2 &&
+      length(module.diagnostics["operations"].diagnostic_settings) == 1 &&
+      length(module.diagnostics["audit"].diagnostic_settings) == 1 &&
       module.diagnostics["operations"].diagnostic_settings["operations"].target_resource_id == azurerm_cosmosdb_account.cosmos_account.id &&
-      module.diagnostics["operations"].diagnostic_settings["operations"].log_analytics_workspace_id == var.diagnostics.diagnostics_destinations.log_analytics.usage.log_analytics_resource_id
+      module.diagnostics["operations"].diagnostic_settings["operations"].log_analytics_workspace_id == var.diagnostics.diagnostics_destinations.log_analytics.usage.log_analytics_resource_id &&
+      module.diagnostics["audit"].diagnostic_settings["audit"].target_resource_id == azurerm_cosmosdb_account.cosmos_account.id
     )
-    error_message = "Cosmos diagnostic profiles must use the account as the target and the resolved Log Analytics destination."
+    error_message = "Each Cosmos diagnostic module instance must own exactly one profile and use the resolved account destination."
   }
 }
 
@@ -170,11 +180,12 @@ run "sql_database_and_container_optional_contracts_are_forwarded" {
 
   assert {
     condition = (
+      azurerm_cosmosdb_sql_database.database.name == "usage" &&
       azurerm_cosmosdb_sql_database.database.autoscale_settings[0].max_throughput == 1000 &&
       azurerm_cosmosdb_sql_database.database.timeouts.create == "45m" &&
       azurerm_cosmosdb_sql_database.database.timeouts.read == "5m"
     )
-    error_message = "SQL database autoscale and timeout settings must be applied without a provider planning conflict."
+    error_message = "SQL database naming, autoscale, and timeout settings must be applied without a provider planning conflict."
   }
 
   assert {
