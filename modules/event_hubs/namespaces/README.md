@@ -10,7 +10,11 @@ The `settings` object supports the AzureRM namespace arguments `sku`, `capacity`
 `minimum_tls_version`, `identity`, `network_rulesets`, `timeouts`, tags, and
 location overrides. Existing `event_hubs` and `auth_rules` maps remain supported.
 Identity IDs can be supplied directly or resolved through
-`identity.managed_identity_keys` and `identity.remote`.
+`identity.managed_identity_keys` and `identity.remote`. The current single
+identity object and legacy keyed-map or list forms are supported.
 
 Outputs expose the namespace ID, name, location, tags, principal and tenant IDs,
-child hubs, and sanitized child authorization-rule metadata.
+child hubs, and sanitized child authorization-rule metadata. Credential-bearing
+authorization rules remain in the root `event_hub_auth_rules` and
+`event_hub_namespace_auth_rules` object inventories so their sensitive outputs
+are preserved without key collisions with child-local resources.

@@ -23,7 +23,7 @@ resource "azurerm_eventhub_namespace" "evh" {
   public_network_access_enabled = try(var.settings.public_network_access_enabled, null)
 
   dynamic "identity" {
-    for_each = try(var.settings.identity, null) == null ? [] : [var.settings.identity]
+    for_each = local.event_hub_identities
     content {
       type = identity.value.type
       identity_ids = contains(

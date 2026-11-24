@@ -89,3 +89,55 @@ run "legacy_network_rules_map" {
     error_message = "The legacy keyed network_rulesets map must continue to create one ruleset."
   }
 }
+
+run "legacy_identity_map" {
+  command = plan
+  module {
+    source = "../modules/event_hubs/namespaces"
+  }
+  variables {
+    settings = {
+      name = "secure-eventhub"
+      sku  = "Standard"
+      identity = {
+        main = {
+          type         = "SystemAssigned"
+          identity_ids = []
+        }
+      }
+    }
+  }
+
+  assert {
+    condition = (
+      length(azurerm_eventhub_namespace.evh.identity) == 1 &&
+      azurerm_eventhub_namespace.evh.identity[0].type == "SystemAssigned"
+    )
+    error_message = "The legacy keyed identity map must continue to create one namespace identity."
+  }
+}
+
+run "legacy_identity_list" {
+  command = plan
+  module {
+    source = "../modules/event_hubs/namespaces"
+  }
+  variables {
+    settings = {
+      name = "secure-eventhub"
+      sku  = "Standard"
+      identity = [{
+        type         = "SystemAssigned"
+        identity_ids = []
+      }]
+    }
+  }
+
+  assert {
+    condition = (
+      length(azurerm_eventhub_namespace.evh.identity) == 1 &&
+      azurerm_eventhub_namespace.evh.identity[0].type == "SystemAssigned"
+    )
+    error_message = "The legacy identity list must continue to create one namespace identity."
+  }
+}
