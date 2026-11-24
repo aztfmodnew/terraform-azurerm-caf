@@ -14,6 +14,11 @@ variable "client_config" {
 variable "storage_accounts" {
   default = {}
 }
+variable "remote_objects" {
+  description = "Remote CAF objects used to resolve optional user-assigned managed identities."
+  type        = any
+  default     = {}
+}
 variable "location" {
   description = "location of the resource if different from the resource group."
   type        = string

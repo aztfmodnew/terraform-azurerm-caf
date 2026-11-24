@@ -17,4 +17,14 @@ resource "azurerm_eventhub_consumer_group" "evhcg" {
   eventhub_name       = var.eventhub_name
   resource_group_name = var.resource_group_name
   user_metadata       = try(var.settings.user_metadata, null)
+
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
+    }
+  }
 }
