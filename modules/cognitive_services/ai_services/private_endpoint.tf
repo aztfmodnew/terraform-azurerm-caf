@@ -10,12 +10,13 @@ module "private_endpoint" {
   name                = each.value.name
   location            = try(each.value.location, local.location)
   resource_group_name = try(each.value.resource_group_name, local.resource_group_name)
-  subnet_id = coalesce(
-    try(each.value.subnet_id, null),
-    try(
-      var.remote_objects.virtual_subnets[try(each.value.lz_key, var.client_config.landingzone_key)][each.value.subnet_key].id,
-      var.remote_objects.vnets[try(each.value.lz_key, var.client_config.landingzone_key)][each.value.vnet_key].subnets[each.value.subnet_key].id
-    )
+  subnet_id = try(
+    coalesce(
+      try(each.value.subnet_id, null),
+      try(var.remote_objects.vnets[try(each.value.lz_key, var.client_config.landingzone_key)][each.value.vnet_key].subnets[each.value.subnet_key].id, null),
+      try(var.remote_objects.virtual_subnets[try(each.value.lz_key, var.client_config.landingzone_key)][each.value.subnet_key].id, null)
+    ),
+    null
   )
   settings = merge(
     each.value,

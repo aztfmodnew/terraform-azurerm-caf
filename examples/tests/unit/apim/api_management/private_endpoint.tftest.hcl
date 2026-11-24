@@ -122,9 +122,10 @@ run "supports_direct_subnet_and_dns_zone_ids" {
   assert {
     condition = (
       output.private_endpoints["gateway"].private_service_connection[0].subresource_names == tolist(["Gateway"]) &&
-      length(output.private_endpoints["gateway"].private_dns_zone_group[0].private_dns_zone_ids) == 1
+      length(output.private_endpoints["gateway"].private_dns_zone_group[0].private_dns_zone_ids) == 1 &&
+      azurerm_api_management.apim.public_network_access_enabled
     )
-    error_message = "Direct subnet and DNS zone IDs must remain backward compatible."
+    error_message = "Direct references must remain backward compatible and public access must default to enabled for the initial endpoint deployment."
   }
 }
 

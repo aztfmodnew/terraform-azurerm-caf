@@ -121,6 +121,39 @@ run "private_endpoint_forces_account_subresource_and_preserves_dns" {
     source = "../modules/cognitive_services/ai_services"
   }
   variables {
+    remote_objects = {
+      vnets = {
+        local = {
+          ai = {
+            subnets = {
+              private_endpoints = {
+                id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/migrationtest/providers/Microsoft.Network/virtualNetworks/ai/subnets/private-endpoints"
+              }
+            }
+          }
+        }
+      }
+      virtual_subnets = {
+        local = {
+          private_endpoints = {
+            id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/migrationtest/providers/Microsoft.Network/virtualNetworks/unrelated/subnets/private-endpoints"
+          }
+        }
+      }
+      private_dns = {
+        local = {
+          cognitive = {
+            id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/migrationtest/providers/Microsoft.Network/privateDnsZones/privatelink.cognitiveservices.azure.com"
+          }
+          openai = {
+            id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/migrationtest/providers/Microsoft.Network/privateDnsZones/privatelink.openai.azure.com"
+          }
+          services_ai = {
+            id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/migrationtest/providers/Microsoft.Network/privateDnsZones/privatelink.services.ai.azure.com"
+          }
+        }
+      }
+    }
     private_endpoints = {
       ai = {
         name       = "ai"
@@ -133,6 +166,13 @@ run "private_endpoint_forces_account_subresource_and_preserves_dns" {
         private_dns = {
           zone_group_name = "ai-services"
           keys            = ["cognitive", "openai", "services_ai"]
+        }
+      }
+      direct = {
+        name      = "ai-direct"
+        subnet_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/migrationtest/providers/Microsoft.Network/virtualNetworks/direct/subnets/private-endpoints"
+        private_service_connection = {
+          name = "ai-direct"
         }
       }
     }
@@ -154,6 +194,8 @@ run "private_endpoint_forces_account_subresource_and_preserves_dns" {
         var.remote_objects.private_dns.local.openai.id,
         var.remote_objects.private_dns.local.services_ai.id
       ]) &&
+      output.private_endpoints["ai"].subnet_id == var.remote_objects.vnets.local.ai.subnets.private_endpoints.id &&
+      output.private_endpoints["direct"].subnet_id == var.private_endpoints.direct.subnet_id &&
       azurerm_cognitive_account.ai_services.network_acls[0].default_action == "Deny" &&
       !azurerm_cognitive_account.ai_services.public_network_access_enabled
     )

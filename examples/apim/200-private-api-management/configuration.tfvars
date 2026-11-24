@@ -53,12 +53,14 @@ private_dns_vnet_links = {
 
 api_management = {
   private_ai_gateway = {
-    name                          = "private-ai-gateway"
-    resource_group_key            = "apim"
-    publisher_name                = "Private AI Gateway"
-    publisher_email               = "owner@example.com"
-    sku_name                      = "Standard_1"
-    public_network_access_enabled = false
+    name               = "private-ai-gateway"
+    resource_group_key = "apim"
+    publisher_name     = "Private AI Gateway"
+    publisher_email    = "owner@example.com"
+    sku_name           = "Standard_1"
+    # Keep public access enabled for the initial apply so Azure can create the
+    # private endpoint. Disable it in a second apply after the endpoint exists.
+    public_network_access_enabled = true
 
     private_endpoints = {
       gateway = {
