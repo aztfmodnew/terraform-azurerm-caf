@@ -14,6 +14,7 @@ locals {
 
   location = coalesce(
     try(var.settings.location, null),
+    try(var.global_settings.regions[var.settings.region], null),
     try(var.settings.region, null),
     try(var.global_settings.regions[try(var.settings.region_key, var.global_settings.default_region)], null)
   )

@@ -50,13 +50,13 @@ module "cognitive_deployment" {
     try(each.value.cognitive_account_id, null),
     try(each.value.cognitive_account.id, null),
     try(
-      local.combined_objects_ai_services[
+      local.combined_objects_cognitive_services_accounts[
         try(each.value.cognitive_account.lz_key, local.client_config.landingzone_key)
       ][try(each.value.cognitive_account_key, each.value.cognitive_account.key)].id,
       null
     ),
     try(
-      local.combined_objects_cognitive_services_accounts[
+      local.combined_objects_ai_services[
         try(each.value.cognitive_account.lz_key, local.client_config.landingzone_key)
       ][try(each.value.cognitive_account_key, each.value.cognitive_account.key)].id,
       null

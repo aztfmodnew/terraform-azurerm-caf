@@ -1,5 +1,5 @@
 resource "azurerm_cognitive_account_project" "project" {
-  name                 = var.settings.name
+  name                 = azurecaf_name.project.result
   cognitive_account_id = var.cognitive_account_id
   location             = local.location
   description          = try(var.settings.description, null)
