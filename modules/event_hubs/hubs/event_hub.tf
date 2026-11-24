@@ -22,7 +22,7 @@ resource "azurerm_eventhub" "evhub" {
   name              = azurecaf_name.evhub.result
   namespace_id      = var.namespace != null ? var.namespace.id : (var.namespace_id != null ? var.namespace_id : data.azurerm_eventhub_namespace.evh[0].id)
   partition_count   = var.settings.partition_count
-  message_retention = var.settings.message_retention
+  message_retention = try(var.settings.retention_description, null) == null ? try(var.settings.message_retention, null) : null
   status            = try(var.settings.status, null)
 
   dynamic "capture_description" {
@@ -37,13 +37,24 @@ resource "azurerm_eventhub" "evhub" {
       dynamic "destination" { # required if capture_description is set
         for_each = try(var.settings.capture_description.destination, false) == false ? [] : [1]
         content {
-          name                = var.settings.capture_description.destination.name                # At this time(12/2020), the only supported value is EventHubArchive.AzureBlockBlob
-          archive_name_format = var.settings.capture_description.destination.archive_name_format # e.g. {Namespace}/{EventHub}/{PartitionId}/{Year}/{Month}/{Day}/{Hour}/{Minute}/{Second}
-          blob_container_name = var.settings.capture_description.destination.blob_container_name
-          storage_account_id  = var.storage_account_id
+          name                        = var.settings.capture_description.destination.name                # At this time(12/2020), the only supported value is EventHubArchive.AzureBlockBlob
+          archive_name_format         = var.settings.capture_description.destination.archive_name_format # e.g. {Namespace}/{EventHub}/{PartitionId}/{Year}/{Month}/{Day}/{Hour}/{Minute}/{Second}
+          blob_container_name         = var.settings.capture_description.destination.blob_container_name
+          storage_account_id          = var.storage_account_id
+          storage_authentication_type = try(var.settings.capture_description.destination.storage_authentication_type, null)
+          storage_authentication_id   = try(var.settings.capture_description.destination.storage_authentication_id, null)
         }
 
       }
+    }
+  }
+
+  dynamic "retention_description" {
+    for_each = try(var.settings.retention_description, null) == null ? [] : [var.settings.retention_description]
+    content {
+      cleanup_policy                    = retention_description.value.cleanup_policy
+      retention_time_in_hours           = try(retention_description.value.retention_time_in_hours, null)
+      tombstone_retention_time_in_hours = try(retention_description.value.tombstone_retention_time_in_hours, null)
     }
   }
 
