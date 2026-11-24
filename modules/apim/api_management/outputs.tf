@@ -2,6 +2,10 @@ output "id" {
   value       = azurerm_api_management.apim.id
   description = "The ID of the API Management Service."
 }
+output "location" {
+  value       = azurerm_api_management.apim.location
+  description = "The location of the API Management service."
+}
 output "additional_location" {
   value       = azurerm_api_management.apim.additional_location
   description = "Zero or more `additional_location` blocks as documented below."

@@ -13,4 +13,15 @@ resource "azurerm_log_analytics_solution" "solution" {
     product        = lookup(each.value, "product")
     promotion_code = lookup(each.value, "promotion_code", null)
   }
+
+  dynamic "timeouts" {
+    for_each = try(each.value.timeouts, null) == null ? [] : [each.value.timeouts]
+
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
+    }
+  }
 }

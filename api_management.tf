@@ -23,6 +23,16 @@ output "api_management" {
   sensitive = true
 }
 
+module "api_management_diagnostics" {
+  source   = "./modules/diagnostics"
+  for_each = local.apim.api_management
+
+  resource_id       = module.api_management[each.key].id
+  resource_location = module.api_management[each.key].location
+  diagnostics       = local.combined_diagnostics
+  profiles          = try(each.value.diagnostic_profiles, {})
+}
+
 module "api_management_api" {
   source   = "./modules/apim/api_management_api"
   for_each = local.apim.api_management_api
@@ -55,9 +65,14 @@ module "api_management_logger" {
   api_management_name = try(each.value.api_management.name, null) != null ? each.value.api_management.name : local.combined_objects_api_management[coalesce(try(each.value.api_management.lz_key, null), local.client_config.landingzone_key)][each.value.api_management.key].name
 
   remote_objects = {
-    resource_group       = local.combined_objects_resource_groups
-    api_management       = local.combined_objects_api_management
-    application_insights = local.combined_objects_application_insights
+    resource_group                 = local.combined_objects_resource_groups
+    api_management                 = local.combined_objects_api_management
+    application_insights           = local.combined_objects_application_insights
+    event_hub_namespaces           = local.combined_objects_event_hub_namespaces
+    event_hubs                     = local.combined_objects_event_hubs
+    event_hub_auth_rules           = local.combined_objects_event_hub_auth_rules
+    event_hub_namespace_auth_rules = local.combined_objects_event_hub_namespace_auth_rules
+    managed_identities             = local.combined_objects_managed_identities
   }
 }
 output "api_management_logger" {
