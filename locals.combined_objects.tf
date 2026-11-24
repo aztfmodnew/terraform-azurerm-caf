@@ -191,9 +191,20 @@ locals {
     }),
     lookup(var.remote_objects, "managed_identities", {})
   )
-  combined_objects_management_locks                              = merge(tomap({ (local.client_config.landingzone_key) = module.management_locks }), lookup(var.remote_objects, "management_locks", {}))
-  combined_objects_maps_accounts                                 = merge(tomap({ (local.client_config.landingzone_key) = module.maps_accounts }), lookup(var.remote_objects, "maps_accounts", {}))
-  combined_objects_monitor_action_groups                         = merge(tomap({ (local.client_config.landingzone_key) = module.monitor_action_groups }), lookup(var.remote_objects, "monitor_action_groups", {}), lookup(var.data_sources, "monitor_action_groups", {}))
+  combined_objects_management_locks            = merge(tomap({ (local.client_config.landingzone_key) = module.management_locks }), lookup(var.remote_objects, "management_locks", {}))
+  combined_objects_maps_accounts               = merge(tomap({ (local.client_config.landingzone_key) = module.maps_accounts }), lookup(var.remote_objects, "maps_accounts", {}))
+  combined_objects_monitor_action_groups       = merge(tomap({ (local.client_config.landingzone_key) = module.monitor_action_groups }), lookup(var.remote_objects, "monitor_action_groups", {}), lookup(var.data_sources, "monitor_action_groups", {}))
+  combined_objects_monitor_private_link_scopes = merge(tomap({ (local.client_config.landingzone_key) = module.monitor_private_link_scopes }), lookup(var.remote_objects, "monitor_private_link_scopes", {}))
+  combined_objects_monitor_private_link_scoped_services = merge(
+    tomap({
+      (local.client_config.landingzone_key) = merge({}, [
+        for scope_key, scope in module.monitor_private_link_scopes : {
+          for service_key, service in scope.scoped_services : "${scope_key}.${service_key}" => service
+        }
+      ]...)
+    }),
+    lookup(var.remote_objects, "monitor_private_link_scoped_services", {})
+  )
   combined_objects_mssql_databases                               = merge(tomap({ (local.client_config.landingzone_key) = module.mssql_databases }), lookup(var.remote_objects, "mssql_databases", {}), lookup(var.data_sources, "mssql_databases", {}))
   combined_objects_mssql_elastic_pools                           = merge(tomap({ (local.client_config.landingzone_key) = merge(module.mssql_elastic_pools, lookup(var.data_sources, "mssql_elastic_pools", {})) }), lookup(var.remote_objects, "mssql_elastic_pools", {}))
   combined_objects_mssql_managed_databases                       = merge(tomap({ (local.client_config.landingzone_key) = merge(module.mssql_managed_databases, module.mssql_managed_databases_v1) }), lookup(var.remote_objects, "mssql_managed_databases", {}), lookup(var.data_sources, "mssql_managed_databases", {}))

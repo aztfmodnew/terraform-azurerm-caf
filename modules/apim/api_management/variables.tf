@@ -497,3 +497,21 @@ variable "public_ip_addresses" {
   type        = any
   default     = {}
 }
+
+variable "private_endpoints" {
+  description = "Private endpoints for the API Management Gateway subresource. Private endpoints cannot be configured with Consumption_* SKUs."
+  type        = any
+  default     = {}
+}
+
+variable "private_dns" {
+  description = "Combined private DNS zones used by private endpoint DNS zone groups."
+  type        = any
+  default     = {}
+}
+
+variable "resource_groups" {
+  description = "Combined resource groups used to place private endpoints."
+  type        = any
+  default     = {}
+}

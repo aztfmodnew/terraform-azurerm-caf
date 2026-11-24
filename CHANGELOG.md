@@ -46,6 +46,10 @@
 
 ## Features and fixes
 
+- Add an Azure Monitor Private Link Scope module with scoped Log Analytics and
+  Application Insights resources, `azuremonitor` private endpoints, combined
+  object integration, an integrated five-zone private DNS example, and focused
+  contract coverage.
 - Update all active AzAPI module contracts to verified stable APIs, retaining
   the root AzAPI declaration and upgrading its version constraint to `~> 2.13.0`.
 - Retain source-only AzAPI requirements in modules that directly use the provider,

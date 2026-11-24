@@ -8,6 +8,9 @@ module "api_management" {
 
   vnets               = local.combined_objects_networking
   public_ip_addresses = local.combined_objects_public_ip_addresses
+  private_endpoints   = try(each.value.private_endpoints, {})
+  private_dns         = local.combined_objects_private_dns
+  resource_groups     = local.combined_objects_resource_groups
   base_tags           = local.global_settings.inherit_tags
   resource_group      = local.combined_objects_resource_groups[coalesce(try(each.value.resource_group.lz_key, null), local.client_config.landingzone_key)][coalesce(try(each.value.resource_group_key, null), try(each.value.resource_group.key, null))]
   resource_group_name = try(each.value.resource_group.name, null) != null || try(each.value.resource_group_name, null) != null ? coalesce(try(each.value.resource_group.name, null), try(each.value.resource_group_name, null)) : null

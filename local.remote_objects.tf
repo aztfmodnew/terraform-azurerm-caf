@@ -159,6 +159,8 @@ locals {
     management_groups                              = try(local.combined_objects_management_groups, null)
     managed_redis                                  = try(local.combined_objects_managed_redis, null)
     monitor_action_groups                          = try(local.combined_objects_monitor_action_groups, null)
+    monitor_private_link_scopes                    = try(local.combined_objects_monitor_private_link_scopes, null)
+    monitor_private_link_scoped_services           = try(local.combined_objects_monitor_private_link_scoped_services, null)
     mssql_databases                                = try(local.combined_objects_mssql_databases, null)
     mssql_elastic_pools                            = try(local.combined_objects_mssql_elastic_pools, null)
     mssql_managed_databases                        = try(local.combined_objects_mssql_managed_databases, null)

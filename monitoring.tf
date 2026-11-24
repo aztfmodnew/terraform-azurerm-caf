@@ -39,3 +39,25 @@ module "monitor_activity_log_alert" {
 output "monitor_activity_log_alert" {
   value = module.monitor_activity_log_alert
 }
+
+module "monitor_private_link_scopes" {
+  source   = "./modules/monitoring/private_link_scope"
+  for_each = local.shared_services.monitor_private_link_scopes
+
+  global_settings = local.global_settings
+  client_config   = local.client_config
+  settings        = each.value
+  base_tags       = try(local.global_settings.inherit_tags, false)
+  remote_objects = {
+    resource_groups      = local.combined_objects_resource_groups
+    log_analytics        = local.combined_objects_log_analytics
+    application_insights = local.combined_objects_application_insights
+    vnets                = local.combined_objects_vnets
+    virtual_subnets      = local.combined_objects_virtual_subnets
+    private_dns          = local.combined_objects_private_dns
+  }
+}
+
+output "monitor_private_link_scopes" {
+  value = module.monitor_private_link_scopes
+}
