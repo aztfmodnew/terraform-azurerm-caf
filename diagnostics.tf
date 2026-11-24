@@ -11,8 +11,10 @@ locals {
     diagnostics_definition   = try(var.diagnostics.diagnostics_definition, {})
     diagnostics_destinations = try(var.diagnostics.diagnostics_destinations, {})
     storage_accounts         = merge(try(var.diagnostics.storage_accounts, {}), module.diagnostic_storage_accounts)
-    log_analytics            = merge(try(var.diagnostics.log_analytics, {}), module.diagnostic_log_analytics, module.log_analytics)
-    event_hub_namespaces     = merge(try(var.diagnostics.event_hub_namespaces, {}), module.diagnostic_event_hub_namespaces)
+    # New root-managed workspaces have the lowest precedence so collisions keep the
+    # established explicit-diagnostics and diagnostic-module behavior unchanged.
+    log_analytics        = merge(module.log_analytics, try(var.diagnostics.log_analytics, {}), module.diagnostic_log_analytics)
+    event_hub_namespaces = merge(try(var.diagnostics.event_hub_namespaces, {}), module.diagnostic_event_hub_namespaces)
   }
 }
 

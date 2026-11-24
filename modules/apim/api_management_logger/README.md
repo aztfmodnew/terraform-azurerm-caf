@@ -29,7 +29,7 @@ module "caf" {
 |application_insights|instrumentation_key| The instrumentation key used to push data to Application Insights.|||True|
 |eventhub|name| Direct Event Hub name. A direct name or an `event_hub`/`hub` reference is required.|||False|
 |eventhub|connection_string| Direct authorization-rule connection string. Direct values take precedence over resolved authorization rules.|||False|
-|eventhub|endpoint_uri| Direct namespace endpoint for managed-identity ingestion. A namespace reference can provide or derive it.|||False|
+|eventhub|endpoint_uri| Direct namespace endpoint for managed-identity ingestion. A namespace reference can provide it; otherwise the module derives its host with the configured cloud `servicebusEndpoint`.|||False|
 |eventhub|event_hub| Event Hub key/name reference resolved through CAF combined objects.|||False|
 |eventhub|event_hub_namespace| Event Hub Namespace key/name reference resolved through CAF combined objects.|||False|
 |eventhub|authorization_rule| Event Hub or namespace authorization-rule reference providing a connection string.|||False|
@@ -38,7 +38,9 @@ module "caf" {
 Exactly one of `application_insights` and `eventhub` is accepted. No generic
 Azure Monitor logger is synthesized. Event Hub ingestion supports either a
 connection string or a namespace endpoint with the service identity; direct
-inputs retain precedence for compatibility.
+inputs retain precedence for compatibility. Derived endpoints use
+`cloud.servicebusEndpoint`, defaulting to `.servicebus.windows.net`, so
+sovereign-cloud consumers can override the Service Bus DNS suffix.
 
 ## Focused contract
 

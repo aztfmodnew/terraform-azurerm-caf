@@ -127,7 +127,7 @@ locals {
     local.eventhub_connection_string == null ? try(var.settings.eventhub.endpoint_uri, null) : null,
     local.eventhub_connection_string == null ? try(local.eventhub_namespace_reference.endpoint_uri, null) : null,
     local.eventhub_connection_string == null ? try(local.eventhub_remote_namespace.endpoint_uri, null) : null,
-    local.eventhub_connection_string == null && local.eventhub_namespace_name != null ? format("https://%s.servicebus.windows.net:443/", local.eventhub_namespace_name) : null
+    local.eventhub_connection_string == null && local.eventhub_namespace_name != null ? format("%s%s", local.eventhub_namespace_name, try(var.cloud.servicebusEndpoint, ".servicebus.windows.net")) : null
   ), null)
 
   eventhub_user_assigned_identity_client_id = try(coalesce(

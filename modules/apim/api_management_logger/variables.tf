@@ -50,6 +50,14 @@ DESCRIPTION
   })
 }
 
+variable "cloud" {
+  description = "Azure cloud endpoints used to derive cloud-specific service DNS names."
+  type        = map(string)
+  default = {
+    servicebusEndpoint = ".servicebus.windows.net"
+  }
+}
+
 variable "settings" {
   description = <<DESCRIPTION
 Define a telemetry destination referenced by service/API diagnostics.
@@ -88,9 +96,9 @@ reference members are optional/null unless marked required.
   over an authorization-rule connection string resolved through
   authorization_rule, event_hub_authorization_rule, or
   event_hub_namespace_authorization_rule. endpoint_uri wins over an endpoint
-  exported by an event_hub_namespace/namespace reference; a public-cloud
-  namespace name is also expanded to its HTTPS endpoint. At least a connection
-  string or endpoint is required. user_assigned_identity_client_id wins over a
+  exported by an event_hub_namespace/namespace reference; a namespace name is
+  expanded with cloud.servicebusEndpoint. At least a connection string or
+  endpoint is required. user_assigned_identity_client_id wins over a
   managed_identity/identity reference resolved to client_id; omitting it uses
   the service system-assigned identity. Direct name, endpoint, connection, and
   client-ID inputs remain supported.

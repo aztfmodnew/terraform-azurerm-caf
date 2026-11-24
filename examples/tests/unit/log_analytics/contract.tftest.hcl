@@ -121,3 +121,36 @@ run "legacy_network_and_reservation_aliases_remain_supported" {
     error_message = "Legacy internet_* and misspelled reservation_capcity_* inputs must remain supported."
   }
 }
+
+run "omitted_provider_defaulted_booleans_remain_unset" {
+  command = plan
+
+  module {
+    source = "../modules/log_analytics"
+  }
+
+  variables {
+    global_settings = {
+      prefixes      = []
+      random_length = 0
+      passthrough   = true
+      use_slug      = false
+    }
+    resource_group = {
+      name     = "observability"
+      location = "westeurope"
+    }
+    base_tags = false
+    log_analytics = {
+      name = "provider-defaults-law"
+    }
+  }
+
+  assert {
+    condition = (
+      azurerm_log_analytics_workspace.law.allow_resource_only_permissions == null &&
+      azurerm_log_analytics_workspace.law.local_authentication_enabled == null
+    )
+    error_message = "Omitted booleans must remain null so provider and service defaults are retained."
+  }
+}

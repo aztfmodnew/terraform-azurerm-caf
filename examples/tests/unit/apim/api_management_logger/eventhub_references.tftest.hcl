@@ -91,6 +91,9 @@ run "logger_resolves_eventhub_managed_identity_ingestion" {
   variables {
     global_settings = {}
     client_config   = { landingzone_key = "local" }
+    cloud = {
+      servicebusEndpoint = ".servicebus.usgovcloudapi.net"
+    }
     remote_objects = {
       event_hub_namespaces = {
         local = {
@@ -129,7 +132,7 @@ run "logger_resolves_eventhub_managed_identity_ingestion" {
   assert {
     condition = (
       azurerm_api_management_logger.apim.eventhub[0].connection_string == null &&
-      azurerm_api_management_logger.apim.eventhub[0].endpoint_uri == "https://gateway.servicebus.windows.net:443/" &&
+      azurerm_api_management_logger.apim.eventhub[0].endpoint_uri == "gateway.servicebus.usgovcloudapi.net" &&
       azurerm_api_management_logger.apim.eventhub[0].user_assigned_identity_client_id == "00000000-0000-0000-0000-000000000010"
     )
     error_message = "Namespace, hub, and managed-identity references must resolve to identity-based Event Hub ingestion."

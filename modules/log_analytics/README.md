@@ -20,6 +20,10 @@ Legacy `internet_ingestion_enabled`, `internet_query_enabled`, and the
 misspelled `reservation_capcity_in_gb_per_day` inputs remain supported. Current
 spellings take precedence.
 
+`allow_resource_only_permissions` and `local_authentication_enabled` are
+forwarded only when explicitly configured. When omitted, the AzureRM provider
+and Azure service defaults remain authoritative.
+
 `solutions_maps` is keyed by solution name. Each entry supports `publisher`,
 `product`, `promotion_code`, `tags`, and the solution timeout fields.
 

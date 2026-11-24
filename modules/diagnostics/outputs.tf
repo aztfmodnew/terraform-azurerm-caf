@@ -1,4 +1,4 @@
-# output id {
-#   description = "The ID of the Diagnostic Setting."
-#   value       = azurerm_monitor_diagnostic_setting.diagnostics[*].id
-# }
+output "diagnostic_settings" {
+  description = "Diagnostic settings created for the target resource, keyed by profile."
+  value       = azurerm_monitor_diagnostic_setting.diagnostics
+}

@@ -33,6 +33,10 @@ module "api_management_diagnostics" {
   profiles          = try(each.value.diagnostic_profiles, {})
 }
 
+output "api_management_diagnostics" {
+  value = module.api_management_diagnostics
+}
+
 module "api_management_api" {
   source   = "./modules/apim/api_management_api"
   for_each = local.apim.api_management_api
@@ -59,6 +63,7 @@ module "api_management_logger" {
 
   global_settings = local.global_settings
   client_config   = local.client_config
+  cloud           = local.cloud
   settings        = each.value
 
   resource_group_name = try(each.value.resource_group.name, null) != null || try(each.value.resource_group_name, null) != null ? coalesce(try(each.value.resource_group.name, null), try(each.value.resource_group_name, null)) : local.combined_objects_resource_groups[coalesce(try(each.value.resource_group.lz_key, null), local.client_config.landingzone_key)][coalesce(try(each.value.resource_group_key, null), try(each.value.resource_group.key, null))].name
