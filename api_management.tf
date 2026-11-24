@@ -438,7 +438,8 @@ module "api_management_subscription" {
   }
 }
 output "api_management_subscription" {
-  value = module.api_management_subscription
+  value     = module.api_management_subscription
+  sensitive = true
 }
 
 module "api_management_product" {

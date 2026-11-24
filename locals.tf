@@ -572,6 +572,9 @@ locals {
     api_management_workspace_policy_fragment       = try(var.apim.api_management_workspace_policy_fragment, {})
     api_management_product_policy                  = try(var.apim.api_management_product_policy, {})
   }
+  integration = {
+    api_center = try(var.integration.api_center, {})
+  }
   iot = {
     digital_twins_instances             = try(var.iot.digital_twins_instances, {})
     digital_twins_endpoint_eventhubs    = try(var.iot.digital_twins_endpoint_eventhubs, {})

@@ -42,6 +42,16 @@ resource "azurerm_role_assignment" "for_deferred" {
   condition            = try(each.value.condition, null)
 }
 
+output "role_assignment_targets" {
+  description = "Resolved principal and scope targets for generic role assignments."
+  value = {
+    for key, value in local.roles_to_process : key => {
+      principal_id = value.object_id_resource_type == "object_ids" ? value.object_id_key_resource : value.object_id_lz_key == null ? local.services_roles[value.object_id_resource_type][var.current_landingzone_key][value.object_id_key_resource].rbac_id : local.services_roles[value.object_id_resource_type][value.object_id_lz_key][value.object_id_key_resource].rbac_id
+      scope        = value.scope_lz_key == null ? local.services_roles[value.scope_resource_key][var.current_landingzone_key][value.scope_key_resource].id : local.services_roles[value.scope_resource_key][value.scope_lz_key][value.scope_key_resource].id
+    } if contains(keys(local.services_roles), value.scope_resource_key)
+  }
+}
+
 resource "time_sleep" "azurerm_role_assignment_for" {
   depends_on = [azurerm_role_assignment.for]
   count = length(
@@ -132,6 +142,7 @@ locals {
   services_roles = {
     aks_clusters                               = local.combined_objects_aks_clusters
     aks_ingress_application_gateway_identities = local.aks_ingress_application_gateway_identities
+    api_centers                                = local.combined_objects_api_centers
     api_management                             = local.combined_objects_api_management
     app_config                                 = local.combined_objects_app_config
     app_service_environments                   = local.combined_objects_app_service_environments
