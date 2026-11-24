@@ -30,6 +30,7 @@ resource "azurerm_cognitive_account" "ai_services" {
   dynamic "network_acls" {
     for_each = try(var.settings.network_acls, null) == null ? [] : [var.settings.network_acls]
     content {
+      bypass         = try(network_acls.value.bypass, null)
       default_action = network_acls.value.default_action
       ip_rules       = try(network_acls.value.ip_rules, null)
       dynamic "virtual_network_rules" {

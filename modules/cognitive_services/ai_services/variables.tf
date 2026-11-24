@@ -35,6 +35,7 @@ variable "settings" {
   local_authentication_enabled - (Optional) Whether local authentication is enabled for the AI Services Account. Defaults to true.
   local_auth_enabled - (Optional) Current AzureRM alias for local authentication. Takes precedence over local_authentication_enabled.
   network_acls - (Optional) A network_acls block as defined below. When this property is specified, custom_subdomain_name is also required to be set.
+    - bypass - (Optional) Whether trusted Azure Services may access the account. Possible values are None and AzureServices.
     - default_action - (Required) The Default Action to use when no rules match from ip_rules / virtual_network_rules. Possible values are Allow and Deny.
     - ip_rules - (Optional) One or more IP Addresses, or CIDR Blocks which should be able to access the AI Services Account.
     - virtual_network_rules - (Optional) A virtual_network_rules block as defined below.
@@ -76,6 +77,7 @@ variable "settings" {
       }
       local_authentication_enabled = false
       network_acls = {
+        bypass        = "AzureServices"
         default_action = "Deny"
         ip_rules = [
           "10.0.0.0/8"

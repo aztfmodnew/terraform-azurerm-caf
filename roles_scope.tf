@@ -12,6 +12,7 @@ resource "azurerm_role_assignment" "scope" {
 }
 
 locals {
+  # Cognitive account projects are dispatched only through services_roles in roles.tf.
   services_scope = {
     azuread_users    = local.combined_objects_azuread_users
     virtual_machines = local.combined_objects_virtual_machines

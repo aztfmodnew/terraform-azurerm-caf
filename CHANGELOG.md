@@ -1,5 +1,18 @@
 # [5.0.1](https://github.com/aztfmodnew/terraform-azurerm-caf/compare/5.0.0...5.0.1) (2026-10-17)
 
+## Unreleased
+
+### Added
+
+- **cognitive_services/cognitive_account_project**: Microsoft Foundry project module with direct, local, and remote parent-account references, managed identity, endpoints, and role outputs.
+- **ai_services** and **cognitive_deployment**: AzureRM 5.14 throughput and network ACL contract coverage.
+- **examples/ai_services/102-ai-gateway-foundry**: Integrated Foundry platform example with diagnostics and lower-layer RBAC.
+
+### Impact Analysis
+
+- Existing AI Services and deployment addresses and inputs remain unchanged.
+- No API connections, APIM backend/policy, Logic App, Cosmos DB, or application changes are included.
+
 ## What's Changed
 
 - Skip SQL password and Key Vault helpers for Entra-only MSSQL servers @[copilot-swe-agent[bot]](https://github.com/apps/copilot-swe-agent) (#252)

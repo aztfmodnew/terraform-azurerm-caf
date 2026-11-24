@@ -64,6 +64,14 @@ terraform -chdir=examples test \
   -no-color
 ```
 
+## Foundry platform
+
+`102-ai-gateway-foundry` demonstrates the lower AI Gateway platform layer with
+an AIServices account, a Cognitive Account project, a deployment, diagnostics,
+managed identity, and a scoped role assignment. It intentionally leaves APIM
+backends/policies, API Center, Logic Apps, Cosmos DB, and application
+deployments to later layers.
+
 Shared example mock:
 
 ```shell
