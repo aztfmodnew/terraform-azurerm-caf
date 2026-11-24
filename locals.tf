@@ -516,6 +516,8 @@ locals {
 
   apim = {
     api_management                                 = try(var.apim.api_management, {})
+    api_management_ai_backend                      = try(var.apim.api_management_ai_backend, {})
+    api_management_backend_pool                    = try(var.apim.api_management_backend_pool, {})
     api_management_api                             = try(var.apim.api_management_api, {})
     api_management_logger                          = try(var.apim.api_management_logger, {})
     api_management_api_diagnostic                  = try(var.apim.api_management_api_diagnostic, {})

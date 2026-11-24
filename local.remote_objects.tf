@@ -21,6 +21,8 @@ locals {
     api_management_api_tag_description             = try(local.combined_objects_api_management_api_tag_description, null)
     api_management_api_version_set                 = try(local.combined_objects_api_management_api_version_set, null)
     api_management_authorization_server            = try(local.combined_objects_api_management_authorization_server, null)
+    api_management_ai_backend                      = try(local.combined_objects_api_management_ai_backend, null)
+    api_management_backend_pool                    = try(local.combined_objects_api_management_backend_pool, null)
     api_management_backend                         = try(local.combined_objects_api_management_backend, null)
     api_management_certificate                     = try(local.combined_objects_api_management_certificate, null)
     api_management_custom_domain                   = try(local.combined_objects_api_management_custom_domain, null)

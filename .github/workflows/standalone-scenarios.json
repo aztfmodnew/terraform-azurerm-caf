@@ -60,6 +60,7 @@
     "apim/154-api_management_workspace_policy_fragment",
     "apim/155-ai-gateway-observability",
     "apim/200-private-api-management",
+    "apim/400-ai-gateway-routing",
     "app_config/100-simple",
     "app_config/101-private-link",
     "app_insights/100-all-attributes",

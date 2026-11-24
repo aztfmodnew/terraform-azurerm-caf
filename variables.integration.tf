@@ -31,7 +31,8 @@ variable "communication" {
 }
 
 variable "apim" {
-  default = {}
+  description = "Configuration object for API Management resources and routing-layer modules."
+  default     = {}
 }
 
 variable "iot" {

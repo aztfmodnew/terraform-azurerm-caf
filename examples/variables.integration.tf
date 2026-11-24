@@ -892,6 +892,18 @@ variable "api_management_backend" {
   default = {}
 }
 
+variable "api_management_ai_backend" {
+  description = "Map of managed-identity APIM AI backends. Each value is a settings object for modules/apim/api_management_ai_backend and must select exactly one HTTPS endpoint source."
+  type        = map(any)
+  default     = {}
+}
+
+variable "api_management_backend_pool" {
+  description = "Map of APIM backend pools composed from AI or standard child backend references. Each value is a settings object for modules/apim/api_management_backend_pool."
+  type        = map(any)
+  default     = {}
+}
+
 variable "api_management_api_policy" {
   description = "Map of business-keyed settings for API-scope XML policies, supplied inline or through a publicly accessible policy document. Each value follows modules/apim/api_management_api_policy/variables.tf. Defaults to an empty map, which creates none."
   type = map(object({

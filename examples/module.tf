@@ -420,6 +420,8 @@ module "example" {
     api_management_api_diagnostic                  = var.api_management_api_diagnostic
     api_management_api_operation                   = var.api_management_api_operation
     api_management_backend                         = var.api_management_backend
+    api_management_ai_backend                      = var.api_management_ai_backend
+    api_management_backend_pool                    = var.api_management_backend_pool
     api_management_api_policy                      = var.api_management_api_policy
     api_management_api_operation_tag               = var.api_management_api_operation_tag
     api_management_api_operation_policy            = var.api_management_api_operation_policy
