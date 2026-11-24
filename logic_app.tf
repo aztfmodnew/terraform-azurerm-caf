@@ -127,6 +127,8 @@ module "logic_app_standard" {
   storage_accounts   = local.combined_objects_storage_accounts
   service_plans      = local.combined_objects_service_plans
   app_settings       = try(each.value.app_settings, null)
+  combined_objects   = local.dynamic_app_settings_combined_objects
+  diagnostics        = local.combined_diagnostics
   subnets            = local.combined_objects_networking
   managed_identities = local.combined_objects_managed_identities
   private_endpoints  = try(each.value.private_endpoints, {})

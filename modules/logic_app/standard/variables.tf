@@ -51,3 +51,8 @@ variable "vnet_integration" {
 variable "managed_identities" {
   default = {}
 }
+
+variable "diagnostics" {
+  description = "Diagnostic settings for the Logic App Standard instance."
+  default     = null
+}
