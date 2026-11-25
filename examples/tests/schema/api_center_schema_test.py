@@ -5,17 +5,18 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import subprocess
 import sys
-from urllib.request import urlopen
 
 ROOT = Path(__file__).resolve().parents[3]
+SPEC_COMMIT = "a5376dae10138aa7fcfa3c6a3fd26d77dc9c3d37"
 SPEC_URL = (
-    "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/"
+    f"https://raw.githubusercontent.com/Azure/azure-rest-api-specs/{SPEC_COMMIT}/"
     "specification/apicenter/resource-manager/Microsoft.ApiCenter/ApiCenter/"
     "stable/2024-03-01/apicenter.json"
 )
 IDENTITY_URL = (
-    "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/"
+    f"https://raw.githubusercontent.com/Azure/azure-rest-api-specs/{SPEC_COMMIT}/"
     "specification/common-types/resource-management/v5/managedidentity.json"
 )
 
@@ -69,8 +70,15 @@ def validate_value(spec: dict, schema: dict, value: object, path: str) -> None:
 
 
 def load_json(url: str) -> dict:
-    with urlopen(url, timeout=30) as response:
-        return json.load(response)
+    # curl is used in the repository validation workflows and honours proxy/TLS
+    # configuration more consistently than urllib on hosted runners.
+    result = subprocess.run(
+        ["curl", "--location", "--fail", "--silent", "--show-error", "--max-time", "60", url],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return json.loads(result.stdout)
 
 
 def main() -> int:

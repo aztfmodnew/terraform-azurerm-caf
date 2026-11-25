@@ -28,10 +28,9 @@ locals {
     var.remote_objects.api_centers[local.service_lz_key][var.settings.service.key],
     null
   )
-  create_service = (
-    try(var.settings.service_id, null) == null &&
-    try(var.settings.service.id, null) == null &&
-    try(local.referenced_service.id, null) == null
+  create_service = coalesce(
+    try(var.settings.create_service, null),
+    try(var.settings.name, null) != null
   )
   service_id = try(coalesce(
     try(var.settings.service_id, null),

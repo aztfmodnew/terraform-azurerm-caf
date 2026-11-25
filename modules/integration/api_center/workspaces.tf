@@ -44,16 +44,22 @@ resource "azapi_resource" "environments" {
       try(each.value.server, null) == null ? {} : {
         server = merge(
           try(each.value.server.type, null) == null ? {} : { type = each.value.server.type },
-          try(each.value.server.management_portal_uri, each.value.server.management_portal_uris, null) == null ? {} : {
-            managementPortalUri = try(each.value.server.management_portal_uri != null ? [each.value.server.management_portal_uri] : each.value.server.management_portal_uris, null)
+          try(each.value.server.management_portal_uri, null) == null && try(each.value.server.management_portal_uris, null) == null ? {} : {
+            managementPortalUri = try(
+              each.value.server.management_portal_uri != null ? [each.value.server.management_portal_uri] : each.value.server.management_portal_uris,
+              null
+            )
           }
         )
       },
       try(each.value.onboarding, null) == null ? {} : {
         onboarding = merge(
           try(each.value.onboarding.instructions, null) == null ? {} : { instructions = each.value.onboarding.instructions },
-          try(each.value.onboarding.developer_portal_uri, each.value.onboarding.developer_portal_uris, null) == null ? {} : {
-            developerPortalUri = try(each.value.onboarding.developer_portal_uri != null ? [each.value.onboarding.developer_portal_uri] : each.value.onboarding.developer_portal_uris, null)
+          try(each.value.onboarding.developer_portal_uri, null) == null && try(each.value.onboarding.developer_portal_uris, null) == null ? {} : {
+            developerPortalUri = try(
+              each.value.onboarding.developer_portal_uri != null ? [each.value.onboarding.developer_portal_uri] : each.value.onboarding.developer_portal_uris,
+              null
+            )
           }
         )
       },

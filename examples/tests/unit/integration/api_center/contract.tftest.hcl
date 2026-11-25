@@ -52,6 +52,9 @@ run "stable_api_center_hierarchy" {
                 type                  = "Azure API Management"
                 management_portal_uri = "https://portal.example.invalid"
               }
+              onboarding = {
+                developer_portal_uri = "https://developer.example.invalid"
+              }
             }
           }
           apis = {
@@ -121,6 +124,13 @@ run "stable_api_center_hierarchy" {
     error_message = "The default workspace must contain the declared production environment."
   }
   assert {
+    condition = (
+      one(azapi_resource.environments["default/production"].body.properties.server.managementPortalUri) == "https://portal.example.invalid" &&
+      one(azapi_resource.environments["default/production"].body.properties.onboarding.developerPortalUri) == "https://developer.example.invalid"
+    )
+    error_message = "Singular management and developer portal URI inputs must be emitted as ARM URI lists."
+  }
+  assert {
     condition     = azapi_resource.api_versions["default/chat/v01"].body.properties.lifecycleStage == "production"
     error_message = "The API version must carry the writable lifecycle stage."
   }
@@ -163,6 +173,30 @@ run "existing_remote_service_supports_child_registration" {
         default = {
           name  = "default"
           title = "Default"
+          environments = {
+            production = {
+              name  = "production"
+              title = "Production"
+              kind  = "production"
+              server = {
+                management_portal_uris = ["https://portal.example.invalid"]
+              }
+            }
+          }
+          apis = {
+            chat = {
+              name  = "ai-chat"
+              title = "AI Chat"
+              kind  = "rest"
+              deployments = {
+                production = {
+                  name           = "production"
+                  environment_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/shared/providers/Microsoft.ApiCenter/services/shared/workspaces/default/environments/production"
+                  definition_id  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/shared/providers/Microsoft.ApiCenter/services/shared/workspaces/default/apis/chat/versions/v01/definitions/openapi"
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -171,6 +205,29 @@ run "existing_remote_service_supports_child_registration" {
   assert {
     condition     = length(azapi_resource.service) == 0 && azapi_resource.workspaces["default"].parent_id == "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/shared/providers/Microsoft.ApiCenter/services/shared"
     error_message = "A remote API Center ID must be usable as the parent without recreating the service."
+  }
+  assert {
+    condition     = one(azapi_resource.environments["default/production"].body.properties.server.managementPortalUri) == "https://portal.example.invalid"
+    error_message = "A plural portal URI list must be retained when the singular form is omitted."
+  }
+  assert {
+    condition = (
+      azapi_resource.deployments["default/chat/production"].body.properties.environmentId == "workspaces/default/environments/production" &&
+      azapi_resource.deployments["default/chat/production"].body.properties.definitionId == "workspaces/default/apis/chat/versions/v01/definitions/openapi"
+    )
+    error_message = "Deployment child references must be relative to the selected API Center service."
+  }
+}
+
+run "computed_service_id_keeps_count_plan_known" {
+  command = plan
+  module {
+    source = "./tests/unit/integration/api_center/computed_service_id"
+  }
+
+  assert {
+    condition     = output.workspace_count == 1
+    error_message = "A direct service ID computed during apply must not make service and naming counts unknown."
   }
 }
 

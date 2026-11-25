@@ -92,16 +92,22 @@ api_management_product = {
     subscriptions_limit   = 100
     api_management        = { key = "ai_gateway" }
     resource_group        = { key = "ai_gateway" }
-    policy = {
-      xml_content = <<-XML
-        <policies>
-          <inbound><base /><include-fragment fragment-id="ai-access-limits" /></inbound>
-          <backend><base /></backend>
-          <outbound><base /></outbound>
-          <on-error><base /></on-error>
-        </policies>
-      XML
-    }
+  }
+}
+
+api_management_product_policy = {
+  ai_consumers = {
+    api_management = { key = "ai_gateway" }
+    resource_group = { key = "ai_gateway" }
+    product        = { key = "ai_consumers" }
+    xml_content    = <<-XML
+      <policies>
+        <inbound><base /><include-fragment fragment-id="ai-access-limits" /></inbound>
+        <backend><base /></backend>
+        <outbound><base /></outbound>
+        <on-error><base /></on-error>
+      </policies>
+    XML
   }
 }
 
@@ -117,7 +123,7 @@ api_management_product_api = {
 api_management_subscription = {
   ai_consumer = {
     display_name   = "AI Consumer"
-    state          = "active"
+    state          = "submitted"
     api_management = { key = "ai_gateway" }
     resource_group = { key = "ai_gateway" }
     product        = { key = "ai_consumers" }
@@ -132,7 +138,7 @@ api_management_api_policy = {
     xml_content    = <<-XML
       <policies>
         <inbound><base /><set-backend-service backend-id="ai-chat-pool" /></inbound>
-        <backend><base /><forward-request timeout="120" /></backend>
+        <backend><forward-request timeout="120" /></backend>
         <outbound><base /></outbound>
         <on-error><base /></on-error>
       </policies>

@@ -89,11 +89,15 @@ integration = {
 
 - `resource_group`: direct `name`, local `key`, or remote `key` + `lz_key`.
 - `service`: direct `service_id`/`service.id`, or remote `service.key` +
-  `lz_key`.
+  `lz_key`. When a direct service ID is computed during apply, set
+  `create_service = false` explicitly so resource counts remain plan-known.
 - deployment `environment`: direct `environment_id`/`environment.id`, or a
   local workspace environment key.
 - deployment `definition`: direct `definition_id`/`definition.id`, or local
   `api version key` + `definition key`.
+- Full ARM deployment references are normalized to the API Center-relative
+  form required by the stable deployment schema; already-relative values are
+  preserved.
 - identity: direct `identity_ids`, local `managed_identity_keys`, or remote
   `managed_identities` with `key` and `lz_key`.
 

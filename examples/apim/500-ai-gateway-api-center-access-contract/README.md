@@ -19,7 +19,13 @@ prints them.
 - Catalog hierarchy: service, `default` workspace, environment, API, version,
   OpenAPI definition, and APIM deployment
 - APIM access: published product, product/API association, approval-gated
-  subscription, and a named fragment applying rate and quota limits
+  subscription created in `submitted` state, and a named fragment applying rate
+  and quota limits
+- Product policies wait for both the product and referenced fragment; the API
+  policy waits for its backend pool and uses one `forward-request` backend
+  element so the XML remains valid
+- API Center deployment environment and definition values are emitted as
+  service-relative references
 
 ## Validate
 

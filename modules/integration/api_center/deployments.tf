@@ -11,16 +11,16 @@ resource "azapi_resource" "deployments" {
       try(each.value.description, null) == null ? {} : { description = each.value.description },
       try(each.value.environment_id, null) == null && try(each.value.environment, null) == null ? {} : {
         environmentId = coalesce(
-          try(each.value.environment_id, null),
-          try(each.value.environment.id, null),
-          try(azapi_resource.environments["${each.value.workspace_key}/${each.value.environment.key}"].id, null)
+          try(replace(each.value.environment_id, "/^.*\\/providers\\/Microsoft\\.ApiCenter\\/services\\/[^/]+\\//", ""), null),
+          try(replace(each.value.environment.id, "/^.*\\/providers\\/Microsoft\\.ApiCenter\\/services\\/[^/]+\\//", ""), null),
+          try(replace(azapi_resource.environments["${each.value.workspace_key}/${each.value.environment.key}"].id, "/^.*\\/providers\\/Microsoft\\.ApiCenter\\/services\\/[^/]+\\//", ""), null)
         )
       },
       try(each.value.definition_id, null) == null && try(each.value.definition, null) == null ? {} : {
         definitionId = coalesce(
-          try(each.value.definition_id, null),
-          try(each.value.definition.id, null),
-          try(azapi_resource.definitions["${each.value.api_key}/${each.value.definition.version_key}/${each.value.definition.key}"].id, null)
+          try(replace(each.value.definition_id, "/^.*\\/providers\\/Microsoft\\.ApiCenter\\/services\\/[^/]+\\//", ""), null),
+          try(replace(each.value.definition.id, "/^.*\\/providers\\/Microsoft\\.ApiCenter\\/services\\/[^/]+\\//", ""), null),
+          try(replace(azapi_resource.definitions["${each.value.api_key}/${each.value.definition.version_key}/${each.value.definition.key}"].id, "/^.*\\/providers\\/Microsoft\\.ApiCenter\\/services\\/[^/]+\\//", ""), null)
         )
       },
       try(each.value.state, null) == null ? {} : { state = each.value.state },
