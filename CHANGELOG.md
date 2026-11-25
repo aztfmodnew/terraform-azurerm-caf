@@ -1,3 +1,13 @@
+# [5.0.2](https://github.com/aztfmodnew/terraform-azurerm-caf/compare/5.0.1...5.0.2) (2026-10-17)
+
+## What's Changed
+
+## 📖 Documentation
+
+- docs: update changelog for 5.0.1 @[github-actions[bot]](https://github.com/apps/github-actions) (#212)
+
+**Full Changelog**: https://github.com/aztfmodnew/terraform-azurerm-caf/compare/5.0.1...5.0.2
+
 # [5.0.1](https://github.com/aztfmodnew/terraform-azurerm-caf/compare/5.0.0...5.0.1) (2026-10-17)
 
 ## What's Changed
