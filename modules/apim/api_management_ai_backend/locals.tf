@@ -31,10 +31,10 @@ locals {
     try(var.settings.api_management_id, null),
     try(var.settings.api_management.id, null),
     try(local.referenced_apim.id, null),
-    format("/subscriptions/%s/resourceGroups/%s/providers/Microsoft.ApiManagement/service/%s",
+    try(format("/subscriptions/%s/resourceGroups/%s/providers/Microsoft.ApiManagement/service/%s",
       try(var.client_config.subscription_id, ""),
       try(local.resource_group_name, ""),
-    try(local.apim_name, ""))
+    try(local.apim_name, "")), null)
   )
 
   ai_services_endpoint = try(
@@ -49,11 +49,19 @@ locals {
     try(var.remote_objects.cognitive_deployment[local.cognitive_lz_key][var.settings.cognitive_deployment.key], null),
     try(var.remote_objects.cognitive_deployment[local.cognitive_lz_key][var.settings.cognitive_account_deployment.key], null)
   ), null)
+  deployment_account_id = try(regex("^(.*/accounts/[^/]+)/deployments/", local.deployment.id)[0], null)
+  deployment_account = try(one([
+    for account in concat(
+      values(try(var.remote_objects.cognitive_services_accounts[local.cognitive_lz_key], {})),
+      values(try(var.remote_objects.ai_services[local.cognitive_lz_key], {}))
+    ) :
+    account if local.deployment_account_id != null && try(account.id, null) == local.deployment_account_id
+  ]), null)
   deployment_endpoint = try(coalesce(
     try(var.settings.cognitive_deployment.endpoint, null),
     try(var.settings.cognitive_account_deployment.endpoint, null),
     try(local.deployment.endpoint, null),
-    try("${format("https://%s.openai.azure.com", regex("/accounts/([^/]+)/deployments/", local.deployment.id)[0])}/", null)
+    try(local.deployment_account.endpoint, null)
   ), null)
   project = try(var.remote_objects.cognitive_account_project[local.cognitive_lz_key][var.settings.cognitive_account_project.key], null)
   project_endpoint = try(coalesce(
@@ -77,10 +85,19 @@ locals {
     var.remote_objects.managed_identities[local.managed_identity_lz_key][var.settings.managed_identity.key],
     try(one([
       for identity in values(try(var.remote_objects.managed_identities[local.managed_identity_lz_key], {})) :
-      identity if try(identity.name, null) == try(var.settings.managed_identity.name, null) ||
-      try(identity.id, null) == try(var.settings.managed_identity.id, null)
+      identity if
+      (try(var.settings.managed_identity.name, null) != null &&
+      try(identity.name, null) == var.settings.managed_identity.name) ||
+      (try(var.settings.managed_identity.id, null) != null &&
+      try(identity.id, null) == var.settings.managed_identity.id)
     ]), null)
   )
+  managed_identity_selector_supplied = anytrue([
+    try(var.settings.managed_identity.client_id, null) != null,
+    try(var.settings.managed_identity.id, null) != null,
+    try(var.settings.managed_identity.key, null) != null,
+    try(var.settings.managed_identity.name, null) != null
+  ])
   managed_identity_client_id = try(coalesce(
     try(var.settings.managed_identity.client_id, null),
     try(local.managed_identity.client_id, null)

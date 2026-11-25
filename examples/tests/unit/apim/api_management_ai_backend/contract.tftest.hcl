@@ -1,9 +1,7 @@
-mock_provider "azapi" {}
-mock_provider "azurecaf" {
-  mock_resource "azurecaf_name" {
-    override_during = plan
-    defaults        = { result = "ai-east" }
-  }
+override_resource {
+  target          = azurecaf_name.resource
+  override_during = plan
+  values          = { result = "ai-east" }
 }
 
 run "direct_https_endpoint_uses_system_identity_policy" {
@@ -15,10 +13,24 @@ run "direct_https_endpoint_uses_system_identity_policy" {
     global_settings = { passthrough = true, random_length = 0, use_slug = false }
     client_config   = { landingzone_key = "local", subscription_id = "00000000-0000-0000-0000-000000000000" }
     base_tags       = {}
+    remote_objects = {
+      managed_identities = {
+        local = {
+          unrelated = {
+            name      = "unrelated"
+            client_id = "22222222-2222-2222-2222-222222222222"
+          }
+        }
+      }
+    }
     settings = {
       name              = "ai-east"
       endpoint          = "https://ai-east.example.invalid"
       api_management_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg/providers/Microsoft.ApiManagement/service/apim"
+      tls = {
+        validate_certificate_chain = true
+        validate_certificate_name  = false
+      }
       reconnect = {
         enabled = true
         after   = "PT2M"
@@ -32,7 +44,11 @@ run "direct_https_endpoint_uses_system_identity_policy" {
   }
   assert {
     condition     = strcontains(output.authentication_policy, "authentication-managed-identity") && !strcontains(output.authentication_policy, "client-id")
-    error_message = "Managed identity must default to the APIM system-assigned identity."
+    error_message = "Omitting an identity selector must use the APIM system-assigned identity and not match unrelated remote identities."
+  }
+  assert {
+    condition     = azapi_resource.resource.body.properties.tls.validateCertificateChain == true && azapi_resource.resource.body.properties.tls.validateCertificateName == false
+    error_message = "TLS settings must be mapped to the ARM camelCase property names."
   }
   assert {
     condition     = azapi_resource_action.reconnect[0].action == "reconnect"
@@ -161,7 +177,7 @@ run "cognitive_account_endpoint_reference_is_supported" {
   }
 }
 
-run "deployment_reference_derives_account_endpoint" {
+run "deployment_reference_resolves_parent_account_endpoint" {
   command = plan
   module {
     source = "../modules/apim/api_management_ai_backend"
@@ -177,6 +193,14 @@ run "deployment_reference_derives_account_endpoint" {
           }
         }
       }
+      cognitive_services_accounts = {
+        local = {
+          account = {
+            id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg/providers/Microsoft.CognitiveServices/accounts/oai"
+            endpoint = "https://gateway-oai.cognitiveservices.azure.com/"
+          }
+        }
+      }
     }
     settings = {
       name                 = "ai-deployment"
@@ -185,8 +209,26 @@ run "deployment_reference_derives_account_endpoint" {
     }
   }
   assert {
-    condition     = output.endpoint == "https://oai.openai.azure.com/"
-    error_message = "A resolved deployment ID may derive the Azure OpenAI account host, but direct deployment IDs are not an input."
+    condition     = output.endpoint == "https://gateway-oai.cognitiveservices.azure.com/"
+    error_message = "A deployment must use its resolved parent account endpoint rather than synthesizing a public OpenAI host from the ARM resource name."
+  }
+}
+
+run "unresolved_managed_identity_selector_is_rejected" {
+  command         = plan
+  expect_failures = [azapi_resource.resource]
+  module {
+    source = "../modules/apim/api_management_ai_backend"
+  }
+  variables {
+    global_settings = {}
+    client_config   = { landingzone_key = "local" }
+    settings = {
+      name              = "ai-identity"
+      endpoint          = "https://ai-identity.example.invalid"
+      api_management_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg/providers/Microsoft.ApiManagement/service/apim"
+      managed_identity  = { key = "misspelled" }
+    }
   }
 }
 

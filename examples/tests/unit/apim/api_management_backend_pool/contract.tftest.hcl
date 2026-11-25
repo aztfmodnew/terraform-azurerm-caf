@@ -1,9 +1,7 @@
-mock_provider "azapi" {}
-mock_provider "azurecaf" {
-  mock_resource "azurecaf_name" {
-    override_during = plan
-    defaults        = { result = "ai-pool" }
-  }
+override_resource {
+  target          = azurecaf_name.resource
+  override_during = plan
+  values          = { result = "ai-pool" }
 }
 
 run "pool_composes_weighted_child_ids" {

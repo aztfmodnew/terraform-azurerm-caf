@@ -199,6 +199,13 @@ module "api_management_api_policy" {
   source   = "./modules/apim/api_management_api_policy"
   for_each = local.apim.api_management_api_policy
 
+  depends_on = [
+    module.api_management_ai_backend,
+    module.api_management_backend_pool,
+    module.api_management_named_value,
+    module.api_management_policy_fragment
+  ]
+
   global_settings = local.global_settings
   client_config   = local.client_config
   settings        = each.value
@@ -658,6 +665,8 @@ output "api_management_policy" {
 module "api_management_policy_fragment" {
   source   = "./modules/apim/api_management_policy_fragment"
   for_each = local.apim.api_management_policy_fragment
+
+  depends_on = [module.api_management_named_value]
 
   global_settings = local.global_settings
   client_config   = local.client_config

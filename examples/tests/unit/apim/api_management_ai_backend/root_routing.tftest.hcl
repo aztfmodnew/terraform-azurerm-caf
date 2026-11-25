@@ -1,9 +1,17 @@
-mock_provider "azapi" {}
-mock_provider "azurecaf" {
-  mock_resource "azurecaf_name" {
-    override_during = plan
-    defaults        = { result = "routing-resource" }
-  }
+override_resource {
+  target          = module.example.module.api_management_ai_backend["east"].azurecaf_name.resource
+  override_during = plan
+  values          = { result = "routing-resource" }
+}
+override_resource {
+  target          = module.example.module.api_management_ai_backend["west"].azurecaf_name.resource
+  override_during = plan
+  values          = { result = "routing-resource" }
+}
+override_resource {
+  target          = module.example.module.api_management_backend_pool["ai"].azurecaf_name.resource
+  override_during = plan
+  values          = { result = "routing-resource" }
 }
 mock_provider "azurerm" {}
 mock_provider "azurerm" {
@@ -40,24 +48,27 @@ run "examples_root_creates_ai_backends_and_pool" {
         api_management_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg/providers/Microsoft.ApiManagement/service/apim"
         services = [
           {
-            id     = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg/providers/Microsoft.ApiManagement/service/apim/backends/east"
+            key    = "east"
+            source = "ai_backends"
             weight = 50
           },
           {
-            id     = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg/providers/Microsoft.ApiManagement/service/apim/backends/west"
+            key    = "west"
+            source = "ai_backends"
             weight = 50
           }
         ]
       }
     }
+
   }
 
   assert {
-    condition     = length(module.example.api_management_ai_backend) >= 1
-    error_message = "The examples root must pass api_management_ai_backend through and plan at least one resource."
+    condition     = length(module.example.api_management_ai_backend) == 2
+    error_message = "The examples root must create both configured AI backend modules."
   }
   assert {
-    condition     = length(module.example.api_management_backend_pool) >= 1
-    error_message = "The examples root must pass api_management_backend_pool through and plan at least one resource."
+    condition     = length(module.example.api_management_backend_pool) == 1
+    error_message = "The examples root must create one pool that resolves both AI backend keys."
   }
 }

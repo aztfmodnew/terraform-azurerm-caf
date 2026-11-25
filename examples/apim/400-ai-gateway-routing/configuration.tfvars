@@ -40,6 +40,27 @@ api_management_api = {
   }
 }
 
+api_management_api_operation = {
+  chat_completions = {
+    operation_id   = "chat-completions"
+    display_name   = "Chat completions"
+    method         = "POST"
+    url_template   = "/openai/deployments/{deployment}/chat/completions"
+    description    = "Routes an Azure OpenAI chat-completions request through the backend pool."
+    api            = { key = "ai_gateway" }
+    api_management = { key = "ai_gateway" }
+    resource_group = { key = "ai_gateway" }
+    template_parameters = {
+      deployment = {
+        name        = "deployment"
+        required    = true
+        type        = "string"
+        description = "Azure OpenAI deployment name."
+      }
+    }
+  }
+}
+
 managed_identities = {
   ai_gateway = {
     name               = "id-ai-gateway-routing"
@@ -96,7 +117,7 @@ api_management_named_value = {
   jwt_issuer = {
     name           = "jwt-issuer"
     display_name   = "jwt-issuer"
-    value          = "https://issuer.example.invalid"
+    value          = "https://login.microsoftonline.com/common/v2.0"
     api_management = { key = "ai_gateway" }
     resource_group = { key = "ai_gateway" }
   }
@@ -154,17 +175,17 @@ api_management_api_policy = {
           <set-backend-service backend-id="ai-pool" />
           <set-variable name="route" value="pool" />
         </inbound>
-        <backend><base /><forward-request timeout="120" /></backend>
+        <backend><forward-request timeout="120" /></backend>
         <outbound>
           <base />
           <trace source="ai-gateway" severity="information">
-            {"event":"ai-complete","route":"@((string)context.Variables["route"])","status":@(context.Response.StatusCode),"latencyMs":@(Convert.ToInt64(context.Elapsed.TotalMilliseconds)),"correlation":"@(context.Request.Headers.GetValueOrDefault("x-correlation-id",""))"}
+            <message>@(JsonConvert.SerializeObject(new { @event = "ai-complete", route = context.Variables.GetValueOrDefault&lt;string&gt;("route", "unknown"), status = context.Response.StatusCode, latencyMs = Convert.ToInt64(context.Elapsed.TotalMilliseconds), correlation = context.Request.Headers.GetValueOrDefault("x-correlation-id", "") }))</message>
           </trace>
         </outbound>
         <on-error>
           <base />
           <trace source="ai-gateway" severity="error">
-            {"event":"ai-error","route":"@((string)context.Variables["route"])","status":@(context.Response?.StatusCode ?? 0),"latencyMs":@(Convert.ToInt64(context.Elapsed.TotalMilliseconds)),"correlation":"@(context.Request.Headers.GetValueOrDefault("x-correlation-id",""))"}
+            <message>@(JsonConvert.SerializeObject(new { @event = "ai-error", route = context.Variables.GetValueOrDefault&lt;string&gt;("route", "unknown"), status = context.Response?.StatusCode ?? 0, latencyMs = Convert.ToInt64(context.Elapsed.TotalMilliseconds), correlation = context.Request.Headers.GetValueOrDefault("x-correlation-id", "") }))</message>
           </trace>
         </on-error>
       </policies>
