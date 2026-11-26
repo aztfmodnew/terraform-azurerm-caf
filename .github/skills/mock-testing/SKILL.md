@@ -148,15 +148,34 @@ terraform test \
 **For REAL deployments (terraform plan/apply), ALWAYS verify subscription first:**
 
 ```bash
-# 1. Check current Azure subscription
+# 1. Check the current Azure subscription
 az account show --query "{subscriptionId:id, name:name, state:state}" -o table
 
-# 2. Confirm with user this is correct
-# MUST get explicit confirmation before plan/apply
+# 2. Record the exact subscription targeted by the preflight and Terraform
+export ARM_SUBSCRIPTION_ID="$(az account show --query id -o tsv)"
 
-# 3. Export for Terraform
-export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+# 3. Require a token for Azure Resource Manager
+az account get-access-token \
+  --resource https://management.azure.com/ \
+  --query expiresOn \
+  -o tsv
+
+# 4. Require an authenticated ARM GET against that exact subscription
+az rest \
+  --method get \
+  --url "https://management.azure.com/subscriptions/${ARM_SUBSCRIPTION_ID}?api-version=2022-12-01" \
+  --query "{subscriptionId:id, name:displayName, state:state}" \
+  -o table
+
+# 5. Confirm with the user that this is the intended subscription
+# MUST get explicit confirmation before plan/apply
 ```
+
+Every command must succeed before continuing. Do not start `terraform plan` if
+token acquisition or the authenticated ARM `GET` fails; report and resolve the
+authentication failure first. After confirmation, continue with isolated state,
+make no edits to Azure source resources, save and review the plan, and only then
+proceed with an explicitly approved apply.
 
 ### Basic Test Execution
 

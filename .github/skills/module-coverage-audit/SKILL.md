@@ -33,6 +33,10 @@ Classify each directory as a public entry point, nested resource module, shared 
 
 ## Implement and verify
 
+- When multi-module stacked work is requested, propose and freeze the dependency
+  stack graph and shared public contracts (settings, outputs, and cross-module
+  references) before implementation. Do not advance to implementation or a later
+  stack layer until those contracts have an explicit PASS.
 - Update only confirmed capability gaps. Follow CAF naming, locals, `remote_objects`, provider source/version, and module output conventions.
 - Update the example and existing documentation to demonstrate new user-facing settings. Reuse the shared mock runner; add a focused module contract only when it asserts behavior the shared plan does not cover.
 - Validate provider schemas before modifying resource arguments. Run focused Terraform formatting/validation, the relevant example mock plan, and applicable contract tests. Treat mock plans as syntax/planning evidence, not proof of Azure service acceptance.
