@@ -21,7 +21,7 @@ module "caf" {
 |log_client_ip| Log client IP address.||False|
 |sampling_percentage| Sampling (%). For high traffic APIs, please read this [documentation](https://docs.microsoft.com/azure/api-management/api-management-howto-app-insights#performance-implications-and-log-sampling) to understand performance implications and log sampling. Valid values are between `0.0` and `100.0`.||False|
 |verbosity| Logging verbosity. Possible values are `verbose`, `information` or `error`.||False|
-|operation_name_format| The format of the Operation Name for Application Insights telemetries. Possible values are `Name`, and `Url`. Defaults to `Name`.||False|
+|operation_name_format| The format of the Operation Name for Application Insights telemetries. Possible values are `Name`, and `Url`. Omitted for non-`applicationinsights` identifiers.||False|
 
 ## Blocks
 | Block | Argument | Description | Required |

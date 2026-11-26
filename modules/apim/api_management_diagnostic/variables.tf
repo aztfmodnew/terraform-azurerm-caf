@@ -69,7 +69,8 @@ reference members are optional/null unless marked required.
 - verbosity (optional string): verbose, information, or error logging level.
 - operation_name_format (optional string): use Name or Url as the Application
   Insights operation name. Unlike the API-specific diagnostic child, this
-  module leaves omitted/null values to the provider.
+  module leaves omitted/null values to the provider. This value is not sent
+  for other diagnostic identifiers.
 - backend_request / backend_response (optional objects): capture requests sent
   to the backend and responses received from it.
 - frontend_request / frontend_response (optional objects): capture requests

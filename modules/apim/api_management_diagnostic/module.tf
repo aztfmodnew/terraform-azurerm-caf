@@ -10,7 +10,7 @@ resource "azurerm_api_management_diagnostic" "apim" {
   metrics_enabled           = try(var.settings.metrics_enabled, null)
   sampling_percentage       = try(var.settings.sampling_percentage, null)
   verbosity                 = try(var.settings.verbosity, null)
-  operation_name_format     = try(var.settings.operation_name_format, null)
+  operation_name_format     = var.settings.identifier == "applicationinsights" ? try(var.settings.operation_name_format, null) : null
 
   dynamic "backend_request" {
     for_each = try(var.settings.backend_request, null) == null ? [] : [var.settings.backend_request]

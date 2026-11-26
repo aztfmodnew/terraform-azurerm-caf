@@ -58,8 +58,9 @@ output "api_management_api" {
 }
 
 module "api_management_logger" {
-  source   = "./modules/apim/api_management_logger"
-  for_each = local.apim.api_management_logger
+  source     = "./modules/apim/api_management_logger"
+  depends_on = [time_sleep.azurerm_role_assignment_for]
+  for_each   = local.apim.api_management_logger
 
   global_settings = local.global_settings
   client_config   = local.client_config

@@ -103,3 +103,36 @@ run "api_diagnostic_configuration" {
     error_message = "Frontend request header masking must be passed through."
   }
 }
+
+run "api_diagnostic_rejects_azuremonitor_identifier" {
+  command         = plan
+  expect_failures = [var.settings]
+
+  module {
+    source = "../modules/apim/api_management_api_diagnostic"
+  }
+
+  variables {
+    global_settings = {
+      prefixes      = []
+      random_length = 0
+      passthrough   = true
+      use_slug      = false
+      tags          = {}
+    }
+    client_config            = { landingzone_key = "local" }
+    base_tags                = {}
+    remote_objects           = {}
+    api_management_logger_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example-rg/providers/Microsoft.ApiManagement/service/example-apim/loggers/eventhub"
+    api_management_name      = "example-apim"
+    api_name                 = "example-api"
+    resource_group_name      = "example-rg"
+    settings = {
+      identifier                = "azuremonitor"
+      http_correlation_protocol = "W3C"
+      operation_name_format     = "Url"
+      sampling_percentage       = 100
+      verbosity                 = "information"
+    }
+  }
+}

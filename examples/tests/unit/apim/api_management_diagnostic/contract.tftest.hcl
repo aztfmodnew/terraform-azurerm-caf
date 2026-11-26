@@ -72,7 +72,7 @@ run "diagnostic_with_data_masking_and_timeouts" {
   }
 }
 
-run "diagnostic_supports_azure_monitor_identifier" {
+run "eventhub_logger_diagnostic_omits_application_insights_format" {
   command = plan
 
   module {
@@ -86,15 +86,19 @@ run "diagnostic_supports_azure_monitor_identifier" {
     base_tags                = {}
     api_management_name      = "example-apim"
     resource_group_name      = "example-rg"
-    api_management_logger_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example-rg/providers/Microsoft.ApiManagement/service/example-apim/loggers/monitor"
+    api_management_logger_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example-rg/providers/Microsoft.ApiManagement/service/example-apim/loggers/eventhub"
     settings = {
-      identifier = "azuremonitor"
+      identifier            = "azuremonitor"
+      operation_name_format = "Url"
     }
   }
 
   assert {
-    condition     = azurerm_api_management_diagnostic.apim.identifier == "azuremonitor"
-    error_message = "Azure Monitor must be accepted as a supported diagnostic identifier."
+    condition = (
+      azurerm_api_management_diagnostic.apim.identifier == "azuremonitor" &&
+      azurerm_api_management_diagnostic.apim.operation_name_format == null
+    )
+    error_message = "Azure Monitor/Event Hub service diagnostics must not send the Application Insights-only operation_name_format."
   }
 }
 

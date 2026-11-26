@@ -14,8 +14,11 @@ Configure telemetry for one API using the separately supplied APIM logger ID.
 Required settings object. Leaf values are strings unless another type is stated;
 reference members are optional/null unless marked required.
 
-- identifier (required string): applicationinsights or azuremonitor identifies
-  the diagnostic destination type.
+- identifier (required string): must be applicationinsights. AzureRM 5.14
+  internally defaults operation_name_format for this resource and rejects
+  azuremonitor even when that attribute is omitted. Service diagnostics can
+  continue to use azuremonitor; this constraint applies only to API
+  diagnostics.
 - always_log_errors (optional bool): send error telemetry regardless of sampling.
 - http_correlation_protocol (optional string): None disables correlation, Legacy
   uses legacy correlation, and W3C uses W3C distributed-tracing correlation.
@@ -25,7 +28,8 @@ reference members are optional/null unless marked required.
 - sampling_percentage (optional number): percentage of requests sampled, 0 to 100.
 - verbosity (optional string): verbose, information, or error logging level.
 - operation_name_format (optional string): use the operation Name or Url in
-  telemetry. The module defaults omission/null to Name.
+  Application Insights telemetry. Omission/null leaves the provider default in
+  place.
 - backend_request / backend_response (optional objects): logging for traffic
   sent to the backend and responses received from it, respectively.
 - frontend_request / frontend_response (optional objects): logging for client
@@ -86,7 +90,7 @@ DESCRIPTION
     metrics_enabled           = optional(bool)
     sampling_percentage       = optional(number)
     verbosity                 = optional(string)
-    operation_name_format     = optional(string, "Name")
+    operation_name_format     = optional(string)
     backend_request = optional(object({
       body_bytes     = optional(number)
       headers_to_log = optional(set(string))
@@ -152,8 +156,8 @@ DESCRIPTION
   })
 
   validation {
-    condition     = contains(["applicationinsights", "azuremonitor"], var.settings.identifier)
-    error_message = "identifier must be applicationinsights or azuremonitor."
+    condition     = var.settings.identifier == "applicationinsights"
+    error_message = "identifier must be applicationinsights for API diagnostics with AzureRM 5.14; use azuremonitor only with the service diagnostic module."
   }
 
   validation {
@@ -175,7 +179,7 @@ DESCRIPTION
   }
 
   validation {
-    condition     = contains(["Name", "Url"], var.settings.operation_name_format)
+    condition     = var.settings.operation_name_format == null || contains(["Name", "Url"], var.settings.operation_name_format)
     error_message = "operation_name_format must be Name or Url."
   }
 }

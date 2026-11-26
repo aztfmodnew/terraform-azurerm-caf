@@ -35,6 +35,18 @@ log_analytics = {
   }
 }
 
+azurerm_application_insights = {
+  ai_gateway = {
+    name               = "ai-gateway"
+    resource_group_key = "ai_gateway"
+    region             = "region1"
+    application_type   = "web"
+    log_analytics_workspace = {
+      key = "ai_gateway"
+    }
+  }
+}
+
 event_hub_namespaces = {
   ai_gateway = {
     name                          = "ai-gateway"
@@ -127,6 +139,22 @@ api_management_logger = {
       }
     }
   }
+  application_insights = {
+    name        = "ai-gateway-application-insights"
+    description = "AI Gateway API telemetry in Application Insights"
+    resource_group = {
+      key = "ai_gateway"
+    }
+    api_management = {
+      key = "ai_gateway"
+    }
+    resource = {
+      key = "ai_gateway"
+    }
+    application_insights = {
+      key = "ai_gateway"
+    }
+  }
 }
 
 api_management_diagnostic = {
@@ -151,7 +179,7 @@ api_management_diagnostic = {
 
 api_management_api_diagnostic = {
   api = {
-    identifier = "azuremonitor"
+    identifier = "applicationinsights"
     resource_group = {
       key = "ai_gateway"
     }
@@ -162,7 +190,7 @@ api_management_api_diagnostic = {
       key = "ai_gateway"
     }
     api_management_logger = {
-      key = "eventhub"
+      key = "application_insights"
     }
     sampling_percentage       = 100
     always_log_errors         = true

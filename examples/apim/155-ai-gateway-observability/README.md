@@ -1,16 +1,23 @@
-# AI Gateway Log Analytics and APIM observability
+# AI Gateway Log Analytics, Application Insights and APIM observability
 
 This integrated example combines:
 
 - a Developer-tier API Management service and API;
-- an identity-authenticated Event Hub logger for APIM service and API diagnostics;
+- a workspace-based Application Insights resource linked to the example's
+  Log Analytics workspace;
+- an identity-authenticated Event Hub logger for APIM service diagnostics;
+- an Application Insights logger for per-API diagnostics;
 - an Azure Monitor diagnostic setting that sends APIM platform logs and metrics
   to a PerGB2018 Log Analytics workspace; and
 - the minimum RBAC required for the user-assigned identity to send Event Hub data.
 
-The APIM logger's `azuremonitor` diagnostics and the service's Azure Monitor
-diagnostic setting are intentionally separate telemetry paths and do not create
-duplicate resource ownership.
+The service diagnostic keeps the Event Hub-backed `azuremonitor` identifier.
+The API diagnostic uses the provider-valid `applicationinsights` identifier and
+its matching Application Insights logger. AzureRM 5.14 internally defaults
+`operation_name_format` for the API diagnostic resource, so `azuremonitor`
+cannot be used for per-API diagnostics even when that attribute is omitted.
+The service's Azure Monitor diagnostic setting remains a separate platform
+telemetry path and does not create duplicate resource ownership.
 
 This simple example uses public network connectivity for the Event Hub namespace.
 Its namespace-level public access setting and network ruleset are both enabled so
