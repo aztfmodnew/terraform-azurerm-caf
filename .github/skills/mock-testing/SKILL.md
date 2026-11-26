@@ -5,7 +5,7 @@ description: Execute and debug Terraform mock tests for Azure CAF modules. Use t
 
 # Mock Testing for Azure CAF Modules
 
-Mock tests validate that your Terraform module can successfully generate a plan without requiring actual Azure resources.
+Mock tests validate that your Terraform module can successfully generate a plan without requiring actual Azure resources, the Azure CLI, an Azure login, an access token, or an Azure subscription.
 
 ## Terraform MCP Integration
 
@@ -141,22 +141,72 @@ terraform test \
 
 **Alternative (single command)**: Use `terraform -chdir=examples test ...` if you don't want to change directories.
 
-### ⚠️ CRITICAL: Azure Subscription Verification (for real deployments only)
+### ⚠️ CRITICAL: Azure Subscription Verification (for real plan/apply/destroy only)
 
-**Mock tests do NOT require Azure subscription** (they use mock providers).
+**Mock tests require no Azure CLI, login, token, or subscription** because they
+use mock providers. Do not perform Azure authentication preflight commands for a
+mock test.
 
-**For REAL deployments (terraform plan/apply), ALWAYS verify subscription first:**
+For a real lifecycle test, a normal authenticated `az login` session is
+sufficient for Terraform's Azure CLI authentication. An access token request or
+direct ARM REST preflight is not required and must not be run.
 
-```bash
-# 1. Check current Azure subscription
-az account show --query "{subscriptionId:id, name:name, state:state}" -o table
+1. Run the read-only subscription check:
 
-# 2. Confirm with user this is correct
-# MUST get explicit confirmation before plan/apply
+   ```bash
+   az account show \
+     --query "{name:name,id:id,state:state}" \
+     -o json
+   ```
 
-# 3. Export for Terraform
-export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
-```
+2. Present the exact returned subscription **name**, **id**, and **state** to the
+   user. Require an explicit approval that all three values are correct and that
+   the subscription is the intended target. Do not infer approval, and do not
+   continue if the command fails or the subscription state is not `Enabled`.
+3. Only after that confirmation, export the confirmed subscription ID for
+   Terraform. Substitute the exact approved ID:
+
+   ```bash
+   export ARM_SUBSCRIPTION_ID="<confirmed-subscription-id>"
+   ```
+
+4. Use isolated state for the lifecycle test. Select a dedicated backend
+   workspace or key and ensure it cannot overwrite shared or production state.
+   Make no edits to existing Azure source resources.
+5. Save and review the apply plan before asking for apply approval:
+
+   ```bash
+   terraform plan -out=apply.tfplan
+   terraform show -no-color apply.tfplan
+   ```
+
+6. Obtain separate, explicit user approval after the saved plan is reviewed.
+   Apply only that approved plan:
+
+   ```bash
+   terraform apply apply.tfplan
+   ```
+
+7. Verify the deployed resources and run a follow-up plan. For cleanup, create
+   and review a saved destroy plan:
+
+   ```bash
+   terraform plan -destroy -out=destroy.tfplan
+   terraform show -no-color destroy.tfplan
+   ```
+
+8. Obtain separate, explicit approval for the reviewed destroy plan, then apply
+   it:
+
+   ```bash
+   terraform apply destroy.tfplan
+   terraform state list
+   ```
+
+   Confirm the state list is empty. Document any service-specific soft-delete
+   retention or resources that could not be removed, and retain cleanup evidence
+   outside tracked documentation. Never treat plan creation or apply approval as
+   destroy approval.
 
 ### Basic Test Execution
 

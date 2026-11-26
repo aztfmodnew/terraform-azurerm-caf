@@ -193,6 +193,26 @@ When you ask Copilot to perform a task, it:
 
 You don't need to explicitly mention the skill name - Copilot will automatically choose the right skill based on what you're asking for.
 
+## Copilot Task Handoff Template
+
+Use this reusable handoff for focused, repeatable work. Replace every angle-bracket
+placeholder; list exact paths or glob patterns rather than relying on inferred
+scope. Use the relevant specialized skills and agents, and do not begin the next
+gate until the prior gate has an explicit PASS.
+
+```text
+Objective: <measurable outcome>
+Allowed scope: <files or areas that may change>
+Non-goals: <work explicitly excluded>
+Exact pattern files: <exact paths and/or glob patterns to inspect and update>
+Required MCP/provider version: <required MCP tools and exact provider version>
+Model preference: <preferred model, or "no preference"; do not change configuration>
+Definition of done: <tests, validations, and required artifacts; each gate must PASS>
+Git/stack policy: <branch or stack method, authorization for commit/push/submit/merge>
+Workflow: Use the applicable specialized skills/agents. Complete and validate the
+current gate; do not begin the next gate before prior PASS.
+```
+
 ## Skills vs Custom Instructions
 
 **Use Skills for:**
