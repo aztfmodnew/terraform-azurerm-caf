@@ -154,4 +154,15 @@ resource "azurerm_api_management_diagnostic" "apim" {
       delete = try(timeouts.value.delete, null)
     }
   }
+
+  lifecycle {
+    precondition {
+      condition = (
+        var.settings.identifier == "azuremonitor" ?
+        endswith(lower(var.api_management_logger_id), "/loggers/azuremonitor") :
+        !endswith(lower(var.api_management_logger_id), "/loggers/azuremonitor")
+      )
+      error_message = "api_management_logger_id must match identifier: use the built-in /loggers/azuremonitor ID for azuremonitor and an Application Insights logger for applicationinsights. Event Hub loggers are used by the log-to-eventhub policy, not by APIM diagnostic resources."
+    }
+  }
 }

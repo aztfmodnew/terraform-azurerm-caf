@@ -261,9 +261,25 @@ module "api_management_diagnostic" {
   client_config   = local.client_config
   settings        = each.value
 
-  api_management_name      = try(each.value.api_management.name, null) != null ? each.value.api_management.name : local.combined_objects_api_management[coalesce(try(each.value.api_management.lz_key, null), local.client_config.landingzone_key)][each.value.api_management.key].name
-  resource_group_name      = try(each.value.resource_group.name, null) != null ? each.value.resource_group.name : local.combined_objects_resource_groups[coalesce(try(each.value.resource_group.lz_key, null), local.client_config.landingzone_key)][coalesce(try(each.value.resource_group_key, null), try(each.value.resource_group.key, null))].name
-  api_management_logger_id = try(each.value.api_management_logger.id, null) != null ? each.value.api_management_logger.id : local.combined_objects_api_management_logger[coalesce(try(each.value.api_management_logger.lz_key, null), local.client_config.landingzone_key)][each.value.api_management_logger.key].id
+  api_management_name = try(each.value.api_management.name, null) != null ? each.value.api_management.name : local.combined_objects_api_management[coalesce(try(each.value.api_management.lz_key, null), local.client_config.landingzone_key)][each.value.api_management.key].name
+  resource_group_name = try(each.value.resource_group.name, null) != null ? each.value.resource_group.name : local.combined_objects_resource_groups[coalesce(try(each.value.resource_group.lz_key, null), local.client_config.landingzone_key)][coalesce(try(each.value.resource_group_key, null), try(each.value.resource_group.key, null))].name
+  api_management_logger_id = try(coalesce(
+    try(each.value.api_management_logger.id, null),
+    try(local.combined_objects_api_management_logger[coalesce(try(each.value.api_management_logger.lz_key, null), local.client_config.landingzone_key)][each.value.api_management_logger.key].id, null),
+    each.value.identifier == "azuremonitor" ? format(
+      "%s/loggers/azuremonitor",
+      coalesce(
+        try(each.value.api_management.id, null),
+        try(local.combined_objects_api_management[coalesce(try(each.value.api_management.lz_key, null), local.client_config.landingzone_key)][each.value.api_management.key].id, null),
+        format(
+          "/subscriptions/%s/resourceGroups/%s/providers/Microsoft.ApiManagement/service/%s",
+          local.client_config.subscription_id,
+          try(each.value.resource_group.name, null) != null ? each.value.resource_group.name : local.combined_objects_resource_groups[coalesce(try(each.value.resource_group.lz_key, null), local.client_config.landingzone_key)][coalesce(try(each.value.resource_group_key, null), try(each.value.resource_group.key, null))].name,
+          try(each.value.api_management.name, null) != null ? each.value.api_management.name : local.combined_objects_api_management[coalesce(try(each.value.api_management.lz_key, null), local.client_config.landingzone_key)][each.value.api_management.key].name
+        )
+      )
+    ) : null
+  ), null)
 
   remote_objects = {
     api_management        = local.combined_objects_api_management

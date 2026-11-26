@@ -166,9 +166,6 @@ api_management_diagnostic = {
     api_management = {
       key = "ai_gateway"
     }
-    api_management_logger = {
-      key = "eventhub"
-    }
     sampling_percentage       = 100
     always_log_errors         = true
     log_client_ip             = false

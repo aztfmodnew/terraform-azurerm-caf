@@ -8,10 +8,10 @@ module "caf" {
 ## Inputs
 | Name | Description | Type | Required |
 |------|-------------|------|:--------:|
-|identifier| The diagnostic identifier for the API Management Service. At this time the only supported value is `applicationinsights`. Changing this forces a new resource to be created.||True|
+|identifier| The diagnostic identifier for the API Management Service: `applicationinsights` or `azuremonitor`. Changing this forces a new resource to be created.||True|
 |api_management|The `api_management` block as defined below.|Block|True|
 |resource_group|The `resource_group` block as defined below.|Block|True|
-|api_management_logger|The `api_management_logger` block as defined below.|Block|True|
+|api_management_logger|The `api_management_logger` block as defined below. Required for `applicationinsights`; omit for the APIM built-in `azuremonitor` logger. Event Hub loggers cannot be attached to diagnostic resources.|Block|False|
 |always_log_errors| Always log errors. Send telemetry if there is an erroneous condition, regardless of sampling settings.||False|
 |backend_request| A `backend_request` block as defined below.| Block |False|
 |backend_response| A `backend_response` block as defined below.| Block |False|

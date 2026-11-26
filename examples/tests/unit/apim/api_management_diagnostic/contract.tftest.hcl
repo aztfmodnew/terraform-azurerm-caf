@@ -72,8 +72,39 @@ run "diagnostic_with_data_masking_and_timeouts" {
   }
 }
 
-run "eventhub_logger_diagnostic_omits_application_insights_format" {
+run "azuremonitor_diagnostic_uses_builtin_logger_and_omits_application_insights_format" {
   command = plan
+
+  module {
+    source = "../modules/apim/api_management_diagnostic"
+  }
+
+  variables {
+    global_settings          = {}
+    client_config            = { landingzone_key = "local" }
+    remote_objects           = {}
+    base_tags                = {}
+    api_management_name      = "example-apim"
+    resource_group_name      = "example-rg"
+    api_management_logger_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example-rg/providers/Microsoft.ApiManagement/service/example-apim/loggers/azuremonitor"
+    settings = {
+      identifier            = "azuremonitor"
+      operation_name_format = "Url"
+    }
+  }
+
+  assert {
+    condition = (
+      azurerm_api_management_diagnostic.apim.identifier == "azuremonitor" &&
+      azurerm_api_management_diagnostic.apim.operation_name_format == null
+    )
+    error_message = "Azure Monitor service diagnostics must use the built-in logger and omit the Application Insights-only operation_name_format."
+  }
+}
+
+run "azuremonitor_diagnostic_rejects_eventhub_logger" {
+  command         = plan
+  expect_failures = [azurerm_api_management_diagnostic.apim]
 
   module {
     source = "../modules/apim/api_management_diagnostic"
@@ -88,17 +119,8 @@ run "eventhub_logger_diagnostic_omits_application_insights_format" {
     resource_group_name      = "example-rg"
     api_management_logger_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example-rg/providers/Microsoft.ApiManagement/service/example-apim/loggers/eventhub"
     settings = {
-      identifier            = "azuremonitor"
-      operation_name_format = "Url"
+      identifier = "azuremonitor"
     }
-  }
-
-  assert {
-    condition = (
-      azurerm_api_management_diagnostic.apim.identifier == "azuremonitor" &&
-      azurerm_api_management_diagnostic.apim.operation_name_format == null
-    )
-    error_message = "Azure Monitor/Event Hub service diagnostics must not send the Application Insights-only operation_name_format."
   }
 }
 
