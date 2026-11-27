@@ -226,6 +226,11 @@ variable "cognitive_account_customer_managed_key" {
   default = {}
 }
 
+variable "cognitive_account_project" {
+  type    = any
+  default = {}
+}
+
 variable "cognitive_deployment" {
   type    = any
   default = {}

@@ -2,6 +2,7 @@
   "config_files": [
     "ai_services/100-cognitive-services-ai-services",
     "ai_services/101-private-endpoint-rbac",
+    "ai_services/102-ai-gateway-foundry",
     "apim/100-basic",
     "apim/101-api",
     "apim/102-diagnostics",

@@ -24,6 +24,18 @@ resource "azurerm_cognitive_deployment" "service" {
     capacity = try(var.settings.sku.capacity, 1)
   }
 
-  rai_policy_name        = try(var.settings.rai_policy_name, null)
-  version_upgrade_option = try(var.settings.version_upgrade_option, null)
+  dynamic_throttling_enabled = try(var.settings.dynamic_throttling_enabled, null)
+  rai_policy_name            = try(var.settings.rai_policy_name, null)
+  spillover_deployment_name  = try(var.settings.spillover_deployment_name, null)
+  version_upgrade_option     = try(var.settings.version_upgrade_option, null)
+
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+    content {
+      create = try(timeouts.value.create, "30m")
+      read   = try(timeouts.value.read, "5m")
+      update = try(timeouts.value.update, "30m")
+      delete = try(timeouts.value.delete, "30m")
+    }
+  }
 }

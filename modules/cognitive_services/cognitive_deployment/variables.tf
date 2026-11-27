@@ -14,7 +14,10 @@ variable "settings" {
       - family: The family of the sku.
       - capacity: The capacity of the sku.
     - rai_policy_name: The name of the RAI policy.
+    - dynamic_throttling_enabled: Whether dynamic throttling is enabled.
+    - spillover_deployment_name: The existing standard deployment used by a provisioned deployment when throttled.
     - version_upgrade_option: The version upgrade option.
+    - timeouts: Optional create/read/update/delete operation timeouts.
     Example Input:
     ```terraform
     settings = {
@@ -33,7 +36,13 @@ variable "settings" {
         capacity = "sku-capacity"
       }
       rai_policy_name = "rai-policy-name"
+      dynamic_throttling_enabled = true
+      spillover_deployment_name = "standard-deployment"
       version_upgrade_option = "version-upgrade-option"
+      timeouts = {
+        create = "30m"
+        update = "30m"
+      }
     }
     ```
 DESCRIPTION

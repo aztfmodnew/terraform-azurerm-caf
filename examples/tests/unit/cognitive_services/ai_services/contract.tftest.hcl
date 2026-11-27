@@ -182,6 +182,7 @@ run "private_endpoint_forces_account_subresource_and_preserves_dns" {
       custom_subdomain_name         = "private"
       public_network_access_enabled = false
       network_acls = {
+        bypass         = "AzureServices"
         default_action = "Deny"
       }
     }
@@ -197,6 +198,7 @@ run "private_endpoint_forces_account_subresource_and_preserves_dns" {
       output.private_endpoints["ai"].subnet_id == var.remote_objects.vnets.local.ai.subnets.private_endpoints.id &&
       output.private_endpoints["direct"].subnet_id == var.private_endpoints.direct.subnet_id &&
       azurerm_cognitive_account.ai_services.network_acls[0].default_action == "Deny" &&
+      azurerm_cognitive_account.ai_services.network_acls[0].bypass == "AzureServices" &&
       !azurerm_cognitive_account.ai_services.public_network_access_enabled
     )
     error_message = "AI Services private endpoints must force account, retain DNS zone integration, and not replace network ACLs."

@@ -7,6 +7,7 @@ locals {
     active_directory_domain_service_trust          = try(local.combined_objects_active_directory_domain_service_trust, null)
     aks_clusters                                   = try(local.combined_objects_aks_clusters, null)
     ai_services                                    = try(local.combined_objects_ai_services, null)
+    cognitive_account_project                      = try(local.combined_objects_cognitive_account_projects, null)
     api_management                                 = try(local.combined_objects_api_management, null)
     api_management_api                             = try(local.combined_objects_api_management_api, null)
     api_management_api_diagnostic                  = try(local.combined_objects_api_management_api_diagnostic, null)
