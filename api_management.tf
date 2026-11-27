@@ -150,9 +150,61 @@ output "api_management_backend" {
   value = module.api_management_backend
 }
 
+module "api_management_ai_backend" {
+  source   = "./modules/apim/api_management_ai_backend"
+  for_each = local.apim.api_management_ai_backend
+
+  global_settings = local.global_settings
+  client_config   = local.client_config
+  settings        = each.value
+  base_tags       = local.global_settings.inherit_tags ? coalesce(local.global_settings.tags, {}) : {}
+
+  remote_objects = {
+    api_management              = local.combined_objects_api_management
+    resource_groups             = local.combined_objects_resource_groups
+    managed_identities          = local.combined_objects_managed_identities
+    ai_services                 = local.combined_objects_ai_services
+    cognitive_services_accounts = local.combined_objects_cognitive_services_accounts
+    cognitive_deployment        = local.combined_objects_cognitive_deployment
+    cognitive_account_project   = local.combined_objects_cognitive_account_projects
+  }
+}
+output "api_management_ai_backend" {
+  description = "Business-keyed APIM AI backend modules created by the root configuration."
+  value       = module.api_management_ai_backend
+}
+
+module "api_management_backend_pool" {
+  source   = "./modules/apim/api_management_backend_pool"
+  for_each = local.apim.api_management_backend_pool
+
+  global_settings = local.global_settings
+  client_config   = local.client_config
+  settings        = each.value
+  base_tags       = local.global_settings.inherit_tags ? coalesce(local.global_settings.tags, {}) : {}
+
+  remote_objects = {
+    api_management  = local.combined_objects_api_management
+    resource_groups = local.combined_objects_resource_groups
+    ai_backends     = local.combined_objects_api_management_ai_backend
+    backends        = local.combined_objects_api_management_backend
+  }
+}
+output "api_management_backend_pool" {
+  description = "Business-keyed APIM backend pool modules created by the root configuration."
+  value       = module.api_management_backend_pool
+}
+
 module "api_management_api_policy" {
   source   = "./modules/apim/api_management_api_policy"
   for_each = local.apim.api_management_api_policy
+
+  depends_on = [
+    module.api_management_ai_backend,
+    module.api_management_backend_pool,
+    module.api_management_named_value,
+    module.api_management_policy_fragment
+  ]
 
   global_settings = local.global_settings
   client_config   = local.client_config
@@ -613,6 +665,8 @@ output "api_management_policy" {
 module "api_management_policy_fragment" {
   source   = "./modules/apim/api_management_policy_fragment"
   for_each = local.apim.api_management_policy_fragment
+
+  depends_on = [module.api_management_named_value]
 
   global_settings = local.global_settings
   client_config   = local.client_config

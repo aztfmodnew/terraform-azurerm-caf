@@ -368,6 +368,7 @@ variable "api_management" {
     }))
   }))
   default = {}
+
 }
 
 variable "api_management_api" {
@@ -437,6 +438,7 @@ variable "api_management_api" {
     }))
   }))
   default = {}
+
 }
 
 variable "api_management_api_diagnostic" {
@@ -814,11 +816,75 @@ variable "api_management_api_operation" {
 }
 
 variable "api_management_backend" {
-  description = "Map of business-keyed settings for Upstream backend registrations used by APIM policies, including endpoint, authentication and TLS configuration. Each value follows modules/apim/api_management_backend/variables.tf. Defaults to an empty map, which creates none."
+  description = <<DESCRIPTION
+  The api_management_backend object is a map keyed by business key. Each value registers an upstream backend that APIM policies can route requests to.
+  These are the settings that can be configured:
+  - name - (Required) Backend resource name processed by CAF naming.
+  - protocol - (Required) Backend protocol; must be "http" or "soap".
+  - url - (Required) Backend host or base URL.
+  - api_management - (Optional) APIM parent reference.
+    - id - (Optional) APIM resource ID retained as reference metadata.
+    - name - (Optional) Direct APIM service name.
+    - key - (Optional) Business key in the combined APIM objects.
+    - lz_key - (Optional) Landing-zone key; defaults to the current landing zone.
+  - resource_group - (Optional) Resource-group parent reference.
+    - id - (Optional) Resource-group resource ID retained as reference metadata.
+    - name - (Optional) Direct resource-group name.
+    - key - (Optional) Business key in the combined resource-group objects.
+    - lz_key - (Optional) Landing-zone key; defaults to the current landing zone.
+  - resource_group_name - (Optional) Direct APIM resource-group name.
+  - title - (Optional) Short backend label.
+  - description - (Optional) Backend documentation.
+  - resource_id - (Optional) Management URI or ARM ID for the backing service.
+  - credentials - (Optional) Credentials and parameters sent to the upstream.
+    - authorization - (Optional) Authorization settings.
+      - parameter - (Optional) Authorization parameter.
+      - scheme - (Optional) Authorization scheme.
+    - certificate - (Optional) List of client-certificate thumbprints already present in APIM.
+    - header - (Optional) Map of request-header names to values.
+    - query - (Optional) Map of query-parameter names to values.
+  - circuit_breaker_rule - (Optional) Circuit-breaker behavior for backend failures.
+    - name - (Required) Rule name.
+    - trip_duration - (Required) ISO 8601 duration for which the circuit remains open.
+    - accept_retry_after_enabled - (Optional) Honor Retry-After responses.
+    - failure_condition - (Required) Failure trigger.
+      - interval_duration - (Required) ISO 8601 failure-counting window.
+      - count - (Optional) Absolute failure threshold; set exactly one of count or percentage.
+      - percentage - (Optional) Failure percentage threshold; set exactly one of count or percentage.
+      - error_reasons - (Optional) Failure categories to count.
+      - status_code_range - (Optional) HTTP ranges; defaults to an empty list.
+        - min - (Required) Minimum status code.
+        - max - (Required) Maximum status code.
+  - proxy - (Optional) Outbound HTTP proxy.
+    - url - (Required) Proxy URL.
+    - username - (Optional) Proxy user name.
+    - password - (Optional) Proxy password.
+  - tls - (Optional) Upstream TLS verification; omitted flags retain provider behavior.
+    - validate_certificate_chain - (Optional) Validate the certificate chain.
+    - validate_certificate_name - (Optional) Validate the certificate server name.
+  - service_fabric_cluster - (Optional) Service Fabric discovery and certificate settings.
+    - management_endpoints - (Required) Set of cluster management URLs.
+    - max_partition_resolution_retries - (Required) Maximum partition-resolution retries.
+    - client_certificate_thumbprint - (Optional) Client-certificate thumbprint.
+    - client_certificate_id - (Optional) Client-certificate resource ID.
+    - server_certificate_thumbprints - (Optional) Set of trusted server-certificate thumbprints.
+    - server_x509_name - (Optional) Set of trusted server names.
+      - name - (Required) Certificate common name.
+      - issuer_certificate_thumbprint - (Required) Issuer certificate thumbprint.
+  - server_x509_name - (Optional) Legacy single trusted server-name object.
+    - name - (Required) Certificate common name.
+    - issuer_certificate_thumbprint - (Required) Issuer certificate thumbprint.
+  - timeouts - (Optional) Provider operation durations; omitted fields retain provider defaults.
+    - create - (Optional) Create timeout.
+    - read - (Optional) Read timeout.
+    - update - (Optional) Update timeout.
+    - delete - (Optional) Delete timeout.
+DESCRIPTION
   type = map(object({
-    name     = string
-    protocol = string
-    url      = string
+    name                = string
+    protocol            = string
+    url                 = string
+    resource_group_name = optional(string)
     api_management = optional(object({
       id     = optional(string)
       key    = optional(string)
@@ -881,6 +947,259 @@ variable "api_management_backend" {
     tls = optional(object({
       validate_certificate_chain = optional(bool)
       validate_certificate_name  = optional(bool)
+    }))
+    timeouts = optional(object({
+      create = optional(string)
+      read   = optional(string)
+      update = optional(string)
+      delete = optional(string)
+    }))
+  }))
+  default = {}
+}
+
+variable "api_management_ai_backend" {
+  description = <<DESCRIPTION
+  The api_management_ai_backend object is a map keyed by business key. Each value registers an APIM single backend for an AI HTTPS endpoint and generates its managed-identity authentication policy.
+  These are the settings that can be configured:
+  - name - (Required) Backend resource name processed by CAF naming.
+  - endpoint - (Optional) Direct HTTPS endpoint; exactly one top-level endpoint source is required.
+  - url - (Optional) Alias for a direct HTTPS endpoint; exactly one top-level endpoint source is required.
+  - ai_services - (Optional) AI Services endpoint reference; exactly one top-level endpoint source is required.
+    - endpoint - (Optional) Direct HTTPS endpoint; mutually exclusive with key.
+    - key - (Optional) AI Services business key; mutually exclusive with endpoint.
+    - lz_key - (Optional) Landing-zone key; defaults to the current landing zone.
+  - cognitive_services_account - (Optional) Cognitive Services account endpoint reference.
+    - endpoint - (Optional) Direct HTTPS endpoint; mutually exclusive with key.
+    - key - (Optional) Cognitive Services account business key; mutually exclusive with endpoint.
+    - lz_key - (Optional) Landing-zone key; defaults to the current landing zone.
+  - cognitive_account_deployment - (Optional) Cognitive account deployment endpoint reference.
+    - endpoint - (Optional) Direct HTTPS endpoint; mutually exclusive with key.
+    - key - (Optional) Cognitive deployment business key; mutually exclusive with endpoint.
+    - lz_key - (Optional) Landing-zone key; defaults to the current landing zone.
+  - cognitive_deployment - (Optional) Cognitive deployment endpoint reference.
+    - endpoint - (Optional) Direct HTTPS endpoint; mutually exclusive with key.
+    - key - (Optional) Cognitive deployment business key; mutually exclusive with endpoint.
+    - lz_key - (Optional) Landing-zone key; defaults to the current landing zone.
+  - cognitive_account_project - (Optional) Cognitive account project endpoint reference.
+    - endpoint - (Optional) Direct HTTPS endpoint; mutually exclusive with key.
+    - key - (Optional) Cognitive project business key; mutually exclusive with endpoint.
+    - lz_key - (Optional) Landing-zone key; defaults to the current landing zone.
+    - endpoint_key - (Optional) Named project endpoint; falls back to endpoint_key at the top level, then "project", then the first endpoint.
+  - endpoint_path - (Optional) Path appended to the resolved endpoint; defaults to no path.
+  - endpoint_key - (Optional) Default project endpoint selector.
+  - api_version - (Optional) APIM backends API version. Defaults to "2024-05-01".
+  - protocol - (Optional) Backend protocol. Defaults to "http".
+  - title - (Optional) Backend title.
+  - description - (Optional) Backend description.
+  - resource_id - (Optional) ARM resource ID represented by the backend.
+  - azure_region - (Optional) Preferred Azure region; supported only by the 2025 preview API versions listed by the module.
+  - api_management_id - (Optional) Direct APIM resource ID.
+  - api_management - (Optional) APIM reference.
+    - id - (Optional) Direct APIM resource ID.
+    - name - (Optional) Direct APIM name.
+    - resource_group_name - (Optional) Direct APIM resource-group name used with name.
+    - key - (Optional) APIM business key.
+    - lz_key - (Optional) Landing-zone key; defaults to the current landing zone.
+  - resource_group_name - (Optional) Direct APIM resource-group name.
+  - resource_group - (Optional) Resource-group reference.
+    - name - (Optional) Direct resource-group name.
+    - key - (Optional) Resource-group business key.
+    - lz_key - (Optional) Landing-zone key; defaults to the current landing zone.
+  - managed_identity - (Optional) Identity selector. Omit to use APIM's system-assigned identity.
+    - client_id - (Optional) Direct managed-identity client ID.
+    - id - (Optional) Managed-identity resource ID.
+    - name - (Optional) Managed-identity name.
+    - key - (Optional) Managed-identity business key.
+    - lz_key - (Optional) Landing-zone key; defaults to the current landing zone.
+  - tls - (Optional) Upstream TLS verification settings.
+    - validate_certificate_chain - (Optional) Validate the certificate chain.
+    - validate_certificate_name - (Optional) Validate the certificate server name.
+  - reconnect - (Optional) AzAPI reconnect action settings.
+    - enabled - (Optional) Run the reconnect action. Defaults to true.
+    - after - (Optional) Reconnect delay. Defaults to "PT2M".
+  - action_timeouts - (Optional) Reconnect action timeouts; omitted fields retain provider defaults.
+    - create - (Optional) Create timeout.
+    - read - (Optional) Read timeout.
+    - update - (Optional) Update timeout.
+    - delete - (Optional) Delete timeout.
+  - timeouts - (Optional) Backend resource timeouts; omitted fields retain provider defaults.
+    - create - (Optional) Create timeout.
+    - read - (Optional) Read timeout.
+    - update - (Optional) Update timeout.
+    - delete - (Optional) Delete timeout.
+DESCRIPTION
+  type = map(object({
+    name              = string
+    url               = optional(string)
+    endpoint          = optional(string)
+    endpoint_path     = optional(string)
+    endpoint_key      = optional(string)
+    api_version       = optional(string, "2024-05-01")
+    protocol          = optional(string, "http")
+    title             = optional(string)
+    description       = optional(string)
+    resource_id       = optional(string)
+    azure_region      = optional(string)
+    api_management_id = optional(string)
+    api_management = optional(object({
+      id                  = optional(string)
+      key                 = optional(string)
+      lz_key              = optional(string)
+      name                = optional(string)
+      resource_group_name = optional(string)
+    }))
+    resource_group_name = optional(string)
+    resource_group = optional(object({
+      key    = optional(string)
+      lz_key = optional(string)
+      name   = optional(string)
+    }))
+    ai_services = optional(object({
+      key      = optional(string)
+      lz_key   = optional(string)
+      endpoint = optional(string)
+    }))
+    cognitive_services_account = optional(object({
+      key      = optional(string)
+      lz_key   = optional(string)
+      endpoint = optional(string)
+    }))
+    cognitive_account_deployment = optional(object({
+      key      = optional(string)
+      lz_key   = optional(string)
+      endpoint = optional(string)
+    }))
+    cognitive_deployment = optional(object({
+      key      = optional(string)
+      lz_key   = optional(string)
+      endpoint = optional(string)
+    }))
+    cognitive_account_project = optional(object({
+      key          = optional(string)
+      lz_key       = optional(string)
+      endpoint     = optional(string)
+      endpoint_key = optional(string)
+    }))
+    managed_identity = optional(object({
+      client_id = optional(string)
+      id        = optional(string)
+      key       = optional(string)
+      lz_key    = optional(string)
+      name      = optional(string)
+    }))
+    tls = optional(object({
+      validate_certificate_chain = optional(bool)
+      validate_certificate_name  = optional(bool)
+    }))
+    reconnect = optional(object({
+      enabled = optional(bool, true)
+      after   = optional(string, "PT2M")
+    }))
+    action_timeouts = optional(object({
+      create = optional(string)
+      read   = optional(string)
+      update = optional(string)
+      delete = optional(string)
+    }))
+    timeouts = optional(object({
+      create = optional(string)
+      read   = optional(string)
+      update = optional(string)
+      delete = optional(string)
+    }))
+  }))
+  default = {}
+}
+
+variable "api_management_backend_pool" {
+  description = <<DESCRIPTION
+  The api_management_backend_pool object is a map keyed by business key. Each value registers an APIM pool composed from AI or standard child backends.
+  These are the settings that can be configured:
+  - name - (Required) Pool resource name processed by CAF naming.
+  - services - (Required) List of 1 to 30 pool members.
+    - id - (Optional) Direct child-backend ARM ID; exactly one of id, key, or name is required.
+    - key - (Optional) Child-backend business key; exactly one of id, key, or name is required.
+    - name - (Optional) Child-backend name used to derive its ARM ID; exactly one of id, key, or name is required.
+    - source - (Optional) Lookup collection, "ai_backends" or "backends". Defaults to "ai_backends".
+    - lz_key - (Optional) Landing-zone key for key lookup; defaults to the current landing zone.
+    - weight - (Optional) Routing weight from 0 to 100. Defaults to 100.
+    - priority - (Optional) Routing priority from 0 to 100. Defaults to 1.
+    - preferred_carbon_emission - (Optional) Carbon preference: "VeryLow", "Low", "Medium", "High", or "VeryHigh"; supported by 2025 preview APIs.
+  - api_version - (Optional) APIM backends API version. Defaults to "2024-05-01".
+  - title - (Optional) Pool title.
+  - description - (Optional) Pool description.
+  - api_management_id - (Optional) Direct APIM resource ID.
+  - api_management - (Optional) APIM reference.
+    - id - (Optional) Direct APIM resource ID.
+    - name - (Optional) Direct APIM name.
+    - resource_group_name - (Optional) Direct APIM resource-group name used with name.
+    - key - (Optional) APIM business key.
+    - lz_key - (Optional) Landing-zone key; defaults to the current landing zone.
+  - resource_group_name - (Optional) Direct APIM resource-group name.
+  - resource_group - (Optional) Resource-group reference.
+    - name - (Optional) Direct resource-group name.
+    - key - (Optional) Resource-group business key.
+    - lz_key - (Optional) Landing-zone key; defaults to the current landing zone.
+  - session_affinity - (Optional) Cookie-based session affinity; requires "2024-10-01-preview" or later.
+    - cookie_name - (Required) Session cookie name.
+  - failure_response_status_code - (Optional) Fallback HTTP status from 100 to 599; requires "2024-10-01-preview" or later.
+  - reconnect - (Optional) AzAPI reconnect action settings.
+    - enabled - (Optional) Run the reconnect action. Defaults to false.
+    - after - (Optional) Reconnect delay. Defaults to "PT2M".
+  - action_timeouts - (Optional) Reconnect action timeouts; omitted fields retain provider defaults.
+    - create - (Optional) Create timeout.
+    - read - (Optional) Read timeout.
+    - update - (Optional) Update timeout.
+    - delete - (Optional) Delete timeout.
+  - timeouts - (Optional) Pool resource timeouts; omitted fields retain provider defaults.
+    - create - (Optional) Create timeout.
+    - read - (Optional) Read timeout.
+    - update - (Optional) Update timeout.
+    - delete - (Optional) Delete timeout.
+DESCRIPTION
+  type = map(object({
+    name                = string
+    api_version         = optional(string, "2024-05-01")
+    title               = optional(string)
+    description         = optional(string)
+    api_management_id   = optional(string)
+    resource_group_name = optional(string)
+    api_management = optional(object({
+      id                  = optional(string)
+      key                 = optional(string)
+      lz_key              = optional(string)
+      name                = optional(string)
+      resource_group_name = optional(string)
+    }))
+    resource_group = optional(object({
+      key    = optional(string)
+      lz_key = optional(string)
+      name   = optional(string)
+    }))
+    services = list(object({
+      id                        = optional(string)
+      name                      = optional(string)
+      key                       = optional(string)
+      lz_key                    = optional(string)
+      source                    = optional(string, "ai_backends")
+      weight                    = optional(number, 100)
+      priority                  = optional(number, 1)
+      preferred_carbon_emission = optional(string)
+    }))
+    session_affinity = optional(object({
+      cookie_name = string
+    }))
+    failure_response_status_code = optional(number)
+    reconnect = optional(object({
+      enabled = optional(bool, false)
+      after   = optional(string, "PT2M")
+    }))
+    action_timeouts = optional(object({
+      create = optional(string)
+      read   = optional(string)
+      update = optional(string)
+      delete = optional(string)
     }))
     timeouts = optional(object({
       create = optional(string)

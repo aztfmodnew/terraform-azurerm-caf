@@ -7,11 +7,16 @@
 - **cognitive_services/cognitive_account_project**: Microsoft Foundry project module with direct, local, and remote parent-account references, managed identity, endpoints, and role outputs.
 - **ai_services** and **cognitive_deployment**: AzureRM 5.14 throughput and network ACL contract coverage.
 - **examples/ai_services/102-ai-gateway-foundry**: Integrated Foundry platform example with diagnostics and lower-layer RBAC.
+- **apim/api_management_ai_backend**: managed-identity AI backend onboarding with direct and CAF-resolved AI endpoints using AzAPI 2.13.0.
+- **apim/api_management_backend_pool**: weighted and prioritized backend pools with session affinity, failure response, reconnect action, and timeouts.
+- **examples/apim/400-ai-gateway-routing**: generic APIM policy, fragment, named-value, AI backend, and pool composition.
 
 ### Impact Analysis
 
 - Existing AI Services and deployment addresses and inputs remain unchanged.
-- No API connections, APIM backend/policy, Logic App, Cosmos DB, or application changes are included.
+- Existing APIM backend resources remain unchanged; the new routing layer is additive and requires no migration.
+- AI routing uses managed identity by default; example traces are limited to non-content operational metadata.
+- Products/access subscriptions, Logic App, Cosmos DB, and application code remain outside this change.
 
 ## What's Changed
 
