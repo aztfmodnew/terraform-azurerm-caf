@@ -35,6 +35,11 @@ variable "apim" {
   default     = {}
 }
 
+variable "integration" {
+  description = "Configuration object for integration services, including Azure API Center."
+  default     = {}
+}
+
 variable "iot" {
   description = "Configuration object - IoT"
   default = {

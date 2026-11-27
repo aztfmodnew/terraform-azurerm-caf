@@ -471,6 +471,9 @@ module "example" {
     api_management_workspace_policy_fragment       = var.api_management_workspace_policy_fragment
     api_management_product_policy                  = var.api_management_product_policy
   }
+  integration = {
+    api_center = var.api_center
+  }
   purview = {
     purview_accounts = var.purview_accounts
   }

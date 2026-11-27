@@ -61,6 +61,7 @@
     "apim/155-ai-gateway-observability",
     "apim/200-private-api-management",
     "apim/400-ai-gateway-routing",
+    "apim/500-ai-gateway-api-center-access-contract",
     "app_config/100-simple",
     "app_config/101-private-link",
     "app_insights/100-all-attributes",

@@ -42,6 +42,11 @@ endpoint targeting `Gateway`, the `privatelink.azure-api.net` DNS zone, and a
 VNet link. It does not use APIM VNet injection and does not depend on AI
 Services or Azure Monitor Private Link Scope.
 
+[`500-ai-gateway-api-center-access-contract`](500-ai-gateway-api-center-access-contract)
+composes the APIM AI Gateway access contract and registers its API hierarchy in
+Azure API Center. It includes an approval-gated product subscription and an
+API Center catalog with an APIM deployment reference.
+
 ## Scenario numbering
 
 APIM examples use a flat `NNN-description/` layout. The numbers identify

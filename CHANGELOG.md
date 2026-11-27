@@ -10,13 +10,16 @@
 - **apim/api_management_ai_backend**: managed-identity AI backend onboarding with direct and CAF-resolved AI endpoints using AzAPI 2.13.0.
 - **apim/api_management_backend_pool**: weighted and prioritized backend pools with session affinity, failure response, reconnect action, and timeouts.
 - **examples/apim/400-ai-gateway-routing**: generic APIM policy, fragment, named-value, AI backend, and pool composition.
+- **integration/api_center**: Azure API Center service and complete catalog hierarchy using stable ARM 2024-03-01, system/user-assigned identity, specification import, direct/local/remote references, timeouts, and non-secret outputs.
+- **examples/apim/500-ai-gateway-api-center-access-contract**: APIM AI API product, product/API association, approval-gated subscription, named quota/rate fragment, and API Center registration contract.
 
 ### Impact Analysis
 
 - Existing AI Services and deployment addresses and inputs remain unchanged.
 - Existing APIM backend resources remain unchanged; the new routing layer is additive and requires no migration.
 - AI routing uses managed identity by default; example traces are limited to non-content operational metadata.
-- Products/access subscriptions, Logic App, Cosmos DB, and application code remain outside this change.
+- The API Center layer is additive and uses no preview API or AzureRM resource.
+- Products/access subscriptions, Logic App, Cosmos DB, and application code remain outside the routing refactor; the new 500 example only validates access contracts.
 
 ## What's Changed
 

@@ -1112,6 +1112,12 @@ DESCRIPTION
   default = {}
 }
 
+variable "api_center" {
+  description = "Map of composed Azure API Center services and catalog hierarchies. Each value is passed to modules/integration/api_center."
+  type        = map(any)
+  default     = {}
+}
+
 variable "api_management_backend_pool" {
   description = <<DESCRIPTION
   The api_management_backend_pool object is a map keyed by business key. Each value registers an APIM pool composed from AI or standard child backends.
