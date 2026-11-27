@@ -3,6 +3,7 @@
     "ai_services/100-cognitive-services-ai-services",
     "ai_services/101-private-endpoint-rbac",
     "ai_services/102-ai-gateway-foundry",
+    "ai_services/400-ai-gateway-usage-data",
     "apim/100-basic",
     "apim/101-api",
     "apim/102-diagnostics",

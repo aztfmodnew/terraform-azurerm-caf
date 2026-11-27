@@ -19,6 +19,7 @@ resource "azurerm_logic_app_standard" "logic_app_standard" {
   version                    = lookup(var.settings, "version", null)
   virtual_network_subnet_id  = lookup(var.settings, "vnet_integration", null) != null ? can(var.settings.vnet_integration.subnet_id) ? var.settings.vnet_integration.subnet_id : try(var.vnets[try(var.settings.vnet_integration.lz_key, var.client_config.landingzone_key)][var.settings.vnet_integration.vnet_key].subnets[var.settings.vnet_integration.subnet_key].id, try(var.virtual_subnets[var.client_config.landingzone_key][var.settings.vnet_integration.subnet_key].id, var.virtual_subnets[var.settings.vnet_integration.lz_key][var.settings.vnet_integration.subnet_key].id)) : null
   app_settings               = local.app_settings
+  tags                       = merge(try(var.base_tags, {}), try(var.settings.tags, {}))
 
   dynamic "site_config" {
     for_each = lookup(var.settings, "site_config", {}) != {} ? [1] : []
@@ -42,6 +43,7 @@ resource "azurerm_logic_app_standard" "logic_app_standard" {
           support_credentials = lookup(var.settings.site_config.cors, "support_credentials", null)
         }
       }
+
     }
   }
 
@@ -49,7 +51,18 @@ resource "azurerm_logic_app_standard" "logic_app_standard" {
     for_each = try(var.settings.identity, null) == null ? [] : [var.settings.identity]
     content {
       type         = var.settings.identity.type
-      identity_ids = contains(["userassigned", "systemassigned", "systemassigned, userassigned"], lower(var.settings.identity.type)) ? local.managed_identities : null
+      identity_ids = contains(["userassigned", "systemassigned, userassigned"], lower(var.settings.identity.type)) ? local.managed_identities : null
+    }
+  }
+
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
     }
   }
 }

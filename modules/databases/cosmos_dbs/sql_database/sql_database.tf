@@ -11,7 +11,7 @@ resource "azurerm_cosmosdb_sql_database" "database" {
   resource_group_name = var.resource_group_name
   account_name        = var.cosmosdb_account_name
   # Note : throughput and autoscale_settings conflict and autoscale_settings will take precedence if set
-  throughput = try(var.settings.autoscale_settings, null) != null ? null : var.settings.throughput
+  throughput = try(var.settings.autoscale_settings, null) != null ? null : try(var.settings.throughput, null)
 
   # Note : throughput and autoscale_settings conflict and autoscale_settings will take precedence if set
   dynamic "autoscale_settings" {
@@ -21,19 +21,33 @@ resource "azurerm_cosmosdb_sql_database" "database" {
       max_throughput = autoscale_settings.value.max_throughput
     }
   }
+
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
+    }
+  }
 }
 
 # Create container
 resource "azurerm_cosmosdb_sql_container" "container" {
   for_each = var.settings.containers
 
-  name                = each.value.name
-  resource_group_name = var.resource_group_name
-  account_name        = var.cosmosdb_account_name
-  database_name       = azurerm_cosmosdb_sql_database.database.name
-  partition_key_paths = each.value.partition_key_paths
+  name                   = each.value.name
+  resource_group_name    = var.resource_group_name
+  account_name           = var.cosmosdb_account_name
+  database_name          = azurerm_cosmosdb_sql_database.database.name
+  partition_key_paths    = each.value.partition_key_paths
+  partition_key_kind     = try(each.value.partition_key_kind, null)
+  partition_key_version  = try(each.value.partition_key_version, null)
+  analytical_storage_ttl = try(each.value.analytical_storage_ttl, null)
   # Note : throughput and autoscale_settings conflict and autoscale_settings will take precedence if set
-  throughput  = try(each.value.autoscale_settings, null) != null ? null : each.value.throughput
+  throughput  = try(each.value.autoscale_settings, null) != null ? null : try(each.value.throughput, null)
   default_ttl = try(each.value.default_ttl, -1)
 
   dynamic "unique_key" {
@@ -100,4 +114,24 @@ resource "azurerm_cosmosdb_sql_container" "container" {
     }
   }
 
+  dynamic "conflict_resolution_policy" {
+    for_each = try(each.value.conflict_resolution_policy, null) == null ? [] : [each.value.conflict_resolution_policy]
+
+    content {
+      mode                          = conflict_resolution_policy.value.mode
+      conflict_resolution_path      = try(conflict_resolution_policy.value.conflict_resolution_path, null)
+      conflict_resolution_procedure = try(conflict_resolution_policy.value.conflict_resolution_procedure, null)
+    }
+  }
+
+  dynamic "timeouts" {
+    for_each = try(each.value.timeouts, null) == null ? [] : [each.value.timeouts]
+
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
+    }
+  }
 }
