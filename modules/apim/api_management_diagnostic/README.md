@@ -8,10 +8,10 @@ module "caf" {
 ## Inputs
 | Name | Description | Type | Required |
 |------|-------------|------|:--------:|
-|identifier| The diagnostic identifier for the API Management Service. At this time the only supported value is `applicationinsights`. Changing this forces a new resource to be created.||True|
+|identifier| The diagnostic identifier for the API Management Service: `applicationinsights` or `azuremonitor`. Changing this forces a new resource to be created.||True|
 |api_management|The `api_management` block as defined below.|Block|True|
 |resource_group|The `resource_group` block as defined below.|Block|True|
-|api_management_logger|The `api_management_logger` block as defined below.|Block|True|
+|api_management_logger|The `api_management_logger` block as defined below. Required for `applicationinsights`; omit for the APIM built-in `azuremonitor` logger. Event Hub loggers cannot be attached to diagnostic resources.|Block|False|
 |always_log_errors| Always log errors. Send telemetry if there is an erroneous condition, regardless of sampling settings.||False|
 |backend_request| A `backend_request` block as defined below.| Block |False|
 |backend_response| A `backend_response` block as defined below.| Block |False|
@@ -21,7 +21,7 @@ module "caf" {
 |log_client_ip| Log client IP address.||False|
 |sampling_percentage| Sampling (%). For high traffic APIs, please read this [documentation](https://docs.microsoft.com/azure/api-management/api-management-howto-app-insights#performance-implications-and-log-sampling) to understand performance implications and log sampling. Valid values are between `0.0` and `100.0`.||False|
 |verbosity| Logging verbosity. Possible values are `verbose`, `information` or `error`.||False|
-|operation_name_format| The format of the Operation Name for Application Insights telemetries. Possible values are `Name`, and `Url`. Defaults to `Name`.||False|
+|operation_name_format| The format of the Operation Name for Application Insights telemetries. Possible values are `Name`, and `Url`. Omitted for non-`applicationinsights` identifiers.||False|
 
 ## Blocks
 | Block | Argument | Description | Required |

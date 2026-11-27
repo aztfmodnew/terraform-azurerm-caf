@@ -27,8 +27,28 @@ module "caf" {
 |api_management| lz_key |Landing Zone Key in wich the api_management is located|||True|
 |api_management| name | The name of the api_management |||True|
 |application_insights|instrumentation_key| The instrumentation key used to push data to Application Insights.|||True|
-|eventhub|name| The name of an EventHub.|||True|
-|eventhub|connection_string| The connection string of an EventHub Namespace.|||True|
+|eventhub|name| Direct Event Hub name. A direct name or an `event_hub`/`hub` reference is required.|||False|
+|eventhub|connection_string| Direct authorization-rule connection string. Direct values take precedence over resolved authorization rules.|||False|
+|eventhub|endpoint_uri| Direct namespace endpoint for managed-identity ingestion. A namespace reference can provide it; otherwise the module derives its host with the configured cloud `servicebusEndpoint`.|||False|
+|eventhub|event_hub| Event Hub key/name reference resolved through CAF combined objects.|||False|
+|eventhub|event_hub_namespace| Event Hub Namespace key/name reference resolved through CAF combined objects.|||False|
+|eventhub|authorization_rule| Event Hub or namespace authorization-rule reference providing a connection string.|||False|
+|eventhub|managed_identity| User-assigned managed identity reference providing the APIM logger client ID.|||False|
+
+Exactly one of `application_insights` and `eventhub` is accepted. No generic
+Azure Monitor logger is synthesized. Event Hub ingestion supports either a
+connection string or a namespace endpoint with the service identity; direct
+inputs retain precedence for compatibility. Derived endpoints use
+`cloud.servicebusEndpoint`, defaulting to `.servicebus.windows.net`, so
+sovereign-cloud consumers can override the Service Bus DNS suffix.
+
+## Focused contract
+
+```bash
+terraform -chdir=examples test \
+  -test-directory=tests/unit/apim/api_management_logger \
+  -no-color
+```
 
 ## Outputs
 | Name | Description |

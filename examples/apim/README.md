@@ -28,6 +28,14 @@ resource_to_be_created = {
 
 You can review the complete set of examples in the [GitHub repository](https://github.com/aztfmodnew/terraform-azurerm-caf/tree/main/examples/apim).
 
+## AI Gateway observability
+
+[`155-ai-gateway-observability`](155-ai-gateway-observability) combines a
+workspace-backed Application Insights resource, a Log Analytics platform
+diagnostic setting, an Event Hub-backed APIM service diagnostic, and an
+Application Insights-backed per-API diagnostic. The example uses the Developer
+APIM tier and identity-based Event Hub ingestion.
+
 ## Scenario numbering
 
 APIM examples use a flat `NNN-description/` layout. The numbers identify

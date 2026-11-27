@@ -10,7 +10,7 @@ resource "azurerm_api_management_diagnostic" "apim" {
   metrics_enabled           = try(var.settings.metrics_enabled, null)
   sampling_percentage       = try(var.settings.sampling_percentage, null)
   verbosity                 = try(var.settings.verbosity, null)
-  operation_name_format     = try(var.settings.operation_name_format, null)
+  operation_name_format     = var.settings.identifier == "applicationinsights" ? try(var.settings.operation_name_format, null) : null
 
   dynamic "backend_request" {
     for_each = try(var.settings.backend_request, null) == null ? [] : [var.settings.backend_request]
@@ -152,6 +152,17 @@ resource "azurerm_api_management_diagnostic" "apim" {
       read   = try(timeouts.value.read, null)
       update = try(timeouts.value.update, null)
       delete = try(timeouts.value.delete, null)
+    }
+  }
+
+  lifecycle {
+    precondition {
+      condition = (
+        var.settings.identifier == "azuremonitor" ?
+        endswith(lower(var.api_management_logger_id), "/loggers/azuremonitor") :
+        !endswith(lower(var.api_management_logger_id), "/loggers/azuremonitor")
+      )
+      error_message = "api_management_logger_id must match identifier: use the built-in /loggers/azuremonitor ID for azuremonitor and an Application Insights logger for applicationinsights. Event Hub loggers are used by the log-to-eventhub policy, not by APIM diagnostic resources."
     }
   }
 }

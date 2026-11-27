@@ -9,9 +9,9 @@ resource "azurerm_monitor_diagnostic_setting" "diagnostics" {
   target_resource_id = var.resource_id
 
   eventhub_name = contains(try([tostring(each.value.destination_type)], tolist(each.value.destination_type)), "event_hub") ? try(
+    each.value.eventhub_name,
     var.diagnostics.event_hub_namespaces[var.diagnostics.diagnostics_destinations.event_hub_namespaces[each.value.destination_key].event_hub_namespace_key].event_hubs[each.value.event_hub_key].name,
     var.diagnostics.event_hub_namespaces[var.diagnostics.diagnostics_destinations.event_hub_namespaces[each.value.destination_key].event_hub_namespace_key].name,
-    each.value.eventhub_name,
     null
   ) : null
 

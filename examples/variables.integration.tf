@@ -358,7 +358,8 @@ variable "api_management" {
     tenant_access = optional(object({
       enabled = bool
     }))
-    tags = optional(map(string), {})
+    tags                = optional(map(string), {})
+    diagnostic_profiles = optional(map(any), {})
     timeouts = optional(object({
       create = optional(string)
       read   = optional(string)
@@ -569,10 +570,68 @@ variable "api_management_logger" {
       identity_client_id  = optional(string)
     }))
     eventhub = optional(object({
-      name                             = string
+      name                             = optional(string)
+      event_hub_name                   = optional(string)
+      event_hub_namespace_name         = optional(string)
       connection_string                = optional(string)
       endpoint_uri                     = optional(string)
+      resource_id                      = optional(string)
       user_assigned_identity_client_id = optional(string)
+      event_hub_namespace_key          = optional(string)
+      event_hub_key                    = optional(string)
+      authorization_rule_key           = optional(string)
+      managed_identity_key             = optional(string)
+      event_hub_namespace = optional(object({
+        id           = optional(string)
+        key          = optional(string)
+        lz_key       = optional(string)
+        name         = optional(string)
+        endpoint_uri = optional(string)
+      }))
+      namespace = optional(object({
+        id           = optional(string)
+        key          = optional(string)
+        lz_key       = optional(string)
+        name         = optional(string)
+        endpoint_uri = optional(string)
+      }))
+      event_hub = optional(object({
+        id     = optional(string)
+        key    = optional(string)
+        lz_key = optional(string)
+        name   = optional(string)
+      }))
+      hub = optional(object({
+        id     = optional(string)
+        key    = optional(string)
+        lz_key = optional(string)
+        name   = optional(string)
+      }))
+      authorization_rule = optional(object({
+        key                       = optional(string)
+        lz_key                    = optional(string)
+        primary_connection_string = optional(string)
+      }))
+      event_hub_authorization_rule = optional(object({
+        key                       = optional(string)
+        lz_key                    = optional(string)
+        primary_connection_string = optional(string)
+      }))
+      event_hub_namespace_authorization_rule = optional(object({
+        key                       = optional(string)
+        lz_key                    = optional(string)
+        primary_connection_string = optional(string)
+      }))
+      managed_identity = optional(object({
+        client_id = optional(string)
+        key       = optional(string)
+        lz_key    = optional(string)
+      }))
+      identity = optional(object({
+        client_id = optional(string)
+        key       = optional(string)
+        lz_key    = optional(string)
+      }))
     }))
     timeouts = optional(object({
       create = optional(string)

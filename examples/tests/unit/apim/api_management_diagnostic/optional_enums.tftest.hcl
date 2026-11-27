@@ -5,7 +5,7 @@ variables {
   client_config            = { landingzone_key = "local" }
   api_management_name      = "example-apim"
   resource_group_name      = "example-rg"
-  api_management_logger_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example-rg/providers/Microsoft.ApiManagement/service/example-apim/loggers/monitor"
+  api_management_logger_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example-rg/providers/Microsoft.ApiManagement/service/example-apim/loggers/azuremonitor"
 }
 
 run "explicit_null_optional_enums_remain_provider_owned" {

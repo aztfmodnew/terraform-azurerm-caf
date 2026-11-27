@@ -23,6 +23,20 @@ output "api_management" {
   sensitive = true
 }
 
+module "api_management_diagnostics" {
+  source   = "./modules/diagnostics"
+  for_each = local.apim.api_management
+
+  resource_id       = module.api_management[each.key].id
+  resource_location = module.api_management[each.key].location
+  diagnostics       = local.combined_diagnostics
+  profiles          = try(each.value.diagnostic_profiles, {})
+}
+
+output "api_management_diagnostics" {
+  value = module.api_management_diagnostics
+}
+
 module "api_management_api" {
   source   = "./modules/apim/api_management_api"
   for_each = local.apim.api_management_api
@@ -44,20 +58,27 @@ output "api_management_api" {
 }
 
 module "api_management_logger" {
-  source   = "./modules/apim/api_management_logger"
-  for_each = local.apim.api_management_logger
+  source     = "./modules/apim/api_management_logger"
+  depends_on = [time_sleep.azurerm_role_assignment_for]
+  for_each   = local.apim.api_management_logger
 
   global_settings = local.global_settings
   client_config   = local.client_config
+  cloud           = local.cloud
   settings        = each.value
 
   resource_group_name = try(each.value.resource_group.name, null) != null || try(each.value.resource_group_name, null) != null ? coalesce(try(each.value.resource_group.name, null), try(each.value.resource_group_name, null)) : local.combined_objects_resource_groups[coalesce(try(each.value.resource_group.lz_key, null), local.client_config.landingzone_key)][coalesce(try(each.value.resource_group_key, null), try(each.value.resource_group.key, null))].name
   api_management_name = try(each.value.api_management.name, null) != null ? each.value.api_management.name : local.combined_objects_api_management[coalesce(try(each.value.api_management.lz_key, null), local.client_config.landingzone_key)][each.value.api_management.key].name
 
   remote_objects = {
-    resource_group       = local.combined_objects_resource_groups
-    api_management       = local.combined_objects_api_management
-    application_insights = local.combined_objects_application_insights
+    resource_group                 = local.combined_objects_resource_groups
+    api_management                 = local.combined_objects_api_management
+    application_insights           = local.combined_objects_application_insights
+    event_hub_namespaces           = local.combined_objects_event_hub_namespaces
+    event_hubs                     = local.combined_objects_event_hubs
+    event_hub_auth_rules           = local.combined_objects_event_hub_auth_rules
+    event_hub_namespace_auth_rules = local.combined_objects_event_hub_namespace_auth_rules
+    managed_identities             = local.combined_objects_managed_identities
   }
 }
 output "api_management_logger" {
@@ -240,9 +261,25 @@ module "api_management_diagnostic" {
   client_config   = local.client_config
   settings        = each.value
 
-  api_management_name      = try(each.value.api_management.name, null) != null ? each.value.api_management.name : local.combined_objects_api_management[coalesce(try(each.value.api_management.lz_key, null), local.client_config.landingzone_key)][each.value.api_management.key].name
-  resource_group_name      = try(each.value.resource_group.name, null) != null ? each.value.resource_group.name : local.combined_objects_resource_groups[coalesce(try(each.value.resource_group.lz_key, null), local.client_config.landingzone_key)][coalesce(try(each.value.resource_group_key, null), try(each.value.resource_group.key, null))].name
-  api_management_logger_id = try(each.value.api_management_logger.id, null) != null ? each.value.api_management_logger.id : local.combined_objects_api_management_logger[coalesce(try(each.value.api_management_logger.lz_key, null), local.client_config.landingzone_key)][each.value.api_management_logger.key].id
+  api_management_name = try(each.value.api_management.name, null) != null ? each.value.api_management.name : local.combined_objects_api_management[coalesce(try(each.value.api_management.lz_key, null), local.client_config.landingzone_key)][each.value.api_management.key].name
+  resource_group_name = try(each.value.resource_group.name, null) != null ? each.value.resource_group.name : local.combined_objects_resource_groups[coalesce(try(each.value.resource_group.lz_key, null), local.client_config.landingzone_key)][coalesce(try(each.value.resource_group_key, null), try(each.value.resource_group.key, null))].name
+  api_management_logger_id = try(coalesce(
+    try(each.value.api_management_logger.id, null),
+    try(local.combined_objects_api_management_logger[coalesce(try(each.value.api_management_logger.lz_key, null), local.client_config.landingzone_key)][each.value.api_management_logger.key].id, null),
+    each.value.identifier == "azuremonitor" ? format(
+      "%s/loggers/azuremonitor",
+      coalesce(
+        try(each.value.api_management.id, null),
+        try(local.combined_objects_api_management[coalesce(try(each.value.api_management.lz_key, null), local.client_config.landingzone_key)][each.value.api_management.key].id, null),
+        format(
+          "/subscriptions/%s/resourceGroups/%s/providers/Microsoft.ApiManagement/service/%s",
+          local.client_config.subscription_id,
+          try(each.value.resource_group.name, null) != null ? each.value.resource_group.name : local.combined_objects_resource_groups[coalesce(try(each.value.resource_group.lz_key, null), local.client_config.landingzone_key)][coalesce(try(each.value.resource_group_key, null), try(each.value.resource_group.key, null))].name,
+          try(each.value.api_management.name, null) != null ? each.value.api_management.name : local.combined_objects_api_management[coalesce(try(each.value.api_management.lz_key, null), local.client_config.landingzone_key)][each.value.api_management.key].name
+        )
+      )
+    ) : null
+  ), null)
 
   remote_objects = {
     api_management        = local.combined_objects_api_management

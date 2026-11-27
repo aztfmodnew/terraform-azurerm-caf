@@ -50,6 +50,14 @@ DESCRIPTION
   })
 }
 
+variable "cloud" {
+  description = "Azure cloud endpoints used to derive cloud-specific service DNS names."
+  type        = map(string)
+  default = {
+    servicebusEndpoint = ".servicebus.windows.net"
+  }
+}
+
 variable "settings" {
   description = <<DESCRIPTION
 Define a telemetry destination referenced by service/API diagnostics.
@@ -83,14 +91,17 @@ reference members are optional/null unless marked required.
   non-identity mode prefers a remote instrumentation key when available,
   otherwise a remote connection string.
 - eventhub (optional object): Event Hub destination. name is the required Event
-  Hub name. Optional connection_string authenticates with an authorization-rule
-  connection string; optional endpoint_uri identifies the namespace endpoint
-  for identity-based ingestion. At least one must be supplied. Optional
-  user_assigned_identity_client_id selects the user-assigned identity used to
-  connect to the hub; the provider documents system-assigned identity behavior
-  when it is omitted. Identity-based ingestion needs the namespace endpoint and
-  Azure Event Hubs Data Sender permissions for the service identity.
-  Destination strings are sensitive configuration.
+  Hub name. name, event_hub_name, event_hub.name, hub.name, or an event_hub key
+  resolving through remote_objects identifies the hub. connection_string wins
+  over an authorization-rule connection string resolved through
+  authorization_rule, event_hub_authorization_rule, or
+  event_hub_namespace_authorization_rule. endpoint_uri wins over an endpoint
+  exported by an event_hub_namespace/namespace reference; a namespace name is
+  expanded with cloud.servicebusEndpoint. At least a connection string or
+  endpoint is required. user_assigned_identity_client_id wins over a
+  managed_identity/identity reference resolved to client_id; omitting it uses
+  the service system-assigned identity. Direct name, endpoint, connection, and
+  client-ID inputs remain supported.
   Exactly one of application_insights and eventhub must be configured.
 - api_management / resource_group (optional objects): root parent references;
   all nested fields are optional/null. name is a direct resource name preferred
@@ -134,10 +145,68 @@ DESCRIPTION
       identity_client_id  = optional(string)
     }))
     eventhub = optional(object({
-      name                             = string
+      name                             = optional(string)
+      event_hub_name                   = optional(string)
+      event_hub_namespace_name         = optional(string)
       connection_string                = optional(string)
       endpoint_uri                     = optional(string)
+      resource_id                      = optional(string)
       user_assigned_identity_client_id = optional(string)
+      event_hub_namespace_key          = optional(string)
+      event_hub_key                    = optional(string)
+      authorization_rule_key           = optional(string)
+      managed_identity_key             = optional(string)
+      event_hub_namespace = optional(object({
+        id           = optional(string)
+        key          = optional(string)
+        lz_key       = optional(string)
+        name         = optional(string)
+        endpoint_uri = optional(string)
+      }))
+      namespace = optional(object({
+        id           = optional(string)
+        key          = optional(string)
+        lz_key       = optional(string)
+        name         = optional(string)
+        endpoint_uri = optional(string)
+      }))
+      event_hub = optional(object({
+        id     = optional(string)
+        key    = optional(string)
+        lz_key = optional(string)
+        name   = optional(string)
+      }))
+      hub = optional(object({
+        id     = optional(string)
+        key    = optional(string)
+        lz_key = optional(string)
+        name   = optional(string)
+      }))
+      authorization_rule = optional(object({
+        key                       = optional(string)
+        lz_key                    = optional(string)
+        primary_connection_string = optional(string)
+      }))
+      event_hub_authorization_rule = optional(object({
+        key                       = optional(string)
+        lz_key                    = optional(string)
+        primary_connection_string = optional(string)
+      }))
+      event_hub_namespace_authorization_rule = optional(object({
+        key                       = optional(string)
+        lz_key                    = optional(string)
+        primary_connection_string = optional(string)
+      }))
+      managed_identity = optional(object({
+        client_id = optional(string)
+        key       = optional(string)
+        lz_key    = optional(string)
+      }))
+      identity = optional(object({
+        client_id = optional(string)
+        key       = optional(string)
+        lz_key    = optional(string)
+      }))
     }))
     timeouts = optional(object({
       create = optional(string)
@@ -167,11 +236,50 @@ DESCRIPTION
   }
 
   validation {
-    condition = try(var.settings.eventhub.name, null) == null || (
+    condition = var.settings.eventhub == null || (
       try(var.settings.eventhub.connection_string, null) != null ||
-      try(var.settings.eventhub.endpoint_uri, null) != null
+      try(var.settings.eventhub.endpoint_uri, null) != null ||
+      try(var.settings.eventhub.event_hub_namespace.endpoint_uri, null) != null ||
+      try(var.settings.eventhub.namespace.endpoint_uri, null) != null ||
+      try(var.settings.eventhub.event_hub_namespace_name, null) != null ||
+      try(var.settings.eventhub.event_hub_namespace.name, null) != null ||
+      try(var.settings.eventhub.namespace.name, null) != null ||
+      try(var.settings.eventhub.event_hub_namespace.key, null) != null ||
+      try(var.settings.eventhub.namespace.key, null) != null ||
+      try(var.settings.eventhub.event_hub_namespace_key, null) != null ||
+      try(var.settings.eventhub.authorization_rule_key, null) != null ||
+      try(var.settings.eventhub.authorization_rule.key, null) != null ||
+      try(var.settings.eventhub.event_hub_authorization_rule.key, null) != null ||
+      try(var.settings.eventhub.event_hub_namespace_authorization_rule.key, null) != null ||
+      try(var.settings.eventhub.authorization_rule.primary_connection_string, null) != null ||
+      try(var.settings.eventhub.event_hub_authorization_rule.primary_connection_string, null) != null ||
+      try(var.settings.eventhub.event_hub_namespace_authorization_rule.primary_connection_string, null) != null
     )
-    error_message = "eventhub must set at least one of connection_string or endpoint_uri."
+    error_message = "eventhub must resolve a connection_string or endpoint_uri directly, from a namespace reference, or from an authorization-rule reference."
+  }
+
+  validation {
+    condition = var.settings.eventhub == null || (
+      try(var.settings.eventhub.name, null) != null ||
+      try(var.settings.eventhub.event_hub_name, null) != null ||
+      try(var.settings.eventhub.event_hub.name, null) != null ||
+      try(var.settings.eventhub.hub.name, null) != null ||
+      try(var.settings.eventhub.event_hub.key, null) != null ||
+      try(var.settings.eventhub.hub.key, null) != null ||
+      try(var.settings.eventhub.event_hub_key, null) != null
+    )
+    error_message = "eventhub must provide or reference the Event Hub name."
+  }
+
+  validation {
+    condition = var.settings.eventhub == null || (
+      try(var.settings.eventhub.connection_string, null) == null ||
+      (
+        try(var.settings.eventhub.endpoint_uri, null) == null &&
+        try(var.settings.eventhub.user_assigned_identity_client_id, null) == null
+      )
+    )
+    error_message = "eventhub.connection_string cannot be combined with endpoint_uri or user_assigned_identity_client_id."
   }
 
   validation {

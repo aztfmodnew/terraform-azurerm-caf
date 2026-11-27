@@ -443,7 +443,8 @@ DESCRIPTION
     tenant_access = optional(object({
       enabled = bool
     }))
-    tags = optional(map(string), {})
+    tags                = optional(map(string), {})
+    diagnostic_profiles = optional(map(any), {})
     timeouts = optional(object({
       create = optional(string)
       read   = optional(string)
@@ -460,6 +461,7 @@ DESCRIPTION
     )
     error_message = "When sign_up is configured, provide sign_up.terms_of_service or the legacy top-level terms_of_service block."
   }
+
 }
 
 variable "remote_objects" {

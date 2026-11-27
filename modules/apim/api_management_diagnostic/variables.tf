@@ -57,7 +57,11 @@ Required settings object. Leaf values are strings unless another type is stated;
 reference members are optional/null unless marked required.
 
 - identifier (required string): applicationinsights or azuremonitor selects the
-  diagnostic destination type.
+  diagnostic destination type. applicationinsights requires an Application
+  Insights logger reference. azuremonitor uses the APIM built-in
+  /loggers/azuremonitor logger; the root module derives this ID when no explicit
+  logger reference is supplied. Event Hub loggers cannot be attached to APIM
+  service diagnostics.
 - always_log_errors (optional bool): send error telemetry even when normal
   sampling would omit it.
 - http_correlation_protocol (optional string): None disables correlation, Legacy
@@ -69,7 +73,8 @@ reference members are optional/null unless marked required.
 - verbosity (optional string): verbose, information, or error logging level.
 - operation_name_format (optional string): use Name or Url as the Application
   Insights operation name. Unlike the API-specific diagnostic child, this
-  module leaves omitted/null values to the provider.
+  module leaves omitted/null values to the provider. This value is not sent
+  for other diagnostic identifiers.
 - backend_request / backend_response (optional objects): capture requests sent
   to the backend and responses received from it.
 - frontend_request / frontend_response (optional objects): capture requests
@@ -83,13 +88,17 @@ reference members are optional/null unless marked required.
     for omission or null. Each rule requires value, the parameter/header name
     to redact, and mode, which is Mask or Hide for query_params and only Mask
     for headers.
-- api_management / resource_group / api_management_logger (optional objects):
+- api_management / resource_group (optional objects):
   root dependency references; all their nested fields are optional/null.
   key selects the corresponding combined CAF collection, and lz_key chooses
   its landing zone (current zone when omitted). name supplies a direct service
-  or group name preferred over key. id supplies a direct logger ARM ID preferred
-  over its key. Service/group id fields and logger name are compatibility
-  metadata, not used by the root's corresponding name/ID lookups.
+  or group name preferred over key. Service/group id fields are compatibility
+  metadata, not used by the root's corresponding name lookups.
+- api_management_logger (optional object): required for applicationinsights and
+  optional for azuremonitor. id supplies a direct logger ARM ID preferred over
+  key. lz_key selects the logger's landing zone. The logger name field is
+  compatibility metadata. For azuremonitor, omit this block to use the built-in
+  APIM logger automatically.
   resource_group_key is an optional legacy group key preferred before
   resource_group.key. The root passes resolved names/ID as separate child inputs.
 - timeouts (optional object): create limits diagnostic creation, read retrieval,
@@ -154,6 +163,15 @@ DESCRIPTION
   validation {
     condition     = try(contains(["applicationinsights", "azuremonitor"], var.settings.identifier), false)
     error_message = "identifier must be applicationinsights or azuremonitor."
+  }
+
+  validation {
+    condition = try(
+      var.settings.metrics_enabled == null ||
+      var.settings.identifier == "applicationinsights",
+      true
+    )
+    error_message = "metrics_enabled is supported only for applicationinsights diagnostics."
   }
 
   validation {
@@ -235,6 +253,6 @@ variable "resource_group_name" {
 }
 
 variable "api_management_logger_id" {
-  description = "The ID of the API Management logger receiving diagnostic data."
+  description = "The ID of the APIM logger matching the diagnostic identifier. Use /loggers/azuremonitor for azuremonitor, or an Application Insights logger for applicationinsights."
   type        = string
 }

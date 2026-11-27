@@ -11,7 +11,7 @@ module "caf" {
 |api_management_logger|The `api_management_logger` block as defined below.|Block|True|
 |api_management|The `api_management` block as defined below.|Block|True|
 |api_name| The name of the API on which to configure the Diagnostics Logs. Changing this forces a new API Management Service API Diagnostics Logs to be created.||True|
-|identifier| Identifier of the Diagnostics Logs. Possible values are `applicationinsights` and `azuremonitor`. Changing this forces a new API Management Service API Diagnostics Logs to be created.||True|
+|identifier| Identifier of the Diagnostics Logs. Must be `applicationinsights`. AzureRM 5.14 internally defaults `operation_name_format` and rejects `azuremonitor` even when the attribute is omitted. Service diagnostics continue to support `azuremonitor`. Changing this forces a new API Management Service API Diagnostics Logs to be created.||True|
 |resource_group|The `resource_group` block as defined below.|Block|True|
 |always_log_errors| Always log errors. Send telemetry if there is an erroneous condition, regardless of sampling settings.||False|
 |backend_request| A `backend_request` block as defined below.| Block |False|
@@ -22,7 +22,7 @@ module "caf" {
 |log_client_ip| Log client IP address.||False|
 |sampling_percentage| Sampling (%). For high traffic APIs, please read this [documentation](https://docs.microsoft.com/azure/api-management/api-management-howto-app-insights#performance-implications-and-log-sampling) to understand performance implications and log sampling. Valid values are between `0.0` and `100.0`.||False|
 |verbosity| Logging verbosity. Possible values are `verbose`, `information` or `error`.||False|
-|operation_name_format| The format of the Operation Name for Application Insights telemetries. Possible values are `Name`, and `Url`. Defaults to `Name`.||False|
+|operation_name_format| The format of the Operation Name for Application Insights telemetries. Possible values are `Name`, and `Url`. Omission uses the provider default.||False|
 
 ## Blocks
 | Block | Argument | Description | Required |

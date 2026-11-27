@@ -30,10 +30,10 @@ resource "azurerm_api_management_logger" "apim" {
     for_each = try(var.settings.eventhub, null) == null ? [] : [var.settings.eventhub]
 
     content {
-      name                             = eventhub.value.name
-      connection_string                = try(eventhub.value.connection_string, null)
-      endpoint_uri                     = try(eventhub.value.endpoint_uri, null)
-      user_assigned_identity_client_id = try(eventhub.value.user_assigned_identity_client_id, null)
+      name                             = local.eventhub_name
+      connection_string                = local.eventhub_connection_string
+      endpoint_uri                     = local.eventhub_endpoint_uri
+      user_assigned_identity_client_id = local.eventhub_user_assigned_identity_client_id
     }
   }
 

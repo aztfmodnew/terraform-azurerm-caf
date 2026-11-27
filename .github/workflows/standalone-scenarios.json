@@ -55,6 +55,7 @@
     "apim/152-api_management_workspace_named_value",
     "apim/153-api_management_workspace_policy",
     "apim/154-api_management_workspace_policy_fragment",
+    "apim/155-ai-gateway-observability",
     "app_config/100-simple",
     "app_config/101-private-link",
     "app_insights/100-all-attributes",
