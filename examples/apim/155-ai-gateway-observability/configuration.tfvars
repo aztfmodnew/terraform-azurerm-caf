@@ -159,12 +159,15 @@ api_management_logger = {
 
 api_management_diagnostic = {
   service = {
-    identifier = "azuremonitor"
+    identifier = "applicationinsights"
     resource_group = {
       key = "ai_gateway"
     }
     api_management = {
       key = "ai_gateway"
+    }
+    api_management_logger = {
+      key = "application_insights"
     }
     sampling_percentage       = 100
     always_log_errors         = true
