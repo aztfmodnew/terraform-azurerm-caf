@@ -7,6 +7,9 @@ module "event_hub_namespaces" {
   settings         = each.value
   storage_accounts = local.combined_objects_storage_accounts
   client_config    = local.client_config
+  remote_objects = {
+    managed_identities = local.combined_objects_managed_identities
+  }
 
   base_tags           = local.global_settings.inherit_tags
   resource_group      = local.combined_objects_resource_groups[try(each.value.resource_group.lz_key, local.client_config.landingzone_key)][try(each.value.resource_group_key, each.value.resource_group.key)]
@@ -36,7 +39,8 @@ module "event_hub_namespace_auth_rules" {
 }
 
 output "event_hub_namespace_auth_rules" {
-  value = module.event_hub_namespace_auth_rules
+  value     = module.event_hub_namespace_auth_rules
+  sensitive = true
 }
 
 module "event_hub_namespaces_diagnostics" {
@@ -101,11 +105,16 @@ module "event_hubs" {
   depends_on = [module.event_hub_namespaces]
   for_each   = try(var.event_hubs, {})
 
-  client_config       = local.client_config
-  global_settings     = local.global_settings
-  settings            = each.value
-  namespace_name      = module.event_hub_namespaces[each.value.event_hub_namespace_key].name
-  storage_account_id  = try(module.storage_accounts[each.value.storage_account_key].id, null)
+  client_config   = local.client_config
+  global_settings = local.global_settings
+  settings        = each.value
+  namespace       = module.event_hub_namespaces[each.value.event_hub_namespace_key]
+  namespace_name  = module.event_hub_namespaces[each.value.event_hub_namespace_key].name
+  storage_account_id = try(coalesce(
+    try(each.value.storage_account_id, null),
+    try(local.combined_objects_storage_accounts[try(each.value.storage_account.lz_key, local.client_config.landingzone_key)][each.value.storage_account.key].id, null),
+    try(module.storage_accounts[each.value.storage_account_key].id, null)
+  ), null)
   resource_group_name = local.combined_objects_resource_groups[try(each.value.lz_key, local.client_config.landingzone_key)][try(each.value.resource_group_key, each.value.resource_group.key)].name
 }
 
@@ -132,7 +141,8 @@ module "event_hub_auth_rules" {
 }
 
 output "event_hub_auth_rules" {
-  value = module.event_hub_auth_rules
+  value     = module.event_hub_auth_rules
+  sensitive = true
 }
 
 module "event_hub_consumer_groups" {
@@ -151,4 +161,8 @@ module "event_hub_consumer_groups" {
     module.event_hub_namespaces,
     module.event_hubs
   ]
+}
+
+output "event_hub_consumer_groups" {
+  value = module.event_hub_consumer_groups
 }

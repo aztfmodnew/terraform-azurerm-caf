@@ -15,4 +15,14 @@ resource "azurerm_eventhub_namespace_authorization_rule" "evh_ns_rule" {
   listen              = var.settings.listen
   send                = var.settings.send
   manage              = var.settings.manage
+
+  dynamic "timeouts" {
+    for_each = try(var.settings.timeouts, null) == null ? [] : [var.settings.timeouts]
+    content {
+      create = try(timeouts.value.create, null)
+      read   = try(timeouts.value.read, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
+    }
+  }
 }
