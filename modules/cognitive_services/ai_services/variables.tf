@@ -33,6 +33,7 @@ variable "settings" {
     - type - (Required) Specifies the type of Managed Service Identity that should be configured on this AI Services Account. Possible values are SystemAssigned, UserAssigned, SystemAssigned, UserAssigned
     - identity_ids - (Optional) Specifies a list of User Assigned Managed Identity IDs to be assigned to this AI Services Account.
   local_authentication_enabled - (Optional) Whether local authentication is enabled for the AI Services Account. Defaults to true.
+  local_auth_enabled - (Optional) Current AzureRM alias for local authentication. Takes precedence over local_authentication_enabled.
   network_acls - (Optional) A network_acls block as defined below. When this property is specified, custom_subdomain_name is also required to be set.
     - default_action - (Required) The Default Action to use when no rules match from ip_rules / virtual_network_rules. Possible values are Allow and Deny.
     - ip_rules - (Optional) One or more IP Addresses, or CIDR Blocks which should be able to access the AI Services Account.
@@ -42,6 +43,8 @@ variable "settings" {
   outbound_network_access_restricted - (Optional) Whether outbound network access is restricted for the AI Services Account. Defaults to false.
   project_management_enabled - (Optional) Whether project management is enabled. Defaults to true to preserve the previous azurerm_ai_services behaviour.
   public_network_access - (Optional) Whether public network access is allowed for the AI Services Account. Possible values are Enabled and Disabled. Defaults to Enabled. 
+  public_network_access_enabled - (Optional) Current boolean form of public network access. Takes precedence over public_network_access.
+  private_endpoints - (Optional) A map passed separately by the root module. Use private_service_connection for connection options; the subresource is always `account`. Attach private_dns keys for privatelink.cognitiveservices.azure.com, privatelink.openai.azure.com, and privatelink.services.ai.azure.com as required.
   storage - (Optional) A storage block as defined below.
     - storage_account_id - (Required) The ID of the Storage Account.
     - identity_client_id - (Optional) The client ID of the Managed Identity associated with the Storage Account.
@@ -118,5 +121,11 @@ variable "base_tags" {
 
 variable "remote_objects" {
   type        = any
-  description = "Remote objects"
+  description = "Remote objects used for network, DNS, identity and storage references."
+}
+
+variable "private_endpoints" {
+  description = "A map of private endpoints for the AI Services account. Private-link connections always target the `account` subresource."
+  type        = any
+  default     = {}
 }

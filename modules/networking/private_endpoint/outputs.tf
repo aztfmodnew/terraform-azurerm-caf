@@ -8,6 +8,11 @@ output "name" {
   description = "The name of the Private Endpoint"
 }
 
+output "subnet_id" {
+  value       = azurerm_private_endpoint.pep.subnet_id
+  description = "The ID of the subnet used by the Private Endpoint"
+}
+
 output "private_dns_zone_group" {
   value       = azurerm_private_endpoint.pep.private_dns_zone_group
   description = "The private DNS zone group configuration"

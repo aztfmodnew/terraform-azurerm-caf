@@ -65,6 +65,11 @@ variable "monitor_activity_log_alert" {
   default = {}
 }
 
+variable "monitor_private_link_scopes" {
+  type    = any
+  default = {}
+}
+
 variable "log_analytics_storage_insights" {
   type    = any
   default = {}

@@ -31,3 +31,13 @@ output "tenant_id" {
   value       = try(azurerm_cognitive_account.ai_services.identity[0].tenant_id, null)
   sensitive   = false
 }
+
+output "rbac_id" {
+  description = "The managed identity principal ID for generic role mappings."
+  value       = try(azurerm_cognitive_account.ai_services.identity[0].principal_id, null)
+}
+
+output "private_endpoints" {
+  description = "Private endpoints created for the AI Services account, keyed by configuration key."
+  value       = module.private_endpoint
+}

@@ -260,6 +260,14 @@ resource "azurerm_api_management" "apim" {
       delete = try(timeouts.value.delete, null)
     }
   }
+
+  lifecycle {
+    precondition {
+      condition     = length(var.private_endpoints) == 0 || !startswith(var.settings.sku_name, "Consumption_")
+      error_message = "API Management private endpoints are not supported for Consumption_* SKUs."
+    }
+  }
+
   tags = merge(local.tags, try(var.settings.tags, {}))
 
 }

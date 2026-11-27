@@ -1,6 +1,7 @@
 {
   "config_files": [
     "ai_services/100-cognitive-services-ai-services",
+    "ai_services/101-private-endpoint-rbac",
     "apim/100-basic",
     "apim/101-api",
     "apim/102-diagnostics",
@@ -56,6 +57,7 @@
     "apim/153-api_management_workspace_policy",
     "apim/154-api_management_workspace_policy_fragment",
     "apim/155-ai-gateway-observability",
+    "apim/200-private-api-management",
     "app_config/100-simple",
     "app_config/101-private-link",
     "app_insights/100-all-attributes",
@@ -130,6 +132,7 @@
     "monitoring/102-monitor_activity_log_alert",
     "monitoring/103-monitor_metric_alert",
     "monitoring/104-log_analytics_storage_insights",
+    "monitoring/105-private-monitoring",
     "grafana/100-simple-grafana",
     "governance/management_lock/100-simple-management-lock",
     "netapp/101-nfs",

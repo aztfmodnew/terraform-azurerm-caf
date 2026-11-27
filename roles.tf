@@ -144,6 +144,7 @@ locals {
     application_gateways                       = local.combined_objects_application_gateways
     automations                                = local.combined_objects_automations
     availability_sets                          = local.combined_objects_availability_sets
+    ai_services                                = local.combined_objects_ai_services
     azure_container_registries                 = local.combined_objects_azure_container_registries
     azuread_applications                       = local.combined_objects_azuread_applications
     azuread_apps                               = local.combined_objects_azuread_apps

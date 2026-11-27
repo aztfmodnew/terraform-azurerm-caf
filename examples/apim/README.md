@@ -36,6 +36,12 @@ diagnostic setting, an Event Hub-backed APIM service diagnostic, and an
 Application Insights-backed per-API diagnostic. The example uses the Developer
 APIM tier and identity-based Event Hub ingestion.
 
+[`200-private-api-management`](200-private-api-management) demonstrates the
+private AI Gateway network foundation: an API Management inbound private
+endpoint targeting `Gateway`, the `privatelink.azure-api.net` DNS zone, and a
+VNet link. It does not use APIM VNet injection and does not depend on AI
+Services or Azure Monitor Private Link Scope.
+
 ## Scenario numbering
 
 APIM examples use a flat `NNN-description/` layout. The numbers identify
